@@ -34,7 +34,8 @@ impl VnidropTicket {
     }
 
     fn decode(value: &str) -> Result<Self> {
-        let encoded = value
+        let normalized = normalize_ticket_input(value);
+        let encoded = normalized
             .strip_prefix(VNIDROP_TICKET_PREFIX)
             .context("not a VniDrop ticket")?;
         let bytes = BASE64URL_NOPAD
@@ -51,8 +52,9 @@ pub(crate) struct ParsedTransferTicket {
 }
 
 pub(crate) fn parse_transfer_ticket(value: &str) -> Result<ParsedTransferTicket> {
-    if value.starts_with(VNIDROP_TICKET_PREFIX) {
-        let ticket = VnidropTicket::decode(value)?;
+    let normalized = normalize_ticket_input(value);
+    if normalized.starts_with(VNIDROP_TICKET_PREFIX) {
+        let ticket = VnidropTicket::decode(&normalized)?;
         let blob_ticket = BlobTicket::from_str(&ticket.blob_ticket)
             .context("invalid BlobTicket inside VniDrop ticket")?;
         return Ok(ParsedTransferTicket {
@@ -61,9 +63,13 @@ pub(crate) fn parse_transfer_ticket(value: &str) -> Result<ParsedTransferTicket>
         });
     }
 
-    let blob_ticket = BlobTicket::from_str(value).context("invalid BlobTicket")?;
+    let blob_ticket = BlobTicket::from_str(&normalized).context("invalid BlobTicket")?;
     Ok(ParsedTransferTicket {
         blob_ticket,
         metadata: None,
     })
+}
+
+fn normalize_ticket_input(value: &str) -> String {
+    value.chars().filter(|char| !char.is_whitespace()).collect()
 }

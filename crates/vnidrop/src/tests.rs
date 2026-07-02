@@ -53,6 +53,26 @@ mod tests {
     }
 
     #[test]
+    fn metadata_ticket_round_trip_tolerates_wrapped_whitespace() {
+        let secret = SecretKey::generate();
+        let addr = iroh::EndpointAddr::new(secret.public());
+        let blob_ticket = BlobTicket::new(addr, Hash::new([9; 32]), BlobFormat::HashSeq);
+        let metadata = TransferMetadata::new(7, "Wrapped", None, blob_ticket.hash(), 1, 10);
+        let encoded = VnidropTicket::new(blob_ticket.clone(), metadata)
+            .encode()
+            .unwrap();
+        let wrapped = encoded
+            .as_bytes()
+            .chunks(8)
+            .map(|chunk| std::str::from_utf8(chunk).unwrap())
+            .collect::<Vec<_>>()
+            .join("\n  ");
+
+        let parsed = parse_transfer_ticket(&wrapped).unwrap();
+        assert_eq!(parsed.blob_ticket.hash(), blob_ticket.hash());
+    }
+
+    #[test]
     fn invalid_ticket_is_rejected() {
         assert!(parse_transfer_ticket("not-a-ticket").is_err());
     }
