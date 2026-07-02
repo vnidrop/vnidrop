@@ -2,6 +2,10 @@
 members = ["crates/vnidrop"]
 resolver = "2"
 
+[profile.dev]
+debug = 0
+strip = "debuginfo"
+
 [profile.release]
 lto = "thin"
 codegen-units = 1
