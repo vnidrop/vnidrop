@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.core.CoreRepository
+import com.vnidrop.app.core.PickedShareFile
+import com.vnidrop.app.core.rememberShareFilePicker
+import com.vnidrop.app.core.sharePickedFile
 import kotlinx.coroutines.launch
 
 @Composable
@@ -32,11 +35,22 @@ fun App() {
 	val scope = rememberCoroutineScope()
 	var appDataDir by remember { mutableStateOf(platform.defaultCoreDataDir) }
 	var sourcePath by remember { mutableStateOf("") }
+	var selectedFile by remember { mutableStateOf<PickedShareFile?>(null) }
 	var transferName by remember { mutableStateOf("VniDrop transfer") }
 	var senderName by remember { mutableStateOf("") }
 	var ticket by remember { mutableStateOf("") }
 	var receiveDir by remember { mutableStateOf(platform.defaultReceiveDir) }
 	var receiverName by remember { mutableStateOf("") }
+	val shareFilePicker = rememberShareFilePicker(
+		onFilePicked = { file ->
+			selectedFile = file
+			sourcePath = file.value
+			if (transferName.isBlank() || transferName == "VniDrop transfer") {
+				transferName = file.displayName
+			}
+		},
+		onError = { error -> scope.launch { repository.setError(error) } },
+	)
 
 	MaterialTheme {
 		Surface(
@@ -73,13 +87,19 @@ fun App() {
 				}
 
 				item {
-					CoreCard(title = "Share path") {
+					CoreCard(title = "Share file") {
 						OutlinedTextField(
 							value = sourcePath,
-							onValueChange = { sourcePath = it },
-							label = { Text("Source file path") },
+							onValueChange = {
+								sourcePath = it
+								selectedFile = null
+							},
+							label = { Text("Selected file") },
 							modifier = Modifier.fillMaxWidth(),
 						)
+						Button(onClick = { shareFilePicker.pickFile() }) {
+							Text("Select file")
+						}
 						OutlinedTextField(
 							value = transferName,
 							onValueChange = { transferName = it },
@@ -93,10 +113,15 @@ fun App() {
 							modifier = Modifier.fillMaxWidth(),
 						)
 						Button(
-							enabled = state.isInitialized && sourcePath.isNotBlank(),
+							enabled = state.isInitialized && (selectedFile != null || sourcePath.isNotBlank()),
 							onClick = {
 								scope.launch {
-									repository.sharePath(sourcePath, transferName, senderName)
+									val picked = selectedFile
+									if (picked != null) {
+										sharePickedFile(repository, picked, transferName, senderName)
+									} else {
+										repository.sharePath(sourcePath, transferName, senderName)
+									}
 								}
 							},
 						) {

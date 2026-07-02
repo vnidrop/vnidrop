@@ -135,6 +135,10 @@ class CoreRepository(
 		refreshStatus()
 	}
 
+	suspend fun setError(message: String) {
+		_state.update { it.copy(error = message) }
+	}
+
 	private suspend fun runCore(block: suspend () -> Unit) {
 		withContext(dispatcher) {
 			try {

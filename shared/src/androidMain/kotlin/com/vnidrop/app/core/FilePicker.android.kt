@@ -1,0 +1,72 @@
+package com.vnidrop.app.core
+
+import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+
+@Composable
+actual fun rememberShareFilePicker(
+	onFilePicked: (PickedShareFile) -> Unit,
+	onError: (String) -> Unit,
+): ShareFilePicker {
+	val context = LocalContext.current
+	val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+		if (uri != null) {
+			onFilePicked(PickedShareFile(uri.toString(), context.displayName(uri)))
+		}
+	}
+	return remember(launcher) {
+		object : ShareFilePicker {
+			override fun pickFile() {
+				launcher.launch(arrayOf("*/*"))
+			}
+		}
+	}
+}
+
+actual suspend fun sharePickedFile(
+	repository: CoreRepository,
+	file: PickedShareFile,
+	transferName: String,
+	senderName: String,
+) {
+	val context = AndroidContextHolder.context
+		errorIfNull(context, "Android context has not been attached")
+		.contentResolver
+		.openFileDescriptor(Uri.parse(file.value), "r")
+		.use { descriptor ->
+			checkNotNull(descriptor) { "Could not open selected file descriptor" }
+			repository.shareFileDescriptor(
+				fd = descriptor.fd,
+				displayName = file.displayName,
+				transferName = transferName,
+				senderName = senderName,
+			)
+		}
+}
+
+private object AndroidContextHolder {
+	var context: Context? = null
+}
+
+fun attachAndroidFilePickerContext(context: Context) {
+	AndroidContextHolder.context = context.applicationContext
+}
+
+private fun Context.displayName(uri: Uri): String {
+	contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+		val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+		if (nameIndex >= 0 && cursor.moveToFirst()) {
+			return cursor.getString(nameIndex)
+		}
+	}
+	return uri.lastPathSegment ?: "transfer"
+}
+
+private fun <T : Any> errorIfNull(value: T?, message: String): T =
+	value ?: error(message)
