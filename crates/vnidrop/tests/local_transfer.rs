@@ -1,8 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use vnidrop_core::{
-    CoreEvent, CoreEventSink, ShareMetadataInput, ShareSource, SourceKind, VnidropCore,
-};
+use vnidrop::{CoreEvent, CoreEventSink, ShareMetadataInput, ShareSource, SourceKind, VnidropCore};
 
 #[derive(Default)]
 struct RecordingSink {
@@ -29,7 +27,11 @@ fn two_local_cores_transfer_file() {
     )
     .unwrap();
     let receiver = VnidropCore::initialize(
-        receiver_dir.path().join("core").to_string_lossy().to_string(),
+        receiver_dir
+            .path()
+            .join("core")
+            .to_string_lossy()
+            .to_string(),
         Arc::new(RecordingSink::default()),
     )
     .unwrap();

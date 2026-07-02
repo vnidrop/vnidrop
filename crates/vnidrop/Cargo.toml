@@ -1,10 +1,10 @@
 [package]
-name = "vnidrop-core"
+name = "vnidrop"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-name = "vnidrop_core"
+name = "vnidrop"
 crate-type = ["cdylib", "staticlib", "rlib"]
 
 [dependencies]
@@ -21,7 +21,11 @@ n0-future = "0.3.1"
 num_cpus = "1.17.0"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+sqlx = { version = "0.8.6", default-features = false, features = ["runtime-tokio", "sqlite", "macros", "migrate"] }
 thiserror = "2.0.18"
+tracing = "0.1.41"
+tracing-appender = "0.2.4"
+tracing-subscriber = { version = "0.3.20", features = ["env-filter", "fmt"] }
 tokio = { version = "1.52.3", features = ["full"] }
 uniffi = { version = "=0.29.4", features = ["tokio"] }
 uuid = { version = "1.23.3", features = ["v4", "serde"] }

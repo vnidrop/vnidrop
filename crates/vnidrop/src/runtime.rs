@@ -1,29 +1,17 @@
 use std::{
     collections::HashMap,
     fs::File,
-    io::{self, Read, Write},
-    path::{Component, Path, PathBuf},
-    str::FromStr,
+    io,
+    path::{Path, PathBuf},
     sync::{Arc, Mutex},
-    time::{SystemTime, UNIX_EPOCH},
 };
 
 use anyhow::{Context, Result};
 use bytes::Bytes;
-use data_encoding::{BASE64URL_NOPAD, HEXLOWER};
 use futures_lite::StreamExt as _;
-use iroh::{
-    endpoint::presets,
-    protocol::Router,
-    Endpoint, SecretKey,
-};
+use iroh::{endpoint::presets, protocol::Router, Endpoint};
 use iroh_blobs::{
-    api::{
-        blobs::AddProgressItem,
-        proto::ExportRangesItem,
-        remote::GetProgressItem,
-        TempTag,
-    },
+    api::{blobs::AddProgressItem, proto::ExportRangesItem, remote::GetProgressItem, TempTag},
     format::collection::Collection,
     get::request::get_hash_seq_and_sizes,
     provider::events::{EventMask, EventSender, ProviderMessage, RequestUpdate},
@@ -32,207 +20,26 @@ use iroh_blobs::{
     BlobFormat, BlobsProtocol, Hash,
 };
 use n0_future::BufferedStreamExt;
-use serde::{Deserialize, Serialize};
 use serde_json::json;
 use tokio::sync::{mpsc, oneshot, Mutex as TokioMutex};
 
-const VNIDROP_TICKET_PREFIX: &str = "vnd1:";
-const STREAM_BUFFER_LEN: usize = 1024 * 1024;
-
-#[derive(Debug, thiserror::Error, uniffi::Error)]
-pub enum VnidropError {
-    #[error("{reason}")]
-    Generic { reason: String },
-}
-
-impl From<anyhow::Error> for VnidropError {
-    fn from(error: anyhow::Error) -> Self {
-        Self::Generic {
-            reason: error.to_string(),
-        }
-    }
-}
-
-impl From<io::Error> for VnidropError {
-    fn from(error: io::Error) -> Self {
-        Self::Generic {
-            reason: error.to_string(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct CoreEvent {
-    pub id: String,
-    pub timestamp: i64,
-    pub scope: String,
-    pub transfer_id: Option<u64>,
-    pub direction: Option<String>,
-    pub phase: String,
-    pub kind: String,
-    pub data_json: String,
-}
-
-#[uniffi::export(with_foreign)]
-pub trait CoreEventSink: Send + Sync {
-    fn on_event(&self, event: CoreEvent);
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct RuntimeStatus {
-    pub endpoint_id: String,
-    pub addr: String,
-    pub active_transfers: u64,
-    pub active_shares: u64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Enum)]
-pub enum SourceKind {
-    Path,
-    AndroidContentUri,
-    IosSecurityScopedUrl,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct ShareSource {
-    pub kind: SourceKind,
-    pub value: String,
-    pub display_name: Option<String>,
-    pub is_directory: bool,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct ShareMetadataInput {
-    pub transfer_id: u64,
-    pub transfer_name: Option<String>,
-    pub sender_name: Option<String>,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct ShareResult {
-    pub transfer_id: u64,
-    pub ticket: String,
-    pub blob_ticket: String,
-    pub hash: String,
-    pub transfer_name: String,
-    pub file_count: u64,
-    pub total_size: u64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct TransferMetadata {
-    pub version: u8,
-    pub transfer_id: u64,
-    pub transfer_name: String,
-    pub sender_name: Option<String>,
-    pub created_at: i64,
-    pub content_hash: String,
-    pub file_count: u64,
-    pub total_size: u64,
-}
-
-impl TransferMetadata {
-    fn new(
-        transfer_id: u64,
-        transfer_name: impl Into<String>,
-        sender_name: Option<String>,
-        content_hash: Hash,
-        file_count: u64,
-        total_size: u64,
-    ) -> Self {
-        Self {
-            version: 1,
-            transfer_id,
-            transfer_name: transfer_name.into(),
-            sender_name: sender_name.and_then(non_empty),
-            created_at: now_ms(),
-            content_hash: content_hash.to_string(),
-            file_count,
-            total_size,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct VnidropTicket {
-    version: u8,
-    blob_ticket: String,
-    metadata: TransferMetadata,
-}
-
-impl VnidropTicket {
-    fn new(blob_ticket: BlobTicket, metadata: TransferMetadata) -> Self {
-        Self {
-            version: 1,
-            blob_ticket: blob_ticket.to_string(),
-            metadata,
-        }
-    }
-
-    fn encode(&self) -> Result<String> {
-        let bytes = serde_json::to_vec(self)?;
-        Ok(format!(
-            "{VNIDROP_TICKET_PREFIX}{}",
-            BASE64URL_NOPAD.encode(&bytes)
-        ))
-    }
-
-    fn decode(value: &str) -> Result<Self> {
-        let encoded = value
-            .strip_prefix(VNIDROP_TICKET_PREFIX)
-            .context("not a VniDrop ticket")?;
-        let bytes = BASE64URL_NOPAD
-            .decode(encoded.as_bytes())
-            .context("invalid VniDrop ticket encoding")?;
-        serde_json::from_slice(&bytes).context("invalid VniDrop ticket payload")
-    }
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
-pub struct TicketInspection {
-    pub kind: String,
-    pub blob_ticket: String,
-    pub metadata: Option<TransferMetadata>,
-}
-
-#[derive(Debug, Clone)]
-struct ParsedTransferTicket {
-    blob_ticket: BlobTicket,
-    metadata: Option<TransferMetadata>,
-}
-
-fn parse_transfer_ticket(value: &str) -> Result<ParsedTransferTicket> {
-    if value.starts_with(VNIDROP_TICKET_PREFIX) {
-        let ticket = VnidropTicket::decode(value)?;
-        let blob_ticket = BlobTicket::from_str(&ticket.blob_ticket)
-            .context("invalid BlobTicket inside VniDrop ticket")?;
-        return Ok(ParsedTransferTicket {
-            blob_ticket,
-            metadata: Some(ticket.metadata),
-        });
-    }
-
-    let blob_ticket = BlobTicket::from_str(value).context("invalid BlobTicket")?;
-    Ok(ParsedTransferTicket {
-        blob_ticket,
-        metadata: None,
-    })
-}
-
-#[derive(Debug)]
-struct TransferImport {
-    tag: TempTag,
-    root_hash: Hash,
-    total_size: u64,
-    file_count: u64,
-    default_name: String,
-}
-
-#[derive(Debug)]
-struct ImportSourceFile {
-    path: PathBuf,
-    collection_name: String,
-}
+use crate::{
+    access_policy::{AccessDecision, AccessPolicy},
+    api::{
+        CoreEvent, CoreEventSink, RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource,
+        StoredTransfer, TicketInspection, TransferAccessMode, TransferMetadata,
+    },
+    error::VnidropError,
+    filesystem::{
+        collect_import_files, default_collection_name, read_stream_from_blocking_reader,
+        safe_output_path, wait_for_writer, write_stream_to_blocking_writer, TransferImport,
+    },
+    logging::init_logging,
+    repository::Repository,
+    secret::load_or_create_secret,
+    ticket::{parse_transfer_ticket, ParsedTransferTicket, VnidropTicket},
+    util::{non_empty, now_ms, unique_transfer_id},
+};
 
 #[derive(uniffi::Object)]
 pub struct VnidropCore {
@@ -244,10 +51,13 @@ struct CoreInner {
     endpoint: Endpoint,
     router: Router,
     store: FsStore,
+    repository: Repository,
+    access_policy: Arc<AccessPolicy>,
     event_sink: Arc<dyn CoreEventSink>,
     active_transfers: TokioMutex<HashMap<u64, oneshot::Sender<()>>>,
     active_shares: TokioMutex<HashMap<u64, TempTag>>,
     hash_to_transfer: TokioMutex<HashMap<String, u64>>,
+    connection_endpoints: TokioMutex<HashMap<u64, String>>,
     sequence: Mutex<u64>,
 }
 
@@ -260,7 +70,7 @@ impl VnidropCore {
     ) -> Result<Arc<Self>, VnidropError> {
         let runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
-            .thread_name("vnidrop-core")
+            .thread_name("vnidrop")
             .build()?;
         let app_data_dir = PathBuf::from(app_data_dir);
         let inner = runtime.block_on(CoreInner::start(app_data_dir, event_sink))?;
@@ -288,13 +98,51 @@ impl VnidropCore {
         receiver_name: Option<String>,
     ) -> Result<(), VnidropError> {
         self.runtime
-            .block_on(self.inner.receive(ticket, PathBuf::from(output_dir), receiver_name))
+            .block_on(
+                self.inner
+                    .receive(ticket, PathBuf::from(output_dir), receiver_name),
+            )
             .map_err(Into::into)
     }
 
     pub fn cancel_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
         self.runtime
             .block_on(self.inner.cancel_transfer(transfer_id))
+            .map_err(Into::into)
+    }
+
+    pub fn set_transfer_access_mode(
+        &self,
+        transfer_id: u64,
+        mode: TransferAccessMode,
+    ) -> Result<(), VnidropError> {
+        self.runtime
+            .block_on(self.inner.set_transfer_access_mode(transfer_id, mode))
+            .map_err(Into::into)
+    }
+
+    pub fn approve_endpoint_for_transfer(
+        &self,
+        transfer_id: u64,
+        endpoint_id: String,
+    ) -> Result<(), VnidropError> {
+        self.runtime
+            .block_on(
+                self.inner
+                    .approve_endpoint_for_transfer(transfer_id, endpoint_id),
+            )
+            .map_err(Into::into)
+    }
+
+    pub fn list_transfers(&self) -> Result<Vec<StoredTransfer>, VnidropError> {
+        self.runtime
+            .block_on(self.inner.repository.list_transfers())
+            .map_err(Into::into)
+    }
+
+    pub fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>, VnidropError> {
+        self.runtime
+            .block_on(self.inner.repository.list_events(transfer_id))
             .map_err(Into::into)
     }
 
@@ -317,12 +165,11 @@ impl VnidropCore {
 }
 
 impl CoreInner {
-    async fn start(
-        app_data_dir: PathBuf,
-        event_sink: Arc<dyn CoreEventSink>,
-    ) -> Result<Arc<Self>> {
+    async fn start(app_data_dir: PathBuf, event_sink: Arc<dyn CoreEventSink>) -> Result<Arc<Self>> {
         tokio::fs::create_dir_all(&app_data_dir).await?;
+        init_logging(&app_data_dir)?;
         let secret_key = load_or_create_secret(&app_data_dir).await?;
+        let repository = Repository::open(&app_data_dir).await?;
         let store_root = app_data_dir.join("blobs");
         let store = FsStore::load(&store_root).await?;
         let endpoint = Endpoint::builder(presets::N0)
@@ -341,10 +188,13 @@ impl CoreInner {
             endpoint,
             router,
             store,
+            repository,
+            access_policy: AccessPolicy::new(),
             event_sink,
             active_transfers: TokioMutex::new(HashMap::new()),
             active_shares: TokioMutex::new(HashMap::new()),
             hash_to_transfer: TokioMutex::new(HashMap::new()),
+            connection_endpoints: TokioMutex::new(HashMap::new()),
             sequence: Mutex::new(1),
         });
 
@@ -387,7 +237,8 @@ impl CoreInner {
             json!({ "source_count": sources.len() }),
         );
         let import = self.import_sources(metadata.transfer_id, sources).await?;
-        let blob_ticket = BlobTicket::new(self.endpoint.addr(), import.root_hash, BlobFormat::HashSeq);
+        let blob_ticket =
+            BlobTicket::new(self.endpoint.addr(), import.root_hash, BlobFormat::HashSeq);
         let transfer_name = metadata
             .transfer_name
             .and_then(non_empty)
@@ -408,10 +259,25 @@ impl CoreInner {
             .lock()
             .await
             .insert(import.root_hash.to_string(), metadata.transfer_id);
+        self.access_policy
+            .set_mode(metadata.transfer_id, TransferAccessMode::Public)
+            .await;
         self.active_shares
             .lock()
             .await
             .insert(metadata.transfer_id, import.tag);
+        self.repository
+            .upsert_transfer(
+                metadata.transfer_id,
+                "send",
+                "sharing",
+                Some(&transfer_name),
+                Some(&import.root_hash.to_string()),
+                Some(&ticket),
+                import.file_count,
+                import.total_size,
+            )
+            .await?;
 
         self.emit_transfer(
             metadata.transfer_id,
@@ -482,6 +348,32 @@ impl CoreInner {
                 "receiver_name": receiver_name,
             }),
         );
+        self.repository
+            .upsert_transfer(
+                transfer_id,
+                "receive",
+                "receiving",
+                parsed
+                    .metadata
+                    .as_ref()
+                    .map(|metadata| metadata.transfer_name.as_str()),
+                parsed
+                    .metadata
+                    .as_ref()
+                    .map(|metadata| metadata.content_hash.as_str()),
+                None,
+                parsed
+                    .metadata
+                    .as_ref()
+                    .map(|metadata| metadata.file_count)
+                    .unwrap_or_default(),
+                parsed
+                    .metadata
+                    .as_ref()
+                    .map(|metadata| metadata.total_size)
+                    .unwrap_or_default(),
+            )
+            .await?;
         tokio::fs::create_dir_all(&output_dir).await?;
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
@@ -527,6 +419,9 @@ impl CoreInner {
         let collection = Collection::load(hash_and_format.hash, self.store.as_ref()).await?;
         self.export_collection(transfer_id, total_files, output_dir, collection)
             .await?;
+        self.repository
+            .update_transfer_status(transfer_id, "done")
+            .await?;
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
         Ok(())
     }
@@ -541,17 +436,64 @@ impl CoreInner {
                 "cancel-requested",
                 json!({}),
             );
+            self.repository
+                .update_transfer_status(transfer_id, "cancelled")
+                .await?;
             return Ok(());
         }
-        if self.active_shares.lock().await.remove(&transfer_id).is_some() {
+        if self
+            .active_shares
+            .lock()
+            .await
+            .remove(&transfer_id)
+            .is_some()
+        {
             self.hash_to_transfer
                 .lock()
                 .await
                 .retain(|_, id| *id != transfer_id);
+            self.access_policy.remove_transfer(transfer_id).await;
+            self.repository
+                .update_transfer_status(transfer_id, "stopped")
+                .await?;
             self.emit_transfer(transfer_id, "send", "lifecycle", "share-stopped", json!({}));
             return Ok(());
         }
         anyhow::bail!("transfer not found")
+    }
+
+    async fn set_transfer_access_mode(
+        &self,
+        transfer_id: u64,
+        mode: TransferAccessMode,
+    ) -> Result<()> {
+        self.access_policy.set_mode(transfer_id, mode.clone()).await;
+        self.emit_transfer(
+            transfer_id,
+            "send",
+            "access",
+            "mode-updated",
+            json!({ "mode": format!("{mode:?}") }),
+        );
+        Ok(())
+    }
+
+    async fn approve_endpoint_for_transfer(
+        &self,
+        transfer_id: u64,
+        endpoint_id: String,
+    ) -> Result<()> {
+        self.access_policy
+            .approve_endpoint(transfer_id, endpoint_id.clone())
+            .await;
+        self.emit_transfer(
+            transfer_id,
+            "send",
+            "access",
+            "endpoint-approved",
+            json!({ "endpoint_id": endpoint_id }),
+        );
+        Ok(())
     }
 
     async fn shutdown(&self) {
@@ -582,7 +524,11 @@ impl CoreInner {
                     let stream = read_stream_from_blocking_reader(reader);
                     let import = core.store.add_stream(stream).await;
                     let (tag, size) = core
-                        .consume_add_progress(transfer_id, file.collection_name.clone(), import.stream().await)
+                        .consume_add_progress(
+                            transfer_id,
+                            file.collection_name.clone(),
+                            import.stream().await,
+                        )
                         .await?;
                     Result::<_>::Ok((file.collection_name, tag, size))
                 }
@@ -714,7 +660,9 @@ impl CoreInner {
                 ExportRangesItem::Size(size) => file_size = size,
                 ExportRangesItem::Data(leaf) => {
                     if leaf.offset != exported {
-                        anyhow::bail!("export stream for {relative_path} yielded out-of-order data");
+                        anyhow::bail!(
+                            "export stream for {relative_path} yielded out-of-order data"
+                        );
                     }
                     exported += leaf.data.len() as u64;
                     tx.send(Ok(Some(leaf.data)))
@@ -767,6 +715,12 @@ impl CoreInner {
                         "endpoint_id": message.inner.endpoint_id.map(|id| id.to_string()),
                     }),
                 );
+                if let Some(endpoint_id) = message.inner.endpoint_id {
+                    self.connection_endpoints
+                        .lock()
+                        .await
+                        .insert(message.inner.connection_id, endpoint_id.to_string());
+                }
                 let _ = message.tx.send(Ok(())).await;
             }
             ProviderMessage::ClientConnectedNotify(message) => {
@@ -778,10 +732,48 @@ impl CoreInner {
                         "endpoint_id": message.inner.endpoint_id.map(|id| id.to_string()),
                     }),
                 );
+                if let Some(endpoint_id) = message.inner.endpoint_id {
+                    self.connection_endpoints
+                        .lock()
+                        .await
+                        .insert(message.inner.connection_id, endpoint_id.to_string());
+                }
+            }
+            ProviderMessage::ConnectionClosed(message) => {
+                self.connection_endpoints
+                    .lock()
+                    .await
+                    .remove(&message.inner.connection_id);
+                self.emit_endpoint(
+                    "provider",
+                    "connection-closed",
+                    json!({ "connection_id": message.inner.connection_id }),
+                );
             }
             ProviderMessage::GetRequestReceived(message) => {
                 let transfer_id = self.transfer_for_hash(message.inner.request.hash).await;
                 if let Some(transfer_id) = transfer_id {
+                    let decision = self
+                        .access_decision(transfer_id, message.inner.connection_id)
+                        .await;
+                    if let AccessDecision::Deny { reason } = decision {
+                        self.emit_transfer(
+                            transfer_id,
+                            "send",
+                            "access",
+                            "request-denied",
+                            json!({
+                                "connection_id": message.inner.connection_id,
+                                "request_id": message.inner.request_id,
+                                "reason": reason,
+                            }),
+                        );
+                        let _ = message
+                            .tx
+                            .send(Err(iroh_blobs::provider::events::AbortReason::Permission))
+                            .await;
+                        return;
+                    }
                     self.track_request_updates(
                         transfer_id,
                         message.inner.connection_id,
@@ -792,7 +784,8 @@ impl CoreInner {
                 let _ = message.tx.send(Ok(())).await;
             }
             ProviderMessage::GetRequestReceivedNotify(message) => {
-                if let Some(transfer_id) = self.transfer_for_hash(message.inner.request.hash).await {
+                if let Some(transfer_id) = self.transfer_for_hash(message.inner.request.hash).await
+                {
                     self.track_request_updates(
                         transfer_id,
                         message.inner.connection_id,
@@ -802,8 +795,31 @@ impl CoreInner {
                 }
             }
             ProviderMessage::GetManyRequestReceived(message) => {
-                let transfer_id = self.transfer_for_any_hash(&message.inner.request.hashes).await;
+                let transfer_id = self
+                    .transfer_for_any_hash(&message.inner.request.hashes)
+                    .await;
                 if let Some(transfer_id) = transfer_id {
+                    let decision = self
+                        .access_decision(transfer_id, message.inner.connection_id)
+                        .await;
+                    if let AccessDecision::Deny { reason } = decision {
+                        self.emit_transfer(
+                            transfer_id,
+                            "send",
+                            "access",
+                            "request-denied",
+                            json!({
+                                "connection_id": message.inner.connection_id,
+                                "request_id": message.inner.request_id,
+                                "reason": reason,
+                            }),
+                        );
+                        let _ = message
+                            .tx
+                            .send(Err(iroh_blobs::provider::events::AbortReason::Permission))
+                            .await;
+                        return;
+                    }
                     self.track_request_updates(
                         transfer_id,
                         message.inner.connection_id,
@@ -814,7 +830,10 @@ impl CoreInner {
                 let _ = message.tx.send(Ok(())).await;
             }
             ProviderMessage::GetManyRequestReceivedNotify(message) => {
-                if let Some(transfer_id) = self.transfer_for_any_hash(&message.inner.request.hashes).await {
+                if let Some(transfer_id) = self
+                    .transfer_for_any_hash(&message.inner.request.hashes)
+                    .await
+                {
                     self.track_request_updates(
                         transfer_id,
                         message.inner.connection_id,
@@ -879,6 +898,18 @@ impl CoreInner {
         hashes
             .iter()
             .find_map(|hash| map.get(&hash.to_string()).copied())
+    }
+
+    async fn access_decision(&self, transfer_id: u64, connection_id: u64) -> AccessDecision {
+        let endpoint_id = self
+            .connection_endpoints
+            .lock()
+            .await
+            .get(&connection_id)
+            .cloned();
+        self.access_policy
+            .decide(transfer_id, endpoint_id.as_deref())
+            .await
     }
 
     fn track_request_updates(
@@ -971,7 +1002,7 @@ impl CoreInner {
         let id = format!("{timestamp}-{}", *sequence);
         *sequence += 1;
         drop(sequence);
-        self.event_sink.on_event(CoreEvent {
+        let event = CoreEvent {
             id,
             timestamp,
             scope: scope.to_string(),
@@ -980,308 +1011,14 @@ impl CoreInner {
             phase: phase.to_string(),
             kind: kind.to_string(),
             data_json: data.to_string(),
+        };
+        let repository = self.repository.clone();
+        let event_for_repository = event.clone();
+        tokio::spawn(async move {
+            if let Err(error) = repository.insert_event(&event_for_repository).await {
+                tracing::warn!(%error, "failed to persist core event");
+            }
         });
-    }
-}
-
-fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<ImportSourceFile>> {
-    let mut files = Vec::new();
-    for source in sources {
-        match source.kind {
-            SourceKind::Path | SourceKind::IosSecurityScopedUrl => {
-                let path = source_path(&source)?;
-                let display_name = source
-                    .display_name
-                    .clone()
-                    .and_then(non_empty)
-                    .or_else(|| path.file_name().and_then(|name| name.to_str()).map(ToOwned::to_owned))
-                    .unwrap_or_else(|| "transfer".to_string());
-                if source.is_directory || path.is_dir() {
-                    collect_dir_files(&path, &display_name, &mut files)?;
-                } else {
-                    files.push(ImportSourceFile {
-                        path,
-                        collection_name: validated_relative_string(&display_name)?,
-                    });
-                }
-            }
-            SourceKind::AndroidContentUri => {
-                anyhow::bail!(
-                    "Android content URI streaming needs platform file descriptor glue before it can be imported without copying"
-                );
-            }
-        }
-    }
-    if files.is_empty() {
-        anyhow::bail!("no files found in selected sources");
-    }
-    Ok(files)
-}
-
-fn source_path(source: &ShareSource) -> Result<PathBuf> {
-    if matches!(source.kind, SourceKind::IosSecurityScopedUrl) && source.value.starts_with("file://") {
-        let without_scheme = source.value.trim_start_matches("file://");
-        return Ok(PathBuf::from(percent_decode_file_url_path(without_scheme)?));
-    }
-    Ok(PathBuf::from(&source.value))
-}
-
-fn collect_dir_files(root: &Path, display_name: &str, files: &mut Vec<ImportSourceFile>) -> Result<()> {
-    for entry in walkdir::WalkDir::new(root).follow_links(false) {
-        let entry = entry?;
-        if !entry.file_type().is_file() {
-            continue;
-        }
-        let relative = entry
-            .path()
-            .strip_prefix(root)
-            .context("failed to compute relative path")?;
-        let collection_name = path_to_string(Path::new(display_name).join(relative), true)?;
-        files.push(ImportSourceFile {
-            path: entry.path().to_path_buf(),
-            collection_name,
-        });
-    }
-    Ok(())
-}
-
-fn default_collection_name(files: &[ImportSourceFile]) -> String {
-    files
-        .first()
-        .and_then(|file| file.collection_name.split('/').next())
-        .filter(|name| !name.is_empty())
-        .unwrap_or("transfer")
-        .to_string()
-}
-
-fn safe_output_path(output_dir: &Path, relative_path: &str) -> Result<PathBuf> {
-    let relative = Path::new(relative_path);
-    path_to_string(relative, true)?;
-    Ok(output_dir.join(relative))
-}
-
-fn read_stream_from_blocking_reader<R>(
-    mut reader: R,
-) -> impl futures::Stream<Item = io::Result<Bytes>> + Send + Sync + 'static
-where
-    R: Read + Send + 'static,
-{
-    let (tx, rx) = async_channel::bounded(2);
-    std::thread::spawn(move || {
-        let mut buffer = vec![0; STREAM_BUFFER_LEN];
-        loop {
-            match reader.read(&mut buffer) {
-                Ok(0) => break,
-                Ok(read) => {
-                    if tx
-                        .send_blocking(Ok(Bytes::copy_from_slice(&buffer[..read])))
-                        .is_err()
-                    {
-                        break;
-                    }
-                }
-                Err(error) => {
-                    let _ = tx.send_blocking(Err(error));
-                    break;
-                }
-            }
-        }
-    });
-    rx
-}
-
-fn write_stream_to_blocking_writer<W>(
-    mut writer: W,
-    rx: async_channel::Receiver<io::Result<Option<Bytes>>>,
-) -> io::Result<()>
-where
-    W: Write,
-{
-    while let Ok(item) = rx.recv_blocking() {
-        match item? {
-            Some(bytes) => writer.write_all(&bytes)?,
-            None => break,
-        }
-    }
-    writer.flush()
-}
-
-async fn wait_for_writer(task: std::thread::JoinHandle<io::Result<()>>) -> Result<io::Result<()>> {
-    tokio::task::spawn_blocking(move || {
-        task.join()
-            .map_err(|_| anyhow::anyhow!("export writer thread panicked"))
-    })
-    .await?
-}
-
-fn validated_relative_string(name: &str) -> Result<String> {
-    path_to_string(Path::new(name), true)
-}
-
-fn path_to_string(path: impl AsRef<Path>, must_be_relative: bool) -> Result<String> {
-    let mut path_str = String::new();
-    let parts = path
-        .as_ref()
-        .components()
-        .filter_map(|component| match component {
-            Component::Normal(x) => {
-                let Some(component) = x.to_str() else {
-                    return Some(Err(anyhow::anyhow!("invalid character in path")));
-                };
-                if !component.contains('/') && !component.contains('\\') {
-                    Some(Ok(component))
-                } else {
-                    Some(Err(anyhow::anyhow!("invalid path component {component:?}")))
-                }
-            }
-            Component::RootDir => {
-                if must_be_relative {
-                    Some(Err(anyhow::anyhow!("invalid root path component")))
-                } else {
-                    path_str.push('/');
-                    None
-                }
-            }
-            other => Some(Err(anyhow::anyhow!("invalid path component {other:?}"))),
-        })
-        .collect::<Result<Vec<_>>>()?;
-    path_str.push_str(&parts.join("/"));
-    Ok(path_str)
-}
-
-fn percent_decode_file_url_path(value: &str) -> Result<String> {
-    let bytes = value.as_bytes();
-    let mut output = Vec::with_capacity(bytes.len());
-    let mut i = 0;
-    while i < bytes.len() {
-        if bytes[i] == b'%' {
-            if i + 2 >= bytes.len() {
-                anyhow::bail!("invalid percent escape in file URL");
-            }
-            let hex = std::str::from_utf8(&bytes[i + 1..i + 3])?;
-            output.push(u8::from_str_radix(hex, 16).context("invalid percent escape in file URL")?);
-            i += 3;
-        } else {
-            output.push(bytes[i]);
-            i += 1;
-        }
-    }
-    Ok(String::from_utf8(output)?)
-}
-
-async fn load_or_create_secret(app_data_dir: &Path) -> Result<SecretKey> {
-    if let Ok(secret) = std::env::var("IROH_SECRET") {
-        return SecretKey::from_str(&secret).context("invalid IROH_SECRET");
-    }
-
-    let path = app_data_dir.join("iroh.secret");
-    match tokio::fs::read_to_string(&path).await {
-        Ok(secret) => {
-            let bytes = HEXLOWER
-                .decode(secret.trim().as_bytes())
-                .context("invalid persisted iroh secret encoding")?;
-            let bytes: [u8; 32] = bytes
-                .try_into()
-                .map_err(|_| anyhow::anyhow!("invalid persisted iroh secret length"))?;
-            Ok(SecretKey::from_bytes(&bytes))
-        }
-        Err(error) if error.kind() == io::ErrorKind::NotFound => {
-            let secret = SecretKey::generate();
-            tokio::fs::write(&path, HEXLOWER.encode(&secret.to_bytes())).await?;
-            Ok(secret)
-        }
-        Err(error) => Err(error.into()),
-    }
-}
-
-fn non_empty(value: String) -> Option<String> {
-    let trimmed = value.trim();
-    (!trimmed.is_empty()).then(|| trimmed.to_string())
-}
-
-fn now_ms() -> i64 {
-    SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|duration| duration.as_millis() as i64)
-        .unwrap_or_default()
-}
-
-fn unique_transfer_id() -> u64 {
-    now_ms() as u64
-}
-
-uniffi::setup_scaffolding!();
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    struct TestSink;
-
-    impl CoreEventSink for TestSink {
-        fn on_event(&self, _event: CoreEvent) {}
-    }
-
-    #[test]
-    fn metadata_ticket_round_trips() {
-        let secret = SecretKey::generate();
-        let addr = iroh::EndpointAddr::new(secret.public());
-        let blob_ticket = BlobTicket::new(addr, Hash::new([7; 32]), BlobFormat::HashSeq);
-        let metadata = TransferMetadata::new(
-            42,
-            "Summer photos",
-            Some("hammed".to_string()),
-            blob_ticket.hash(),
-            3,
-            2048,
-        );
-        let encoded = VnidropTicket::new(blob_ticket.clone(), metadata.clone())
-            .encode()
-            .unwrap();
-        let parsed = parse_transfer_ticket(&encoded).unwrap();
-
-        assert_eq!(parsed.blob_ticket.hash(), blob_ticket.hash());
-        assert_eq!(parsed.metadata.unwrap().transfer_name, metadata.transfer_name);
-    }
-
-    #[test]
-    fn invalid_ticket_is_rejected() {
-        assert!(parse_transfer_ticket("not-a-ticket").is_err());
-    }
-
-    #[tokio::test]
-    async fn secret_persists() {
-        let temp = tempfile::tempdir().unwrap();
-        let first = load_or_create_secret(temp.path()).await.unwrap();
-        let second = load_or_create_secret(temp.path()).await.unwrap();
-        assert_eq!(first.to_bytes(), second.to_bytes());
-    }
-
-    #[test]
-    fn path_validation_rejects_unsafe_paths() {
-        assert!(path_to_string(Path::new("../escape"), true).is_err());
-        assert!(path_to_string(Path::new("/absolute"), true).is_err());
-        assert!(validated_relative_string("bad\\name").is_err());
-    }
-
-    #[test]
-    fn file_url_decodes_spaces() {
-        assert_eq!(
-            percent_decode_file_url_path("/tmp/My%20File.txt").unwrap(),
-            "/tmp/My File.txt"
-        );
-    }
-
-    #[test]
-    fn can_initialize_core() {
-        let temp = tempfile::tempdir().unwrap();
-        let core = VnidropCore::initialize(
-            temp.path().to_string_lossy().to_string(),
-            Arc::new(TestSink),
-        )
-        .unwrap();
-        let status = core.status();
-        assert!(!status.endpoint_id.is_empty());
-        core.shutdown();
+        self.event_sink.on_event(event);
     }
 }

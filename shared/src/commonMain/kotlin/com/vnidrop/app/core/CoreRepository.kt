@@ -8,14 +8,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
-import uniffi.vnidrop_core.CoreEvent
-import uniffi.vnidrop_core.CoreEventSink
-import uniffi.vnidrop_core.ShareMetadataInput
-import uniffi.vnidrop_core.ShareResult
-import uniffi.vnidrop_core.ShareSource
-import uniffi.vnidrop_core.SourceKind
-import uniffi.vnidrop_core.TicketInspection
-import uniffi.vnidrop_core.VnidropCore
+import uniffi.vnidrop.CoreEvent
+import uniffi.vnidrop.CoreEventSink
+import uniffi.vnidrop.ShareMetadataInput
+import uniffi.vnidrop.ShareResult
+import uniffi.vnidrop.ShareSource
+import uniffi.vnidrop.SourceKind
+import uniffi.vnidrop.TicketInspection
+import uniffi.vnidrop.VnidropCore
 
 data class CoreUiState(
 	val isInitialized: Boolean = false,

@@ -72,14 +72,14 @@ android {
 }
 
 cargo {
-	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop-core")
+	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop")
 	publishJvmArtifacts = true
 	androidTargetsToBuild.set(setOf(RustAndroidTarget.Arm64))
 }
 
 uniffi {
 	generateFromLibrary {
-		namespace = "vnidrop_core"
+		namespace = "vnidrop"
 	}
 }
 

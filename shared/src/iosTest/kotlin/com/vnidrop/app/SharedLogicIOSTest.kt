@@ -3,9 +3,9 @@ package com.vnidrop.app
 import platform.Foundation.NSTemporaryDirectory
 import kotlin.test.Test
 import kotlin.test.assertTrue
-import uniffi.vnidrop_core.CoreEvent
-import uniffi.vnidrop_core.CoreEventSink
-import uniffi.vnidrop_core.VnidropCore
+import uniffi.vnidrop.CoreEvent
+import uniffi.vnidrop.CoreEventSink
+import uniffi.vnidrop.VnidropCore
 
 class SharedLogicIOSTest {
 
