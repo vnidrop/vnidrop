@@ -31,8 +31,9 @@ use crate::{
     },
     error::VnidropError,
     filesystem::{
-        collect_import_files, default_collection_name, read_stream_from_blocking_reader,
-        safe_output_path, wait_for_writer, write_stream_to_blocking_writer, TransferImport,
+        collect_import_files, default_collection_name, platform_path,
+        read_stream_from_blocking_reader, safe_output_path, wait_for_writer,
+        write_stream_to_blocking_writer, TransferImport,
     },
     logging::init_logging,
     repository::Repository,
@@ -97,11 +98,9 @@ impl VnidropCore {
         output_dir: String,
         receiver_name: Option<String>,
     ) -> Result<(), VnidropError> {
+        let output_dir = platform_path(&output_dir)?;
         self.runtime
-            .block_on(
-                self.inner
-                    .receive(ticket, PathBuf::from(output_dir), receiver_name),
-            )
+            .block_on(self.inner.receive(ticket, output_dir, receiver_name))
             .map_err(Into::into)
     }
 
@@ -519,8 +518,7 @@ impl CoreInner {
             .map(|file| {
                 let core = self.clone();
                 async move {
-                    let reader = File::open(&file.path)
-                        .with_context(|| format!("failed to open {}", file.path.display()))?;
+                    let reader = file.source.open()?;
                     let stream = read_stream_from_blocking_reader(reader);
                     let import = core.store.add_stream(stream).await;
                     let (tag, size) = core

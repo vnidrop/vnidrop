@@ -1,4 +1,7 @@
+#[cfg(unix)]
+use std::os::fd::{FromRawFd, OwnedFd};
 use std::{
+    fs::File,
     io::{self, Read, Write},
     path::{Component, Path, PathBuf},
 };
@@ -25,8 +28,27 @@ pub(crate) struct TransferImport {
 
 #[derive(Debug)]
 pub(crate) struct ImportSourceFile {
-    pub(crate) path: PathBuf,
+    pub(crate) source: ImportSource,
     pub(crate) collection_name: String,
+}
+
+#[derive(Debug)]
+pub(crate) enum ImportSource {
+    Path(PathBuf),
+    #[cfg(unix)]
+    FileDescriptor(OwnedFd),
+}
+
+impl ImportSource {
+    pub(crate) fn open(self) -> Result<File> {
+        match self {
+            Self::Path(path) => {
+                File::open(&path).with_context(|| format!("failed to open {}", path.display()))
+            }
+            #[cfg(unix)]
+            Self::FileDescriptor(fd) => Ok(File::from(fd)),
+        }
+    }
 }
 
 pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<ImportSourceFile>> {
@@ -34,6 +56,10 @@ pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<Impo
     for source in sources {
         match source.kind {
             SourceKind::Path | SourceKind::IosSecurityScopedUrl => {
+                // iOS security-scoped resources are still ordinary paths once
+                // the platform side has started the lease.  Rust deliberately
+                // does not try to own that lease; it only streams while Kotlin
+                // keeps the URL accessible.
                 let path = source_path(&source)?;
                 let display_name = source
                     .display_name
@@ -49,14 +75,42 @@ pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<Impo
                     collect_dir_files(&path, &display_name, &mut files)?;
                 } else {
                     files.push(ImportSourceFile {
-                        path,
+                        source: ImportSource::Path(path),
+                        collection_name: validated_relative_string(&display_name)?,
+                    });
+                }
+            }
+            SourceKind::FileDescriptor => {
+                #[cfg(not(unix))]
+                {
+                    anyhow::bail!(
+                        "file descriptor sources are only supported on Unix-like targets"
+                    );
+                }
+                #[cfg(unix)]
+                {
+                    if source.is_directory {
+                        anyhow::bail!("file descriptor sources cannot represent directories yet");
+                    }
+                    let display_name = source
+                        .display_name
+                        .clone()
+                        .and_then(non_empty)
+                        .unwrap_or_else(|| "transfer".to_string());
+                    // Android SAF/content URIs are not paths.  Platform code opens
+                    // the URI as a ParcelFileDescriptor, then Rust duplicates the
+                    // borrowed fd here and streams from its owned duplicate.
+                    files.push(ImportSourceFile {
+                        source: ImportSource::FileDescriptor(duplicate_file_descriptor(
+                            &source.value,
+                        )?),
                         collection_name: validated_relative_string(&display_name)?,
                     });
                 }
             }
             SourceKind::AndroidContentUri => {
                 anyhow::bail!(
-                    "Android content URI streaming needs platform file descriptor glue before it can be imported without copying"
+                    "Android content URIs are not filesystem paths; open a ParcelFileDescriptor in Kotlin and pass its fd as SourceKind.FileDescriptor"
                 );
             }
         }
@@ -68,13 +122,14 @@ pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<Impo
 }
 
 fn source_path(source: &ShareSource) -> Result<PathBuf> {
-    if matches!(source.kind, SourceKind::IosSecurityScopedUrl)
-        && source.value.starts_with("file://")
-    {
-        let without_scheme = source.value.trim_start_matches("file://");
+    platform_path(&source.value)
+}
+
+pub(crate) fn platform_path(value: &str) -> Result<PathBuf> {
+    if let Some(without_scheme) = value.strip_prefix("file://") {
         return Ok(PathBuf::from(percent_decode_file_url_path(without_scheme)?));
     }
-    Ok(PathBuf::from(&source.value))
+    Ok(PathBuf::from(value))
 }
 
 fn collect_dir_files(
@@ -93,7 +148,7 @@ fn collect_dir_files(
             .context("failed to compute relative path")?;
         let collection_name = path_to_string(Path::new(display_name).join(relative), true)?;
         files.push(ImportSourceFile {
-            path: entry.path().to_path_buf(),
+            source: ImportSource::Path(entry.path().to_path_buf()),
             collection_name,
         });
     }
@@ -121,6 +176,9 @@ pub(crate) fn read_stream_from_blocking_reader<R>(
 where
     R: Read + Send + 'static,
 {
+    // Keep the FFI boundary out of the data path: blocking OS reads feed a
+    // small bounded channel, so large files are streamed into iroh-blobs
+    // without copying the whole file through Kotlin memory.
     let (tx, rx) = async_channel::bounded(2);
     std::thread::spawn(move || {
         let mut buffer = vec![0; STREAM_BUFFER_LEN];
@@ -224,4 +282,24 @@ pub(crate) fn percent_decode_file_url_path(value: &str) -> Result<String> {
         }
     }
     Ok(String::from_utf8(output)?)
+}
+
+#[cfg(unix)]
+fn duplicate_file_descriptor(value: &str) -> Result<OwnedFd> {
+    let fd = value
+        .parse::<i32>()
+        .context("file descriptor source value must be an integer fd")?;
+    if fd < 0 {
+        anyhow::bail!("file descriptor must be non-negative");
+    }
+
+    // Android's ParcelFileDescriptor remains owned by Kotlin.  Rust duplicates
+    // it immediately so the blocking import thread can close its own handle
+    // without racing or invalidating the platform owner.
+    let duplicated = unsafe { libc::dup(fd) };
+    if duplicated < 0 {
+        return Err(io::Error::last_os_error()).context("failed to duplicate file descriptor");
+    }
+    let owned = unsafe { OwnedFd::from_raw_fd(duplicated) };
+    Ok(owned)
 }

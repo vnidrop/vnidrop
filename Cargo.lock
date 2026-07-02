@@ -5025,6 +5025,7 @@ dependencies = [
  "iroh",
  "iroh-blobs",
  "irpc",
+ "libc",
  "n0-future",
  "num_cpus",
  "serde",

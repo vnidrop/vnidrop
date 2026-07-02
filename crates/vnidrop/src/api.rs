@@ -31,6 +31,7 @@ pub struct RuntimeStatus {
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Enum)]
 pub enum SourceKind {
     Path,
+    FileDescriptor,
     AndroidContentUri,
     IosSecurityScopedUrl,
 }

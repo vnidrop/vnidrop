@@ -50,8 +50,7 @@ class CoreRepository(
 	}
 
 	suspend fun sharePath(path: String, transferName: String, senderName: String) = runCore {
-		val active = requireCore()
-		val result = active.shareFiles(
+		shareSources(
 			sources = listOf(
 				ShareSource(
 					kind = SourceKind.PATH,
@@ -60,14 +59,54 @@ class CoreRepository(
 					isDirectory = false,
 				),
 			),
-			metadata = ShareMetadataInput(
-				transferId = nextTransferId(),
-				transferName = transferName.ifBlank { null },
-				senderName = senderName.ifBlank { null },
-			),
+			transferName = transferName,
+			senderName = senderName,
 		)
-		_state.update { it.copy(lastShare = result, error = null) }
-		refreshStatus()
+	}
+
+	suspend fun shareFileDescriptor(
+		fd: Int,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+	) = runCore {
+		// The fd is borrowed from platform code. Rust duplicates it before
+		// starting the import, so Android may close the ParcelFileDescriptor
+		// once this suspend call returns.
+		shareSources(
+			sources = listOf(
+				ShareSource(
+					kind = SourceKind.FILE_DESCRIPTOR,
+					value = fd.toString(),
+					displayName = displayName.ifBlank { "transfer" },
+					isDirectory = false,
+				),
+			),
+			transferName = transferName,
+			senderName = senderName,
+		)
+	}
+
+	suspend fun shareSecurityScopedFileUrl(
+		fileUrl: String,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+	) = runCore {
+		// The iOS actual for withPlatformPathAccess starts and stops the
+		// security-scoped URL lease around this entire shareFiles call.
+		shareSources(
+			sources = listOf(
+				ShareSource(
+					kind = SourceKind.IOS_SECURITY_SCOPED_URL,
+					value = fileUrl,
+					displayName = displayName.ifBlank { fileUrl.substringAfterLast('/').ifBlank { "transfer" } },
+					isDirectory = false,
+				),
+			),
+			transferName = transferName,
+			senderName = senderName,
+		)
 	}
 
 	suspend fun inspectTicket(ticket: String) = runCore {
@@ -77,6 +116,17 @@ class CoreRepository(
 
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String) = runCore {
 		requireCore().receive(ticket, outputDir, receiverName.ifBlank { null })
+		refreshStatus()
+	}
+
+	suspend fun receiveIntoSecurityScopedDirectory(
+		ticket: String,
+		outputDirectoryUrl: String,
+		receiverName: String,
+	) = runCore {
+		withPlatformPathAccess(SourceKind.IOS_SECURITY_SCOPED_URL, outputDirectoryUrl) {
+			requireCore().receive(ticket, outputDirectoryUrl, receiverName.ifBlank { null })
+		}
 		refreshStatus()
 	}
 
@@ -97,6 +147,39 @@ class CoreRepository(
 
 	private fun requireCore(): VnidropCore =
 		core ?: error("Initialize the core first.")
+
+	private suspend fun shareSources(
+		sources: List<ShareSource>,
+		transferName: String,
+		senderName: String,
+	) {
+		withPlatformPathAccess(sources) {
+			val result = requireCore().shareFiles(
+				sources = sources,
+				metadata = ShareMetadataInput(
+					transferId = nextTransferId(),
+					transferName = transferName.ifBlank { null },
+					senderName = senderName.ifBlank { null },
+				),
+			)
+			_state.update { it.copy(lastShare = result, error = null) }
+		}
+		refreshStatus()
+	}
+
+	private suspend fun <T> withPlatformPathAccess(
+		sources: List<ShareSource>,
+		index: Int = 0,
+		block: suspend () -> T,
+	): T {
+		if (index >= sources.size) {
+			return block()
+		}
+		val source = sources[index]
+		return withPlatformPathAccess(source.kind, source.value) {
+			withPlatformPathAccess(sources, index + 1, block)
+		}
+	}
 
 	private fun refreshStatus() {
 		val status = core?.status()

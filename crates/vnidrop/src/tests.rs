@@ -1,14 +1,19 @@
 #[cfg(test)]
 mod tests {
-    use std::{path::Path, sync::Arc};
+    #[cfg(unix)]
+    use std::os::fd::AsRawFd;
+    use std::{io::Read, path::Path, sync::Arc};
 
     use iroh::SecretKey;
     use iroh_blobs::{ticket::BlobTicket, BlobFormat, Hash};
 
     use crate::{
         access_policy::{AccessDecision, AccessPolicy},
-        api::{CoreEvent, CoreEventSink, TransferMetadata},
-        filesystem::{path_to_string, percent_decode_file_url_path, validated_relative_string},
+        api::{CoreEvent, CoreEventSink, ShareSource, SourceKind, TransferMetadata},
+        filesystem::{
+            collect_import_files, path_to_string, percent_decode_file_url_path,
+            validated_relative_string,
+        },
         repository::Repository,
         runtime::VnidropCore,
         secret::load_or_create_secret,
@@ -73,6 +78,27 @@ mod tests {
             percent_decode_file_url_path("/tmp/My%20File.txt").unwrap(),
             "/tmp/My File.txt"
         );
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn file_descriptor_source_duplicates_and_streams() {
+        let mut temp = tempfile::tempfile().unwrap();
+        std::io::Write::write_all(&mut temp, b"fd-backed import").unwrap();
+        std::io::Seek::rewind(&mut temp).unwrap();
+
+        let files = collect_import_files(vec![ShareSource {
+            kind: SourceKind::FileDescriptor,
+            value: temp.as_raw_fd().to_string(),
+            display_name: Some("from-fd.txt".to_string()),
+            is_directory: false,
+        }])
+        .unwrap();
+
+        let mut imported = files.into_iter().next().unwrap().source.open().unwrap();
+        let mut content = String::new();
+        imported.read_to_string(&mut content).unwrap();
+        assert_eq!(content, "fd-backed import");
     }
 
     #[test]
