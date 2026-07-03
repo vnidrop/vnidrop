@@ -36,6 +36,9 @@ android {
 		resources {
 			excludes += "/META-INF/{AL2.0,LGPL2.1}"
 		}
+		jniLibs {
+			pickFirsts += "lib/arm64-v8a/libvnidrop.so"
+		}
 	}
 	buildTypes {
 		getByName("release") {
@@ -45,5 +48,16 @@ android {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_11
 		targetCompatibility = JavaVersion.VERSION_11
+	}
+	sourceSets {
+		getByName("debug") {
+			jniLibs.srcDir(project(":shared").layout.buildDirectory.dir("intermediates/rust/aarch64-linux-android/debug"))
+		}
+	}
+}
+
+tasks.configureEach {
+	if (name == "mergeDebugJniLibFolders" || name == "mergeDebugNativeLibs") {
+		dependsOn(":shared:cargoBuildAndroidArm64Debug")
 	}
 }
