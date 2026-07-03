@@ -48,6 +48,9 @@ impl AccessPolicy {
         transfer_id: u64,
         endpoint_id: Option<&str>,
     ) -> AccessDecision {
+        // This is intentionally only the provider-side gate for milestone one.
+        // A later handshake can add receiver-request/sender-approval events on
+        // top without weakening the default public sharing behavior.
         match self
             .modes
             .read()

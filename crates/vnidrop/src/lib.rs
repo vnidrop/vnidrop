@@ -1,6 +1,7 @@
 mod access_policy;
 mod api;
 mod error;
+mod event_hub;
 mod filesystem;
 mod logging;
 mod repository;
@@ -19,4 +20,5 @@ pub use runtime::VnidropCore;
 uniffi::setup_scaffolding!();
 
 #[cfg(test)]
-mod tests;
+#[path = "tests.rs"]
+mod core_tests;

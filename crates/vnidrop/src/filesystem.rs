@@ -122,10 +122,16 @@ pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<Impo
 }
 
 fn source_path(source: &ShareSource) -> Result<PathBuf> {
+    if source.value.trim().is_empty() {
+        anyhow::bail!("source path must not be empty");
+    }
     platform_path(&source.value)
 }
 
 pub(crate) fn platform_path(value: &str) -> Result<PathBuf> {
+    if value.trim().is_empty() {
+        anyhow::bail!("path must not be empty");
+    }
     if let Some(without_scheme) = value.strip_prefix("file://") {
         return Ok(PathBuf::from(percent_decode_file_url_path(without_scheme)?));
     }
@@ -230,7 +236,11 @@ pub(crate) async fn wait_for_writer(
 }
 
 pub(crate) fn validated_relative_string(name: &str) -> Result<String> {
-    path_to_string(Path::new(name), true)
+    let value = path_to_string(Path::new(name), true)?;
+    if value.trim().is_empty() {
+        anyhow::bail!("relative path must not be empty");
+    }
+    Ok(value)
 }
 
 pub(crate) fn path_to_string(path: impl AsRef<Path>, must_be_relative: bool) -> Result<String> {

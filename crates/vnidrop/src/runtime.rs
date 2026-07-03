@@ -3,7 +3,10 @@ use std::{
     fs::File,
     io,
     path::{Path, PathBuf},
-    sync::{Arc, Mutex},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
 };
 
 use anyhow::{Context, Result};
@@ -21,7 +24,10 @@ use iroh_blobs::{
 };
 use n0_future::BufferedStreamExt;
 use serde_json::json;
-use tokio::sync::{mpsc, oneshot, Mutex as TokioMutex};
+use tokio::{
+    sync::{mpsc, oneshot, Mutex as TokioMutex},
+    task::JoinHandle,
+};
 
 use crate::{
     access_policy::{AccessDecision, AccessPolicy},
@@ -30,17 +36,25 @@ use crate::{
         StoredTransfer, TicketInspection, TransferAccessMode, TransferMetadata,
     },
     error::VnidropError,
+    event_hub::EventHub,
     filesystem::{
         collect_import_files, default_collection_name, platform_path,
         read_stream_from_blocking_reader, safe_output_path, wait_for_writer,
         write_stream_to_blocking_writer, TransferImport,
     },
     logging::init_logging,
-    repository::Repository,
+    repository::{Repository, TransferUpsert},
     secret::load_or_create_secret,
     ticket::{parse_transfer_ticket, ParsedTransferTicket, VnidropTicket},
-    util::{non_empty, now_ms, unique_transfer_id},
+    util::{non_empty, unique_transfer_id},
 };
+
+const STATUS_SHARING: &str = "sharing";
+const STATUS_RECEIVING: &str = "receiving";
+const STATUS_DONE: &str = "done";
+const STATUS_CANCELLED: &str = "cancelled";
+const STATUS_STOPPED: &str = "stopped";
+const STATUS_FAILED: &str = "failed";
 
 #[derive(uniffi::Object)]
 pub struct VnidropCore {
@@ -49,17 +63,20 @@ pub struct VnidropCore {
 }
 
 struct CoreInner {
+    // Kotlin owns app lifecycle and platform file picking; this Rust object
+    // owns the Iroh endpoint, blob store, transfer history, and byte streaming.
     endpoint: Endpoint,
     router: Router,
     store: FsStore,
     repository: Repository,
+    event_hub: EventHub,
     access_policy: Arc<AccessPolicy>,
-    event_sink: Arc<dyn CoreEventSink>,
     active_transfers: TokioMutex<HashMap<u64, oneshot::Sender<()>>>,
     active_shares: TokioMutex<HashMap<u64, TempTag>>,
     hash_to_transfer: TokioMutex<HashMap<String, u64>>,
     connection_endpoints: TokioMutex<HashMap<u64, String>>,
-    sequence: Mutex<u64>,
+    provider_task: TokioMutex<Option<JoinHandle<()>>>,
+    shutdown_started: AtomicBool,
 }
 
 #[uniffi::export]
@@ -74,7 +91,9 @@ impl VnidropCore {
             .thread_name("vnidrop")
             .build()?;
         let app_data_dir = PathBuf::from(app_data_dir);
-        let inner = runtime.block_on(CoreInner::start(app_data_dir, event_sink))?;
+        let inner = runtime
+            .block_on(CoreInner::start(app_data_dir, event_sink))
+            .map_err(VnidropError::initialization)?;
         Ok(Arc::new(Self { runtime, inner }))
     }
 
@@ -89,7 +108,7 @@ impl VnidropCore {
     ) -> Result<ShareResult, VnidropError> {
         self.runtime
             .block_on(self.inner.share_files(sources, metadata))
-            .map_err(Into::into)
+            .map_err(VnidropError::transfer)
     }
 
     pub fn receive(
@@ -98,16 +117,29 @@ impl VnidropCore {
         output_dir: String,
         receiver_name: Option<String>,
     ) -> Result<(), VnidropError> {
-        let output_dir = platform_path(&output_dir)?;
+        if let Err(error) =
+            parse_transfer_ticket(&ticket).context("failed to parse transfer ticket")
+        {
+            self.runtime.block_on(async {
+                self.inner.emit_endpoint(
+                    "error",
+                    "invalid-ticket",
+                    json!({ "reason": error.to_string() }),
+                );
+                self.inner.event_hub.flush().await;
+            });
+            return Err(VnidropError::ticket(error));
+        }
+        let output_dir = platform_path(&output_dir).map_err(VnidropError::filesystem)?;
         self.runtime
             .block_on(self.inner.receive(ticket, output_dir, receiver_name))
-            .map_err(Into::into)
+            .map_err(VnidropError::transfer)
     }
 
     pub fn cancel_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
         self.runtime
             .block_on(self.inner.cancel_transfer(transfer_id))
-            .map_err(Into::into)
+            .map_err(VnidropError::transfer)
     }
 
     pub fn set_transfer_access_mode(
@@ -117,7 +149,7 @@ impl VnidropCore {
     ) -> Result<(), VnidropError> {
         self.runtime
             .block_on(self.inner.set_transfer_access_mode(transfer_id, mode))
-            .map_err(Into::into)
+            .map_err(VnidropError::permission)
     }
 
     pub fn approve_endpoint_for_transfer(
@@ -130,23 +162,25 @@ impl VnidropCore {
                 self.inner
                     .approve_endpoint_for_transfer(transfer_id, endpoint_id),
             )
-            .map_err(Into::into)
+            .map_err(VnidropError::permission)
     }
 
     pub fn list_transfers(&self) -> Result<Vec<StoredTransfer>, VnidropError> {
         self.runtime
             .block_on(self.inner.repository.list_transfers())
-            .map_err(Into::into)
+            .map_err(VnidropError::repository)
     }
 
     pub fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>, VnidropError> {
         self.runtime
-            .block_on(self.inner.repository.list_events(transfer_id))
-            .map_err(Into::into)
+            .block_on(self.inner.list_events(transfer_id))
+            .map_err(VnidropError::repository)
     }
 
     pub fn inspect_ticket(&self, ticket: String) -> Result<TicketInspection, VnidropError> {
-        let parsed = parse_transfer_ticket(&ticket).context("failed to parse transfer ticket")?;
+        let parsed = parse_transfer_ticket(&ticket)
+            .context("failed to parse transfer ticket")
+            .map_err(VnidropError::ticket)?;
         Ok(TicketInspection {
             kind: if parsed.metadata.is_some() {
                 "vnidrop".to_string()
@@ -177,24 +211,28 @@ impl CoreInner {
             .await?;
         endpoint.online().await;
 
+        // Provider events are where the sender sees remote readers.  The core
+        // uses them for send progress and for the current approval gate.
         let (events, event_rx) = EventSender::channel(128, EventMask::ALL_READONLY);
         let blobs = BlobsProtocol::new(&store, Some(events));
         let router = Router::builder(endpoint.clone())
             .accept(iroh_blobs::ALPN, blobs)
             .spawn();
+        let event_hub = EventHub::start(repository.clone(), event_sink);
 
         let inner = Arc::new(Self {
             endpoint,
             router,
             store,
             repository,
+            event_hub,
             access_policy: AccessPolicy::new(),
-            event_sink,
             active_transfers: TokioMutex::new(HashMap::new()),
             active_shares: TokioMutex::new(HashMap::new()),
             hash_to_transfer: TokioMutex::new(HashMap::new()),
             connection_endpoints: TokioMutex::new(HashMap::new()),
-            sequence: Mutex::new(1),
+            provider_task: TokioMutex::new(None),
+            shutdown_started: AtomicBool::new(false),
         });
 
         inner.emit_endpoint(
@@ -206,7 +244,7 @@ impl CoreInner {
                 "store_root": store_root.to_string_lossy(),
             }),
         );
-        inner.spawn_provider_event_task(event_rx);
+        inner.spawn_provider_event_task(event_rx).await;
         Ok(inner)
     }
 
@@ -220,6 +258,29 @@ impl CoreInner {
     }
 
     async fn share_files(
+        self: &Arc<Self>,
+        sources: Vec<ShareSource>,
+        metadata: ShareMetadataInput,
+    ) -> Result<ShareResult> {
+        let transfer_id = metadata.transfer_id;
+        let result = self.share_files_inner(sources, metadata).await;
+        if let Err(error) = &result {
+            self.emit_transfer(
+                transfer_id,
+                "send",
+                "error",
+                "failed",
+                json!({ "reason": error.to_string() }),
+            );
+            let _ = self
+                .repository
+                .update_transfer_status(transfer_id, STATUS_FAILED)
+                .await;
+        }
+        result
+    }
+
+    async fn share_files_inner(
         self: &Arc<Self>,
         sources: Vec<ShareSource>,
         metadata: ShareMetadataInput,
@@ -266,16 +327,16 @@ impl CoreInner {
             .await
             .insert(metadata.transfer_id, import.tag);
         self.repository
-            .upsert_transfer(
-                metadata.transfer_id,
-                "send",
-                "sharing",
-                Some(&transfer_name),
-                Some(&import.root_hash.to_string()),
-                Some(&ticket),
-                import.file_count,
-                import.total_size,
-            )
+            .upsert_transfer(TransferUpsert {
+                transfer_id: metadata.transfer_id,
+                direction: "send",
+                status: STATUS_SHARING,
+                transfer_name: Some(&transfer_name),
+                content_hash: Some(&import.root_hash.to_string()),
+                ticket: Some(&ticket),
+                file_count: import.file_count,
+                total_size: import.total_size,
+            })
             .await?;
 
         self.emit_transfer(
@@ -308,12 +369,25 @@ impl CoreInner {
         output_dir: PathBuf,
         receiver_name: Option<String>,
     ) -> Result<()> {
-        let parsed = parse_transfer_ticket(&ticket).context("failed to parse transfer ticket")?;
+        let parsed = match parse_transfer_ticket(&ticket).context("failed to parse transfer ticket")
+        {
+            Ok(parsed) => parsed,
+            Err(error) => {
+                self.emit_endpoint(
+                    "error",
+                    "invalid-ticket",
+                    json!({ "reason": error.to_string() }),
+                );
+                return Err(error);
+            }
+        };
         let transfer_id = parsed
             .metadata
             .as_ref()
             .map(|metadata| metadata.transfer_id)
             .unwrap_or_else(unique_transfer_id);
+        // Cancellation is cooperative: it stops our receive future and marks
+        // local state while lower-level Iroh work unwinds naturally.
         let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
         self.active_transfers
             .lock()
@@ -326,6 +400,19 @@ impl CoreInner {
         };
 
         self.active_transfers.lock().await.remove(&transfer_id);
+        if let Err(error) = &result {
+            self.emit_transfer(
+                transfer_id,
+                "receive",
+                "error",
+                "failed",
+                json!({ "reason": error.to_string() }),
+            );
+            let _ = self
+                .repository
+                .update_transfer_status(transfer_id, STATUS_FAILED)
+                .await;
+        }
         result
     }
 
@@ -336,7 +423,8 @@ impl CoreInner {
         output_dir: PathBuf,
         receiver_name: Option<String>,
     ) -> Result<()> {
-        let metadata_json = serde_json::to_value(&parsed.metadata).unwrap_or_else(|_| json!(null));
+        let metadata_json =
+            serde_json::to_value(&parsed.metadata).unwrap_or(serde_json::Value::Null);
         self.emit_transfer(
             transfer_id,
             "receive",
@@ -348,30 +436,30 @@ impl CoreInner {
             }),
         );
         self.repository
-            .upsert_transfer(
+            .upsert_transfer(TransferUpsert {
                 transfer_id,
-                "receive",
-                "receiving",
-                parsed
+                direction: "receive",
+                status: STATUS_RECEIVING,
+                transfer_name: parsed
                     .metadata
                     .as_ref()
                     .map(|metadata| metadata.transfer_name.as_str()),
-                parsed
+                content_hash: parsed
                     .metadata
                     .as_ref()
                     .map(|metadata| metadata.content_hash.as_str()),
-                None,
-                parsed
+                ticket: None,
+                file_count: parsed
                     .metadata
                     .as_ref()
                     .map(|metadata| metadata.file_count)
                     .unwrap_or_default(),
-                parsed
+                total_size: parsed
                     .metadata
                     .as_ref()
                     .map(|metadata| metadata.total_size)
                     .unwrap_or_default(),
-            )
+            })
             .await?;
         tokio::fs::create_dir_all(&output_dir).await?;
 
@@ -419,7 +507,7 @@ impl CoreInner {
         self.export_collection(transfer_id, total_files, output_dir, collection)
             .await?;
         self.repository
-            .update_transfer_status(transfer_id, "done")
+            .update_transfer_status(transfer_id, STATUS_DONE)
             .await?;
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
         Ok(())
@@ -436,7 +524,7 @@ impl CoreInner {
                 json!({}),
             );
             self.repository
-                .update_transfer_status(transfer_id, "cancelled")
+                .update_transfer_status(transfer_id, STATUS_CANCELLED)
                 .await?;
             return Ok(());
         }
@@ -453,7 +541,7 @@ impl CoreInner {
                 .retain(|_, id| *id != transfer_id);
             self.access_policy.remove_transfer(transfer_id).await;
             self.repository
-                .update_transfer_status(transfer_id, "stopped")
+                .update_transfer_status(transfer_id, STATUS_STOPPED)
                 .await?;
             self.emit_transfer(transfer_id, "send", "lifecycle", "share-stopped", json!({}));
             return Ok(());
@@ -496,7 +584,13 @@ impl CoreInner {
     }
 
     async fn shutdown(&self) {
+        if self.shutdown_started.swap(true, Ordering::SeqCst) {
+            return;
+        }
         self.emit_endpoint("shutdown", "service-shutdown", json!({}));
+        // Flush before stopping the router so the app can show the shutdown
+        // event even if the process exits soon after Compose disposes the core.
+        self.event_hub.flush().await;
         if let Err(error) = self.router.shutdown().await {
             self.emit_endpoint(
                 "shutdown",
@@ -504,6 +598,11 @@ impl CoreInner {
                 json!({ "error": error.to_string() }),
             );
         }
+        if let Some(task) = self.provider_task.lock().await.take() {
+            task.abort();
+            let _ = task.await;
+        }
+        self.event_hub.shutdown().await;
     }
 
     async fn import_sources(
@@ -693,13 +792,14 @@ impl CoreInner {
         Ok(())
     }
 
-    fn spawn_provider_event_task(self: &Arc<Self>, mut rx: mpsc::Receiver<ProviderMessage>) {
+    async fn spawn_provider_event_task(self: &Arc<Self>, mut rx: mpsc::Receiver<ProviderMessage>) {
         let core = self.clone();
-        tokio::spawn(async move {
+        let task = tokio::spawn(async move {
             while let Some(message) = rx.recv().await {
                 core.handle_provider_message(message).await;
             }
         });
+        *self.provider_task.lock().await = Some(task);
     }
 
     async fn handle_provider_message(self: &Arc<Self>, message: ProviderMessage) {
@@ -917,6 +1017,9 @@ impl CoreInner {
         request_id: u64,
         mut rx: irpc::channel::mpsc::Receiver<RequestUpdate>,
     ) {
+        // Request update tasks are tied to individual provider streams.  Router
+        // shutdown closes those streams; only the long-lived provider receiver
+        // is tracked directly for explicit shutdown.
         let core = self.clone();
         tokio::spawn(async move {
             while let Ok(Some(update)) = rx.recv().await {
@@ -965,7 +1068,7 @@ impl CoreInner {
     }
 
     fn emit_endpoint(&self, phase: &str, kind: &str, data: serde_json::Value) {
-        self.emit("endpoint", None, None, phase, kind, data);
+        self.event_hub.emit_endpoint(phase, kind, data);
     }
 
     fn emit_transfer(
@@ -976,47 +1079,12 @@ impl CoreInner {
         kind: &str,
         data: serde_json::Value,
     ) {
-        self.emit(
-            "transfer",
-            Some(transfer_id),
-            Some(direction.to_string()),
-            phase,
-            kind,
-            data,
-        );
+        self.event_hub
+            .emit_transfer(transfer_id, direction, phase, kind, data);
     }
 
-    fn emit(
-        &self,
-        scope: &str,
-        transfer_id: Option<u64>,
-        direction: Option<String>,
-        phase: &str,
-        kind: &str,
-        data: serde_json::Value,
-    ) {
-        let timestamp = now_ms();
-        let mut sequence = self.sequence.lock().expect("event sequence lock poisoned");
-        let id = format!("{timestamp}-{}", *sequence);
-        *sequence += 1;
-        drop(sequence);
-        let event = CoreEvent {
-            id,
-            timestamp,
-            scope: scope.to_string(),
-            transfer_id,
-            direction,
-            phase: phase.to_string(),
-            kind: kind.to_string(),
-            data_json: data.to_string(),
-        };
-        let repository = self.repository.clone();
-        let event_for_repository = event.clone();
-        tokio::spawn(async move {
-            if let Err(error) = repository.insert_event(&event_for_repository).await {
-                tracing::warn!(%error, "failed to persist core event");
-            }
-        });
-        self.event_sink.on_event(event);
+    async fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>> {
+        self.event_hub.flush().await;
+        self.repository.list_events(transfer_id).await
     }
 }

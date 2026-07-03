@@ -9,9 +9,22 @@ use sqlx::{
 use crate::api::{CoreEvent, StoredTransfer};
 use crate::util::now_ms;
 
+const SCHEMA_VERSION: i64 = 1;
+
 #[derive(Debug, Clone)]
 pub(crate) struct Repository {
     pool: SqlitePool,
+}
+
+pub(crate) struct TransferUpsert<'a> {
+    pub(crate) transfer_id: u64,
+    pub(crate) direction: &'a str,
+    pub(crate) status: &'a str,
+    pub(crate) transfer_name: Option<&'a str>,
+    pub(crate) content_hash: Option<&'a str>,
+    pub(crate) ticket: Option<&'a str>,
+    pub(crate) file_count: u64,
+    pub(crate) total_size: u64,
 }
 
 impl Repository {
@@ -30,6 +43,8 @@ impl Repository {
     }
 
     async fn ensure_schema(&self) -> Result<()> {
+        // The app owns this SQLite file.  Keep migrations explicit so future
+        // desktop/mobile releases can move user history forward in place.
         sqlx::query(
             r#"
             CREATE TABLE IF NOT EXISTS transfers (
@@ -71,20 +86,22 @@ impl Repository {
         )
         .execute(&self.pool)
         .await?;
+
+        sqlx::query(&format!("PRAGMA user_version = {SCHEMA_VERSION}"))
+            .execute(&self.pool)
+            .await?;
         Ok(())
     }
 
-    pub(crate) async fn upsert_transfer(
-        &self,
-        transfer_id: u64,
-        direction: &str,
-        status: &str,
-        transfer_name: Option<&str>,
-        content_hash: Option<&str>,
-        ticket: Option<&str>,
-        file_count: u64,
-        total_size: u64,
-    ) -> Result<()> {
+    #[cfg(test)]
+    pub(crate) async fn schema_version(&self) -> Result<i64> {
+        let row = sqlx::query("PRAGMA user_version")
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(row.get(0))
+    }
+
+    pub(crate) async fn upsert_transfer(&self, transfer: TransferUpsert<'_>) -> Result<()> {
         let now = now_ms();
         sqlx::query(
             r#"
@@ -104,14 +121,14 @@ impl Repository {
                 updated_at = excluded.updated_at;
             "#,
         )
-        .bind(transfer_id as i64)
-        .bind(direction)
-        .bind(status)
-        .bind(transfer_name)
-        .bind(content_hash)
-        .bind(ticket)
-        .bind(file_count as i64)
-        .bind(total_size as i64)
+        .bind(transfer.transfer_id as i64)
+        .bind(transfer.direction)
+        .bind(transfer.status)
+        .bind(transfer.transfer_name)
+        .bind(transfer.content_hash)
+        .bind(transfer.ticket)
+        .bind(transfer.file_count as i64)
+        .bind(transfer.total_size as i64)
         .bind(now)
         .execute(&self.pool)
         .await?;

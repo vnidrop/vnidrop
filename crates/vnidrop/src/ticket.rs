@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::api::TransferMetadata;
 
 const VNIDROP_TICKET_PREFIX: &str = "vnd1:";
+const VNIDROP_TICKET_VERSION: u8 = 1;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub(crate) struct VnidropTicket {
@@ -19,7 +20,7 @@ pub(crate) struct VnidropTicket {
 impl VnidropTicket {
     pub(crate) fn new(blob_ticket: BlobTicket, metadata: TransferMetadata) -> Self {
         Self {
-            version: 1,
+            version: VNIDROP_TICKET_VERSION,
             blob_ticket: blob_ticket.to_string(),
             metadata,
         }
@@ -55,8 +56,26 @@ pub(crate) fn parse_transfer_ticket(value: &str) -> Result<ParsedTransferTicket>
     let normalized = normalize_ticket_input(value);
     if normalized.starts_with(VNIDROP_TICKET_PREFIX) {
         let ticket = VnidropTicket::decode(&normalized)?;
+        if ticket.version != VNIDROP_TICKET_VERSION {
+            anyhow::bail!("unsupported VniDrop ticket version {}", ticket.version);
+        }
+        if ticket.metadata.version != VNIDROP_TICKET_VERSION {
+            anyhow::bail!(
+                "unsupported VniDrop metadata version {}",
+                ticket.metadata.version
+            );
+        }
+        if ticket.metadata.transfer_id == 0 {
+            anyhow::bail!("VniDrop ticket metadata is missing a valid transfer id");
+        }
+        if ticket.metadata.transfer_name.trim().is_empty() {
+            anyhow::bail!("VniDrop ticket metadata is missing a transfer name");
+        }
         let blob_ticket = BlobTicket::from_str(&ticket.blob_ticket)
             .context("invalid BlobTicket inside VniDrop ticket")?;
+        if ticket.metadata.content_hash != blob_ticket.hash().to_string() {
+            anyhow::bail!("VniDrop ticket metadata hash does not match BlobTicket hash");
+        }
         return Ok(ParsedTransferTicket {
             blob_ticket,
             metadata: Some(ticket.metadata),
@@ -71,5 +90,8 @@ pub(crate) fn parse_transfer_ticket(value: &str) -> Result<ParsedTransferTicket>
 }
 
 fn normalize_ticket_input(value: &str) -> String {
+    // Tickets are commonly copied from text views or chat apps that insert line
+    // breaks.  Strip whitespace only; other corrupt characters should still be
+    // rejected by the base64 or BlobTicket decoders.
     value.chars().filter(|char| !char.is_whitespace()).collect()
 }
