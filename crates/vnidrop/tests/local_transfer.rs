@@ -1,7 +1,10 @@
-use std::sync::{Arc, Mutex};
+use std::{
+    sync::{Arc, Mutex},
+    time::{Duration, Instant},
+};
 
 use vnidrop::{
-    CoreEvent, CoreEventSink, ShareMetadataInput, ShareSource, SourceKind, TransferAccessMode,
+    CoreEvent, CoreEventSink, ReceiverRequest, ShareMetadataInput, ShareSource, SourceKind,
     VnidropCore,
 };
 
@@ -20,6 +23,49 @@ impl RecordingSink {
     fn events(&self) -> Vec<CoreEvent> {
         self.events.lock().unwrap().clone()
     }
+}
+
+fn wait_for_receiver_request(sender: &VnidropCore, transfer_id: u64) -> ReceiverRequest {
+    let started = Instant::now();
+    loop {
+        let requests = sender.list_receiver_requests(transfer_id).unwrap();
+        if let Some(request) = requests
+            .into_iter()
+            .find(|request| request.status == "requested")
+        {
+            return request;
+        }
+        assert!(
+            started.elapsed() < Duration::from_secs(15),
+            "timed out waiting for receiver request"
+        );
+        std::thread::sleep(Duration::from_millis(50));
+    }
+}
+
+fn receive_with_response(
+    sender: &VnidropCore,
+    transfer_id: u64,
+    receiver: Arc<VnidropCore>,
+    ticket: String,
+    output_dir: String,
+    receiver_name: Option<String>,
+    accepted: bool,
+) -> Result<(), String> {
+    let handle = std::thread::spawn(move || {
+        receiver
+            .receive(ticket, output_dir, receiver_name)
+            .map_err(|error| error.to_string())
+    });
+    let request = wait_for_receiver_request(sender, transfer_id);
+    sender
+        .respond_receiver_request(
+            request.id,
+            accepted,
+            (!accepted).then(|| "sender-refused".to_string()),
+        )
+        .unwrap();
+    handle.join().unwrap()
 }
 
 #[test]
@@ -63,13 +109,16 @@ fn two_local_cores_transfer_file() {
         )
         .unwrap();
 
-    receiver
-        .receive(
-            share.ticket,
-            output_dir.path().to_string_lossy().to_string(),
-            Some("receiver".to_string()),
-        )
-        .unwrap();
+    receive_with_response(
+        &sender,
+        share.transfer_id,
+        receiver.clone(),
+        share.ticket,
+        output_dir.path().to_string_lossy().to_string(),
+        Some("receiver".to_string()),
+        true,
+    )
+    .unwrap();
 
     assert_eq!(
         std::fs::read(output_dir.path().join("hello.txt")).unwrap(),
@@ -121,13 +170,16 @@ fn two_local_cores_transfer_directory() {
         )
         .unwrap();
 
-    receiver
-        .receive(
-            share.ticket,
-            output_dir.path().to_string_lossy().to_string(),
-            Some("receiver".to_string()),
-        )
-        .unwrap();
+    receive_with_response(
+        &sender,
+        share.transfer_id,
+        receiver.clone(),
+        share.ticket,
+        output_dir.path().to_string_lossy().to_string(),
+        Some("receiver".to_string()),
+        true,
+    )
+    .unwrap();
 
     assert_eq!(
         std::fs::read(output_dir.path().join("photos").join("cover.txt")).unwrap(),
@@ -189,32 +241,31 @@ fn approval_required_denies_then_allows_receiver() {
             },
         )
         .unwrap();
-    sender
-        .set_transfer_access_mode(share.transfer_id, TransferAccessMode::ApprovalRequired)
-        .unwrap();
-
-    assert!(receiver
-        .receive(
-            share.ticket.clone(),
-            denied_output.path().to_string_lossy().to_string(),
-            Some("receiver".to_string()),
-        )
-        .is_err());
+    assert!(receive_with_response(
+        &sender,
+        share.transfer_id,
+        receiver.clone(),
+        share.ticket.clone(),
+        denied_output.path().to_string_lossy().to_string(),
+        Some("receiver".to_string()),
+        false,
+    )
+    .is_err());
     assert!(sender_sink
         .events()
         .iter()
-        .any(|event| event.phase == "access" && event.kind == "request-denied"));
+        .any(|event| event.phase == "approval" && event.kind == "receiver-refused"));
 
-    sender
-        .approve_endpoint_for_transfer(share.transfer_id, receiver.status().endpoint_id)
-        .unwrap();
-    receiver
-        .receive(
-            share.ticket,
-            allowed_output.path().to_string_lossy().to_string(),
-            Some("receiver".to_string()),
-        )
-        .unwrap();
+    receive_with_response(
+        &sender,
+        share.transfer_id,
+        receiver.clone(),
+        share.ticket,
+        allowed_output.path().to_string_lossy().to_string(),
+        Some("receiver".to_string()),
+        true,
+    )
+    .unwrap();
     assert_eq!(
         std::fs::read(allowed_output.path().join("private.txt")).unwrap(),
         b"approved content"

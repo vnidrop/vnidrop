@@ -122,3 +122,18 @@ pub struct TicketInspection {
     pub blob_ticket: String,
     pub metadata: Option<TransferMetadata>,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
+pub struct ReceiverRequest {
+    pub id: String,
+    pub transfer_id: u64,
+    pub remote_endpoint_id: String,
+    pub transfer_name: String,
+    pub receiver_name: Option<String>,
+    pub receiver_device_name: Option<String>,
+    pub app_version: String,
+    pub status: String,
+    pub reason: Option<String>,
+    pub requested_at: i64,
+    pub responded_at: Option<i64>,
+}

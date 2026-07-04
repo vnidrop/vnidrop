@@ -32,9 +32,10 @@ use tokio::{
 use crate::{
     access_policy::{AccessDecision, AccessPolicy},
     api::{
-        CoreEvent, CoreEventSink, RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource,
-        StoredTransfer, TicketInspection, TransferAccessMode, TransferMetadata,
+        CoreEvent, CoreEventSink, ReceiverRequest, RuntimeStatus, ShareMetadataInput, ShareResult,
+        ShareSource, StoredTransfer, TicketInspection, TransferAccessMode, TransferMetadata,
     },
+    approval::ApprovalService,
     error::VnidropError,
     event_hub::EventHub,
     filesystem::{
@@ -42,6 +43,7 @@ use crate::{
         read_stream_from_blocking_reader, safe_output_path, wait_for_writer,
         write_stream_to_blocking_writer, TransferImport,
     },
+    handshake::{HandshakeResponse, HandshakeService},
     logging::init_logging,
     repository::{Repository, TransferUpsert},
     secret::load_or_create_secret,
@@ -69,7 +71,8 @@ struct CoreInner {
     router: Router,
     store: FsStore,
     repository: Repository,
-    event_hub: EventHub,
+    event_hub: Arc<EventHub>,
+    approval: ApprovalService,
     access_policy: Arc<AccessPolicy>,
     active_transfers: TokioMutex<HashMap<u64, oneshot::Sender<()>>>,
     active_shares: TokioMutex<HashMap<u64, TempTag>>,
@@ -165,6 +168,26 @@ impl VnidropCore {
             .map_err(VnidropError::permission)
     }
 
+    pub fn list_receiver_requests(
+        &self,
+        transfer_id: u64,
+    ) -> Result<Vec<ReceiverRequest>, VnidropError> {
+        self.runtime
+            .block_on(self.inner.repository.list_receiver_requests(transfer_id))
+            .map_err(VnidropError::repository)
+    }
+
+    pub fn respond_receiver_request(
+        &self,
+        request_id: String,
+        accepted: bool,
+        reason: Option<String>,
+    ) -> Result<(), VnidropError> {
+        self.runtime
+            .block_on(self.inner.approval.respond(request_id, accepted, reason))
+            .map_err(VnidropError::permission)
+    }
+
     pub fn list_transfers(&self) -> Result<Vec<StoredTransfer>, VnidropError> {
         self.runtime
             .block_on(self.inner.repository.list_transfers())
@@ -215,10 +238,15 @@ impl CoreInner {
         // uses them for send progress and for the current approval gate.
         let (events, event_rx) = EventSender::channel(128, EventMask::ALL_READONLY);
         let blobs = BlobsProtocol::new(&store, Some(events));
+        let event_hub = Arc::new(EventHub::start(repository.clone(), event_sink));
+        let access_policy = AccessPolicy::new();
+        let approval =
+            ApprovalService::new(repository.clone(), event_hub.clone(), access_policy.clone());
+        let handshake = HandshakeService::new(approval.clone());
         let router = Router::builder(endpoint.clone())
             .accept(iroh_blobs::ALPN, blobs)
+            .accept(HandshakeService::ALPN, handshake)
             .spawn();
-        let event_hub = EventHub::start(repository.clone(), event_sink);
 
         let inner = Arc::new(Self {
             endpoint,
@@ -226,7 +254,8 @@ impl CoreInner {
             store,
             repository,
             event_hub,
-            access_policy: AccessPolicy::new(),
+            approval,
+            access_policy,
             active_transfers: TokioMutex::new(HashMap::new()),
             active_shares: TokioMutex::new(HashMap::new()),
             hash_to_transfer: TokioMutex::new(HashMap::new()),
@@ -320,7 +349,7 @@ impl CoreInner {
             .await
             .insert(import.root_hash.to_string(), metadata.transfer_id);
         self.access_policy
-            .set_mode(metadata.transfer_id, TransferAccessMode::Public)
+            .set_mode(metadata.transfer_id, TransferAccessMode::ApprovalRequired)
             .await;
         self.active_shares
             .lock()
@@ -464,6 +493,15 @@ impl CoreInner {
         tokio::fs::create_dir_all(&output_dir).await?;
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
+        if let Some(metadata) = &parsed.metadata {
+            self.request_transfer_approval(
+                transfer_id,
+                parsed.blob_ticket.addr().clone(),
+                metadata,
+                receiver_name.as_deref(),
+            )
+            .await?;
+        }
         let connection = self
             .endpoint
             .connect(parsed.blob_ticket.addr().clone(), iroh_blobs::ALPN)
@@ -581,6 +619,49 @@ impl CoreInner {
             json!({ "endpoint_id": endpoint_id }),
         );
         Ok(())
+    }
+
+    async fn request_transfer_approval(
+        &self,
+        local_transfer_id: u64,
+        addr: iroh::EndpointAddr,
+        metadata: &TransferMetadata,
+        receiver_name: Option<&str>,
+    ) -> Result<()> {
+        self.emit_transfer(
+            local_transfer_id,
+            "receive",
+            "handshake",
+            "approval-requesting",
+            json!({
+                "sender_transfer_id": metadata.transfer_id,
+                "metadata": metadata,
+            }),
+        );
+
+        let client = HandshakeService::client(self.endpoint.clone(), addr);
+        match client
+            .request_transfer(metadata, receiver_name)
+            .await
+            .map_err(|error| anyhow::anyhow!("handshake request failed: {error}"))?
+        {
+            HandshakeResponse::Approved { expires_at, .. } => {
+                self.emit_transfer(
+                    local_transfer_id,
+                    "receive",
+                    "handshake",
+                    "approval-granted",
+                    json!({
+                        "sender_transfer_id": metadata.transfer_id,
+                        "expires_at": expires_at,
+                    }),
+                );
+                Ok(())
+            }
+            HandshakeResponse::Denied { reason } => {
+                anyhow::bail!("transfer request was denied by sender: {reason}")
+            }
+        }
     }
 
     async fn shutdown(&self) {

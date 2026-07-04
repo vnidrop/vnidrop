@@ -10,10 +10,12 @@ import kotlinx.coroutines.withContext
 import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
+import uniffi.vnidrop.ReceiverRequest
 import uniffi.vnidrop.ShareMetadataInput
 import uniffi.vnidrop.ShareResult
 import uniffi.vnidrop.ShareSource
 import uniffi.vnidrop.SourceKind
+import uniffi.vnidrop.StoredTransfer
 import uniffi.vnidrop.TicketInspection
 import uniffi.vnidrop.VnidropCore
 
@@ -21,8 +23,10 @@ data class CoreUiState(
 	val isInitialized: Boolean = false,
 	val status: String = "Not initialized",
 	val events: List<CoreEvent> = emptyList(),
+	val transfers: List<StoredTransfer> = emptyList(),
 	val lastShare: ShareResult? = null,
 	val lastInspection: TicketInspection? = null,
+	val receiverRequests: List<ReceiverRequest> = emptyList(),
 	val error: String? = null,
 )
 
@@ -46,6 +50,8 @@ class CoreRepository(
 		core?.shutdown()
 		core = VnidropCore.initialize(appDataDir, sink)
 		refreshStatus()
+		loadTransfers()
+		loadEvents()
 		_state.update { it.copy(isInitialized = true, error = null) }
 	}
 
@@ -117,6 +123,7 @@ class CoreRepository(
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String) = runCore {
 		requireCore().receive(ticket, outputDir, receiverName.ifBlank { null })
 		refreshStatus()
+		loadTransfers()
 	}
 
 	suspend fun receiveIntoSecurityScopedDirectory(
@@ -128,11 +135,34 @@ class CoreRepository(
 			requireCore().receive(ticket, outputDirectoryUrl, receiverName.ifBlank { null })
 		}
 		refreshStatus()
+		loadTransfers()
 	}
 
 	suspend fun cancel(transferId: ULong) = runCore {
 		requireCore().cancelTransfer(transferId)
 		refreshStatus()
+		loadTransfers()
+	}
+
+	suspend fun refreshReceiverRequests(transferId: ULong) = runCore {
+		val requests = requireCore().listReceiverRequests(transferId)
+		_state.update { it.copy(receiverRequests = requests, error = null) }
+	}
+
+	suspend fun respondReceiverRequest(requestId: String, accepted: Boolean, reason: String? = null) = runCore {
+		requireCore().respondReceiverRequest(requestId, accepted, reason)
+		state.value.lastShare?.let { share ->
+			val requests = requireCore().listReceiverRequests(share.transferId)
+			_state.update { it.copy(receiverRequests = requests, error = null) }
+		}
+	}
+
+	suspend fun refreshTransfers() = runCore {
+		loadTransfers()
+	}
+
+	suspend fun refreshEvents() = runCore {
+		loadEvents()
 	}
 
 	suspend fun setError(message: String) {
@@ -166,9 +196,10 @@ class CoreRepository(
 					senderName = senderName.ifBlank { null },
 				),
 			)
-			_state.update { it.copy(lastShare = result, error = null) }
+			_state.update { it.copy(lastShare = result, receiverRequests = emptyList(), error = null) }
 		}
 		refreshStatus()
+		loadTransfers()
 	}
 
 	private suspend fun <T> withPlatformPathAccess(
@@ -194,6 +225,16 @@ class CoreRepository(
 				} ?: "Not initialized",
 			)
 		}
+	}
+
+	private fun loadTransfers() {
+		val transfers = core?.listTransfers().orEmpty()
+		_state.update { it.copy(transfers = transfers, error = null) }
+	}
+
+	private fun loadEvents() {
+		val events = core?.listEvents(null).orEmpty()
+		_state.update { it.copy(events = events.take(200), error = null) }
 	}
 
 	private fun nextTransferId(): ULong =

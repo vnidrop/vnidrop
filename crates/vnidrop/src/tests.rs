@@ -17,7 +17,7 @@ mod tests {
             collect_import_files, default_collection_name, path_to_string,
             percent_decode_file_url_path, validated_relative_string,
         },
-        repository::Repository,
+        repository::{ReceiverRequestInsert, Repository},
         runtime::VnidropCore,
         secret::load_or_create_secret,
         ticket::{parse_transfer_ticket, VnidropTicket},
@@ -293,6 +293,42 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn repository_persists_receiver_requests() {
+        let temp = tempfile::tempdir().unwrap();
+        let repository = Repository::open(temp.path()).await.unwrap();
+        repository
+            .insert_receiver_request(ReceiverRequestInsert {
+                id: "request-1",
+                transfer_id: 77,
+                remote_endpoint_id: "node-a",
+                transfer_name: "demo",
+                receiver_name: Some("receiver"),
+                receiver_device_name: Some("phone"),
+                app_version: "0.1.0",
+            })
+            .await
+            .unwrap();
+        repository
+            .update_receiver_request_status("request-1", "accepted", None)
+            .await
+            .unwrap();
+        assert!(repository
+            .update_receiver_request_status("request-1", "refused", Some("late"))
+            .await
+            .is_err());
+        assert!(repository
+            .update_receiver_request_status("missing", "accepted", None)
+            .await
+            .is_err());
+
+        let requests = repository.list_receiver_requests(77).await.unwrap();
+        assert_eq!(requests.len(), 1);
+        assert_eq!(requests[0].status, "accepted");
+        assert_eq!(requests[0].receiver_name.as_deref(), Some("receiver"));
+        assert!(requests[0].responded_at.is_some());
+    }
+
+    #[tokio::test]
     async fn access_policy_requires_approved_endpoint_when_locked() {
         let policy = AccessPolicy::new();
         policy
@@ -315,6 +351,30 @@ mod tests {
             policy.decide(99, None).await,
             AccessDecision::Deny {
                 reason: "missing-endpoint-id"
+            }
+        );
+    }
+
+    #[tokio::test]
+    async fn access_policy_rejects_expired_approval_sessions() {
+        let policy = AccessPolicy::new();
+        policy
+            .set_mode(100, TransferAccessMode::ApprovalRequired)
+            .await;
+        policy
+            .approve_endpoint_until(100, "node-a".to_string(), Some(crate::util::now_ms() - 1))
+            .await;
+
+        assert_eq!(
+            policy.decide(100, Some("node-a")).await,
+            AccessDecision::Deny {
+                reason: "approval-expired"
+            }
+        );
+        assert_eq!(
+            policy.decide(100, Some("node-a")).await,
+            AccessDecision::Deny {
+                reason: "approval-required"
             }
         );
     }

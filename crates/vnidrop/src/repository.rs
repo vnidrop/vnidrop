@@ -6,7 +6,7 @@ use sqlx::{
     Row, SqlitePool,
 };
 
-use crate::api::{CoreEvent, StoredTransfer};
+use crate::api::{CoreEvent, ReceiverRequest, StoredTransfer};
 use crate::util::now_ms;
 
 const SCHEMA_VERSION: i64 = 1;
@@ -25,6 +25,16 @@ pub(crate) struct TransferUpsert<'a> {
     pub(crate) ticket: Option<&'a str>,
     pub(crate) file_count: u64,
     pub(crate) total_size: u64,
+}
+
+pub(crate) struct ReceiverRequestInsert<'a> {
+    pub(crate) id: &'a str,
+    pub(crate) transfer_id: u64,
+    pub(crate) remote_endpoint_id: &'a str,
+    pub(crate) transfer_name: &'a str,
+    pub(crate) receiver_name: Option<&'a str>,
+    pub(crate) receiver_device_name: Option<&'a str>,
+    pub(crate) app_version: &'a str,
 }
 
 impl Repository {
@@ -83,6 +93,32 @@ impl Repository {
 
         sqlx::query(
             "CREATE INDEX IF NOT EXISTS idx_transfer_events_transfer_id ON transfer_events(transfer_id, timestamp);",
+        )
+        .execute(&self.pool)
+        .await?;
+
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS receiver_requests (
+                id TEXT PRIMARY KEY,
+                transfer_id INTEGER NOT NULL,
+                remote_endpoint_id TEXT NOT NULL,
+                transfer_name TEXT NOT NULL,
+                receiver_name TEXT,
+                receiver_device_name TEXT,
+                app_version TEXT NOT NULL,
+                status TEXT NOT NULL,
+                reason TEXT,
+                requested_at INTEGER NOT NULL,
+                responded_at INTEGER
+            );
+            "#,
+        )
+        .execute(&self.pool)
+        .await?;
+
+        sqlx::query(
+            "CREATE INDEX IF NOT EXISTS idx_receiver_requests_transfer_id ON receiver_requests(transfer_id, requested_at DESC);",
         )
         .execute(&self.pool)
         .await?;
@@ -171,6 +207,98 @@ impl Repository {
         Ok(())
     }
 
+    pub(crate) async fn insert_receiver_request(
+        &self,
+        request: ReceiverRequestInsert<'_>,
+    ) -> Result<()> {
+        sqlx::query(
+            r#"
+            INSERT INTO receiver_requests (
+                id, transfer_id, remote_endpoint_id, transfer_name,
+                receiver_name, receiver_device_name, app_version, status,
+                reason, requested_at, responded_at
+            )
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, 'requested', NULL, ?8, NULL)
+            "#,
+        )
+        .bind(request.id)
+        .bind(request.transfer_id as i64)
+        .bind(request.remote_endpoint_id)
+        .bind(request.transfer_name)
+        .bind(request.receiver_name)
+        .bind(request.receiver_device_name)
+        .bind(request.app_version)
+        .bind(now_ms())
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
+
+    pub(crate) async fn update_receiver_request_status(
+        &self,
+        id: &str,
+        status: &str,
+        reason: Option<&str>,
+    ) -> Result<()> {
+        let result = sqlx::query(
+            r#"
+            UPDATE receiver_requests
+            SET status = ?1, reason = ?2, responded_at = ?3
+            WHERE id = ?4
+              AND status = 'requested'
+            "#,
+        )
+        .bind(status)
+        .bind(reason)
+        .bind(now_ms())
+        .bind(id)
+        .execute(&self.pool)
+        .await?;
+        if result.rows_affected() == 0 {
+            anyhow::bail!("receiver request not found or already handled");
+        }
+        Ok(())
+    }
+
+    pub(crate) async fn list_receiver_requests(
+        &self,
+        transfer_id: u64,
+    ) -> Result<Vec<ReceiverRequest>> {
+        let rows = sqlx::query(
+            r#"
+            SELECT id, transfer_id, remote_endpoint_id, transfer_name,
+                   receiver_name, receiver_device_name, app_version, status,
+                   reason, requested_at, responded_at
+            FROM receiver_requests
+            WHERE transfer_id = ?1
+            ORDER BY requested_at DESC
+            "#,
+        )
+        .bind(transfer_id as i64)
+        .fetch_all(&self.pool)
+        .await?;
+        Ok(rows.into_iter().map(row_to_receiver_request).collect())
+    }
+
+    pub(crate) async fn send_exists(&self, transfer_id: u64, content_hash: &str) -> Result<bool> {
+        let row = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM transfers
+                WHERE transfer_id = ?1
+                  AND content_hash = ?2
+                  AND direction = 'send'
+                  AND status = 'sharing'
+            )
+            "#,
+        )
+        .bind(transfer_id as i64)
+        .bind(content_hash)
+        .fetch_one(&self.pool)
+        .await?;
+        Ok(row.get::<i64, _>(0) != 0)
+    }
+
     pub(crate) async fn list_transfers(&self) -> Result<Vec<StoredTransfer>> {
         let rows = sqlx::query(
             r#"
@@ -241,5 +369,21 @@ fn row_to_event(row: sqlx::sqlite::SqliteRow) -> CoreEvent {
         phase: row.get("phase"),
         kind: row.get("kind"),
         data_json: row.get("data_json"),
+    }
+}
+
+fn row_to_receiver_request(row: sqlx::sqlite::SqliteRow) -> ReceiverRequest {
+    ReceiverRequest {
+        id: row.get("id"),
+        transfer_id: row.get::<i64, _>("transfer_id") as u64,
+        remote_endpoint_id: row.get("remote_endpoint_id"),
+        transfer_name: row.get("transfer_name"),
+        receiver_name: row.get("receiver_name"),
+        receiver_device_name: row.get("receiver_device_name"),
+        app_version: row.get("app_version"),
+        status: row.get("status"),
+        reason: row.get("reason"),
+        requested_at: row.get("requested_at"),
+        responded_at: row.get("responded_at"),
     }
 }

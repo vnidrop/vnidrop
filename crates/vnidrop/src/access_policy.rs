@@ -1,11 +1,9 @@
-use std::{
-    collections::{HashMap, HashSet},
-    sync::Arc,
-};
+use std::{collections::HashMap, sync::Arc};
 
 use tokio::sync::RwLock;
 
 use crate::api::TransferAccessMode;
+use crate::util::now_ms;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AccessDecision {
@@ -16,7 +14,7 @@ pub(crate) enum AccessDecision {
 #[derive(Debug, Default)]
 pub(crate) struct AccessPolicy {
     modes: RwLock<HashMap<u64, TransferAccessMode>>,
-    approved_sessions: RwLock<HashSet<(u64, String)>>,
+    approved_sessions: RwLock<HashMap<(u64, String), ApprovalSession>>,
 }
 
 impl AccessPolicy {
@@ -33,14 +31,24 @@ impl AccessPolicy {
         self.approved_sessions
             .write()
             .await
-            .retain(|(id, _)| *id != transfer_id);
+            .retain(|(id, _), _| *id != transfer_id);
     }
 
     pub(crate) async fn approve_endpoint(&self, transfer_id: u64, endpoint_id: String) {
+        self.approve_endpoint_until(transfer_id, endpoint_id, None)
+            .await;
+    }
+
+    pub(crate) async fn approve_endpoint_until(
+        &self,
+        transfer_id: u64,
+        endpoint_id: String,
+        expires_at: Option<i64>,
+    ) {
         self.approved_sessions
             .write()
             .await
-            .insert((transfer_id, endpoint_id));
+            .insert((transfer_id, endpoint_id), ApprovalSession { expires_at });
     }
 
     pub(crate) async fn decide(
@@ -48,9 +56,6 @@ impl AccessPolicy {
         transfer_id: u64,
         endpoint_id: Option<&str>,
     ) -> AccessDecision {
-        // This is intentionally only the provider-side gate for milestone one.
-        // A later handshake can add receiver-request/sender-approval events on
-        // top without weakening the default public sharing behavior.
         match self
             .modes
             .read()
@@ -66,19 +71,32 @@ impl AccessPolicy {
                         reason: "missing-endpoint-id",
                     };
                 };
-                if self
-                    .approved_sessions
-                    .read()
-                    .await
-                    .contains(&(transfer_id, endpoint_id.to_string()))
-                {
-                    AccessDecision::Allow
-                } else {
-                    AccessDecision::Deny {
-                        reason: "approval-required",
+                let key = (transfer_id, endpoint_id.to_string());
+                let mut sessions = self.approved_sessions.write().await;
+                match sessions.get(&key) {
+                    Some(session) if session.is_valid(now_ms()) => AccessDecision::Allow,
+                    Some(_) => {
+                        sessions.remove(&key);
+                        AccessDecision::Deny {
+                            reason: "approval-expired",
+                        }
                     }
+                    None => AccessDecision::Deny {
+                        reason: "approval-required",
+                    },
                 }
             }
         }
+    }
+}
+
+#[derive(Debug, Clone)]
+struct ApprovalSession {
+    expires_at: Option<i64>,
+}
+
+impl ApprovalSession {
+    fn is_valid(&self, now: i64) -> bool {
+        self.expires_at.is_none_or(|expires_at| expires_at >= now)
     }
 }

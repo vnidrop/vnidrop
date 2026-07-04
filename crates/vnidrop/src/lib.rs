@@ -1,8 +1,10 @@
 mod access_policy;
 mod api;
+mod approval;
 mod error;
 mod event_hub;
 mod filesystem;
+mod handshake;
 mod logging;
 mod repository;
 mod runtime;
@@ -11,8 +13,9 @@ mod ticket;
 mod util;
 
 pub use api::{
-    CoreEvent, CoreEventSink, RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource,
-    SourceKind, StoredTransfer, TicketInspection, TransferAccessMode, TransferMetadata,
+    CoreEvent, CoreEventSink, ReceiverRequest, RuntimeStatus, ShareMetadataInput, ShareResult,
+    ShareSource, SourceKind, StoredTransfer, TicketInspection, TransferAccessMode,
+    TransferMetadata,
 };
 pub use error::VnidropError;
 pub use runtime::VnidropCore;

@@ -1,5 +1,6 @@
 @file:OptIn(gobley.gradle.InternalGobleyGradleApi::class)
 
+import gobley.gradle.cargo.dsl.appleMobile
 import gobley.gradle.rust.targets.RustAndroidTarget
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -76,6 +77,15 @@ cargo {
 	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop")
 	publishJvmArtifacts = true
 	androidTargetsToBuild.set(setOf(RustAndroidTarget.Arm64))
+	builds.appleMobile {
+		variants {
+			buildTaskProvider.configure {
+				if (rustTarget.cinteropName == "ios") {
+					additionalEnvironment.put("IPHONEOS_DEPLOYMENT_TARGET", "16.0.0")
+				}
+			}
+		}
+	}
 }
 
 uniffi {
