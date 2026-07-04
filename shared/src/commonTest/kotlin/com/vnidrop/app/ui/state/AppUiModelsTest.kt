@@ -9,10 +9,17 @@ import kotlin.test.assertTrue
 
 class AppUiModelsTest {
 	@Test
-	fun windowClassUsesCompactMediumExpandedBreakpoints() {
-		assertEquals(WindowClass.Compact, windowClassFor(390f))
-		assertEquals(WindowClass.Medium, windowClassFor(700f))
-		assertEquals(WindowClass.Expanded, windowClassFor(1200f))
+	fun windowClassUsesPhoneTabletDesktopBreakpoints() {
+		assertEquals(WindowClass.Phone, windowClassFor(390f))
+		assertEquals(WindowClass.Tablet, windowClassFor(700f))
+		assertEquals(WindowClass.Desktop, windowClassFor(1200f))
+	}
+
+	@Test
+	fun bottomNavigationIsReservedForPhoneWidth() {
+		assertTrue(useBottomNavigation(WindowClass.Phone))
+		assertFalse(useBottomNavigation(WindowClass.Tablet))
+		assertFalse(useBottomNavigation(WindowClass.Desktop))
 	}
 
 	@Test

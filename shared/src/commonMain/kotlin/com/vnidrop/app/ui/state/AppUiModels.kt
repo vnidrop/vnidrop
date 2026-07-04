@@ -1,33 +1,26 @@
 package com.vnidrop.app.ui.state
 
 import com.vnidrop.app.ui.theme.ThemeMode
+import com.vnidrop.app.ui.navigation.AppDestination
 import uniffi.vnidrop.CoreEvent
-import uniffi.vnidrop.ReceiverRequest
 import uniffi.vnidrop.StoredTransfer
 import kotlin.math.roundToInt
 
-enum class AppDestination(
-	val label: String,
-) {
-	Send("Send"),
-	Receive("Receive"),
-	Activity("Activity"),
-	Requests("Requests"),
-	Settings("Settings"),
-}
-
 enum class WindowClass {
-	Compact,
-	Medium,
-	Expanded,
+	Phone,
+	Tablet,
+	Desktop,
 }
 
 fun windowClassFor(widthDp: Float): WindowClass =
 	when {
-		widthDp >= 920f -> WindowClass.Expanded
-		widthDp >= 640f -> WindowClass.Medium
-		else -> WindowClass.Compact
+		widthDp >= 920f -> WindowClass.Desktop
+		widthDp >= 600f -> WindowClass.Tablet
+		else -> WindowClass.Phone
 	}
+
+fun useBottomNavigation(windowClass: WindowClass): Boolean =
+	windowClass == WindowClass.Phone
 
 data class AppUiState(
 	val destination: AppDestination = AppDestination.Send,
@@ -67,9 +60,6 @@ fun displayNameForStatus(status: String): String =
 		"failed" -> "Failed"
 		else -> status.replaceFirstChar { it.uppercase() }
 	}
-
-fun activeReceiverRequests(requests: List<ReceiverRequest>): List<ReceiverRequest> =
-	requests.filter { it.status == "requested" }
 
 fun summarizeProgress(events: List<CoreEvent>): List<TransferProgress> =
 	events
