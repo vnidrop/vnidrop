@@ -2,9 +2,11 @@ package com.vnidrop.app
 
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.vnidrop.app.platform.DesktopAppearanceBridge
 
 fun main() {
 	configureMacOsNativeAppearance()
+	DesktopAppearanceBridge.applyNativeAppearance = MacOsAppKitAppearance::apply
 	application {
 		Window(
 			onCloseRequest = ::exitApplication,

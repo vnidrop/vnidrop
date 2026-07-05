@@ -1,7 +1,6 @@
 package com.vnidrop.app.ui.navigation
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,23 +39,34 @@ fun AppSidebarNavigation(
 	modifier: Modifier = Modifier,
 ) {
 	val colors = LocalVniDropColors.current
-	Column(
+	Box(
 		modifier = modifier
 			.width(88.dp)
 			.fillMaxHeight()
-			.background(colors.backgroundSurface200)
-			.border(width = 1.dp, color = colors.borderDefault)
-			.padding(vertical = 10.dp),
-		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.spacedBy(2.dp),
+			.background(colors.backgroundSurface200),
 	) {
-		primaryNavigationItems.forEach { item ->
-			SidebarNavigationItem(
-				item = item,
-				selected = item.destination == selected,
-				onClick = { onDestinationSelected(item.destination) },
-			)
+		Column(
+			modifier = Modifier
+				.fillMaxHeight()
+				.padding(vertical = 10.dp),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.spacedBy(2.dp),
+		) {
+			primaryNavigationItems.forEach { item ->
+				SidebarNavigationItem(
+					item = item,
+					selected = item.destination == selected,
+					onClick = { onDestinationSelected(item.destination) },
+				)
+			}
 		}
+		Box(
+			modifier = Modifier
+				.align(Alignment.CenterEnd)
+				.width(1.dp)
+				.fillMaxHeight()
+				.background(colors.borderDefault),
+		)
 	}
 }
 
@@ -70,10 +80,8 @@ fun AppBottomNavigation(
 	Column(
 		modifier = modifier
 			.fillMaxWidth()
-			.background(colors.backgroundSurface200)
-			.border(width = 1.dp, color = colors.borderDefault),
+			.background(colors.backgroundSurface200),
 	) {
-		ActiveBottomIndicator(selected = selected)
 		Row(
 			modifier = Modifier
 				.fillMaxWidth()
@@ -107,18 +115,8 @@ private fun SidebarNavigationItem(
 		modifier = Modifier
 			.fillMaxWidth()
 			.selectable(selected = selected, onClick = onClick)
-			.background(if (selected) colors.backgroundSurface300 else Color.Transparent)
 			.padding(vertical = 13.dp),
 	) {
-		if (selected) {
-			Box(
-				modifier = Modifier
-					.align(Alignment.CenterStart)
-					.size(width = 4.dp, height = 46.dp)
-					.clip(RoundedCornerShape(topEnd = 4.dp, bottomEnd = 4.dp))
-					.background(colors.brandLink),
-			)
-		}
 		Column(
 			modifier = Modifier.align(Alignment.Center),
 			horizontalAlignment = Alignment.CenterHorizontally,
@@ -166,21 +164,5 @@ private fun BottomNavigationItem(
 			maxLines = 1,
 			overflow = TextOverflow.Ellipsis,
 		)
-	}
-}
-
-@Composable
-private fun ActiveBottomIndicator(selected: AppDestination) {
-	val colors = LocalVniDropColors.current
-	val index = primaryNavigationItems.indexOfFirst { it.destination == selected }.coerceAtLeast(0)
-	Row(modifier = Modifier.fillMaxWidth()) {
-		repeat(primaryNavigationItems.size) { itemIndex ->
-			Box(
-				modifier = Modifier
-					.weight(1f)
-					.size(height = 3.dp, width = 1.dp)
-					.background(if (itemIndex == index) colors.brandLink else Color.Transparent),
-			)
-		}
 	}
 }
