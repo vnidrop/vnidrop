@@ -33,14 +33,26 @@ data class SendUiState(
 	val transferName: String = "VniDrop transfer",
 	val senderName: String = "",
 	val isSharing: Boolean = false,
-)
+) {
+	val hasSelectedSource: Boolean
+		get() = selectedSource.isNotBlank()
+
+	fun canCreateShare(isCoreInitialized: Boolean): Boolean =
+		isCoreInitialized && hasSelectedSource && !isSharing
+}
 
 data class ReceiveUiState(
 	val ticket: String = "",
 	val outputDirectory: String = "",
 	val receiverName: String = "",
 	val isReceiving: Boolean = false,
-)
+) {
+	fun canInspect(isCoreInitialized: Boolean): Boolean =
+		isCoreInitialized && ticket.isNotBlank()
+
+	fun canReceive(isCoreInitialized: Boolean): Boolean =
+		isCoreInitialized && ticket.isNotBlank() && outputDirectory.isNotBlank() && !isReceiving
+}
 
 data class TransferProgress(
 	val transferId: ULong?,

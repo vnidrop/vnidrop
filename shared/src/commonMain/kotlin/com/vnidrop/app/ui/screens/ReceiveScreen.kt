@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.VniDropAppEvent
 import com.vnidrop.app.core.CoreUiState
 import com.vnidrop.app.ui.components.AppCard
 import com.vnidrop.app.ui.components.Field
@@ -27,9 +28,7 @@ import vnidrop.shared.generated.resources.ticket_card_title
 fun ReceiveScreen(
 	coreState: CoreUiState,
 	receiveState: ReceiveUiState,
-	onReceiveStateChange: (ReceiveUiState) -> Unit,
-	onInspect: () -> Unit,
-	onReceive: () -> Unit,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
 		ScreenHeader(stringResource(Res.string.receive_title), stringResource(Res.string.receive_subtitle))
@@ -37,33 +36,30 @@ fun ReceiveScreen(
 		AppCard(title = stringResource(Res.string.ticket_card_title)) {
 			Field(
 				value = receiveState.ticket,
-				onValueChange = { onReceiveStateChange(receiveState.copy(ticket = it)) },
+				onValueChange = { onEvent(VniDropAppEvent.ReceiveTicketChanged(it)) },
 				label = stringResource(Res.string.field_ticket),
 				minLines = 4,
 			)
 			Field(
 				value = receiveState.outputDirectory,
-				onValueChange = { onReceiveStateChange(receiveState.copy(outputDirectory = it)) },
+				onValueChange = { onEvent(VniDropAppEvent.OutputDirectoryChanged(it)) },
 				label = stringResource(Res.string.field_output_directory),
 			)
 			Field(
 				value = receiveState.receiverName,
-				onValueChange = { onReceiveStateChange(receiveState.copy(receiverName = it)) },
+				onValueChange = { onEvent(VniDropAppEvent.ReceiverNameChanged(it)) },
 				label = stringResource(Res.string.field_receiver_name),
 			)
 			Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
 				SecondaryButton(
 					text = stringResource(Res.string.button_inspect_ticket),
-					onClick = onInspect,
-					enabled = coreState.isInitialized && receiveState.ticket.isNotBlank(),
+					onClick = { onEvent(VniDropAppEvent.InspectTicketClicked) },
+					enabled = receiveState.canInspect(coreState.isInitialized),
 				)
 				PrimaryButton(
 					text = if (receiveState.isReceiving) stringResource(Res.string.button_receiving) else stringResource(Res.string.button_receive),
-					onClick = onReceive,
-					enabled = coreState.isInitialized &&
-						receiveState.ticket.isNotBlank() &&
-						receiveState.outputDirectory.isNotBlank() &&
-						!receiveState.isReceiving,
+					onClick = { onEvent(VniDropAppEvent.ReceiveClicked) },
+					enabled = receiveState.canReceive(coreState.isInitialized),
 				)
 			}
 		}
