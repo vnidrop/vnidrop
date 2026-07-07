@@ -32,16 +32,17 @@ use tokio::{
 use crate::{
     access_policy::{AccessDecision, AccessPolicy},
     api::{
-        CoreEvent, CoreEventSink, ReceiverRequest, RuntimeStatus, ShareMetadataInput, ShareResult,
-        ShareSource, StoredTransfer, TicketInspection, TransferAccessMode, TransferMetadata,
+        CoreEvent, CoreEventSink, ReceiveOutputSink, ReceiverRequest, RuntimeStatus,
+        ShareMetadataInput, ShareResult, ShareSource, StoredTransfer, TicketInspection,
+        TransferAccessMode, TransferMetadata,
     },
     approval::ApprovalService,
     error::VnidropError,
     event_hub::EventHub,
     filesystem::{
         collect_import_files, default_collection_name, platform_path,
-        read_stream_from_blocking_reader, safe_output_path, wait_for_writer,
-        write_stream_to_blocking_writer, TransferImport,
+        read_stream_from_blocking_reader, safe_output_path, validated_relative_string,
+        wait_for_writer, write_stream_to_blocking_writer, TransferImport,
     },
     handshake::{HandshakeResponse, HandshakeService},
     logging::init_logging,
@@ -80,6 +81,11 @@ struct CoreInner {
     connection_endpoints: TokioMutex<HashMap<u64, String>>,
     provider_task: TokioMutex<Option<JoinHandle<()>>>,
     shutdown_started: AtomicBool,
+}
+
+enum ReceiveTarget {
+    Directory(PathBuf),
+    OutputSink(Arc<dyn ReceiveOutputSink>),
 }
 
 #[uniffi::export]
@@ -136,6 +142,33 @@ impl VnidropCore {
         let output_dir = platform_path(&output_dir).map_err(VnidropError::filesystem)?;
         self.runtime
             .block_on(self.inner.receive(ticket, output_dir, receiver_name))
+            .map_err(VnidropError::transfer)
+    }
+
+    pub fn receive_with_output_sink(
+        &self,
+        ticket: String,
+        output_sink: Arc<dyn ReceiveOutputSink>,
+        receiver_name: Option<String>,
+    ) -> Result<(), VnidropError> {
+        if let Err(error) =
+            parse_transfer_ticket(&ticket).context("failed to parse transfer ticket")
+        {
+            self.runtime.block_on(async {
+                self.inner.emit_endpoint(
+                    "error",
+                    "invalid-ticket",
+                    json!({ "reason": error.to_string() }),
+                );
+                self.inner.event_hub.flush().await;
+            });
+            return Err(VnidropError::ticket(error));
+        }
+        self.runtime
+            .block_on(
+                self.inner
+                    .receive_with_output_sink(ticket, output_sink, receiver_name),
+            )
             .map_err(VnidropError::transfer)
     }
 
@@ -398,6 +431,30 @@ impl CoreInner {
         output_dir: PathBuf,
         receiver_name: Option<String>,
     ) -> Result<()> {
+        self.receive_to_target(ticket, ReceiveTarget::Directory(output_dir), receiver_name)
+            .await
+    }
+
+    async fn receive_with_output_sink(
+        self: &Arc<Self>,
+        ticket: String,
+        output_sink: Arc<dyn ReceiveOutputSink>,
+        receiver_name: Option<String>,
+    ) -> Result<()> {
+        self.receive_to_target(
+            ticket,
+            ReceiveTarget::OutputSink(output_sink),
+            receiver_name,
+        )
+        .await
+    }
+
+    async fn receive_to_target(
+        self: &Arc<Self>,
+        ticket: String,
+        target: ReceiveTarget,
+        receiver_name: Option<String>,
+    ) -> Result<()> {
         let parsed = match parse_transfer_ticket(&ticket).context("failed to parse transfer ticket")
         {
             Ok(parsed) => parsed,
@@ -424,7 +481,7 @@ impl CoreInner {
             .insert(transfer_id, shutdown_tx);
 
         let result = tokio::select! {
-            result = self.receive_inner(transfer_id, parsed, output_dir, receiver_name) => result,
+            result = self.receive_inner(transfer_id, parsed, target, receiver_name) => result,
             _ = &mut shutdown_rx => Err(anyhow::anyhow!("transfer cancelled")),
         };
 
@@ -449,7 +506,7 @@ impl CoreInner {
         self: &Arc<Self>,
         transfer_id: u64,
         parsed: ParsedTransferTicket,
-        output_dir: PathBuf,
+        target: ReceiveTarget,
         receiver_name: Option<String>,
     ) -> Result<()> {
         let metadata_json =
@@ -490,7 +547,9 @@ impl CoreInner {
                     .unwrap_or_default(),
             })
             .await?;
-        tokio::fs::create_dir_all(&output_dir).await?;
+        if let ReceiveTarget::Directory(output_dir) = &target {
+            tokio::fs::create_dir_all(output_dir).await?;
+        }
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
         if let Some(metadata) = &parsed.metadata {
@@ -542,7 +601,7 @@ impl CoreInner {
         }
 
         let collection = Collection::load(hash_and_format.hash, self.store.as_ref()).await?;
-        self.export_collection(transfer_id, total_files, output_dir, collection)
+        self.export_collection(transfer_id, total_files, target, collection)
             .await?;
         self.repository
             .update_transfer_status(transfer_id, STATUS_DONE)
@@ -795,24 +854,39 @@ impl CoreInner {
         &self,
         transfer_id: u64,
         total_files: u64,
-        output_dir: PathBuf,
+        target: ReceiveTarget,
         collection: Collection,
     ) -> Result<()> {
         for (i, (name, hash)) in collection.iter().enumerate() {
-            self.export_blob(
-                transfer_id,
-                total_files,
-                i as u64,
-                &output_dir,
-                name.as_ref(),
-                *hash,
-            )
-            .await?;
+            match &target {
+                ReceiveTarget::Directory(output_dir) => {
+                    self.export_blob_to_directory(
+                        transfer_id,
+                        total_files,
+                        i as u64,
+                        output_dir,
+                        name.as_ref(),
+                        *hash,
+                    )
+                    .await?;
+                }
+                ReceiveTarget::OutputSink(output_sink) => {
+                    self.export_blob_to_sink(
+                        transfer_id,
+                        total_files,
+                        i as u64,
+                        output_sink.as_ref(),
+                        name.as_ref(),
+                        *hash,
+                    )
+                    .await?;
+                }
+            }
         }
         Ok(())
     }
 
-    async fn export_blob(
+    async fn export_blob_to_directory(
         &self,
         transfer_id: u64,
         total_files: u64,
@@ -870,6 +944,62 @@ impl CoreInner {
             .await
             .map_err(|_| anyhow::anyhow!("export writer closed for {relative_path}"))?;
         wait_for_writer(writer_task).await??;
+        Ok(())
+    }
+
+    async fn export_blob_to_sink(
+        &self,
+        transfer_id: u64,
+        total_files: u64,
+        current_file_index: u64,
+        output_sink: &dyn ReceiveOutputSink,
+        relative_path: &str,
+        hash: Hash,
+    ) -> Result<()> {
+        let relative_path = validated_relative_string(relative_path)?;
+        output_sink
+            .start_file(relative_path.clone())
+            .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+        let mut stream = self.store.export_ranges(hash, 0..u64::MAX).stream();
+        let mut file_size = 0;
+        let mut exported = 0;
+
+        while let Some(item) = stream.next().await {
+            match item {
+                ExportRangesItem::Size(size) => file_size = size,
+                ExportRangesItem::Data(leaf) => {
+                    if leaf.offset != exported {
+                        anyhow::bail!(
+                            "export stream for {relative_path} yielded out-of-order data"
+                        );
+                    }
+                    exported += leaf.data.len() as u64;
+                    output_sink
+                        .write_chunk(relative_path.clone(), leaf.data.to_vec())
+                        .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+                    self.emit_transfer(
+                        transfer_id,
+                        "receive",
+                        "export",
+                        "progress",
+                        json!({
+                            "total_files": total_files,
+                            "current_file_index": current_file_index,
+                            "file_name": relative_path,
+                            "file_size": file_size,
+                            "exported": exported,
+                        }),
+                    );
+                }
+                ExportRangesItem::Error(error) => {
+                    anyhow::bail!("export failed for {relative_path}: {error}");
+                }
+            }
+        }
+
+        output_sink
+            .finish_file(relative_path)
+            .map_err(|error| anyhow::anyhow!(error.to_string()))?;
         Ok(())
     }
 

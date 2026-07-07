@@ -39,7 +39,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.DeviceInfo
+import com.vnidrop.app.VniDropAppEvent
 import com.vnidrop.app.core.CoreUiState
+import com.vnidrop.app.core.FolderAccessStatus
+import com.vnidrop.app.ui.components.Field
+import com.vnidrop.app.ui.components.PrimaryButton
+import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.state.PreferencesUiState
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import com.vnidrop.app.ui.theme.ThemeMode
@@ -55,9 +61,18 @@ import vnidrop.shared.generated.resources.appearance_mode_title
 import vnidrop.shared.generated.resources.appearance_system_mode
 import vnidrop.shared.generated.resources.appearance_title
 import vnidrop.shared.generated.resources.battery_level_title
+import vnidrop.shared.generated.resources.button_choose_folder
 import vnidrop.shared.generated.resources.core_status_ready
 import vnidrop.shared.generated.resources.device_model_title
 import vnidrop.shared.generated.resources.device_name_title
+import vnidrop.shared.generated.resources.folder_status_permission_required
+import vnidrop.shared.generated.resources.folder_status_unavailable
+import vnidrop.shared.generated.resources.folder_status_validating
+import vnidrop.shared.generated.resources.folder_status_writable
+import vnidrop.shared.generated.resources.preferences_receive_folder_title
+import vnidrop.shared.generated.resources.preferences_title
+import vnidrop.shared.generated.resources.button_reset_default
+import vnidrop.shared.generated.resources.field_username
 import vnidrop.shared.generated.resources.network_title
 import vnidrop.shared.generated.resources.node_title
 import vnidrop.shared.generated.resources.not_initialized
@@ -68,6 +83,7 @@ import vnidrop.shared.generated.resources.version_title
 
 private enum class SettingsPane {
 	Overview,
+	Preferences,
 	Appearance,
 	About,
 }
@@ -77,8 +93,9 @@ fun SettingsScreen(
 	deviceInfo: DeviceInfo,
 	coreState: CoreUiState,
 	themeMode: ThemeMode,
+	preferencesState: PreferencesUiState,
 	windowClass: WindowClass,
-	onThemeModeChange: (ThemeMode) -> Unit,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	var pane by remember { mutableStateOf(SettingsPane.Overview) }
 
@@ -89,7 +106,8 @@ fun SettingsScreen(
 			deviceInfo = deviceInfo,
 			coreState = coreState,
 			themeMode = themeMode,
-			onThemeModeChange = onThemeModeChange,
+			preferencesState = preferencesState,
+			onEvent = onEvent,
 		)
 		else -> MobileSettings(
 			pane = pane,
@@ -97,7 +115,8 @@ fun SettingsScreen(
 			deviceInfo = deviceInfo,
 			coreState = coreState,
 			themeMode = themeMode,
-			onThemeModeChange = onThemeModeChange,
+			preferencesState = preferencesState,
+			onEvent = onEvent,
 		)
 	}
 }
@@ -109,7 +128,8 @@ private fun MobileSettings(
 	deviceInfo: DeviceInfo,
 	coreState: CoreUiState,
 	themeMode: ThemeMode,
-	onThemeModeChange: (ThemeMode) -> Unit,
+	preferencesState: PreferencesUiState,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 		ErrorSection(coreState)
@@ -117,13 +137,21 @@ private fun MobileSettings(
 			SettingsPane.Overview -> SettingsOverview(
 				coreState = coreState,
 				themeMode = themeMode,
+				preferencesState = preferencesState,
+				onOpenPreferences = { onPaneSelected(SettingsPane.Preferences) },
 				onOpenAppearance = { onPaneSelected(SettingsPane.Appearance) },
 				onOpenAbout = { onPaneSelected(SettingsPane.About) },
 				largeTitle = true,
 			)
+			SettingsPane.Preferences -> PreferencesSettings(
+				preferencesState = preferencesState,
+				onEvent = onEvent,
+				onBack = { onPaneSelected(SettingsPane.Overview) },
+				showBack = true,
+			)
 			SettingsPane.Appearance -> AppearanceSettings(
 				themeMode = themeMode,
-				onThemeModeChange = onThemeModeChange,
+				onThemeModeChange = { onEvent(VniDropAppEvent.ThemeModeChanged(it)) },
 				onBack = { onPaneSelected(SettingsPane.Overview) },
 				showBack = true,
 			)
@@ -144,7 +172,8 @@ private fun DesktopSettings(
 	deviceInfo: DeviceInfo,
 	coreState: CoreUiState,
 	themeMode: ThemeMode,
-	onThemeModeChange: (ThemeMode) -> Unit,
+	preferencesState: PreferencesUiState,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	Row(
 		modifier = Modifier.fillMaxWidth(),
@@ -158,6 +187,8 @@ private fun DesktopSettings(
 			SettingsOverview(
 				coreState = coreState,
 				themeMode = themeMode,
+				preferencesState = preferencesState,
+				onOpenPreferences = { onPaneSelected(SettingsPane.Preferences) },
 				onOpenAppearance = { onPaneSelected(SettingsPane.Appearance) },
 				onOpenAbout = { onPaneSelected(SettingsPane.About) },
 				largeTitle = false,
@@ -170,9 +201,15 @@ private fun DesktopSettings(
 		) {
 			when (selectedPane) {
 				SettingsPane.Overview,
+				SettingsPane.Preferences -> PreferencesSettings(
+					preferencesState = preferencesState,
+					onEvent = onEvent,
+					onBack = {},
+					showBack = false,
+				)
 				SettingsPane.Appearance -> AppearanceSettings(
 					themeMode = themeMode,
-					onThemeModeChange = onThemeModeChange,
+					onThemeModeChange = { onEvent(VniDropAppEvent.ThemeModeChanged(it)) },
 					onBack = {},
 					showBack = false,
 				)
@@ -191,6 +228,8 @@ private fun DesktopSettings(
 private fun SettingsOverview(
 	coreState: CoreUiState,
 	themeMode: ThemeMode,
+	preferencesState: PreferencesUiState,
+	onOpenPreferences: () -> Unit,
 	onOpenAppearance: () -> Unit,
 	onOpenAbout: () -> Unit,
 	largeTitle: Boolean,
@@ -203,6 +242,13 @@ private fun SettingsOverview(
 			Text(stringResource(Res.string.settings_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 		}
 		SettingsGroup {
+			SettingsRow(
+				icon = SettingsIcons.Device,
+				title = stringResource(Res.string.preferences_title),
+				value = preferencesState.username,
+				selected = selectedPane == SettingsPane.Preferences,
+				onClick = onOpenPreferences,
+			)
 			SettingsRow(
 				icon = SettingsIcons.Sun,
 				title = stringResource(Res.string.appearance_title),
@@ -223,6 +269,46 @@ private fun SettingsOverview(
 				title = stringResource(Res.string.about_title),
 				selected = selectedPane == SettingsPane.About,
 				onClick = onOpenAbout,
+			)
+		}
+	}
+}
+
+@Composable
+private fun PreferencesSettings(
+	preferencesState: PreferencesUiState,
+	onEvent: (VniDropAppEvent) -> Unit,
+	onBack: () -> Unit,
+	showBack: Boolean,
+) {
+	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+		SettingsTopBar(title = stringResource(Res.string.preferences_title), onBack = onBack, showBack = showBack)
+		Field(
+			value = preferencesState.username,
+			onValueChange = { onEvent(VniDropAppEvent.UsernameChanged(it)) },
+			label = stringResource(Res.string.field_username),
+		)
+		SettingsGroup {
+			SettingsRow(
+				icon = SettingsIcons.Folder,
+				title = stringResource(Res.string.preferences_receive_folder_title),
+				value = preferencesState.receiveFolder.displayName.ifBlank { preferencesState.receiveFolder.value },
+				iconTone = IconTone.Neutral,
+			)
+			SettingsRow(
+				icon = SettingsIcons.Check,
+				title = preferencesState.folderAccessStatus.displayName(isValidating = preferencesState.isValidatingFolder),
+				iconTone = IconTone.Neutral,
+			)
+		}
+		Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+			PrimaryButton(
+				text = stringResource(Res.string.button_choose_folder),
+				onClick = { onEvent(VniDropAppEvent.ChooseReceiveFolderClicked) },
+			)
+			SecondaryButton(
+				text = stringResource(Res.string.button_reset_default),
+				onClick = { onEvent(VniDropAppEvent.ResetReceiveFolderClicked) },
 			)
 		}
 	}
@@ -479,6 +565,18 @@ private fun ThemeMode.displayName(): String =
 		ThemeMode.Dark -> stringResource(Res.string.appearance_dark_mode)
 	}
 
+@Composable
+private fun FolderAccessStatus.displayName(isValidating: Boolean): String =
+	if (isValidating) {
+		stringResource(Res.string.folder_status_validating)
+	} else {
+		when (this) {
+			FolderAccessStatus.Writable -> stringResource(Res.string.folder_status_writable)
+			FolderAccessStatus.PermissionRequired -> stringResource(Res.string.folder_status_permission_required)
+			FolderAccessStatus.Unavailable -> stringResource(Res.string.folder_status_unavailable)
+		}
+	}
+
 private enum class IconTone {
 	Brand,
 	Neutral,
@@ -532,6 +630,15 @@ private object SettingsIcons {
 		roundRect(7f, 2f, 10f, 20f, 2.5f)
 		moveTo(11f, 18f)
 		lineTo(13f, 18f)
+	}
+	val Folder = lineIcon("Folder") {
+		moveTo(3f, 7f)
+		lineTo(9f, 7f)
+		lineTo(11f, 9f)
+		lineTo(21f, 9f)
+		lineTo(21f, 19f)
+		lineTo(3f, 19f)
+		close()
 	}
 	val Info = lineIcon("Info") {
 		moveTo(12f, 16f)

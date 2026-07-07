@@ -5,14 +5,19 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Environment
 import java.net.NetworkInterface
 
 class AndroidPlatform : Platform {
 	override val name: String = "Android ${Build.VERSION.SDK_INT}"
 	override val defaultCoreDataDir: String =
-		System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop"
+		AndroidPlatformContextHolder.context?.filesDir?.resolve("vnidrop")?.absolutePath
+			?: (System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop")
 	override val defaultReceiveDir: String =
-		System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop-receive"
+		AndroidPlatformContextHolder.context
+			?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
+			?.absolutePath
+			?: (System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop-receive")
 	override val deviceInfo: DeviceInfo = DeviceInfo(
 		deviceName = Build.DEVICE,
 		deviceModel = listOf(Build.MANUFACTURER, Build.MODEL)

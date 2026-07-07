@@ -13,9 +13,9 @@ mod ticket;
 mod util;
 
 pub use api::{
-    CoreEvent, CoreEventSink, ReceiverRequest, RuntimeStatus, ShareMetadataInput, ShareResult,
-    ShareSource, SourceKind, StoredTransfer, TicketInspection, TransferAccessMode,
-    TransferMetadata,
+    CoreEvent, CoreEventSink, ReceiveOutputSink, ReceiverRequest, RuntimeStatus,
+    ShareMetadataInput, ShareResult, ShareSource, SourceKind, StoredTransfer, TicketInspection,
+    TransferAccessMode, TransferMetadata,
 };
 pub use error::VnidropError;
 pub use runtime::VnidropCore;

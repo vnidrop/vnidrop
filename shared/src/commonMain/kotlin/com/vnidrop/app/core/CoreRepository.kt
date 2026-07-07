@@ -11,6 +11,7 @@ import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
 import uniffi.vnidrop.ReceiverRequest
+import uniffi.vnidrop.ReceiveOutputSink
 import uniffi.vnidrop.ShareMetadataInput
 import uniffi.vnidrop.ShareResult
 import uniffi.vnidrop.ShareSource
@@ -122,6 +123,12 @@ class CoreRepository(
 
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String) = runCore {
 		requireCore().receive(ticket, outputDir, receiverName.ifBlank { null })
+		refreshStatus()
+		loadTransfers()
+	}
+
+	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String) = runCore {
+		requireCore().receiveWithOutputSink(ticket, outputSink, receiverName.ifBlank { null })
 		refreshStatus()
 		loadTransfers()
 	}

@@ -20,6 +20,17 @@ pub trait CoreEventSink: Send + Sync {
     fn on_event(&self, event: CoreEvent);
 }
 
+#[uniffi::export(with_foreign)]
+pub trait ReceiveOutputSink: Send + Sync {
+    fn start_file(&self, relative_path: String) -> Result<(), crate::error::VnidropError>;
+    fn write_chunk(
+        &self,
+        relative_path: String,
+        bytes: Vec<u8>,
+    ) -> Result<(), crate::error::VnidropError>;
+    fn finish_file(&self, relative_path: String) -> Result<(), crate::error::VnidropError>;
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct RuntimeStatus {
     pub endpoint_id: String,

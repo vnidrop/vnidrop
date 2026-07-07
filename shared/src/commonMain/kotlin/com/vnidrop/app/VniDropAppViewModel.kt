@@ -4,11 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vnidrop.app.core.CoreRepository
 import com.vnidrop.app.core.CoreUiState
+import com.vnidrop.app.core.FileSystemService
+import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.PickedShareFile
+import com.vnidrop.app.core.ReceiveFolder
+import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.core.sharePickedFile
 import com.vnidrop.app.logging.AppLogger
+import com.vnidrop.app.preferences.AppPreferences
+import com.vnidrop.app.preferences.AppPreferencesRepository
 import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.state.AppUiState
+import com.vnidrop.app.ui.state.PreferencesUiState
 import com.vnidrop.app.ui.state.ReceiveUiState
 import com.vnidrop.app.ui.state.SendUiState
 import com.vnidrop.app.ui.theme.ThemeMode
@@ -21,6 +28,7 @@ import kotlinx.coroutines.launch
 
 data class VniDropAppState(
 	val app: AppUiState = AppUiState(),
+	val preferences: PreferencesUiState = PreferencesUiState(),
 	val send: SendUiState = SendUiState(),
 	val receive: ReceiveUiState = ReceiveUiState(),
 )
@@ -28,6 +36,11 @@ data class VniDropAppState(
 sealed interface VniDropAppEvent {
 	data class DestinationSelected(val destination: AppDestination) : VniDropAppEvent
 	data class ThemeModeChanged(val mode: ThemeMode) : VniDropAppEvent
+	data class UsernameChanged(val value: String) : VniDropAppEvent
+	data object ChooseReceiveFolderClicked : VniDropAppEvent
+	data class ReceiveFolderPicked(val folder: ReceiveFolder) : VniDropAppEvent
+	data class ReceiveFolderPickFailed(val reason: String) : VniDropAppEvent
+	data object ResetReceiveFolderClicked : VniDropAppEvent
 	data object SelectFileClicked : VniDropAppEvent
 	data class ShareFilePicked(val file: PickedShareFile) : VniDropAppEvent
 	data class ShareFilePickFailed(val reason: String) : VniDropAppEvent
@@ -48,16 +61,18 @@ sealed interface VniDropAppEvent {
 
 sealed interface VniDropAppEffect {
 	data object OpenShareFilePicker : VniDropAppEffect
+	data object OpenReceiveFolderPicker : VniDropAppEffect
 	data class CopyTicket(val ticket: String) : VniDropAppEffect
 }
 
 class VniDropAppViewModel(
 	appDataDir: String,
-	defaultReceiveDir: String,
 	platformName: String,
+	private val preferencesRepository: AppPreferencesRepository,
+	private val fileSystemService: FileSystemService,
 	private val repository: CoreRepository = CoreRepository(),
 ) : ViewModel() {
-	private val _state = MutableStateFlow(VniDropAppState(receive = ReceiveUiState(outputDirectory = defaultReceiveDir)))
+	private val _state = MutableStateFlow(VniDropAppState())
 	val state: StateFlow<VniDropAppState> = _state
 	val coreState: StateFlow<CoreUiState> = repository.state
 
@@ -73,12 +88,23 @@ class VniDropAppViewModel(
 		viewModelScope.launch {
 			repository.initialize(appDataDir)
 		}
+		viewModelScope.launch {
+			preferencesRepository.preferences.collect { preferences ->
+				applyPreferences(preferences)
+				validateReceiveFolder(preferences.receiveFolder)
+			}
+		}
 	}
 
 	fun onEvent(event: VniDropAppEvent) {
 		when (event) {
 			is VniDropAppEvent.DestinationSelected -> updateAppState { copy(destination = event.destination) }
 			is VniDropAppEvent.ThemeModeChanged -> setThemeMode(event.mode)
+			is VniDropAppEvent.UsernameChanged -> setUsername(event.value)
+			VniDropAppEvent.ChooseReceiveFolderClicked -> sendEffect(VniDropAppEffect.OpenReceiveFolderPicker)
+			is VniDropAppEvent.ReceiveFolderPicked -> setReceiveFolder(event.folder)
+			is VniDropAppEvent.ReceiveFolderPickFailed -> setFilePickerError(event.reason)
+			VniDropAppEvent.ResetReceiveFolderClicked -> resetReceiveFolder()
 			VniDropAppEvent.SelectFileClicked -> sendEffect(VniDropAppEffect.OpenShareFilePicker)
 			is VniDropAppEvent.ShareFilePicked -> setSelectedFile(event.file)
 			is VniDropAppEvent.ShareFilePickFailed -> setFilePickerError(event.reason)
@@ -101,6 +127,27 @@ class VniDropAppViewModel(
 	private fun setThemeMode(mode: ThemeMode) {
 		AppLogger.info("appearance", "theme mode changed", mapOf("mode" to mode.name))
 		updateAppState { copy(themeMode = mode) }
+		viewModelScope.launch {
+			preferencesRepository.setThemeMode(mode)
+		}
+	}
+
+	private fun setUsername(username: String) {
+		viewModelScope.launch {
+			preferencesRepository.setUsername(username)
+		}
+	}
+
+	private fun setReceiveFolder(folder: ReceiveFolder) {
+		viewModelScope.launch {
+			preferencesRepository.setReceiveFolder(folder)
+		}
+	}
+
+	private fun resetReceiveFolder() {
+		viewModelScope.launch {
+			preferencesRepository.resetReceiveFolder()
+		}
 	}
 
 	private fun setSelectedFile(file: PickedShareFile) {
@@ -179,16 +226,69 @@ class VniDropAppViewModel(
 
 	private fun receive() {
 		val receiveState = state.value.receive
-		if (!receiveState.canReceive(coreState.value.isInitialized)) return
+		val preferences = state.value.preferences
+		if (!receiveState.canReceive(coreState.value.isInitialized) || !preferences.canReceiveIntoFolder) return
 
 		viewModelScope.launch {
 			AppLogger.info("receive", "receive requested")
 			updateReceiveState { copy(isReceiving = true) }
 			try {
-				repository.receive(receiveState.ticket, receiveState.outputDirectory, receiveState.receiverName)
+				receiveIntoFolder(receiveState, preferences.receiveFolder)
 			} finally {
 				updateReceiveState { copy(isReceiving = false) }
 			}
+		}
+	}
+
+	private suspend fun receiveIntoFolder(receiveState: ReceiveUiState, folder: ReceiveFolder) {
+		val outputSink = fileSystemService.createReceiveOutputSink(folder)
+		when {
+			outputSink != null -> repository.receiveWithOutputSink(receiveState.ticket, outputSink, receiveState.receiverName)
+			folder.kind == ReceiveFolderKind.IosSecurityScopedUrl -> {
+				repository.receiveIntoSecurityScopedDirectory(receiveState.ticket, folder.value, receiveState.receiverName)
+			}
+			else -> repository.receive(receiveState.ticket, folder.value, receiveState.receiverName)
+		}
+	}
+
+	private fun applyPreferences(preferences: AppPreferences) {
+		_state.update { current ->
+			val previousUsername = current.preferences.username
+			current.copy(
+				app = current.app.copy(themeMode = preferences.themeMode),
+				preferences = current.preferences.copy(
+					username = preferences.username,
+					receiveFolder = preferences.receiveFolder,
+				),
+				send = current.send.withDefaultName(
+					currentValue = current.send.senderName,
+					previousDefault = previousUsername,
+					nextDefault = preferences.username,
+					update = { copy(senderName = it) },
+				),
+				receive = current.receive
+					.withDefaultName(
+						currentValue = current.receive.receiverName,
+						previousDefault = previousUsername,
+						nextDefault = preferences.username,
+						update = { copy(receiverName = it) },
+					)
+					.copy(outputDirectory = preferences.receiveFolder.value),
+			)
+		}
+	}
+
+	private suspend fun validateReceiveFolder(folder: ReceiveFolder) {
+		updatePreferencesState { copy(isValidatingFolder = true) }
+		val status = fileSystemService.validateReceiveFolder(folder)
+		updatePreferencesState {
+			copy(
+				folderAccessStatus = status,
+				isValidatingFolder = false,
+			)
+		}
+		if (status != FolderAccessStatus.Writable) {
+			repository.setError("Receive folder is not writable.")
 		}
 	}
 
@@ -218,7 +318,26 @@ class VniDropAppViewModel(
 			if (next == current.receive) current else current.copy(receive = next)
 		}
 	}
+
+	private fun updatePreferencesState(reducer: PreferencesUiState.() -> PreferencesUiState) {
+		_state.update { current ->
+			val next = current.preferences.reducer()
+			if (next == current.preferences) current else current.copy(preferences = next)
+		}
+	}
 }
+
+private fun <T> T.withDefaultName(
+	currentValue: String,
+	previousDefault: String,
+	nextDefault: String,
+	update: T.(String) -> T,
+): T =
+	if (currentValue.isBlank() || currentValue == previousDefault) {
+		update(nextDefault)
+	} else {
+		this
+	}
 
 private fun SendUiState.withSelectedFile(file: PickedShareFile): SendUiState =
 	copy(

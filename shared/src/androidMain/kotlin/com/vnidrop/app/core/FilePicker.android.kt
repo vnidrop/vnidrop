@@ -1,6 +1,7 @@
 package com.vnidrop.app.core
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -24,6 +25,38 @@ actual fun rememberShareFilePicker(
 		object : ShareFilePicker {
 			override fun pickFile() {
 				launcher.launch(arrayOf("*/*"))
+			}
+		}
+	}
+}
+
+@Composable
+actual fun rememberReceiveFolderPicker(
+	onFolderPicked: (ReceiveFolder) -> Unit,
+	onError: (String) -> Unit,
+): ReceiveFolderPicker {
+	val context = LocalContext.current
+	val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+		if (uri != null) {
+			runCatching {
+				context.contentResolver.takePersistableUriPermission(
+					uri,
+					Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION,
+				)
+			}
+			onFolderPicked(
+				ReceiveFolder(
+					kind = ReceiveFolderKind.AndroidTreeUri,
+					value = uri.toString(),
+					displayName = uri.lastPathSegment ?: "Downloads",
+				),
+			)
+		}
+	}
+	return remember(launcher) {
+		object : ReceiveFolderPicker {
+			override fun pickFolder() {
+				launcher.launch(null)
 			}
 		}
 	}

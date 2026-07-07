@@ -10,8 +10,13 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.vnidrop.app.core.rememberFileSystemService
+import com.vnidrop.app.core.rememberReceiveFolderPicker
 import com.vnidrop.app.core.rememberShareFilePicker
 import com.vnidrop.app.logging.AppLogger
+import com.vnidrop.app.preferences.AppPreferencesDefaults
+import com.vnidrop.app.preferences.AppPreferencesRepository
+import com.vnidrop.app.preferences.createAppPreferencesDataStore
 import com.vnidrop.app.platform.PlatformSystemAppearance
 import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.screens.ReceiveScreen
@@ -19,6 +24,7 @@ import com.vnidrop.app.ui.screens.SendScreen
 import com.vnidrop.app.ui.screens.SettingsScreen
 import com.vnidrop.app.ui.shell.AppShell
 import com.vnidrop.app.ui.state.windowClassFor
+import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.ui.theme.VniDropTheme
 import com.vnidrop.app.ui.theme.rememberResolvedDarkTheme
 
@@ -26,11 +32,23 @@ import com.vnidrop.app.ui.theme.rememberResolvedDarkTheme
 @Preview
 fun App() {
 	val platform = remember { getPlatform() }
+	val fileSystemService = rememberFileSystemService()
+	val preferencesRepository = remember(platform.defaultCoreDataDir) {
+		AppPreferencesRepository(
+			dataStore = createAppPreferencesDataStore(platform.defaultCoreDataDir),
+			defaults = AppPreferencesDefaults(
+				username = platform.deviceInfo.deviceName?.takeIf { it.isNotBlank() } ?: "Receiver",
+				receiveFolder = fileSystemService.defaultReceiveFolder(),
+				themeMode = ThemeMode.System,
+			),
+		)
+	}
 	val viewModel = viewModel {
 		VniDropAppViewModel(
 			appDataDir = platform.defaultCoreDataDir,
-			defaultReceiveDir = platform.defaultReceiveDir,
 			platformName = platform.name,
+			preferencesRepository = preferencesRepository,
+			fileSystemService = fileSystemService,
 		)
 	}
 	val state by viewModel.state.collectAsStateWithLifecycle()
@@ -44,6 +62,14 @@ fun App() {
 			viewModel.onEvent(VniDropAppEvent.ShareFilePickFailed(error))
 		},
 	)
+	val receiveFolderPicker = rememberReceiveFolderPicker(
+		onFolderPicked = { folder ->
+			viewModel.onEvent(VniDropAppEvent.ReceiveFolderPicked(folder))
+		},
+		onError = { error ->
+			viewModel.onEvent(VniDropAppEvent.ReceiveFolderPickFailed(error))
+		},
+	)
 
 	LaunchedEffect(viewModel) {
 		viewModel.effectFlow.collect { effect ->
@@ -51,6 +77,10 @@ fun App() {
 				VniDropAppEffect.OpenShareFilePicker -> {
 					AppLogger.info("file-picker", "open share file picker")
 					picker.pickFile()
+				}
+				VniDropAppEffect.OpenReceiveFolderPicker -> {
+					AppLogger.info("file-picker", "open receive folder picker")
+					receiveFolderPicker.pickFolder()
 				}
 				is VniDropAppEffect.CopyTicket -> {
 					AppLogger.info("send", "ticket copied")
@@ -78,19 +108,22 @@ fun App() {
 					AppDestination.Send -> SendScreen(
 						coreState = coreState,
 						sendState = state.send,
+						windowClass = windowClass,
 						onEvent = viewModel::onEvent,
 					)
 					AppDestination.Receive -> ReceiveScreen(
 						coreState = coreState,
 						receiveState = state.receive,
+						preferencesState = state.preferences,
 						onEvent = viewModel::onEvent,
 					)
 					AppDestination.Settings -> SettingsScreen(
 						deviceInfo = platform.deviceInfo,
 						coreState = coreState,
 						themeMode = state.app.themeMode,
+						preferencesState = state.preferences,
 						windowClass = windowClass,
-						onThemeModeChange = { viewModel.onEvent(VniDropAppEvent.ThemeModeChanged(it)) },
+						onEvent = viewModel::onEvent,
 					)
 				}
 			}

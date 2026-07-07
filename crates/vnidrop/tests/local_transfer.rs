@@ -1,11 +1,12 @@
 use std::{
+    collections::HashMap,
     sync::{Arc, Mutex},
     time::{Duration, Instant},
 };
 
 use vnidrop::{
-    CoreEvent, CoreEventSink, ReceiverRequest, ShareMetadataInput, ShareSource, SourceKind,
-    VnidropCore,
+    CoreEvent, CoreEventSink, ReceiveOutputSink, ReceiverRequest, ShareMetadataInput, ShareSource,
+    SourceKind, VnidropCore, VnidropError,
 };
 
 #[derive(Default)]
@@ -22,6 +23,44 @@ impl CoreEventSink for RecordingSink {
 impl RecordingSink {
     fn events(&self) -> Vec<CoreEvent> {
         self.events.lock().unwrap().clone()
+    }
+}
+
+#[derive(Default)]
+struct MemoryOutputSink {
+    files: Mutex<HashMap<String, Vec<u8>>>,
+    fail_writes: bool,
+}
+
+impl ReceiveOutputSink for MemoryOutputSink {
+    fn start_file(&self, relative_path: String) -> Result<(), VnidropError> {
+        self.files.lock().unwrap().insert(relative_path, Vec::new());
+        Ok(())
+    }
+
+    fn write_chunk(&self, relative_path: String, bytes: Vec<u8>) -> Result<(), VnidropError> {
+        if self.fail_writes {
+            return Err(VnidropError::Filesystem {
+                reason: "sink write failed".to_string(),
+            });
+        }
+        self.files
+            .lock()
+            .unwrap()
+            .get_mut(&relative_path)
+            .expect("file was not started")
+            .extend(bytes);
+        Ok(())
+    }
+
+    fn finish_file(&self, _relative_path: String) -> Result<(), VnidropError> {
+        Ok(())
+    }
+}
+
+impl MemoryOutputSink {
+    fn file(&self, relative_path: &str) -> Vec<u8> {
+        self.files.lock().unwrap()[relative_path].clone()
     }
 }
 
@@ -55,6 +94,31 @@ fn receive_with_response(
     let handle = std::thread::spawn(move || {
         receiver
             .receive(ticket, output_dir, receiver_name)
+            .map_err(|error| error.to_string())
+    });
+    let request = wait_for_receiver_request(sender, transfer_id);
+    sender
+        .respond_receiver_request(
+            request.id,
+            accepted,
+            (!accepted).then(|| "sender-refused".to_string()),
+        )
+        .unwrap();
+    handle.join().unwrap()
+}
+
+fn receive_with_sink_response(
+    sender: &VnidropCore,
+    transfer_id: u64,
+    receiver: Arc<VnidropCore>,
+    ticket: String,
+    output_sink: Arc<dyn ReceiveOutputSink>,
+    receiver_name: Option<String>,
+    accepted: bool,
+) -> Result<(), String> {
+    let handle = std::thread::spawn(move || {
+        receiver
+            .receive_with_output_sink(ticket, output_sink, receiver_name)
             .map_err(|error| error.to_string())
     });
     let request = wait_for_receiver_request(sender, transfer_id);
@@ -196,6 +260,124 @@ fn two_local_cores_transfer_directory() {
         .unwrap(),
         b"inside"
     );
+
+    sender.shutdown();
+    receiver.shutdown();
+}
+
+#[test]
+fn output_sink_receive_exports_nested_files() {
+    let sender_dir = tempfile::tempdir().unwrap();
+    let receiver_dir = tempfile::tempdir().unwrap();
+    let source_root = sender_dir.path().join("photos");
+    std::fs::create_dir_all(source_root.join("nested")).unwrap();
+    std::fs::write(source_root.join("cover.txt"), b"cover").unwrap();
+    std::fs::write(source_root.join("nested").join("inside.txt"), b"inside").unwrap();
+
+    let sender = VnidropCore::initialize(
+        sender_dir.path().join("core").to_string_lossy().to_string(),
+        Arc::new(RecordingSink::default()),
+    )
+    .unwrap();
+    let receiver = VnidropCore::initialize(
+        receiver_dir
+            .path()
+            .join("core")
+            .to_string_lossy()
+            .to_string(),
+        Arc::new(RecordingSink::default()),
+    )
+    .unwrap();
+
+    let share = sender
+        .share_files(
+            vec![ShareSource {
+                kind: SourceKind::Path,
+                value: source_root.to_string_lossy().to_string(),
+                display_name: Some("photos".to_string()),
+                is_directory: true,
+            }],
+            ShareMetadataInput {
+                transfer_id: 18,
+                transfer_name: Some("photos".to_string()),
+                sender_name: Some("sender".to_string()),
+            },
+        )
+        .unwrap();
+    let output_sink = Arc::new(MemoryOutputSink::default());
+
+    receive_with_sink_response(
+        &sender,
+        share.transfer_id,
+        receiver.clone(),
+        share.ticket,
+        output_sink.clone(),
+        Some("receiver".to_string()),
+        true,
+    )
+    .unwrap();
+
+    assert_eq!(output_sink.file("photos/cover.txt"), b"cover");
+    assert_eq!(output_sink.file("photos/nested/inside.txt"), b"inside");
+
+    sender.shutdown();
+    receiver.shutdown();
+}
+
+#[test]
+fn output_sink_receive_fails_when_sink_write_fails() {
+    let sender_dir = tempfile::tempdir().unwrap();
+    let receiver_dir = tempfile::tempdir().unwrap();
+    let source_path = sender_dir.path().join("hello.txt");
+    std::fs::write(&source_path, b"hello").unwrap();
+
+    let sender = VnidropCore::initialize(
+        sender_dir.path().join("core").to_string_lossy().to_string(),
+        Arc::new(RecordingSink::default()),
+    )
+    .unwrap();
+    let receiver = VnidropCore::initialize(
+        receiver_dir
+            .path()
+            .join("core")
+            .to_string_lossy()
+            .to_string(),
+        Arc::new(RecordingSink::default()),
+    )
+    .unwrap();
+
+    let share = sender
+        .share_files(
+            vec![ShareSource {
+                kind: SourceKind::Path,
+                value: source_path.to_string_lossy().to_string(),
+                display_name: Some("hello.txt".to_string()),
+                is_directory: false,
+            }],
+            ShareMetadataInput {
+                transfer_id: 19,
+                transfer_name: Some("hello".to_string()),
+                sender_name: Some("sender".to_string()),
+            },
+        )
+        .unwrap();
+    let output_sink = Arc::new(MemoryOutputSink {
+        files: Mutex::new(HashMap::new()),
+        fail_writes: true,
+    });
+
+    let error = receive_with_sink_response(
+        &sender,
+        share.transfer_id,
+        receiver.clone(),
+        share.ticket,
+        output_sink,
+        Some("receiver".to_string()),
+        true,
+    )
+    .unwrap_err();
+
+    assert!(error.contains("sink write failed"));
 
     sender.shutdown();
     receiver.shutdown();

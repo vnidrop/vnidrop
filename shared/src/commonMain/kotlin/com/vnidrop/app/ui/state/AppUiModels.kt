@@ -2,6 +2,9 @@ package com.vnidrop.app.ui.state
 
 import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.ui.navigation.AppDestination
+import com.vnidrop.app.core.FolderAccessStatus
+import com.vnidrop.app.core.ReceiveFolder
+import com.vnidrop.app.core.ReceiveFolderKind
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.StoredTransfer
 import kotlin.math.roundToInt
@@ -26,6 +29,20 @@ data class AppUiState(
 	val destination: AppDestination = AppDestination.Send,
 	val themeMode: ThemeMode = ThemeMode.System,
 )
+
+data class PreferencesUiState(
+	val username: String = "",
+	val receiveFolder: ReceiveFolder = ReceiveFolder(
+		kind = ReceiveFolderKind.FileSystemPath,
+		value = "",
+		displayName = "",
+	),
+	val folderAccessStatus: FolderAccessStatus = FolderAccessStatus.Unavailable,
+	val isValidatingFolder: Boolean = false,
+) {
+	val canReceiveIntoFolder: Boolean
+		get() = folderAccessStatus == FolderAccessStatus.Writable
+}
 
 data class SendUiState(
 	val selectedSource: String = "",
@@ -71,6 +88,9 @@ fun displayNameForStatus(status: String): String =
 		"failed" -> "Failed"
 		else -> status.replaceFirstChar { it.uppercase() }
 	}
+
+fun StoredTransfer.isActiveTransfer(): Boolean =
+	status.lowercase() in activeTransferStatuses
 
 fun summarizeProgress(events: List<CoreEvent>): List<TransferProgress> =
 	events
@@ -123,6 +143,7 @@ fun friendlyCoreError(raw: String?): String? {
 }
 
 private val progressPhases = setOf("import", "ticket", "access", "transfer", "download", "export", "lifecycle")
+private val activeTransferStatuses = setOf("sharing", "receiving")
 
 private fun eventLabel(event: CoreEvent): String {
 	val direction = event.direction?.replaceFirstChar { it.uppercase() }

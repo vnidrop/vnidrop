@@ -8,6 +8,7 @@ import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
 import platform.UIKit.UIModalPresentationFormSheet
+import platform.UniformTypeIdentifiers.UTTypeFolder
 import platform.UniformTypeIdentifiers.UTTypeItem
 import platform.darwin.NSObject
 
@@ -29,6 +30,41 @@ actual fun rememberShareFilePicker(
 
 			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeItem), asCopy = false)
 			val delegate = DocumentPickerDelegate(onFilePicked, onError)
+			retainedPickerDelegate = delegate
+			picker.delegate = delegate
+			picker.modalPresentationStyle = UIModalPresentationFormSheet
+			presenter.presentViewController(picker, animated = true, completion = null)
+		}
+	}
+}
+
+@Composable
+actual fun rememberReceiveFolderPicker(
+	onFolderPicked: (ReceiveFolder) -> Unit,
+	onError: (String) -> Unit,
+): ReceiveFolderPicker = remember(onFolderPicked, onError) {
+	object : ReceiveFolderPicker {
+		@OptIn(ExperimentalForeignApi::class)
+		override fun pickFolder() {
+			val presenter = UIApplication.sharedApplication.keyWindow?.rootViewController
+			if (presenter == null) {
+				onError("Could not find an iOS view controller for the folder picker")
+				return
+			}
+
+			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeFolder), asCopy = false)
+			val delegate = DocumentPickerDelegate(
+				onFilePicked = { folder ->
+					onFolderPicked(
+						ReceiveFolder(
+							kind = ReceiveFolderKind.IosSecurityScopedUrl,
+							value = folder.value,
+							displayName = folder.displayName,
+						),
+					)
+				},
+				onError = onError,
+			)
 			retainedPickerDelegate = delegate
 			picker.delegate = delegate
 			picker.modalPresentationStyle = UIModalPresentationFormSheet

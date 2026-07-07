@@ -1,11 +1,15 @@
 package com.vnidrop.app.ui.state
 
+import com.vnidrop.app.core.FolderAccessStatus
+import com.vnidrop.app.core.ReceiveFolder
+import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.ui.theme.resolveDarkTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import uniffi.vnidrop.StoredTransfer
 
 class AppUiModelsTest {
 	@Test
@@ -69,4 +73,40 @@ class AppUiModelsTest {
 		assertFalse(ready.copy(outputDirectory = "").canReceive(isCoreInitialized = true))
 		assertFalse(ready.copy(isReceiving = true).canReceive(isCoreInitialized = true))
 	}
+
+	@Test
+	fun preferencesStateExposesReceiveFolderEligibility() {
+		val folder = ReceiveFolder(
+			kind = ReceiveFolderKind.FileSystemPath,
+			value = "/tmp/downloads",
+			displayName = "Downloads",
+		)
+
+		assertTrue(PreferencesUiState(receiveFolder = folder, folderAccessStatus = FolderAccessStatus.Writable).canReceiveIntoFolder)
+		assertFalse(PreferencesUiState(receiveFolder = folder, folderAccessStatus = FolderAccessStatus.PermissionRequired).canReceiveIntoFolder)
+		assertFalse(PreferencesUiState(receiveFolder = folder, folderAccessStatus = FolderAccessStatus.Unavailable).canReceiveIntoFolder)
+	}
+
+	@Test
+	fun transferActivityOnlyIncludesRunningStatuses() {
+		assertTrue(storedTransfer(status = "sharing").isActiveTransfer())
+		assertTrue(storedTransfer(status = "receiving").isActiveTransfer())
+		assertFalse(storedTransfer(status = "done").isActiveTransfer())
+		assertFalse(storedTransfer(status = "failed").isActiveTransfer())
+		assertFalse(storedTransfer(status = "cancelled").isActiveTransfer())
+	}
+
+	private fun storedTransfer(status: String): StoredTransfer =
+		StoredTransfer(
+			transferId = 1UL,
+			direction = "send",
+			status = status,
+			transferName = "Demo",
+			contentHash = null,
+			ticket = null,
+			fileCount = 1UL,
+			totalSize = 128UL,
+			createdAt = 1L,
+			updatedAt = 1L,
+		)
 }
