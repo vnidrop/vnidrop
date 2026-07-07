@@ -46,8 +46,8 @@ fun AppCard(
 	Card(
 		modifier = modifier.fillMaxWidth(),
 		shape = RoundedCornerShape(8.dp),
-		colors = CardDefaults.cardColors(containerColor = colors.surface),
-		border = BorderStroke(1.dp, colors.border),
+		colors = CardDefaults.cardColors(containerColor = colors.backgroundSurface75),
+		border = BorderStroke(1.dp, colors.borderDefault),
 	) {
 		Column(
 			modifier = Modifier.padding(16.dp),
@@ -61,7 +61,7 @@ fun AppCard(
 				Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
 				trailing?.invoke()
 			}
-			HorizontalDivider(color = colors.border)
+			HorizontalDivider(color = colors.borderDefault)
 			content()
 		}
 	}
@@ -100,7 +100,7 @@ fun PrimaryButton(
 		enabled = enabled,
 		modifier = modifier.heightIn(min = 44.dp),
 		shape = RoundedCornerShape(8.dp),
-		colors = ButtonDefaults.buttonColors(containerColor = colors.brand, contentColor = Color.White),
+		colors = ButtonDefaults.buttonColors(containerColor = colors.brandButton, contentColor = Color.White),
 	) {
 		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
 	}
@@ -143,11 +143,11 @@ fun StatusPill(
 ) {
 	val colors = LocalVniDropColors.current
 	val color = when (tone) {
-		PillTone.Neutral -> colors.textMuted
-		PillTone.Success -> colors.success
-		PillTone.Warning -> colors.warning
-		PillTone.Destructive -> colors.destructive
-		PillTone.Brand -> colors.brand
+		PillTone.Neutral -> colors.foregroundLighter
+		PillTone.Success -> colors.brandLink
+		PillTone.Warning -> colors.warningDefault
+		PillTone.Destructive -> colors.destructiveDefault
+		PillTone.Brand -> colors.brandLink
 	}
 	Row(
 		modifier = modifier
@@ -182,8 +182,8 @@ fun ErrorBanner(message: String, modifier: Modifier = Modifier) {
 	Card(
 		modifier = modifier.fillMaxWidth(),
 		shape = RoundedCornerShape(8.dp),
-		colors = CardDefaults.cardColors(containerColor = colors.destructive.copy(alpha = 0.14f)),
-		border = BorderStroke(1.dp, colors.destructive.copy(alpha = 0.28f)),
+		colors = CardDefaults.cardColors(containerColor = colors.destructive200),
+		border = BorderStroke(1.dp, colors.destructive400),
 	) {
 		Text(
 			text = message,
@@ -220,7 +220,7 @@ fun MetadataRow(label: String, value: String, modifier: Modifier = Modifier) {
 		Text(
 			text = label,
 			modifier = Modifier.weight(0.35f),
-			color = LocalVniDropColors.current.textMuted,
+			color = LocalVniDropColors.current.foregroundLighter,
 			style = MaterialTheme.typography.bodySmall,
 		)
 		Text(

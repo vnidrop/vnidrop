@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -26,85 +25,156 @@ fun resolveDarkTheme(mode: ThemeMode, systemDark: Boolean): Boolean =
 		ThemeMode.Dark -> true
 	}
 
+@Composable
+fun rememberResolvedDarkTheme(mode: ThemeMode): Boolean =
+	resolveDarkTheme(mode, isSystemInDarkTheme())
+
 @Immutable
 data class VniDropColors(
-	val canvas: Color,
-	val sidebar: Color,
-	val surface: Color,
-	val surfaceRaised: Color,
-	val surfaceMuted: Color,
-	val border: Color,
+	val backgroundDefault: Color,
+	val backgroundDashCanvas: Color,
+	val backgroundDashSidebar: Color,
+	val backgroundSurface75: Color,
+	val backgroundSurface100: Color,
+	val backgroundSurface200: Color,
+	val backgroundSurface300: Color,
+	val backgroundSurface400: Color,
+	val backgroundMuted: Color,
+	val backgroundControl: Color,
+	val backgroundSelection: Color,
+	val backgroundButton: Color,
+	val backgroundOverlayHover: Color,
+	val backgroundDialog: Color,
+	val borderDefault: Color,
 	val borderStrong: Color,
-	val textPrimary: Color,
-	val textSecondary: Color,
-	val textMuted: Color,
-	val brand: Color,
-	val brandPressed: Color,
-	val warning: Color,
-	val destructive: Color,
-	val success: Color,
+	val borderStronger: Color,
+	val borderMuted: Color,
+	val borderControl: Color,
+	val foregroundDefault: Color,
+	val foregroundLight: Color,
+	val foregroundLighter: Color,
+	val foregroundMuted: Color,
+	val foregroundContrast: Color,
+	val brandLink: Color,
+	val brandButton: Color,
+	val brandDefault: Color,
+	val brand600: Color,
+	val brand500: Color,
+	val brand400: Color,
+	val brand300: Color,
+	val brand200: Color,
+	val warningDefault: Color,
+	val warning200: Color,
+	val warning300: Color,
+	val warning400: Color,
+	val warning500: Color,
+	val warning600: Color,
+	val destructiveDefault: Color,
+	val destructive200: Color,
+	val destructive300: Color,
+	val destructive400: Color,
+	val destructive500: Color,
+	val destructive600: Color,
 )
 
-val LocalVniDropColors = staticCompositionLocalOf { lightVniDropColors }
+val LocalVniDropColors = staticCompositionLocalOf { VniDropThemeTokens.light }
 
-private val lightVniDropColors = VniDropColors(
-	canvas = hsl(0f, 0f, 97.3f),
-	sidebar = hsl(0f, 0f, 98.8f),
-	surface = hsl(0f, 0f, 100f),
-	surfaceRaised = hsl(0f, 0f, 98.8f),
-	surfaceMuted = hsl(0f, 0f, 95.3f),
-	border = hsl(0f, 0f, 85.9f),
-	borderStrong = hsl(0f, 0f, 78f),
-	textPrimary = hsl(0f, 0f, 9f),
-	textSecondary = hsl(0f, 0f, 32.2f),
-	textMuted = hsl(0f, 0f, 43.9f),
-	brand = hsl(153.1f, 60.2f, 52.7f),
-	brandPressed = hsl(152.9f, 56.1f, 46.5f),
-	warning = hsl(38.9f, 100f, 57.1f),
-	destructive = hsl(10.2f, 77.9f, 53.9f),
-	success = hsl(153.1f, 60.2f, 40f),
-)
+object VniDropThemeTokens {
+	// These values are a direct Compose port of the legacy Tauri theme tokens.
+	// The app uses these semantic tokens directly because Material3's ColorScheme
+	// cannot represent the full surface, border, and foreground stack.
+	val light = VniDropColors(
+		backgroundDefault = hsl(0f, 0f, 98.8f),
+		backgroundDashCanvas = hsl(0f, 0f, 97.3f),
+		backgroundDashSidebar = hsl(0f, 0f, 98.8f),
+		backgroundSurface75 = hsl(0f, 0f, 100f),
+		backgroundSurface100 = hsl(0f, 0f, 98.8f),
+		backgroundSurface200 = hsl(0f, 0f, 95.3f),
+		backgroundSurface300 = hsl(0f, 0f, 92.9f),
+		backgroundSurface400 = hsl(0f, 0f, 89.8f),
+		backgroundMuted = hsl(0f, 0f, 96.9f),
+		backgroundControl = hsl(0f, 0f, 95.3f),
+		backgroundSelection = hsl(0f, 0f, 92.9f),
+		backgroundButton = hsl(0f, 0f, 91f),
+		backgroundOverlayHover = hsl(0f, 0f, 95.3f),
+		backgroundDialog = hsl(0f, 0f, 100f),
+		borderDefault = hsl(0f, 0f, 87.5f),
+		borderStrong = hsl(0f, 0f, 83.1f),
+		borderStronger = hsl(0f, 0f, 56.1f),
+		borderMuted = hsl(0f, 0f, 92.9f),
+		borderControl = hsl(0f, 0f, 78f),
+		foregroundDefault = hsl(0f, 0f, 9f),
+		foregroundLight = hsl(0f, 0f, 32.2f),
+		foregroundLighter = hsl(0f, 0f, 43.9f),
+		foregroundMuted = hsl(0f, 0f, 69.8f),
+		foregroundContrast = hsl(0f, 0f, 98.4f),
+		brandLink = hsl(271f, 91f, 65f),
+		brandButton = hsl(270f, 95f, 75f),
+		brandDefault = hsl(271f, 91f, 65f),
+		brand600 = hsl(271f, 81f, 56f),
+		brand500 = hsl(271f, 91f, 65f),
+		brand400 = hsl(270f, 95f, 75f),
+		brand300 = hsl(269f, 97f, 85f),
+		brand200 = hsl(269f, 100f, 92f),
+		warningDefault = hsl(38.9f, 100f, 57.1f),
+		warning600 = hsl(30.3f, 80.3f, 47.8f),
+		warning500 = hsl(36.3f, 85.7f, 67.1f),
+		warning400 = hsl(41.9f, 100f, 81.8f),
+		warning300 = hsl(44.3f, 100f, 91.8f),
+		warning200 = hsl(40f, 81.8f, 97.8f),
+		destructiveDefault = hsl(10.2f, 77.9f, 53.9f),
+		destructive600 = hsl(9.9f, 82f, 43.5f),
+		destructive500 = hsl(10.4f, 77.1f, 79.4f),
+		destructive400 = hsl(7.1f, 91.3f, 91f),
+		destructive300 = hsl(7.1f, 100f, 96.7f),
+		destructive200 = hsl(0f, 100f, 99.4f),
+	)
 
-private val darkVniDropColors = VniDropColors(
-	canvas = hsl(0f, 0f, 7.1f),
-	sidebar = hsl(0f, 0f, 9f),
-	surface = hsl(0f, 0f, 12.2f),
-	surfaceRaised = hsl(0f, 0f, 14.1f),
-	surfaceMuted = hsl(0f, 0f, 16.1f),
-	border = hsl(0f, 0f, 24.3f),
-	borderStrong = hsl(0f, 0f, 31.4f),
-	textPrimary = hsl(0f, 0f, 98f),
-	textSecondary = hsl(0f, 0f, 70.6f),
-	textMuted = hsl(0f, 0f, 53.7f),
-	brand = hsl(153.1f, 60.2f, 52.7f),
-	brandPressed = hsl(152.9f, 56.1f, 46.5f),
-	warning = hsl(38.9f, 100f, 42.9f),
-	destructive = hsl(10.2f, 77.9f, 53.9f),
-	success = hsl(153.1f, 60.2f, 52.7f),
-)
-
-private fun materialScheme(tokens: VniDropColors, dark: Boolean): ColorScheme {
-	val base = if (dark) {
-		darkColorScheme()
-	} else {
-		lightColorScheme()
-	}
-	return base.copy(
-		primary = tokens.brand,
-		onPrimary = if (dark) Color.Black else Color.White,
-		primaryContainer = tokens.surfaceMuted,
-		onPrimaryContainer = tokens.textPrimary,
-		background = tokens.canvas,
-		onBackground = tokens.textPrimary,
-		surface = tokens.surface,
-		onSurface = tokens.textPrimary,
-		surfaceVariant = tokens.surfaceMuted,
-		onSurfaceVariant = tokens.textSecondary,
-		outline = tokens.border,
-		outlineVariant = tokens.border,
-		error = tokens.destructive,
-		errorContainer = tokens.destructive.copy(alpha = if (dark) 0.22f else 0.16f),
-		onErrorContainer = tokens.textPrimary,
+	val dark = VniDropColors(
+		backgroundDefault = hsl(0f, 0f, 7.1f),
+		backgroundDashCanvas = hsl(0f, 0f, 7.1f),
+		backgroundDashSidebar = hsl(0f, 0f, 9f),
+		backgroundSurface75 = hsl(0f, 0f, 9f),
+		backgroundSurface100 = hsl(0f, 0f, 12.2f),
+		backgroundSurface200 = hsl(0f, 0f, 12.9f),
+		backgroundSurface300 = hsl(0f, 0f, 16.1f),
+		backgroundSurface400 = hsl(0f, 0f, 16.1f),
+		backgroundMuted = hsl(0f, 0f, 14.1f),
+		backgroundControl = hsl(0f, 0f, 14.1f),
+		backgroundSelection = hsl(0f, 0f, 19.2f),
+		backgroundButton = hsl(0f, 0f, 18f),
+		backgroundOverlayHover = hsl(0f, 0f, 18f),
+		backgroundDialog = hsl(0f, 0f, 7.1f),
+		borderDefault = hsl(0f, 0f, 18f),
+		borderStrong = hsl(0f, 0f, 21.2f),
+		borderStronger = hsl(0f, 0f, 27.1f),
+		borderMuted = hsl(0f, 0f, 14.1f),
+		borderControl = hsl(0f, 0f, 22.4f),
+		foregroundDefault = hsl(0f, 0f, 98f),
+		foregroundLight = hsl(0f, 0f, 70.6f),
+		foregroundLighter = hsl(0f, 0f, 53.7f),
+		foregroundMuted = hsl(0f, 0f, 30.2f),
+		foregroundContrast = hsl(0f, 0f, 8.6f),
+		brandLink = hsl(270f, 95f, 75f),
+		brandButton = hsl(271f, 81f, 56f),
+		brandDefault = hsl(270f, 95f, 75f),
+		brand600 = hsl(271f, 91f, 65f),
+		brand500 = hsl(271f, 81f, 56f),
+		brand400 = hsl(273f, 67f, 39f),
+		brand300 = hsl(274f, 66f, 32f),
+		brand200 = hsl(274f, 87f, 21f),
+		warningDefault = hsl(38.9f, 100f, 42.9f),
+		warning600 = hsl(38.9f, 100f, 42.9f),
+		warning500 = hsl(34.8f, 90.9f, 21.6f),
+		warning400 = hsl(33.2f, 100f, 14.5f),
+		warning300 = hsl(32.3f, 100f, 10.2f),
+		warning200 = hsl(36.6f, 100f, 8f),
+		destructiveDefault = hsl(10.2f, 77.9f, 53.9f),
+		destructive600 = hsl(9.7f, 85.2f, 62.9f),
+		destructive500 = hsl(7.9f, 71.6f, 29f),
+		destructive400 = hsl(6.7f, 60f, 20.6f),
+		destructive300 = hsl(7.5f, 51.3f, 15.3f),
+		destructive200 = hsl(10.9f, 23.4f, 9.2f),
 	)
 }
 
@@ -113,23 +183,51 @@ fun VniDropTheme(
 	mode: ThemeMode,
 	content: @Composable () -> Unit,
 ) {
-	val dark = resolveDarkTheme(mode, isSystemInDarkTheme())
-	val tokens = if (dark) darkVniDropColors else lightVniDropColors
+	VniDropTheme(isDarkTheme = rememberResolvedDarkTheme(mode), content = content)
+}
+
+@Composable
+fun VniDropTheme(
+	isDarkTheme: Boolean,
+	content: @Composable () -> Unit,
+) {
+	val tokens = if (isDarkTheme) VniDropThemeTokens.dark else VniDropThemeTokens.light
 	androidx.compose.runtime.CompositionLocalProvider(LocalVniDropColors provides tokens) {
 		MaterialTheme(
-			colorScheme = materialScheme(tokens, dark),
+			colorScheme = tokens.toMaterialColorScheme(isDarkTheme),
 			content = content,
 		)
 	}
 }
 
+private fun VniDropColors.toMaterialColorScheme(isDark: Boolean): ColorScheme {
+	val base = if (isDark) darkColorScheme() else lightColorScheme()
+	return base.copy(
+		primary = brandDefault,
+		onPrimary = if (isDark) Color.Black else Color.White,
+		secondary = brandLink,
+		background = backgroundDashCanvas,
+		onBackground = foregroundDefault,
+		surface = backgroundSurface75,
+		onSurface = foregroundDefault,
+		surfaceVariant = backgroundSurface200,
+		onSurfaceVariant = foregroundLight,
+		outline = borderDefault,
+		outlineVariant = borderMuted,
+		error = destructiveDefault,
+		errorContainer = destructive200,
+		onErrorContainer = if (isDark) destructive600 else destructiveDefault,
+	)
+}
+
+fun hslColorForTest(hue: Float, saturation: Float, lightness: Float): Color =
+	hsl(hue, saturation, lightness)
+
 private fun hsl(hue: Float, saturation: Float, lightness: Float): Color {
 	val h = ((hue % 360f) + 360f) % 360f / 360f
 	val s = saturation.coerceIn(0f, 100f) / 100f
 	val l = lightness.coerceIn(0f, 100f) / 100f
-	if (s == 0f) {
-		return Color(l, l, l)
-	}
+	if (s == 0f) return Color(l, l, l)
 	val q = if (l < 0.5f) l * (1 + s) else l + s - l * s
 	val p = 2 * l - q
 	return Color(
@@ -150,9 +248,3 @@ private fun hueToRgb(p: Float, q: Float, input: Float): Float {
 		else -> p
 	}.let { min(1f, max(0f, it)) }
 }
-
-fun Color.contrastAgainst(other: Color): Float =
-	abs(luminanceApproximation() - other.luminanceApproximation())
-
-private fun Color.luminanceApproximation(): Float =
-	(red * 0.2126f) + (green * 0.7152f) + (blue * 0.0722f)

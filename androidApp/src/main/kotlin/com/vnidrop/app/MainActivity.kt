@@ -13,6 +13,7 @@ class MainActivity : ComponentActivity() {
 		enableEdgeToEdge()
 		super.onCreate(savedInstanceState)
 		attachAndroidFilePickerContext(this)
+		attachAndroidPlatformContext(this)
 
 		setContent {
 			App()
