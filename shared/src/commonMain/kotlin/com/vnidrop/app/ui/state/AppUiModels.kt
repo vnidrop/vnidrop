@@ -25,7 +25,6 @@ fun useBottomNavigation(windowClass: WindowClass): Boolean =
 data class AppUiState(
 	val destination: AppDestination = AppDestination.Send,
 	val themeMode: ThemeMode = ThemeMode.System,
-	val diagnosticsVisible: Boolean = false,
 )
 
 data class SendUiState(

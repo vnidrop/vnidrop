@@ -17,7 +17,6 @@ import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.rememberShareFilePicker
 import com.vnidrop.app.core.sharePickedFile
 import com.vnidrop.app.logging.AppLogger
-import com.vnidrop.app.logging.LogFileInfo
 import com.vnidrop.app.platform.PlatformSystemAppearance
 import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.screens.ReceiveScreen
@@ -39,11 +38,10 @@ fun App() {
 	val repository = remember { CoreRepository() }
 	val coreState by repository.state.collectAsState()
 	var appState by remember { mutableStateOf(AppUiState()) }
-	var appDataDir by remember { mutableStateOf(platform.defaultCoreDataDir) }
+	val appDataDir = platform.defaultCoreDataDir
 	var sendState by remember { mutableStateOf(SendUiState()) }
 	var receiveState by remember { mutableStateOf(ReceiveUiState(outputDirectory = platform.defaultReceiveDir)) }
 	var selectedFile by remember { mutableStateOf<PickedShareFile?>(null) }
-	var logFiles by remember { mutableStateOf<List<LogFileInfo>>(emptyList()) }
 	val scope = rememberCoroutineScope()
 	val clipboard = LocalClipboardManager.current
 	val picker = rememberShareFilePicker(
@@ -51,19 +49,18 @@ fun App() {
 			AppLogger.info("file-picker", "file selected", mapOf("name" to file.displayName))
 			selectedFile = file
 			sendState = sendState.withSelectedFile(file)
-			logFiles = AppLogger.listLogFiles()
 		},
 		onError = { error ->
 			AppLogger.warn("file-picker", "file picker error", mapOf("reason" to error))
 			scope.launch { repository.setError(error) }
-			logFiles = AppLogger.listLogFiles()
 		},
 	)
 
 	LaunchedEffect(Unit) {
 		AppLogger.initialize(appDataDir)
 		AppLogger.info("lifecycle", "app started", mapOf("platform" to platform.name))
-		logFiles = AppLogger.listLogFiles()
+		AppLogger.info("core", "automatic initialize requested", mapOf("appDataDir" to appDataDir))
+		repository.initialize(appDataDir)
 	}
 
 	LaunchedEffect(coreState.lastShare?.transferId) {
@@ -74,14 +71,14 @@ fun App() {
 	PlatformSystemAppearance(isDarkTheme)
 	LaunchedEffect(isDarkTheme) {
 		AppLogger.info("appearance", "system appearance synchronized", mapOf("dark" to isDarkTheme.toString()))
-		logFiles = AppLogger.listLogFiles()
 	}
 
 	VniDropTheme(isDarkTheme = isDarkTheme) {
 		BoxWithConstraints {
+			val windowClass = windowClassFor(maxWidth.value)
 			AppShell(
 				selectedDestination = appState.destination,
-				windowClass = windowClassFor(maxWidth.value),
+				windowClass = windowClass,
 				onDestinationSelected = { appState = appState.copy(destination = it) },
 			) {
 				when (appState.destination) {
@@ -92,7 +89,6 @@ fun App() {
 						onSelectFile = {
 							AppLogger.info("file-picker", "open share file picker")
 							picker.pickFile()
-							logFiles = AppLogger.listLogFiles()
 						},
 						onCreateShare = {
 							scope.launch {
@@ -105,13 +101,11 @@ fun App() {
 									sharePickedFile(repository, file, sendState.transferName, sendState.senderName)
 								}
 								sendState = sendState.copy(isSharing = false)
-								logFiles = AppLogger.listLogFiles()
 							}
 						},
 						onCopyTicket = { ticket ->
 							AppLogger.info("send", "ticket copied")
 							clipboard.setText(AnnotatedString(ticket))
-							logFiles = AppLogger.listLogFiles()
 						},
 						onUseLocally = { ticket ->
 							receiveState = receiveState.copy(ticket = ticket)
@@ -139,33 +133,17 @@ fun App() {
 								receiveState = receiveState.copy(isReceiving = true)
 								repository.receive(receiveState.ticket, receiveState.outputDirectory, receiveState.receiverName)
 								receiveState = receiveState.copy(isReceiving = false)
-								logFiles = AppLogger.listLogFiles()
 							}
 						},
 					)
 					AppDestination.Settings -> SettingsScreen(
-						platformName = platform.name,
-						appDataDir = appDataDir,
-						onAppDataDirChange = { appDataDir = it },
+						deviceInfo = platform.deviceInfo,
 						coreState = coreState,
 						themeMode = appState.themeMode,
+						windowClass = windowClass,
 						onThemeModeChange = {
 							AppLogger.info("appearance", "theme mode changed", mapOf("mode" to it.name))
 							appState = appState.copy(themeMode = it)
-							logFiles = AppLogger.listLogFiles()
-						},
-						diagnosticsVisible = appState.diagnosticsVisible,
-						onDiagnosticsVisibleChange = { appState = appState.copy(diagnosticsVisible = it) },
-						logDirectory = AppLogger.logDirectory,
-						logFiles = logFiles,
-						onRefreshLogs = { logFiles = AppLogger.listLogFiles() },
-						onInitialize = {
-							scope.launch {
-								AppLogger.initialize(appDataDir)
-								AppLogger.info("core", "initialize requested", mapOf("appDataDir" to appDataDir))
-								repository.initialize(appDataDir)
-								logFiles = AppLogger.listLogFiles()
-							}
 						},
 					)
 				}
