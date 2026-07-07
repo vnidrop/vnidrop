@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.VniDropAppEvent
 import com.vnidrop.app.core.CoreUiState
 import com.vnidrop.app.ui.components.AppCard
 import com.vnidrop.app.ui.components.Field
@@ -48,36 +49,25 @@ import vnidrop.shared.generated.resources.transfer_details_title
 fun SendScreen(
 	coreState: CoreUiState,
 	sendState: SendUiState,
-	onSendStateChange: (SendUiState) -> Unit,
-	onSelectFile: () -> Unit,
-	onCreateShare: () -> Unit,
-	onCopyTicket: (String) -> Unit,
-	onUseLocally: (String) -> Unit,
-	onRefreshRequests: (ULong) -> Unit,
-	onRespondRequest: (String, Boolean) -> Unit,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
 		ScreenHeader(stringResource(Res.string.send_title), stringResource(Res.string.send_subtitle))
 		ErrorSection(coreState)
 		SendSourceCard(
 			sendState = sendState,
-			onSendStateChange = onSendStateChange,
-			onSelectFile = onSelectFile,
+			onEvent = onEvent,
 		)
 		SendDetailsCard(
 			coreState = coreState,
 			sendState = sendState,
-			onSendStateChange = onSendStateChange,
-			onCreateShare = onCreateShare,
+			onEvent = onEvent,
 		)
 		coreState.lastShare?.let { share ->
 			ShareResultCard(
 				share = share,
 				requests = coreState.receiverRequests,
-				onCopyTicket = onCopyTicket,
-				onUseLocally = onUseLocally,
-				onRefreshRequests = onRefreshRequests,
-				onRespondRequest = onRespondRequest,
+				onEvent = onEvent,
 			)
 		}
 		ProgressSection(coreState)
@@ -87,10 +77,9 @@ fun SendScreen(
 @Composable
 private fun SendSourceCard(
 	sendState: SendUiState,
-	onSendStateChange: (SendUiState) -> Unit,
-	onSelectFile: () -> Unit,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
-		AppCard(title = stringResource(Res.string.source_title)) {
+	AppCard(title = stringResource(Res.string.source_title)) {
 		if (sendState.selectedSource.isBlank()) {
 			EmptyText(stringResource(Res.string.send_source_empty))
 		} else {
@@ -98,11 +87,14 @@ private fun SendSourceCard(
 			MetadataRow(stringResource(Res.string.metadata_source), sendState.selectedSource)
 		}
 		Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-			PrimaryButton(stringResource(Res.string.button_select_file), onClick = onSelectFile)
+			PrimaryButton(
+				text = stringResource(Res.string.button_select_file),
+				onClick = { onEvent(VniDropAppEvent.SelectFileClicked) },
+			)
 			SecondaryButton(
 				text = stringResource(Res.string.button_clear),
-				onClick = { onSendStateChange(sendState.copy(selectedSource = "", selectedDisplayName = "")) },
-				enabled = sendState.selectedSource.isNotBlank(),
+				onClick = { onEvent(VniDropAppEvent.ClearSelectedSourceClicked) },
+				enabled = sendState.hasSelectedSource,
 			)
 		}
 	}
@@ -112,24 +104,23 @@ private fun SendSourceCard(
 private fun SendDetailsCard(
 	coreState: CoreUiState,
 	sendState: SendUiState,
-	onSendStateChange: (SendUiState) -> Unit,
-	onCreateShare: () -> Unit,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	AppCard(title = stringResource(Res.string.transfer_details_title)) {
 		Field(
 			value = sendState.transferName,
-			onValueChange = { onSendStateChange(sendState.copy(transferName = it)) },
+			onValueChange = { onEvent(VniDropAppEvent.TransferNameChanged(it)) },
 			label = stringResource(Res.string.field_transfer_name),
 		)
 		Field(
 			value = sendState.senderName,
-			onValueChange = { onSendStateChange(sendState.copy(senderName = it)) },
+			onValueChange = { onEvent(VniDropAppEvent.SenderNameChanged(it)) },
 			label = stringResource(Res.string.field_sender_name),
 		)
 		PrimaryButton(
 			text = if (sendState.isSharing) stringResource(Res.string.button_creating_ticket) else stringResource(Res.string.button_create_share_ticket),
-			onClick = onCreateShare,
-			enabled = coreState.isInitialized && sendState.selectedSource.isNotBlank() && !sendState.isSharing,
+			onClick = { onEvent(VniDropAppEvent.CreateShareClicked) },
+			enabled = sendState.canCreateShare(coreState.isInitialized),
 		)
 	}
 }
@@ -138,10 +129,7 @@ private fun SendDetailsCard(
 private fun ShareResultCard(
 	share: ShareResult,
 	requests: List<ReceiverRequest>,
-	onCopyTicket: (String) -> Unit,
-	onUseLocally: (String) -> Unit,
-	onRefreshRequests: (ULong) -> Unit,
-	onRespondRequest: (String, Boolean) -> Unit,
+	onEvent: (VniDropAppEvent) -> Unit,
 ) {
 	AppCard(title = stringResource(Res.string.share_ticket_title), trailing = {
 		StatusPill("${share.fileCount} file${if (share.fileCount == 1UL) "" else "s"}", tone = PillTone.Brand)
@@ -150,14 +138,28 @@ private fun ShareResultCard(
 		MetadataRow(stringResource(Res.string.metadata_size), formatBytes(share.totalSize))
 		TicketText(share.ticket)
 		Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-			PrimaryButton(stringResource(Res.string.button_copy), onClick = { onCopyTicket(share.ticket) })
-			SecondaryButton(stringResource(Res.string.button_use_locally), onClick = { onUseLocally(share.ticket) })
-			SecondaryButton(stringResource(Res.string.button_refresh), onClick = { onRefreshRequests(share.transferId) })
+			PrimaryButton(
+				text = stringResource(Res.string.button_copy),
+				onClick = { onEvent(VniDropAppEvent.CopyTicketClicked(share.ticket)) },
+			)
+			SecondaryButton(
+				text = stringResource(Res.string.button_use_locally),
+				onClick = { onEvent(VniDropAppEvent.UseTicketLocallyClicked(share.ticket)) },
+			)
+			SecondaryButton(
+				text = stringResource(Res.string.button_refresh),
+				onClick = { onEvent(VniDropAppEvent.RefreshReceiverRequestsClicked(share.transferId)) },
+			)
 		}
 		if (requests.isNotEmpty()) {
 			SectionDivider()
 			Text(stringResource(Res.string.receiver_requests_title), fontWeight = FontWeight.SemiBold)
-			ReceiverRequestList(requests = requests, onRespondRequest = onRespondRequest)
+			ReceiverRequestList(
+				requests = requests,
+				onRespondRequest = { requestId, accepted ->
+					onEvent(VniDropAppEvent.RespondReceiverRequestClicked(requestId, accepted))
+				},
+			)
 		}
 	}
 }

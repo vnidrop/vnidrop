@@ -47,4 +47,26 @@ class AppUiModelsTest {
 		assertEquals("58 B", formatBytes(58UL))
 		assertEquals("1.5 KB", formatBytes(1536UL))
 	}
+
+	@Test
+	fun sendStateExposesShareEligibility() {
+		val ready = SendUiState(selectedSource = "/tmp/payload.txt")
+
+		assertTrue(ready.canCreateShare(isCoreInitialized = true))
+		assertFalse(ready.canCreateShare(isCoreInitialized = false))
+		assertFalse(SendUiState().canCreateShare(isCoreInitialized = true))
+		assertFalse(ready.copy(isSharing = true).canCreateShare(isCoreInitialized = true))
+	}
+
+	@Test
+	fun receiveStateExposesInspectAndReceiveEligibility() {
+		val ready = ReceiveUiState(ticket = "ticket", outputDirectory = "/tmp/out")
+
+		assertTrue(ready.canInspect(isCoreInitialized = true))
+		assertTrue(ready.canReceive(isCoreInitialized = true))
+		assertFalse(ready.canInspect(isCoreInitialized = false))
+		assertFalse(ready.copy(ticket = "").canReceive(isCoreInitialized = true))
+		assertFalse(ready.copy(outputDirectory = "").canReceive(isCoreInitialized = true))
+		assertFalse(ready.copy(isReceiving = true).canReceive(isCoreInitialized = true))
+	}
 }
