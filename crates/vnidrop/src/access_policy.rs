@@ -90,6 +90,20 @@ impl AccessPolicy {
     }
 }
 
+pub(crate) fn mode_from_storage(value: &str) -> TransferAccessMode {
+    match value {
+        "public" => TransferAccessMode::Public,
+        _ => TransferAccessMode::ApprovalRequired,
+    }
+}
+
+pub(crate) fn mode_to_storage(mode: &TransferAccessMode) -> &'static str {
+    match mode {
+        TransferAccessMode::Public => "public",
+        TransferAccessMode::ApprovalRequired => "approval_required",
+    }
+}
+
 #[derive(Debug, Clone)]
 struct ApprovalSession {
     expires_at: Option<i64>,

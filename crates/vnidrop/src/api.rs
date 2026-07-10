@@ -1,7 +1,95 @@
+use anyhow::Context;
 use iroh_blobs::Hash;
 use serde::{Deserialize, Serialize};
 
 use crate::util::{non_empty, now_ms};
+
+#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
+pub struct CoreLimits {
+    pub max_sources: u64,
+    pub max_collection_files: u64,
+    pub max_total_bytes: u64,
+    pub max_path_bytes: u64,
+    pub max_ticket_bytes: u64,
+    pub max_metadata_bytes: u64,
+    pub max_events: u64,
+    pub max_pending_approvals: u64,
+    pub max_concurrent_transfers: u64,
+    pub event_queue_capacity: u64,
+}
+
+impl Default for CoreLimits {
+    fn default() -> Self {
+        Self {
+            max_sources: 128,
+            max_collection_files: 10_000,
+            max_total_bytes: 1024 * 1024 * 1024 * 1024,
+            max_path_bytes: 4_096,
+            max_ticket_bytes: 1024 * 1024,
+            max_metadata_bytes: 16 * 1024,
+            max_events: 500,
+            max_pending_approvals: 1_024,
+            max_concurrent_transfers: 8,
+            event_queue_capacity: 1_024,
+        }
+    }
+}
+
+impl CoreLimits {
+    pub(crate) fn validate(&self) -> anyhow::Result<()> {
+        let positive = [
+            ("max_sources", self.max_sources),
+            ("max_collection_files", self.max_collection_files),
+            ("max_total_bytes", self.max_total_bytes),
+            ("max_path_bytes", self.max_path_bytes),
+            ("max_ticket_bytes", self.max_ticket_bytes),
+            ("max_metadata_bytes", self.max_metadata_bytes),
+            ("max_events", self.max_events),
+            ("max_pending_approvals", self.max_pending_approvals),
+            ("max_concurrent_transfers", self.max_concurrent_transfers),
+            ("event_queue_capacity", self.event_queue_capacity),
+        ];
+        for (name, value) in positive {
+            if value == 0 {
+                anyhow::bail!("core limit {name} must be greater than zero");
+            }
+        }
+        for (name, value) in [
+            ("max_pending_approvals", self.max_pending_approvals),
+            ("max_concurrent_transfers", self.max_concurrent_transfers),
+            ("event_queue_capacity", self.event_queue_capacity),
+        ] {
+            usize::try_from(value)
+                .with_context(|| format!("core limit {name} exceeds platform capacity"))?;
+        }
+        if self.max_total_bytes > i64::MAX as u64 || self.max_events > i64::MAX as u64 {
+            anyhow::bail!("SQLite-backed limits must fit in a signed 64-bit integer");
+        }
+        Ok(())
+    }
+
+    pub(crate) fn validate_metadata_text(
+        &self,
+        field: &str,
+        value: Option<&str>,
+    ) -> anyhow::Result<()> {
+        if let Some(value) = value {
+            if value.len() as u64 > self.max_metadata_bytes {
+                anyhow::bail!(
+                    "{field} is {} bytes, limit is {}",
+                    value.len(),
+                    self.max_metadata_bytes
+                );
+            }
+        }
+        Ok(())
+    }
+}
+
+#[uniffi::export]
+pub fn default_core_limits() -> CoreLimits {
+    CoreLimits::default()
+}
 
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct CoreEvent {
@@ -29,6 +117,11 @@ pub trait ReceiveOutputSink: Send + Sync {
         bytes: Vec<u8>,
     ) -> Result<(), crate::error::VnidropError>;
     fn finish_file(&self, relative_path: String) -> Result<(), crate::error::VnidropError>;
+    fn abort_file(
+        &self,
+        relative_path: String,
+        reason: String,
+    ) -> Result<(), crate::error::VnidropError>;
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
@@ -70,7 +163,9 @@ pub enum TransferAccessMode {
 
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct StoredTransfer {
+    pub local_id: String,
     pub transfer_id: u64,
+    pub peer_id: Option<String>,
     pub direction: String,
     pub status: String,
     pub transfer_name: Option<String>,

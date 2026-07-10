@@ -9,8 +9,99 @@ use tokio::{
 use crate::{
     api::{CoreEvent, CoreEventSink},
     repository::Repository,
+    transfer_state::TransferDirection,
     util::now_ms,
 };
+
+#[derive(Debug, Clone, Copy)]
+enum EventScope {
+    Endpoint,
+    Transfer,
+}
+
+impl EventScope {
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Endpoint => "endpoint",
+            Self::Transfer => "transfer",
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+enum EventPhase {
+    Startup,
+    Recovery,
+    Shutdown,
+    Provider,
+    Error,
+    Import,
+    Ticket,
+    Lifecycle,
+    Network,
+    Download,
+    Export,
+    Access,
+    Handshake,
+    Approval,
+    Transfer,
+}
+
+impl EventPhase {
+    fn parse(value: &str) -> Option<Self> {
+        match value {
+            "startup" => Some(Self::Startup),
+            "recovery" => Some(Self::Recovery),
+            "shutdown" => Some(Self::Shutdown),
+            "provider" => Some(Self::Provider),
+            "error" => Some(Self::Error),
+            "import" => Some(Self::Import),
+            "ticket" => Some(Self::Ticket),
+            "lifecycle" => Some(Self::Lifecycle),
+            "network" => Some(Self::Network),
+            "download" => Some(Self::Download),
+            "export" => Some(Self::Export),
+            "access" => Some(Self::Access),
+            "handshake" => Some(Self::Handshake),
+            "approval" => Some(Self::Approval),
+            "transfer" => Some(Self::Transfer),
+            _ => None,
+        }
+    }
+
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Startup => "startup",
+            Self::Recovery => "recovery",
+            Self::Shutdown => "shutdown",
+            Self::Provider => "provider",
+            Self::Error => "error",
+            Self::Import => "import",
+            Self::Ticket => "ticket",
+            Self::Lifecycle => "lifecycle",
+            Self::Network => "network",
+            Self::Download => "download",
+            Self::Export => "export",
+            Self::Access => "access",
+            Self::Handshake => "handshake",
+            Self::Approval => "approval",
+            Self::Transfer => "transfer",
+        }
+    }
+}
+
+struct EventKind(String);
+
+impl EventKind {
+    fn parse(value: &str) -> Option<Self> {
+        let valid = !value.is_empty()
+            && value.len() <= 64
+            && value
+                .bytes()
+                .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-');
+        valid.then(|| Self(value.to_string()))
+    }
+}
 
 enum EventCommand {
     Persist(CoreEvent),
@@ -20,19 +111,24 @@ enum EventCommand {
 
 pub(crate) struct EventHub {
     sink: Arc<dyn CoreEventSink>,
-    tx: mpsc::UnboundedSender<EventCommand>,
+    tx: mpsc::Sender<EventCommand>,
     join: TokioMutex<Option<JoinHandle<()>>>,
     sequence: Mutex<u64>,
 }
 
 impl EventHub {
-    pub(crate) fn start(repository: Repository, sink: Arc<dyn CoreEventSink>) -> Self {
-        let (tx, mut rx) = mpsc::unbounded_channel();
+    pub(crate) fn start(
+        repository: Repository,
+        sink: Arc<dyn CoreEventSink>,
+        queue_capacity: usize,
+        max_history: u64,
+    ) -> Self {
+        let (tx, mut rx) = mpsc::channel(queue_capacity);
         let join = tokio::spawn(async move {
             while let Some(command) = rx.recv().await {
                 match command {
                     EventCommand::Persist(event) => {
-                        if let Err(error) = repository.insert_event(&event).await {
+                        if let Err(error) = repository.insert_event(&event, max_history).await {
                             tracing::warn!(%error, event_id = %event.id, "failed to persist core event");
                         }
                     }
@@ -56,7 +152,15 @@ impl EventHub {
     }
 
     pub(crate) fn emit_endpoint(&self, phase: &str, kind: &str, data: Value) {
-        self.emit("endpoint", None, None, phase, kind, data);
+        let Some(phase) = EventPhase::parse(phase) else {
+            tracing::warn!(phase, "dropped event with unknown phase");
+            return;
+        };
+        let Some(kind) = EventKind::parse(kind) else {
+            tracing::warn!(kind, "dropped event with invalid kind");
+            return;
+        };
+        self.emit(EventScope::Endpoint, None, None, phase, kind, data);
     }
 
     pub(crate) fn emit_transfer(
@@ -67,10 +171,22 @@ impl EventHub {
         kind: &str,
         data: Value,
     ) {
+        let Ok(direction) = TransferDirection::try_from(direction) else {
+            tracing::warn!(direction, "dropped event with unknown direction");
+            return;
+        };
+        let Some(phase) = EventPhase::parse(phase) else {
+            tracing::warn!(phase, "dropped event with unknown phase");
+            return;
+        };
+        let Some(kind) = EventKind::parse(kind) else {
+            tracing::warn!(kind, "dropped event with invalid kind");
+            return;
+        };
         self.emit(
-            "transfer",
+            EventScope::Transfer,
             Some(transfer_id),
-            Some(direction.to_string()),
+            Some(direction),
             phase,
             kind,
             data,
@@ -79,14 +195,14 @@ impl EventHub {
 
     pub(crate) async fn flush(&self) {
         let (tx, rx) = oneshot::channel();
-        if self.tx.send(EventCommand::Flush(tx)).is_ok() {
+        if self.tx.send(EventCommand::Flush(tx)).await.is_ok() {
             let _ = rx.await;
         }
     }
 
     pub(crate) async fn shutdown(&self) {
         let (tx, rx) = oneshot::channel();
-        if self.tx.send(EventCommand::Shutdown(tx)).is_ok() {
+        if self.tx.send(EventCommand::Shutdown(tx)).await.is_ok() {
             let _ = rx.await;
         }
         if let Some(join) = self.join.lock().await.take() {
@@ -96,15 +212,20 @@ impl EventHub {
 
     fn emit(
         &self,
-        scope: &str,
+        scope: EventScope,
         transfer_id: Option<u64>,
-        direction: Option<String>,
-        phase: &str,
-        kind: &str,
+        direction: Option<TransferDirection>,
+        phase: EventPhase,
+        kind: EventKind,
         data: Value,
     ) {
         let timestamp = now_ms();
-        let mut sequence = self.sequence.lock().expect("event sequence lock poisoned");
+        // A panic while formatting a previous event cannot invalidate an
+        // integer counter, so recover the guard instead of cascading a panic.
+        let mut sequence = self
+            .sequence
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
         let id = format!("{timestamp}-{}", *sequence);
         *sequence += 1;
         drop(sequence);
@@ -115,15 +236,15 @@ impl EventHub {
         let event = CoreEvent {
             id,
             timestamp,
-            scope: scope.to_string(),
+            scope: scope.as_str().to_string(),
             transfer_id,
-            direction,
-            phase: phase.to_string(),
-            kind: kind.to_string(),
+            direction: direction.map(|direction| direction.as_str().to_string()),
+            phase: phase.as_str().to_string(),
+            kind: kind.0,
             data_json: data.to_string(),
         };
-        if self.tx.send(EventCommand::Persist(event.clone())).is_err() {
-            tracing::warn!(event_id = %event.id, "event persistence queue is closed");
+        if let Err(error) = self.tx.try_send(EventCommand::Persist(event.clone())) {
+            tracing::warn!(event_id = %event.id, %error, "event persistence queue dropped event");
         }
         self.sink.on_event(event);
     }

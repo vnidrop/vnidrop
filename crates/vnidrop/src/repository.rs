@@ -1,30 +1,58 @@
 use std::{path::Path, str::FromStr};
 
-use anyhow::Result;
+#[cfg(test)]
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
+};
+
+use anyhow::{Context, Result};
 use sqlx::{
     sqlite::{SqliteConnectOptions, SqlitePoolOptions},
     Row, SqlitePool,
 };
+use uuid::Uuid;
 
-use crate::api::{CoreEvent, ReceiverRequest, StoredTransfer};
-use crate::util::now_ms;
+use crate::{
+    api::{CoreEvent, ReceiverRequest, StoredTransfer},
+    transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
+    util::now_ms,
+};
 
-const SCHEMA_VERSION: i64 = 1;
+const SCHEMA_VERSION: i64 = 3;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Repository {
     pool: SqlitePool,
+    #[cfg(test)]
+    fail_next_write: Arc<AtomicBool>,
 }
 
 pub(crate) struct TransferUpsert<'a> {
     pub(crate) transfer_id: u64,
-    pub(crate) direction: &'a str,
-    pub(crate) status: &'a str,
+    pub(crate) peer_id: Option<&'a str>,
+    pub(crate) direction: TransferDirection,
+    pub(crate) status: TransferStatus,
     pub(crate) transfer_name: Option<&'a str>,
     pub(crate) content_hash: Option<&'a str>,
     pub(crate) ticket: Option<&'a str>,
     pub(crate) file_count: u64,
     pub(crate) total_size: u64,
+    pub(crate) access_mode: &'a str,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PersistedShare {
+    pub(crate) transfer_id: u64,
+    pub(crate) content_hash: String,
+    pub(crate) access_mode: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct RecoveredTransfer {
+    pub(crate) transfer_id: u64,
+    pub(crate) direction: TransferDirection,
+    pub(crate) previous_status: TransferStatus,
 }
 
 pub(crate) struct ReceiverRequestInsert<'a> {
@@ -47,7 +75,11 @@ impl Repository {
             .max_connections(4)
             .connect_with(options)
             .await?;
-        let repository = Self { pool };
+        let repository = Self {
+            pool,
+            #[cfg(test)]
+            fail_next_write: Arc::new(AtomicBool::new(false)),
+        };
         repository.ensure_schema().await?;
         Ok(repository)
     }
@@ -59,6 +91,9 @@ impl Repository {
             r#"
             CREATE TABLE IF NOT EXISTS transfers (
                 transfer_id INTEGER PRIMARY KEY,
+                local_id TEXT NOT NULL,
+                protocol_transfer_id INTEGER NOT NULL,
+                peer_id TEXT,
                 direction TEXT NOT NULL,
                 status TEXT NOT NULL,
                 transfer_name TEXT,
@@ -66,10 +101,65 @@ impl Repository {
                 ticket TEXT,
                 file_count INTEGER NOT NULL DEFAULT 0,
                 total_size INTEGER NOT NULL DEFAULT 0,
+                access_mode TEXT NOT NULL DEFAULT 'approval_required',
                 created_at INTEGER NOT NULL,
                 updated_at INTEGER NOT NULL
             );
             "#,
+        )
+        .execute(&self.pool)
+        .await?;
+
+        let columns = sqlx::query("PRAGMA table_info(transfers)")
+            .fetch_all(&self.pool)
+            .await?;
+        let has_access_mode = columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "access_mode");
+        if !has_access_mode {
+            sqlx::query(
+                "ALTER TABLE transfers ADD COLUMN access_mode TEXT NOT NULL DEFAULT 'approval_required'",
+            )
+            .execute(&self.pool)
+            .await?;
+        }
+
+        let has_local_id = columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "local_id");
+        if !has_local_id {
+            sqlx::query("ALTER TABLE transfers ADD COLUMN local_id TEXT")
+                .execute(&self.pool)
+                .await?;
+        }
+        let has_protocol_transfer_id = columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "protocol_transfer_id");
+        if !has_protocol_transfer_id {
+            sqlx::query("ALTER TABLE transfers ADD COLUMN protocol_transfer_id INTEGER")
+                .execute(&self.pool)
+                .await?;
+        }
+        let has_peer_id = columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "peer_id");
+        if !has_peer_id {
+            sqlx::query("ALTER TABLE transfers ADD COLUMN peer_id TEXT")
+                .execute(&self.pool)
+                .await?;
+        }
+        sqlx::query(
+            r#"
+            UPDATE transfers
+            SET local_id = COALESCE(local_id, 'legacy-' || transfer_id || '-' || direction),
+                protocol_transfer_id = COALESCE(protocol_transfer_id, transfer_id)
+            WHERE local_id IS NULL OR protocol_transfer_id IS NULL
+            "#,
+        )
+        .execute(&self.pool)
+        .await?;
+        sqlx::query(
+            "CREATE UNIQUE INDEX IF NOT EXISTS idx_transfers_local_id ON transfers(local_id)",
         )
         .execute(&self.pool)
         .await?;
@@ -137,55 +227,275 @@ impl Repository {
         Ok(row.get(0))
     }
 
-    pub(crate) async fn upsert_transfer(&self, transfer: TransferUpsert<'_>) -> Result<()> {
+    pub(crate) async fn insert_transfer(&self, transfer: TransferUpsert<'_>) -> Result<()> {
+        self.maybe_fail_write()?;
         let now = now_ms();
         sqlx::query(
             r#"
             INSERT INTO transfers (
-                transfer_id, direction, status, transfer_name, content_hash, ticket,
-                file_count, total_size, created_at, updated_at
+                transfer_id, local_id, protocol_transfer_id, peer_id, direction, status,
+                transfer_name, content_hash, ticket, file_count, total_size, access_mode,
+                created_at, updated_at
             )
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?9)
-            ON CONFLICT(transfer_id) DO UPDATE SET
-                direction = excluded.direction,
-                status = excluded.status,
-                transfer_name = excluded.transfer_name,
-                content_hash = excluded.content_hash,
-                ticket = excluded.ticket,
-                file_count = excluded.file_count,
-                total_size = excluded.total_size,
-                updated_at = excluded.updated_at;
+            VALUES (?1, ?2, ?1, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?12);
             "#,
         )
-        .bind(transfer.transfer_id as i64)
-        .bind(transfer.direction)
-        .bind(transfer.status)
+        .bind(to_db_id(transfer.transfer_id)?)
+        .bind(Uuid::new_v4().to_string())
+        .bind(transfer.peer_id)
+        .bind(transfer.direction.as_str())
+        .bind(transfer.status.as_str())
         .bind(transfer.transfer_name)
         .bind(transfer.content_hash)
         .bind(transfer.ticket)
-        .bind(transfer.file_count as i64)
-        .bind(transfer.total_size as i64)
+        .bind(to_db_id(transfer.file_count)?)
+        .bind(to_db_id(transfer.total_size)?)
+        .bind(transfer.access_mode)
         .bind(now)
         .execute(&self.pool)
         .await?;
         Ok(())
     }
 
-    pub(crate) async fn update_transfer_status(
-        &self,
-        transfer_id: u64,
-        status: &str,
-    ) -> Result<()> {
-        sqlx::query("UPDATE transfers SET status = ?1, updated_at = ?2 WHERE transfer_id = ?3")
-            .bind(status)
-            .bind(now_ms())
-            .bind(transfer_id as i64)
-            .execute(&self.pool)
-            .await?;
+    pub(crate) async fn start_receive(&self, transfer: TransferUpsert<'_>) -> Result<()> {
+        self.maybe_fail_write()?;
+        if transfer.direction != TransferDirection::Receive
+            || transfer.status != TransferStatus::Receiving
+        {
+            anyhow::bail!("receive must start in the receiving state");
+        }
+        let now = now_ms();
+        let result = sqlx::query(
+            r#"
+            INSERT INTO transfers (
+                transfer_id, local_id, protocol_transfer_id, peer_id, direction, status,
+                transfer_name, content_hash, ticket, file_count, total_size, access_mode,
+                created_at, updated_at
+            )
+            VALUES (?1, ?2, ?1, ?3, 'receive', 'receiving', ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?10)
+            ON CONFLICT(transfer_id) DO UPDATE SET
+                status = 'receiving',
+                transfer_name = excluded.transfer_name,
+                content_hash = excluded.content_hash,
+                ticket = excluded.ticket,
+                file_count = excluded.file_count,
+                total_size = excluded.total_size,
+                access_mode = excluded.access_mode,
+                peer_id = excluded.peer_id,
+                updated_at = excluded.updated_at
+            WHERE transfers.direction = 'receive'
+              AND transfers.status IN ('done', 'failed', 'cancelled')
+            "#,
+        )
+        .bind(to_db_id(transfer.transfer_id)?)
+        .bind(Uuid::new_v4().to_string())
+        .bind(transfer.peer_id)
+        .bind(transfer.transfer_name)
+        .bind(transfer.content_hash)
+        .bind(transfer.ticket)
+        .bind(to_db_id(transfer.file_count)?)
+        .bind(to_db_id(transfer.total_size)?)
+        .bind(transfer.access_mode)
+        .bind(now)
+        .execute(&self.pool)
+        .await?;
+        require_one_changed(result.rows_affected(), "start receive")?;
         Ok(())
     }
 
-    pub(crate) async fn insert_event(&self, event: &CoreEvent) -> Result<()> {
+    pub(crate) async fn complete_share_import(&self, transfer: TransferUpsert<'_>) -> Result<()> {
+        self.maybe_fail_write()?;
+        if transfer.direction != TransferDirection::Send
+            || transfer.status != TransferStatus::Sharing
+        {
+            anyhow::bail!("share import must complete in the sharing state");
+        }
+        let result = sqlx::query(
+            r#"
+            UPDATE transfers
+            SET status = ?1,
+                transfer_name = ?2,
+                content_hash = ?3,
+                ticket = ?4,
+                file_count = ?5,
+                total_size = ?6,
+                access_mode = ?7,
+                updated_at = ?8
+            WHERE transfer_id = ?9
+              AND direction = 'send'
+              AND status = 'importing'
+            "#,
+        )
+        .bind(transfer.status.as_str())
+        .bind(transfer.transfer_name)
+        .bind(transfer.content_hash)
+        .bind(transfer.ticket)
+        .bind(to_db_id(transfer.file_count)?)
+        .bind(to_db_id(transfer.total_size)?)
+        .bind(transfer.access_mode)
+        .bind(now_ms())
+        .bind(to_db_id(transfer.transfer_id)?)
+        .execute(&self.pool)
+        .await?;
+        require_one_changed(result.rows_affected(), "complete share import")?;
+        Ok(())
+    }
+
+    pub(crate) async fn transition_transfer_status(
+        &self,
+        transfer_id: u64,
+        expected: TransferStatus,
+        next: TransferStatus,
+    ) -> Result<()> {
+        self.maybe_fail_write()?;
+        if !expected.can_transition_to(next) {
+            anyhow::bail!(
+                "illegal transfer status transition: {} -> {}",
+                expected.as_str(),
+                next.as_str()
+            );
+        }
+        let result = sqlx::query(
+            r#"
+            UPDATE transfers
+            SET status = ?1, updated_at = ?2
+            WHERE transfer_id = ?3 AND status = ?4
+            "#,
+        )
+        .bind(next.as_str())
+        .bind(now_ms())
+        .bind(to_db_id(transfer_id)?)
+        .bind(expected.as_str())
+        .execute(&self.pool)
+        .await?;
+        if result.rows_affected() == 0 {
+            let current = sqlx::query("SELECT status FROM transfers WHERE transfer_id = ?1")
+                .bind(to_db_id(transfer_id)?)
+                .fetch_optional(&self.pool)
+                .await?;
+            if current
+                .as_ref()
+                .map(|row| row.get::<String, _>(0))
+                .as_deref()
+                == Some(next.as_str())
+            {
+                return Ok(());
+            }
+        }
+        require_one_changed(result.rows_affected(), "transition transfer status")?;
+        Ok(())
+    }
+
+    pub(crate) async fn update_active_share_access_mode(
+        &self,
+        transfer_id: u64,
+        access_mode: &str,
+    ) -> Result<()> {
+        self.maybe_fail_write()?;
+        let result = sqlx::query(
+            r#"
+            UPDATE transfers
+            SET access_mode = ?1, updated_at = ?2
+            WHERE transfer_id = ?3
+              AND direction = 'send'
+              AND status = 'sharing'
+            "#,
+        )
+        .bind(access_mode)
+        .bind(now_ms())
+        .bind(to_db_id(transfer_id)?)
+        .execute(&self.pool)
+        .await?;
+        require_one_changed(result.rows_affected(), "update active share access mode")?;
+        Ok(())
+    }
+
+    pub(crate) async fn recover_interrupted_transfers(&self) -> Result<Vec<RecoveredTransfer>> {
+        self.maybe_fail_write()?;
+        let mut transaction = self.pool.begin().await?;
+        let rows = sqlx::query(
+            r#"
+            SELECT transfer_id, direction, status
+            FROM transfers
+            WHERE status IN ('importing', 'receiving')
+            ORDER BY created_at ASC
+            "#,
+        )
+        .fetch_all(&mut *transaction)
+        .await?;
+        let recovered = rows
+            .into_iter()
+            .map(|row| {
+                Ok(RecoveredTransfer {
+                    transfer_id: row.get::<i64, _>("transfer_id") as u64,
+                    direction: TransferDirection::try_from(
+                        row.get::<String, _>("direction").as_str(),
+                    )?,
+                    previous_status: TransferStatus::try_from(
+                        row.get::<String, _>("status").as_str(),
+                    )?,
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+
+        if !recovered.is_empty() {
+            sqlx::query(
+                r#"
+                UPDATE transfers
+                SET status = 'failed', updated_at = ?1
+                WHERE status IN ('importing', 'receiving')
+                "#,
+            )
+            .bind(now_ms())
+            .execute(&mut *transaction)
+            .await?;
+        }
+        transaction.commit().await?;
+        Ok(recovered)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fail_next_write(&self) {
+        self.fail_next_write.store(true, Ordering::SeqCst);
+    }
+
+    #[cfg(test)]
+    fn maybe_fail_write(&self) -> Result<()> {
+        if self.fail_next_write.swap(false, Ordering::SeqCst) {
+            anyhow::bail!("injected repository write failure");
+        }
+        Ok(())
+    }
+
+    #[cfg(not(test))]
+    fn maybe_fail_write(&self) -> Result<()> {
+        Ok(())
+    }
+
+    pub(crate) async fn list_active_shares(&self) -> Result<Vec<PersistedShare>> {
+        let rows = sqlx::query(
+            r#"
+            SELECT transfer_id, content_hash, access_mode
+            FROM transfers
+            WHERE direction = 'send'
+              AND status = 'sharing'
+              AND content_hash IS NOT NULL
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await?;
+        Ok(rows
+            .into_iter()
+            .map(|row| PersistedShare {
+                transfer_id: row.get::<i64, _>(0) as u64,
+                content_hash: row.get::<String, _>(1),
+                access_mode: row.get::<String, _>(2),
+            })
+            .collect())
+    }
+
+    pub(crate) async fn insert_event(&self, event: &CoreEvent, max_history: u64) -> Result<()> {
+        let mut transaction = self.pool.begin().await?;
         sqlx::query(
             r#"
             INSERT OR REPLACE INTO transfer_events (
@@ -197,13 +507,25 @@ impl Repository {
         .bind(&event.id)
         .bind(event.timestamp)
         .bind(&event.scope)
-        .bind(event.transfer_id.map(|value| value as i64))
+        .bind(event.transfer_id.map(to_db_id).transpose()?)
         .bind(&event.direction)
         .bind(&event.phase)
         .bind(&event.kind)
         .bind(&event.data_json)
-        .execute(&self.pool)
+        .execute(&mut *transaction)
         .await?;
+        sqlx::query(
+            r#"
+            DELETE FROM transfer_events
+            WHERE id NOT IN (
+                SELECT id FROM transfer_events ORDER BY timestamp DESC, id DESC LIMIT ?1
+            )
+            "#,
+        )
+        .bind(to_db_id(max_history)?)
+        .execute(&mut *transaction)
+        .await?;
+        transaction.commit().await?;
         Ok(())
     }
 
@@ -222,7 +544,7 @@ impl Repository {
             "#,
         )
         .bind(request.id)
-        .bind(request.transfer_id as i64)
+        .bind(to_db_id(request.transfer_id)?)
         .bind(request.remote_endpoint_id)
         .bind(request.transfer_name)
         .bind(request.receiver_name)
@@ -237,7 +559,7 @@ impl Repository {
     pub(crate) async fn update_receiver_request_status(
         &self,
         id: &str,
-        status: &str,
+        status: ReceiverRequestStatus,
         reason: Option<&str>,
     ) -> Result<()> {
         let result = sqlx::query(
@@ -248,7 +570,7 @@ impl Repository {
               AND status = 'requested'
             "#,
         )
-        .bind(status)
+        .bind(status.as_str())
         .bind(reason)
         .bind(now_ms())
         .bind(id)
@@ -258,6 +580,21 @@ impl Repository {
             anyhow::bail!("receiver request not found or already handled");
         }
         Ok(())
+    }
+
+    pub(crate) async fn expire_pending_receiver_requests(&self, reason: &str) -> Result<u64> {
+        let result = sqlx::query(
+            r#"
+            UPDATE receiver_requests
+            SET status = 'expired', reason = ?1, responded_at = ?2
+            WHERE status = 'requested'
+            "#,
+        )
+        .bind(reason)
+        .bind(now_ms())
+        .execute(&self.pool)
+        .await?;
+        Ok(result.rows_affected())
     }
 
     pub(crate) async fn list_receiver_requests(
@@ -274,7 +611,7 @@ impl Repository {
             ORDER BY requested_at DESC
             "#,
         )
-        .bind(transfer_id as i64)
+        .bind(to_db_id(transfer_id)?)
         .fetch_all(&self.pool)
         .await?;
         Ok(rows.into_iter().map(row_to_receiver_request).collect())
@@ -292,7 +629,7 @@ impl Repository {
             )
             "#,
         )
-        .bind(transfer_id as i64)
+        .bind(to_db_id(transfer_id)?)
         .bind(content_hash)
         .fetch_one(&self.pool)
         .await?;
@@ -303,6 +640,7 @@ impl Repository {
         let rows = sqlx::query(
             r#"
             SELECT transfer_id, direction, status, transfer_name, content_hash, ticket,
+                   local_id, protocol_transfer_id, peer_id,
                    file_count, total_size, created_at, updated_at
             FROM transfers
             ORDER BY updated_at DESC
@@ -310,10 +648,14 @@ impl Repository {
         )
         .fetch_all(&self.pool)
         .await?;
-        Ok(rows.into_iter().map(row_to_transfer).collect())
+        rows.into_iter().map(row_to_transfer).collect()
     }
 
-    pub(crate) async fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>> {
+    pub(crate) async fn list_events(
+        &self,
+        transfer_id: Option<u64>,
+        limit: u64,
+    ) -> Result<Vec<CoreEvent>> {
         let rows = if let Some(transfer_id) = transfer_id {
             sqlx::query(
                 r#"
@@ -321,9 +663,11 @@ impl Repository {
                 FROM transfer_events
                 WHERE transfer_id = ?1
                 ORDER BY timestamp ASC
+                LIMIT ?2
                 "#,
             )
-            .bind(transfer_id as i64)
+            .bind(to_db_id(transfer_id)?)
+            .bind(to_db_id(limit)?)
             .fetch_all(&self.pool)
             .await?
         } else {
@@ -332,9 +676,10 @@ impl Repository {
                 SELECT id, timestamp, scope, transfer_id, direction, phase, kind, data_json
                 FROM transfer_events
                 ORDER BY timestamp DESC
-                LIMIT 500
+                LIMIT ?1
                 "#,
             )
+            .bind(to_db_id(limit)?)
             .fetch_all(&self.pool)
             .await?
         };
@@ -342,11 +687,30 @@ impl Repository {
     }
 }
 
-fn row_to_transfer(row: sqlx::sqlite::SqliteRow) -> StoredTransfer {
-    StoredTransfer {
+fn require_one_changed(rows_affected: u64, operation: &str) -> Result<()> {
+    if rows_affected != 1 {
+        anyhow::bail!("{operation} expected one matching transfer, changed {rows_affected}");
+    }
+    Ok(())
+}
+
+fn to_db_id(value: u64) -> Result<i64> {
+    i64::try_from(value).context("transfer id exceeds SQLite signed integer range")
+}
+
+fn row_to_transfer(row: sqlx::sqlite::SqliteRow) -> Result<StoredTransfer> {
+    let direction = row.get::<String, _>("direction");
+    let status = row.get::<String, _>("status");
+    Ok(StoredTransfer {
+        local_id: row.get("local_id"),
         transfer_id: row.get::<i64, _>("transfer_id") as u64,
-        direction: row.get("direction"),
-        status: row.get("status"),
+        peer_id: row.get("peer_id"),
+        direction: TransferDirection::try_from(direction.as_str())?
+            .as_str()
+            .to_string(),
+        status: TransferStatus::try_from(status.as_str())?
+            .as_str()
+            .to_string(),
         transfer_name: row.get("transfer_name"),
         content_hash: row.get("content_hash"),
         ticket: row.get("ticket"),
@@ -354,7 +718,7 @@ fn row_to_transfer(row: sqlx::sqlite::SqliteRow) -> StoredTransfer {
         total_size: row.get::<i64, _>("total_size") as u64,
         created_at: row.get("created_at"),
         updated_at: row.get("updated_at"),
-    }
+    })
 }
 
 fn row_to_event(row: sqlx::sqlite::SqliteRow) -> CoreEvent {
@@ -373,6 +737,7 @@ fn row_to_event(row: sqlx::sqlite::SqliteRow) -> CoreEvent {
 }
 
 fn row_to_receiver_request(row: sqlx::sqlite::SqliteRow) -> ReceiverRequest {
+    let status = row.get::<String, _>("status");
     ReceiverRequest {
         id: row.get("id"),
         transfer_id: row.get::<i64, _>("transfer_id") as u64,
@@ -381,7 +746,9 @@ fn row_to_receiver_request(row: sqlx::sqlite::SqliteRow) -> ReceiverRequest {
         receiver_name: row.get("receiver_name"),
         receiver_device_name: row.get("receiver_device_name"),
         app_version: row.get("app_version"),
-        status: row.get("status"),
+        status: ReceiverRequestStatus::try_from(status.as_str())
+            .map(|status| status.as_str().to_string())
+            .unwrap_or_else(|_| "unknown".to_string()),
         reason: row.get("reason"),
         requested_at: row.get("requested_at"),
         responded_at: row.get("responded_at"),

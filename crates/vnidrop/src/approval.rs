@@ -10,6 +10,7 @@ use crate::{
     event_hub::EventHub,
     handshake::{HandshakeResponse, RequestTransfer},
     repository::{ReceiverRequestInsert, Repository},
+    transfer_state::ReceiverRequestStatus,
     util::now_ms,
 };
 
@@ -29,6 +30,8 @@ pub(crate) struct ApprovalService {
     event_hub: Arc<EventHub>,
     access_policy: Arc<AccessPolicy>,
     pending: Arc<Mutex<HashMap<String, oneshot::Sender<ApprovalDecision>>>>,
+    max_pending: usize,
+    max_metadata_bytes: u64,
 }
 
 impl ApprovalService {
@@ -36,12 +39,16 @@ impl ApprovalService {
         repository: Repository,
         event_hub: Arc<EventHub>,
         access_policy: Arc<AccessPolicy>,
+        max_pending: usize,
+        max_metadata_bytes: u64,
     ) -> Self {
         Self {
             repository,
             event_hub,
             access_policy,
             pending: Arc::new(Mutex::new(HashMap::new())),
+            max_pending,
+            max_metadata_bytes,
         }
     }
 
@@ -52,7 +59,11 @@ impl ApprovalService {
         reason: Option<String>,
     ) -> anyhow::Result<()> {
         let sender = self.pending.lock().await.remove(&request_id);
-        let status = if accepted { "accepted" } else { "refused" };
+        let status = if accepted {
+            ReceiverRequestStatus::Accepted
+        } else {
+            ReceiverRequestStatus::Refused
+        };
         self.repository
             .update_receiver_request_status(&request_id, status, reason.as_deref())
             .await?;
@@ -73,6 +84,25 @@ impl ApprovalService {
         remote_endpoint_id: String,
         request: RequestTransfer,
     ) -> HandshakeResponse {
+        let metadata_values = [
+            request.transfer_hash.as_str(),
+            request.transfer_name.as_str(),
+            request.receiver_name.as_deref().unwrap_or_default(),
+            request.receiver_device_name.as_deref().unwrap_or_default(),
+            request.app_version.as_str(),
+        ];
+        if metadata_values
+            .iter()
+            .any(|value| value.len() as u64 > self.max_metadata_bytes)
+        {
+            return self
+                .deny(
+                    request.transfer_id,
+                    remote_endpoint_id,
+                    "metadata-too-large",
+                )
+                .await;
+        }
         self.event_hub.emit_transfer(
             request.transfer_id,
             "send",
@@ -112,7 +142,19 @@ impl ApprovalService {
     ) -> HandshakeResponse {
         let request_id = Uuid::new_v4().to_string();
         let (tx, rx) = oneshot::channel();
-        self.pending.lock().await.insert(request_id.clone(), tx);
+        let mut pending = self.pending.lock().await;
+        if pending.len() >= self.max_pending {
+            drop(pending);
+            return self
+                .deny(
+                    request.transfer_id,
+                    remote_endpoint_id,
+                    "too-many-pending-approvals",
+                )
+                .await;
+        }
+        pending.insert(request_id.clone(), tx);
+        drop(pending);
 
         let insert_result = self
             .repository
@@ -189,7 +231,7 @@ impl ApprovalService {
                     .repository
                     .update_receiver_request_status(
                         &request_id,
-                        "expired",
+                        ReceiverRequestStatus::Expired,
                         Some("approval timed out"),
                     )
                     .await;
