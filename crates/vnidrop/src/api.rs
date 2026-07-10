@@ -153,9 +153,10 @@ pub struct ShareMetadataInput {
     pub transfer_id: u64,
     pub transfer_name: Option<String>,
     pub sender_name: Option<String>,
+    pub access_mode: TransferAccessMode,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, uniffi::Enum)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, uniffi::Enum)]
 pub enum TransferAccessMode {
     Public,
     ApprovalRequired,
@@ -173,6 +174,7 @@ pub struct StoredTransfer {
     pub ticket: Option<String>,
     pub file_count: u64,
     pub total_size: u64,
+    pub access_mode: TransferAccessMode,
     pub created_at: i64,
     pub updated_at: i64,
 }

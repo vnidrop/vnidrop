@@ -30,6 +30,7 @@ interface FileSystemService {
 		file: PickedShareFile,
 		transferName: String,
 		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share>
 }
 

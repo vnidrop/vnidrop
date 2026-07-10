@@ -50,6 +50,7 @@ private class AndroidFileSystemService(
 		file: PickedShareFile,
 		transferName: String,
 		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share> = runCatching {
 		context.contentResolver.openFileDescriptor(Uri.parse(file.value), "r").use { descriptor ->
 			checkNotNull(descriptor) { "Could not open selected file descriptor" }
@@ -58,6 +59,7 @@ private class AndroidFileSystemService(
 				displayName = file.displayName,
 				transferName = transferName,
 				senderName = senderName,
+				accessPolicy = accessPolicy,
 			).getOrThrow()
 		}
 	}

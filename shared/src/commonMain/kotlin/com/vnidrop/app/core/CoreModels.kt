@@ -21,16 +21,40 @@ data class CoreEventModel(
 	val dataJson: String,
 )
 
+enum class ShareAccessPolicy {
+	RequireApproval,
+	AnyoneWithTransfer,
+}
+
+enum class TransferDirection {
+	Send,
+	Receive,
+}
+
+enum class TransferStatus {
+	Importing,
+	Sharing,
+	Receiving,
+	Done,
+	Failed,
+	Cancelled,
+	Stopped,
+}
+
 data class Transfer(
 	val localId: String,
 	val transferId: ULong,
-	val direction: String,
-	val status: String,
+	val direction: TransferDirection,
+	val status: TransferStatus,
 	val peerId: String?,
 	val transferName: String?,
+	val contentHash: String?,
 	val fileCount: ULong,
 	val totalSize: ULong,
 	val ticket: String?,
+	val accessPolicy: ShareAccessPolicy,
+	val createdAt: Long,
+	val updatedAt: Long,
 )
 
 data class Share(
@@ -90,9 +114,21 @@ interface CoreGateway {
 
 	suspend fun initialize(appDataDir: String): Result<Unit>
 	fun shutdown()
-	suspend fun sharePath(path: String, transferName: String, senderName: String): Result<Share>
-	suspend fun shareFileDescriptor(fd: Int, displayName: String, transferName: String, senderName: String): Result<Share>
-	suspend fun shareSecurityScopedFileUrl(fileUrl: String, displayName: String, transferName: String, senderName: String): Result<Share>
+	suspend fun sharePath(path: String, transferName: String, senderName: String, accessPolicy: ShareAccessPolicy): Result<Share>
+	suspend fun shareFileDescriptor(
+		fd: Int,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	): Result<Share>
+	suspend fun shareSecurityScopedFileUrl(
+		fileUrl: String,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	): Result<Share>
 	suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel>
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit>
 	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit>

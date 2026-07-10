@@ -7,6 +7,35 @@ use support::{share_path, CoreGuard, RecordingSink, TestNode};
 use vnidrop::{CoreLimits, ShareMetadataInput, ShareSource, SourceKind, TransferAccessMode};
 
 #[test]
+fn share_creation_persists_selected_access_mode_atomically() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("public.txt");
+    std::fs::write(&source_path, b"public share").unwrap();
+    let sender = TestNode::new();
+
+    sender
+        .core
+        .share_files(
+            vec![ShareSource {
+                kind: SourceKind::Path,
+                value: source_path.to_string_lossy().into_owned(),
+                display_name: Some("public.txt".to_string()),
+                is_directory: false,
+            }],
+            ShareMetadataInput {
+                transfer_id: 9,
+                transfer_name: Some("Public file".to_string()),
+                sender_name: Some("Sender".to_string()),
+                access_mode: TransferAccessMode::Public,
+            },
+        )
+        .unwrap();
+
+    let transfer = sender.core.list_transfers().unwrap().remove(0);
+    assert_eq!(transfer.access_mode, TransferAccessMode::Public);
+}
+
+#[test]
 fn cancelling_share_updates_status_and_events() {
     let source_dir = tempfile::tempdir().unwrap();
     let source_path = source_dir.path().join("cancel.txt");
@@ -92,6 +121,7 @@ fn failed_import_leaves_durable_failed_transfer() {
             transfer_id,
             transfer_name: Some("missing".to_string()),
             sender_name: None,
+            access_mode: TransferAccessMode::ApprovalRequired,
         },
     );
 
@@ -128,6 +158,7 @@ fn duplicate_transfer_id_does_not_replace_active_share() {
             transfer_id: first.transfer_id,
             transfer_name: Some("second".to_string()),
             sender_name: None,
+            access_mode: TransferAccessMode::ApprovalRequired,
         },
     );
 
@@ -188,6 +219,7 @@ fn source_limit_rejection_creates_no_transfer_state() {
             transfer_id: 24,
             transfer_name: Some("too many".to_string()),
             sender_name: None,
+            access_mode: TransferAccessMode::ApprovalRequired,
         },
     );
 
@@ -217,6 +249,7 @@ fn cancellation_during_import_is_durable() {
                 transfer_id: 25,
                 transfer_name: Some("large".to_string()),
                 sender_name: None,
+                access_mode: TransferAccessMode::ApprovalRequired,
             },
         )
     });

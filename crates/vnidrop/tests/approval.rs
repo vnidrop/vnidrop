@@ -6,7 +6,53 @@ use support::{
     receive_with_response, share_path, wait_for_receiver_request, CoreGuard, RecordingSink,
     TestNode,
 };
-use vnidrop::CoreLimits;
+use vnidrop::{CoreLimits, ShareMetadataInput, ShareSource, SourceKind, TransferAccessMode};
+
+#[test]
+fn public_share_receives_without_sender_approval() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let output_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("public.txt");
+    std::fs::write(&source_path, b"public content").unwrap();
+    let sender = TestNode::new();
+    let receiver = TestNode::new();
+    let share = sender
+        .core
+        .share_files(
+            vec![ShareSource {
+                kind: SourceKind::Path,
+                value: source_path.to_string_lossy().into_owned(),
+                display_name: Some("public.txt".to_string()),
+                is_directory: false,
+            }],
+            ShareMetadataInput {
+                transfer_id: 30,
+                transfer_name: Some("Public file".to_string()),
+                sender_name: Some("Sender".to_string()),
+                access_mode: TransferAccessMode::Public,
+            },
+        )
+        .unwrap();
+
+    receiver
+        .core
+        .receive(
+            share.ticket,
+            output_dir.path().to_string_lossy().into_owned(),
+            Some("Receiver".to_string()),
+        )
+        .unwrap();
+
+    assert_eq!(
+        std::fs::read(output_dir.path().join("public.txt")).unwrap(),
+        b"public content"
+    );
+    assert!(sender
+        .core
+        .list_receiver_requests(share.transfer_id)
+        .unwrap()
+        .is_empty());
+}
 
 #[test]
 fn approval_required_denies_then_allows_receiver() {

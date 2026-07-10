@@ -33,5 +33,6 @@ private class JvmFileSystemService : FileSystemService {
 		file: PickedShareFile,
 		transferName: String,
 		senderName: String,
-	): Result<Share> = repository.sharePath(file.value, transferName, senderName)
+		accessPolicy: ShareAccessPolicy,
+	): Result<Share> = repository.sharePath(file.value, transferName, senderName, accessPolicy)
 }

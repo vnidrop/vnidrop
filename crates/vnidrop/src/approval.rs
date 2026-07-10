@@ -120,8 +120,17 @@ impl ApprovalService {
             .await
         {
             Ok(true) => {
-                self.wait_for_sender_decision(remote_endpoint_id, request)
+                if self
+                    .access_policy
+                    .allows_without_approval(request.transfer_id)
                     .await
+                {
+                    self.allow_without_sender_decision(remote_endpoint_id, request)
+                        .await
+                } else {
+                    self.wait_for_sender_decision(remote_endpoint_id, request)
+                        .await
+                }
             }
             Ok(false) => {
                 self.deny(request.transfer_id, remote_endpoint_id, "unknown-transfer")
@@ -133,6 +142,26 @@ impl ApprovalService {
                     .await
             }
         }
+    }
+
+    async fn allow_without_sender_decision(
+        &self,
+        remote_endpoint_id: String,
+        request: RequestTransfer,
+    ) -> HandshakeResponse {
+        let token = Uuid::new_v4().to_string();
+        let expires_at = now_ms() + APPROVAL_TTL_MS;
+        self.event_hub.emit_transfer(
+            request.transfer_id,
+            "send",
+            "access",
+            "receiver-auto-approved",
+            json!({
+                "remote_endpoint_id": remote_endpoint_id,
+                "expires_at": expires_at,
+            }),
+        );
+        HandshakeResponse::Approved { token, expires_at }
     }
 
     async fn wait_for_sender_decision(

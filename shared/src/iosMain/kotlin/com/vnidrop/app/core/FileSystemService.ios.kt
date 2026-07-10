@@ -47,11 +47,13 @@ private class IosFileSystemService : FileSystemService {
 		file: PickedShareFile,
 		transferName: String,
 		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share> = repository.shareSecurityScopedFileUrl(
 		file.value,
 		file.displayName,
 		transferName,
 		senderName,
+		accessPolicy,
 	)
 
 	private fun validateSecurityScopedUrl(value: String): FolderAccessStatus {

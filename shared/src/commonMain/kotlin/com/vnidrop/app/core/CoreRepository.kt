@@ -25,6 +25,7 @@ import uniffi.vnidrop.SourceKind
 import uniffi.vnidrop.StoredTransfer
 import uniffi.vnidrop.TicketInspection
 import uniffi.vnidrop.TransferMetadata
+import uniffi.vnidrop.TransferAccessMode
 import uniffi.vnidrop.VnidropCore
 
 class CoreRepository(
@@ -64,7 +65,12 @@ class CoreRepository(
 		_state.value = CoreState()
 	}
 
-	override suspend fun sharePath(path: String, transferName: String, senderName: String): Result<Share> =
+	override suspend fun sharePath(
+		path: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	): Result<Share> =
 		shareSources(
 			sources = listOf(
 				ShareSource(
@@ -76,6 +82,7 @@ class CoreRepository(
 			),
 			transferName = transferName,
 			senderName = senderName,
+			accessPolicy = accessPolicy,
 		)
 
 	override suspend fun shareFileDescriptor(
@@ -83,6 +90,7 @@ class CoreRepository(
 		displayName: String,
 		transferName: String,
 		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share> =
 		shareSources(
 			sources = listOf(
@@ -95,6 +103,7 @@ class CoreRepository(
 			),
 			transferName = transferName,
 			senderName = senderName,
+			accessPolicy = accessPolicy,
 		)
 
 	override suspend fun shareSecurityScopedFileUrl(
@@ -102,6 +111,7 @@ class CoreRepository(
 		displayName: String,
 		transferName: String,
 		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share> =
 		shareSources(
 			sources = listOf(
@@ -114,6 +124,7 @@ class CoreRepository(
 			),
 			transferName = transferName,
 			senderName = senderName,
+			accessPolicy = accessPolicy,
 		)
 
 	override suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel> = runCore {
@@ -170,6 +181,7 @@ class CoreRepository(
 		sources: List<ShareSource>,
 		transferName: String,
 		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share> = runCore {
 		withPlatformPathAccess(sources) {
 			requireCore().shareFiles(
@@ -178,6 +190,7 @@ class CoreRepository(
 					transferId = nextTransferId(),
 					transferName = transferName.ifBlank { null },
 					senderName = senderName.ifBlank { null },
+					accessMode = accessPolicy.toNative(),
 				),
 			).toModel()
 		}.also { share ->
@@ -243,14 +256,45 @@ private fun CoreEvent.toModel(): CoreEventModel = CoreEventModel(
 private fun StoredTransfer.toModel(): Transfer = Transfer(
 	localId = localId,
 	transferId = transferId,
-	direction = direction,
-	status = status,
+	direction = direction.toTransferDirection(),
+	status = status.toTransferStatus(),
 	peerId = peerId,
 	transferName = transferName,
+	contentHash = contentHash,
 	fileCount = fileCount,
 	totalSize = totalSize,
 	ticket = ticket,
+	accessPolicy = accessMode.toModel(),
+	createdAt = createdAt,
+	updatedAt = updatedAt,
 )
+
+private fun ShareAccessPolicy.toNative(): TransferAccessMode = when (this) {
+	ShareAccessPolicy.RequireApproval -> TransferAccessMode.APPROVAL_REQUIRED
+	ShareAccessPolicy.AnyoneWithTransfer -> TransferAccessMode.PUBLIC
+}
+
+private fun TransferAccessMode.toModel(): ShareAccessPolicy = when (this) {
+	TransferAccessMode.APPROVAL_REQUIRED -> ShareAccessPolicy.RequireApproval
+	TransferAccessMode.PUBLIC -> ShareAccessPolicy.AnyoneWithTransfer
+}
+
+private fun String.toTransferDirection(): TransferDirection = when (this) {
+	"send" -> TransferDirection.Send
+	"receive" -> TransferDirection.Receive
+	else -> error("Unknown transfer direction: $this")
+}
+
+private fun String.toTransferStatus(): TransferStatus = when (this) {
+	"importing" -> TransferStatus.Importing
+	"sharing" -> TransferStatus.Sharing
+	"receiving" -> TransferStatus.Receiving
+	"done" -> TransferStatus.Done
+	"failed" -> TransferStatus.Failed
+	"cancelled" -> TransferStatus.Cancelled
+	"stopped" -> TransferStatus.Stopped
+	else -> error("Unknown transfer status: $this")
+}
 
 private fun ShareResult.toModel(): Share = Share(
 	transferId = transferId,

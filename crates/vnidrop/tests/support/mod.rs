@@ -12,7 +12,7 @@ use std::{
 
 use vnidrop::{
     CoreEvent, CoreEventSink, CoreLimits, ReceiveOutputSink, ReceiverRequest, ShareMetadataInput,
-    ShareResult, ShareSource, SourceKind, VnidropCore, VnidropError,
+    ShareResult, ShareSource, SourceKind, TransferAccessMode, VnidropCore, VnidropError,
 };
 
 #[derive(Default)]
@@ -192,6 +192,7 @@ pub fn share_path(
                 transfer_id,
                 transfer_name: Some(display_name.to_string()),
                 sender_name: Some("sender".to_string()),
+                access_mode: TransferAccessMode::ApprovalRequired,
             },
         )
         .expect("test share should be created")

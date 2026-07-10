@@ -14,6 +14,7 @@ use sqlx::{
 use uuid::Uuid;
 
 use crate::{
+    access_policy::mode_from_storage,
     api::{CoreEvent, ReceiverRequest, StoredTransfer},
     transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
     util::now_ms,
@@ -641,7 +642,7 @@ impl Repository {
             r#"
             SELECT transfer_id, direction, status, transfer_name, content_hash, ticket,
                    local_id, protocol_transfer_id, peer_id,
-                   file_count, total_size, created_at, updated_at
+                   file_count, total_size, access_mode, created_at, updated_at
             FROM transfers
             ORDER BY updated_at DESC
             "#,
@@ -716,6 +717,7 @@ fn row_to_transfer(row: sqlx::sqlite::SqliteRow) -> Result<StoredTransfer> {
         ticket: row.get("ticket"),
         file_count: row.get::<i64, _>("file_count") as u64,
         total_size: row.get::<i64, _>("total_size") as u64,
+        access_mode: mode_from_storage(&row.get::<String, _>("access_mode")),
         created_at: row.get("created_at"),
         updated_at: row.get("updated_at"),
     })

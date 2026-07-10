@@ -493,7 +493,7 @@ impl CoreInner {
                 ticket: None,
                 file_count: 0,
                 total_size: 0,
-                access_mode: mode_to_storage(&TransferAccessMode::ApprovalRequired),
+                access_mode: mode_to_storage(&metadata.access_mode),
             })
             .await?;
         let (cancel, mut cancelled) = oneshot::channel();
@@ -538,6 +538,7 @@ impl CoreInner {
         sources: Vec<ShareSource>,
         metadata: ShareMetadataInput,
     ) -> Result<ShareResult> {
+        let access_mode = metadata.access_mode.clone();
         self.emit_transfer(
             metadata.transfer_id,
             "send",
@@ -579,7 +580,7 @@ impl CoreInner {
                 ticket: Some(&ticket),
                 file_count: import.file_count,
                 total_size: import.total_size,
-                access_mode: mode_to_storage(&TransferAccessMode::ApprovalRequired),
+                access_mode: mode_to_storage(&access_mode),
             })
             .await?;
         self.hash_to_transfer
@@ -587,7 +588,7 @@ impl CoreInner {
             .await
             .insert(content_hash, metadata.transfer_id);
         self.access_policy
-            .set_mode(metadata.transfer_id, TransferAccessMode::ApprovalRequired)
+            .set_mode(metadata.transfer_id, access_mode)
             .await;
         self.active_shares
             .lock()
