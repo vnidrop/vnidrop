@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import uniffi.vnidrop.ReceiveOutputSink
 import java.io.OutputStream
+import java.util.UUID
 
 @Composable
 actual fun rememberFileSystemService(): FileSystemService {
@@ -59,10 +60,10 @@ private class AndroidFileSystemService(
 		if (!hasPermission) return FolderAccessStatus.PermissionRequired
 		return runCatching {
 			val probe = AndroidTreeReceiveOutputSink(context, uri)
-			val probeName = ".vnidrop-write-test"
+			val probeName = ".vnidrop-write-test-${UUID.randomUUID()}"
 			probe.startFile(probeName)
 			probe.writeChunk(probeName, byteArrayOf())
-			probe.finishFile(probeName)
+			probe.abortFile(probeName, "write probe complete")
 			FolderAccessStatus.Writable
 		}.getOrDefault(FolderAccessStatus.Unavailable)
 	}
@@ -72,26 +73,62 @@ private class AndroidTreeReceiveOutputSink(
 	private val context: Context,
 	private val treeUri: Uri,
 ) : ReceiveOutputSink {
-	private val streams = mutableMapOf<String, OutputStream>()
+	private data class PendingDocument(
+		val stream: OutputStream,
+		val temporaryUri: Uri,
+		val parentUri: Uri,
+		val finalName: String,
+	)
+
+	private val pending = mutableMapOf<String, PendingDocument>()
 
 	override fun startFile(relativePath: String) {
-		streams[relativePath]?.close()
-		val documentUri = createDocument(relativePath)
-		val stream = context.contentResolver.openOutputStream(documentUri, "w")
+		check(relativePath !in pending) { "Output stream is already open for $relativePath" }
+		val (parent, finalName) = resolveParent(relativePath)
+		check(findChild(parent, finalName) == null) { "Destination already exists: $relativePath" }
+		val temporaryName = ".$finalName.vnidrop-${UUID.randomUUID()}.part"
+		val temporaryUri = DocumentsContract.createDocument(
+			context.contentResolver,
+			parent,
+			"application/octet-stream",
+			temporaryName,
+		) ?: error("Could not create temporary file for $relativePath")
+		val stream = context.contentResolver.openOutputStream(temporaryUri, "w")
 			?: error("Could not open output stream for $relativePath")
-		streams[relativePath] = stream
+		pending[relativePath] = PendingDocument(stream, temporaryUri, parent, finalName)
 	}
 
 	override fun writeChunk(relativePath: String, bytes: ByteArray) {
-		val stream = streams[relativePath] ?: error("Output stream is not open for $relativePath")
-		stream.write(bytes)
+		val document = pending[relativePath] ?: error("Output stream is not open for $relativePath")
+		document.stream.write(bytes)
 	}
 
 	override fun finishFile(relativePath: String) {
-		streams.remove(relativePath)?.close()
+		val document = pending.remove(relativePath) ?: error("Output stream is not open for $relativePath")
+		try {
+			document.stream.close()
+			check(findChild(document.parentUri, document.finalName) == null) { "Destination already exists: $relativePath" }
+			checkNotNull(
+				DocumentsContract.renameDocument(
+					context.contentResolver,
+					document.temporaryUri,
+					document.finalName,
+				),
+			) { "Could not commit received file $relativePath" }
+		} catch (error: Throwable) {
+			runCatching { document.stream.close() }
+			DocumentsContract.deleteDocument(context.contentResolver, document.temporaryUri)
+			throw error
+		}
 	}
 
-	private fun createDocument(relativePath: String): Uri {
+	override fun abortFile(relativePath: String, reason: String) {
+		val document = pending.remove(relativePath) ?: return
+		runCatching { document.stream.close() }
+		DocumentsContract.deleteDocument(context.contentResolver, document.temporaryUri)
+	}
+
+	private fun resolveParent(relativePath: String): Pair<Uri, String> {
 		val parts = relativePath.split('/').filter { it.isNotBlank() }
 		require(parts.isNotEmpty()) { "relative path must not be empty" }
 		var parent = DocumentsContract.buildDocumentUriUsingTree(
@@ -103,8 +140,7 @@ private class AndroidTreeReceiveOutputSink(
 				?: DocumentsContract.createDocument(context.contentResolver, parent, DocumentsContract.Document.MIME_TYPE_DIR, name)
 					?: error("Could not create directory $name")
 		}
-		return DocumentsContract.createDocument(context.contentResolver, parent, "application/octet-stream", parts.last())
-			?: error("Could not create file ${parts.last()}")
+		return parent to parts.last()
 	}
 
 	private fun findChild(parent: Uri, name: String): Uri? {

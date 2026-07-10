@@ -81,6 +81,11 @@ class VniDropAppViewModel(
 
 	private var selectedFile: PickedShareFile? = null
 
+	override fun onCleared() {
+		repository.shutdown()
+		super.onCleared()
+	}
+
 	init {
 		AppLogger.initialize(appDataDir)
 		AppLogger.info("lifecycle", "app started", mapOf("platform" to platformName))

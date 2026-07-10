@@ -89,6 +89,7 @@ class AppUiModelsTest {
 
 	@Test
 	fun transferActivityOnlyIncludesRunningStatuses() {
+		assertTrue(storedTransfer(status = "importing").isActiveTransfer())
 		assertTrue(storedTransfer(status = "sharing").isActiveTransfer())
 		assertTrue(storedTransfer(status = "receiving").isActiveTransfer())
 		assertFalse(storedTransfer(status = "done").isActiveTransfer())
@@ -98,7 +99,9 @@ class AppUiModelsTest {
 
 	private fun storedTransfer(status: String): StoredTransfer =
 		StoredTransfer(
+			localId = "local-1",
 			transferId = 1UL,
+			peerId = null,
 			direction = "send",
 			status = status,
 			transferName = "Demo",

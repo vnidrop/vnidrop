@@ -143,7 +143,7 @@ fun friendlyCoreError(raw: String?): String? {
 }
 
 private val progressPhases = setOf("import", "ticket", "access", "transfer", "download", "export", "lifecycle")
-private val activeTransferStatuses = setOf("sharing", "receiving")
+private val activeTransferStatuses = setOf("importing", "sharing", "receiving")
 
 private fun eventLabel(event: CoreEvent): String {
 	val direction = event.direction?.replaceFirstChar { it.uppercase() }

@@ -39,6 +39,12 @@ class CoreRepository(
 
 	private var core: VnidropCore? = null
 
+	fun shutdown() {
+		core?.shutdown()
+		core = null
+		_state.update { it.copy(isInitialized = false, status = "Not initialized") }
+	}
+
 	private val sink = object : CoreEventSink {
 		override fun onEvent(event: CoreEvent) {
 			_state.update { current ->
