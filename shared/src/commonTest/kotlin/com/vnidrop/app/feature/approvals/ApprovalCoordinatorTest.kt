@@ -94,7 +94,21 @@ class ApprovalCoordinatorTest {
 		respondedAt = null,
 	)
 
-	private fun activeTransfer() = Transfer("local", 1UL, "send", "sharing", null, "Photos", 1UL, 1UL, null)
+	private fun activeTransfer() = Transfer(
+		localId = "local",
+		transferId = 1UL,
+		direction = com.vnidrop.app.core.TransferDirection.Send,
+		status = com.vnidrop.app.core.TransferStatus.Sharing,
+		peerId = null,
+		transferName = "Photos",
+		contentHash = "hash",
+		fileCount = 1UL,
+		totalSize = 1UL,
+		ticket = null,
+		accessPolicy = com.vnidrop.app.core.ShareAccessPolicy.RequireApproval,
+		createdAt = 1L,
+		updatedAt = 1L,
+	)
 
 	private fun preferences(enabled: Boolean) = FakePreferencesRepository(
 		AppPreferences(

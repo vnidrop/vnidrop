@@ -2,6 +2,7 @@
 
 import gobley.gradle.cargo.dsl.appleMobile
 import gobley.gradle.rust.targets.RustAndroidTarget
+import org.gradle.api.tasks.PathSensitivity
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -102,6 +103,18 @@ uniffi {
 }
 
 tasks.configureEach {
+	// Gobley does not currently treat every Rust source/API change as an input of
+	// all platform cargo tasks. Without these inputs an incremental Android build
+	// can package an older .so next to freshly generated UniFFI Kotlin bindings.
+	if (name.startsWith("cargoBuild")) {
+		inputs.files(
+			fileTree(layout.projectDirectory.dir("../crates/vnidrop")) {
+				include("Cargo.toml", "build.rs", "src/**/*.rs")
+			},
+			layout.projectDirectory.file("../Cargo.toml"),
+			layout.projectDirectory.file("../Cargo.lock"),
+		).withPathSensitivity(PathSensitivity.RELATIVE)
+	}
 	if (name.contains("Linux") || name.contains("MinGW") || name.contains("MacOSX64")) {
 		enabled = false
 	}

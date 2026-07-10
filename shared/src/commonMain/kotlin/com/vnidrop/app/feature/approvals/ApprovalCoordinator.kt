@@ -2,6 +2,8 @@ package com.vnidrop.app.feature.approvals
 
 import com.vnidrop.app.core.CoreGateway
 import com.vnidrop.app.core.CoreSignal
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.notifications.LocalNotification
 import com.vnidrop.app.notifications.LocalNotificationService
@@ -60,7 +62,7 @@ class ApprovalCoordinator(
 			repository.state.collectLatest { core ->
 				if (core.isInitialized) {
 					core.transfers
-						.filter { it.direction == "send" && it.status == "sharing" }
+						.filter { it.direction == TransferDirection.Send && it.status == TransferStatus.Sharing }
 						.forEach { refresh(it.transferId) }
 				}
 			}

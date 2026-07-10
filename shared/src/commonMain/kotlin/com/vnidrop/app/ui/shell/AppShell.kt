@@ -28,6 +28,7 @@ fun AppShell(
 	windowClass: WindowClass,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit = {},
+	floatingAction: (@Composable BoxScope.() -> Unit)? = null,
 	content: @Composable () -> Unit,
 ) {
 	val colors = LocalVniDropColors.current
@@ -42,6 +43,7 @@ fun AppShell(
 				selectedDestination = selectedDestination,
 				onDestinationSelected = onDestinationSelected,
 				overlay = overlay,
+				floatingAction = floatingAction,
 				content = content,
 			)
 		} else {
@@ -49,6 +51,7 @@ fun AppShell(
 				selectedDestination = selectedDestination,
 				onDestinationSelected = onDestinationSelected,
 				overlay = overlay,
+				floatingAction = floatingAction,
 				content = content,
 			)
 		}
@@ -60,6 +63,7 @@ private fun WideShell(
 	selectedDestination: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit,
+	floatingAction: (@Composable BoxScope.() -> Unit)?,
 	content: @Composable () -> Unit,
 ) {
 	Row(modifier = Modifier.fillMaxSize()) {
@@ -68,8 +72,9 @@ private fun WideShell(
 			onDestinationSelected = onDestinationSelected,
 		)
 		Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-			ScreenScrollContainer(content = content)
-			overlay()
+			content()
+			floatingAction?.invoke(this)
+			Box(Modifier.fillMaxSize().padding(bottom = if (floatingAction == null) 0.dp else 72.dp)) { overlay() }
 		}
 	}
 }
@@ -79,12 +84,14 @@ private fun PhoneShell(
 	selectedDestination: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit,
+	floatingAction: (@Composable BoxScope.() -> Unit)?,
 	content: @Composable () -> Unit,
 ) {
 	Column(modifier = Modifier.fillMaxSize()) {
 		Box(modifier = Modifier.weight(1f).fillMaxSize()) {
-			ScreenScrollContainer(content = content)
-			overlay()
+			content()
+			floatingAction?.invoke(this)
+			Box(Modifier.fillMaxSize().padding(bottom = if (floatingAction == null) 0.dp else 72.dp)) { overlay() }
 		}
 		AppBottomNavigation(
 			selected = selectedDestination,
