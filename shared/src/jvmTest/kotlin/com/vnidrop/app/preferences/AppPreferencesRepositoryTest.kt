@@ -30,6 +30,15 @@ class AppPreferencesRepositoryTest {
 		assertEquals(ThemeMode.Dark, repository.preferences.first().themeMode)
 	}
 
+	@Test
+	fun notificationOptInIsDisabledByDefaultAndPersisted() = runBlocking {
+		val repository = repositoryForTest()
+
+		assertEquals(false, repository.preferences.first().notificationsEnabled)
+		repository.setNotificationsEnabled(true)
+		assertEquals(true, repository.preferences.first().notificationsEnabled)
+	}
+
 	private fun repositoryForTest(): AppPreferencesRepository {
 		val directory = Files.createTempDirectory("vnidrop-preferences-test").toString()
 		return AppPreferencesRepository(

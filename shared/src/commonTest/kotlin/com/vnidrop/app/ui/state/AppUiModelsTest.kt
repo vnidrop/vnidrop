@@ -1,15 +1,14 @@
 package com.vnidrop.app.ui.state
 
-import com.vnidrop.app.core.FolderAccessStatus
-import com.vnidrop.app.core.ReceiveFolder
-import com.vnidrop.app.core.ReceiveFolderKind
+import com.vnidrop.app.feature.receive.ReceiveState
+import com.vnidrop.app.feature.send.SendState
+import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.ui.theme.resolveDarkTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import uniffi.vnidrop.StoredTransfer
 
 class AppUiModelsTest {
 	@Test
@@ -35,18 +34,6 @@ class AppUiModelsTest {
 	}
 
 	@Test
-	fun coreErrorsBecomeStableUserMessages() {
-		assertEquals(
-			"The ticket could not be read. Check that the full ticket was copied.",
-			friendlyCoreError("reason=failed to parse transfer ticket"),
-		)
-		assertEquals(
-			"The transfer is waiting for approval or was refused by the sender.",
-			friendlyCoreError("permission denied by sender"),
-		)
-	}
-
-	@Test
 	fun byteFormattingKeepsTransferCardsReadable() {
 		assertEquals("58 B", formatBytes(58UL))
 		assertEquals("1.5 KB", formatBytes(1536UL))
@@ -54,37 +41,28 @@ class AppUiModelsTest {
 
 	@Test
 	fun sendStateExposesShareEligibility() {
-		val ready = SendUiState(selectedSource = "/tmp/payload.txt")
+		val ready = SendState(selectedSource = "/tmp/payload.txt")
 
-		assertTrue(ready.canCreateShare(isCoreInitialized = true))
-		assertFalse(ready.canCreateShare(isCoreInitialized = false))
-		assertFalse(SendUiState().canCreateShare(isCoreInitialized = true))
-		assertFalse(ready.copy(isSharing = true).canCreateShare(isCoreInitialized = true))
+		assertTrue(ready.canCreateShare(coreInitialized = true))
+		assertFalse(ready.canCreateShare(coreInitialized = false))
+		assertFalse(SendState().canCreateShare(coreInitialized = true))
+		assertFalse(ready.copy(isSharing = true).canCreateShare(coreInitialized = true))
 	}
 
 	@Test
 	fun receiveStateExposesInspectAndReceiveEligibility() {
-		val ready = ReceiveUiState(ticket = "ticket", outputDirectory = "/tmp/out")
-
-		assertTrue(ready.canInspect(isCoreInitialized = true))
-		assertTrue(ready.canReceive(isCoreInitialized = true))
-		assertFalse(ready.canInspect(isCoreInitialized = false))
-		assertFalse(ready.copy(ticket = "").canReceive(isCoreInitialized = true))
-		assertFalse(ready.copy(outputDirectory = "").canReceive(isCoreInitialized = true))
-		assertFalse(ready.copy(isReceiving = true).canReceive(isCoreInitialized = true))
-	}
-
-	@Test
-	fun preferencesStateExposesReceiveFolderEligibility() {
-		val folder = ReceiveFolder(
-			kind = ReceiveFolderKind.FileSystemPath,
-			value = "/tmp/downloads",
-			displayName = "Downloads",
+		val ready = ReceiveState(
+			ticket = "ticket",
+			outputDirectory = "/tmp/out",
+			folderAccessStatus = com.vnidrop.app.core.FolderAccessStatus.Writable,
 		)
 
-		assertTrue(PreferencesUiState(receiveFolder = folder, folderAccessStatus = FolderAccessStatus.Writable).canReceiveIntoFolder)
-		assertFalse(PreferencesUiState(receiveFolder = folder, folderAccessStatus = FolderAccessStatus.PermissionRequired).canReceiveIntoFolder)
-		assertFalse(PreferencesUiState(receiveFolder = folder, folderAccessStatus = FolderAccessStatus.Unavailable).canReceiveIntoFolder)
+		assertTrue(ready.canInspect(coreInitialized = true))
+		assertTrue(ready.canReceive(coreInitialized = true))
+		assertFalse(ready.canInspect(coreInitialized = false))
+		assertFalse(ready.copy(ticket = "").canReceive(coreInitialized = true))
+		assertFalse(ready.copy(outputDirectory = "").canReceive(coreInitialized = true))
+		assertFalse(ready.copy(isReceiving = true).canReceive(coreInitialized = true))
 	}
 
 	@Test
@@ -97,19 +75,16 @@ class AppUiModelsTest {
 		assertFalse(storedTransfer(status = "cancelled").isActiveTransfer())
 	}
 
-	private fun storedTransfer(status: String): StoredTransfer =
-		StoredTransfer(
+	private fun storedTransfer(status: String): Transfer =
+		Transfer(
 			localId = "local-1",
 			transferId = 1UL,
 			peerId = null,
 			direction = "send",
 			status = status,
 			transferName = "Demo",
-			contentHash = null,
 			ticket = null,
 			fileCount = 1UL,
 			totalSize = 128UL,
-			createdAt = 1L,
-			updatedAt = 1L,
 		)
 }
