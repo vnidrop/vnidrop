@@ -43,6 +43,7 @@
     <string name="preferences_receive_folder_title">Receive folder</string>
     <string name="button_choose_folder">Choose folder</string>
     <string name="button_reset_default">Reset default</string>
+    <string name="button_back">Back</string>
     <string name="folder_status_writable">Writable</string>
     <string name="folder_status_permission_required">Permission required</string>
     <string name="folder_status_unavailable">Unavailable</string>
@@ -62,6 +63,18 @@
     <string name="network_title">Network</string>
     <string name="battery_level_title">Battery level</string>
     <string name="value_unavailable">Not available</string>
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_local_title">Allow notifications</string>
+    <string name="notifications_description">Let VniDrop notify you about new connection requests while the app is running in the background.</string>
+    <string name="notifications_permission_denied">Notifications are turned off for VniDrop. You can enable them in Settings.</string>
+    <string name="notifications_unsupported">Notifications are not available on this device.</string>
+    <string name="notifications_enabled_message">Notifications enabled.</string>
+    <string name="notifications_settings_open_failed">Could not open notification settings.</string>
+    <string name="button_open_settings">Open Settings</string>
+    <string name="value_on">On</string>
+    <string name="value_off">Off</string>
+    <string name="approval_connection_request">Connection request</string>
+    <string name="approval_pending_count">%1$d requests are waiting</string>
     <string name="core_status_ready">Ready</string>
     <string name="event_log_title">Event log</string>
     <string name="no_events">No events have been emitted yet.</string>

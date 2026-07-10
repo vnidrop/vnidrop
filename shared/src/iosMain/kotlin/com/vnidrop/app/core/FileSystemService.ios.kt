@@ -42,6 +42,18 @@ private class IosFileSystemService : FileSystemService {
 
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
 
+	override suspend fun sharePickedFile(
+		repository: CoreGateway,
+		file: PickedShareFile,
+		transferName: String,
+		senderName: String,
+	): Result<Share> = repository.shareSecurityScopedFileUrl(
+		file.value,
+		file.displayName,
+		transferName,
+		senderName,
+	)
+
 	private fun validateSecurityScopedUrl(value: String): FolderAccessStatus {
 		val url = NSURL.URLWithString(value) ?: NSURL.fileURLWithPath(value)
 		val didStartAccess = url.startAccessingSecurityScopedResource()

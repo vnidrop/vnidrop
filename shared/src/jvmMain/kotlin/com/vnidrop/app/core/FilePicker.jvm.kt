@@ -44,15 +44,6 @@ actual fun rememberReceiveFolderPicker(
 	}
 }
 
-actual suspend fun sharePickedFile(
-	repository: CoreRepository,
-	file: PickedShareFile,
-	transferName: String,
-	senderName: String,
-) {
-	repository.sharePath(file.value, transferName, senderName)
-}
-
 private fun openPicker(
 	onError: (String) -> Unit,
 	block: () -> Unit,

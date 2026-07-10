@@ -2,6 +2,7 @@ package com.vnidrop.app.ui.shell
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,14 +23,16 @@ import com.vnidrop.app.ui.theme.LocalVniDropColors
 
 @Composable
 fun AppShell(
+	modifier: Modifier = Modifier,
 	selectedDestination: AppDestination,
 	windowClass: WindowClass,
 	onDestinationSelected: (AppDestination) -> Unit,
+	overlay: @Composable BoxScope.() -> Unit = {},
 	content: @Composable () -> Unit,
 ) {
 	val colors = LocalVniDropColors.current
 	Surface(
-		modifier = Modifier
+		modifier = modifier
 			.fillMaxSize()
 			.background(colors.backgroundDashCanvas),
 		color = colors.backgroundDashCanvas,
@@ -38,12 +41,14 @@ fun AppShell(
 			PhoneShell(
 				selectedDestination = selectedDestination,
 				onDestinationSelected = onDestinationSelected,
+				overlay = overlay,
 				content = content,
 			)
 		} else {
 			WideShell(
 				selectedDestination = selectedDestination,
 				onDestinationSelected = onDestinationSelected,
+				overlay = overlay,
 				content = content,
 			)
 		}
@@ -54,6 +59,7 @@ fun AppShell(
 private fun WideShell(
 	selectedDestination: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
+	overlay: @Composable BoxScope.() -> Unit,
 	content: @Composable () -> Unit,
 ) {
 	Row(modifier = Modifier.fillMaxSize()) {
@@ -61,7 +67,10 @@ private fun WideShell(
 			selected = selectedDestination,
 			onDestinationSelected = onDestinationSelected,
 		)
-		ScreenScrollContainer(modifier = Modifier.weight(1f), content = content)
+		Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+			ScreenScrollContainer(content = content)
+			overlay()
+		}
 	}
 }
 
@@ -69,10 +78,14 @@ private fun WideShell(
 private fun PhoneShell(
 	selectedDestination: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
+	overlay: @Composable BoxScope.() -> Unit,
 	content: @Composable () -> Unit,
 ) {
 	Column(modifier = Modifier.fillMaxSize()) {
-		ScreenScrollContainer(modifier = Modifier.weight(1f), content = content)
+		Box(modifier = Modifier.weight(1f).fillMaxSize()) {
+			ScreenScrollContainer(content = content)
+			overlay()
+		}
 		AppBottomNavigation(
 			selected = selectedDestination,
 			onDestinationSelected = onDestinationSelected,

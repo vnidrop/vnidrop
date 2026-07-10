@@ -27,4 +27,11 @@ private class JvmFileSystemService : FileSystemService {
 	}
 
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
+
+	override suspend fun sharePickedFile(
+		repository: CoreGateway,
+		file: PickedShareFile,
+		transferName: String,
+		senderName: String,
+	): Result<Share> = repository.sharePath(file.value, transferName, senderName)
 }

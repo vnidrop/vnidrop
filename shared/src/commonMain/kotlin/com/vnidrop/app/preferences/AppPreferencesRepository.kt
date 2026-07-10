@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.ui.theme.ThemeMode
@@ -18,19 +19,30 @@ data class AppPreferences(
 	val username: String,
 	val receiveFolder: ReceiveFolder,
 	val themeMode: ThemeMode,
+	val notificationsEnabled: Boolean,
 )
 
 class AppPreferencesDefaults(
 	val username: String,
 	val receiveFolder: ReceiveFolder,
 	val themeMode: ThemeMode,
+	val notificationsEnabled: Boolean = false,
 )
+
+interface PreferencesRepository {
+	val preferences: Flow<AppPreferences>
+	suspend fun setUsername(username: String)
+	suspend fun setReceiveFolder(folder: ReceiveFolder)
+	suspend fun resetReceiveFolder()
+	suspend fun setThemeMode(mode: ThemeMode)
+	suspend fun setNotificationsEnabled(enabled: Boolean)
+}
 
 class AppPreferencesRepository(
 	private val dataStore: DataStore<Preferences>,
 	private val defaults: AppPreferencesDefaults,
-) {
-	val preferences: Flow<AppPreferences> = dataStore.data
+) : PreferencesRepository {
+	override val preferences: Flow<AppPreferences> = dataStore.data
 		.catch { emit(emptyPreferences()) }
 		.map { prefs ->
 			AppPreferences(
@@ -44,16 +56,17 @@ class AppPreferencesRepository(
 						?: defaults.receiveFolder.displayName,
 				),
 				themeMode = prefs[PreferenceKeys.ThemeMode]?.let { themeModeOrNull(it) } ?: defaults.themeMode,
+				notificationsEnabled = prefs[PreferenceKeys.NotificationsEnabled] ?: defaults.notificationsEnabled,
 			)
 		}
 
-	suspend fun setUsername(username: String) {
+	override suspend fun setUsername(username: String) {
 		dataStore.edit { prefs ->
 			prefs[PreferenceKeys.Username] = username.trim()
 		}
 	}
 
-	suspend fun setReceiveFolder(folder: ReceiveFolder) {
+	override suspend fun setReceiveFolder(folder: ReceiveFolder) {
 		dataStore.edit { prefs ->
 			prefs[PreferenceKeys.ReceiveFolderKind] = folder.kind.name
 			prefs[PreferenceKeys.ReceiveFolderValue] = folder.value
@@ -61,13 +74,19 @@ class AppPreferencesRepository(
 		}
 	}
 
-	suspend fun resetReceiveFolder() {
+	override suspend fun resetReceiveFolder() {
 		setReceiveFolder(defaults.receiveFolder)
 	}
 
-	suspend fun setThemeMode(mode: ThemeMode) {
+	override suspend fun setThemeMode(mode: ThemeMode) {
 		dataStore.edit { prefs ->
 			prefs[PreferenceKeys.ThemeMode] = mode.name
+		}
+	}
+
+	override suspend fun setNotificationsEnabled(enabled: Boolean) {
+		dataStore.edit { prefs ->
+			prefs[PreferenceKeys.NotificationsEnabled] = enabled
 		}
 	}
 }
@@ -83,6 +102,7 @@ private object PreferenceKeys {
 	val ReceiveFolderValue = stringPreferencesKey("receive_folder_value")
 	val ReceiveFolderDisplayName = stringPreferencesKey("receive_folder_display_name")
 	val ThemeMode = stringPreferencesKey("theme_mode")
+	val NotificationsEnabled = booleanPreferencesKey("notifications_enabled")
 }
 
 private fun receiveFolderKindOrNull(raw: String): ReceiveFolderKind? =

@@ -45,6 +45,23 @@ private class AndroidFileSystemService(
 		return AndroidTreeReceiveOutputSink(context, folder.value.toUri())
 	}
 
+	override suspend fun sharePickedFile(
+		repository: CoreGateway,
+		file: PickedShareFile,
+		transferName: String,
+		senderName: String,
+	): Result<Share> = runCatching {
+		context.contentResolver.openFileDescriptor(Uri.parse(file.value), "r").use { descriptor ->
+			checkNotNull(descriptor) { "Could not open selected file descriptor" }
+			repository.shareFileDescriptor(
+				fd = descriptor.fd,
+				displayName = file.displayName,
+				transferName = transferName,
+				senderName = senderName,
+			).getOrThrow()
+		}
+	}
+
 	private fun validatePath(path: String): FolderAccessStatus =
 		runCatching {
 			val directory = java.io.File(path)

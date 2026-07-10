@@ -62,35 +62,6 @@ actual fun rememberReceiveFolderPicker(
 	}
 }
 
-actual suspend fun sharePickedFile(
-	repository: CoreRepository,
-	file: PickedShareFile,
-	transferName: String,
-	senderName: String,
-) {
-	val context = AndroidContextHolder.context
-		errorIfNull(context, "Android context has not been attached")
-		.contentResolver
-		.openFileDescriptor(Uri.parse(file.value), "r")
-		.use { descriptor ->
-			checkNotNull(descriptor) { "Could not open selected file descriptor" }
-			repository.shareFileDescriptor(
-				fd = descriptor.fd,
-				displayName = file.displayName,
-				transferName = transferName,
-				senderName = senderName,
-			)
-		}
-}
-
-private object AndroidContextHolder {
-	var context: Context? = null
-}
-
-fun attachAndroidFilePickerContext(context: Context) {
-	AndroidContextHolder.context = context.applicationContext
-}
-
 private fun Context.displayName(uri: Uri): String {
 	contentResolver.query(uri, null, null, null, null)?.use { cursor ->
 		val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -100,6 +71,3 @@ private fun Context.displayName(uri: Uri): String {
 	}
 	return uri.lastPathSegment ?: "transfer"
 }
-
-private fun <T : Any> errorIfNull(value: T?, message: String): T =
-	value ?: error(message)

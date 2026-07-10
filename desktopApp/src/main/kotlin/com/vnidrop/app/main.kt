@@ -12,7 +12,7 @@ fun main() {
 			onCloseRequest = ::exitApplication,
 			title = "vnidrop",
 		) {
-			App()
+			App(rememberJvmAppDependencies())
 		}
 	}
 }

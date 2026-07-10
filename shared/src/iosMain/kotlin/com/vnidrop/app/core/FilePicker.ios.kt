@@ -73,15 +73,6 @@ actual fun rememberReceiveFolderPicker(
 	}
 }
 
-actual suspend fun sharePickedFile(
-	repository: CoreRepository,
-	file: PickedShareFile,
-	transferName: String,
-	senderName: String,
-) {
-	repository.shareSecurityScopedFileUrl(file.value, file.displayName, transferName, senderName)
-}
-
 private class DocumentPickerDelegate(
 	private val onFilePicked: (PickedShareFile) -> Unit,
 	private val onError: (String) -> Unit,

@@ -1,0 +1,75 @@
+package com.vnidrop.app.feature.settings
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import com.vnidrop.app.ui.theme.ThemeMode
+import org.jetbrains.compose.resources.stringResource
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.about_title
+import vnidrop.shared.generated.resources.appearance_dark_mode
+import vnidrop.shared.generated.resources.appearance_light_mode
+import vnidrop.shared.generated.resources.appearance_system_mode
+import vnidrop.shared.generated.resources.appearance_title
+import vnidrop.shared.generated.resources.notifications_title
+import vnidrop.shared.generated.resources.preferences_title
+import vnidrop.shared.generated.resources.settings_title
+
+@Composable
+internal fun SettingsOverview(
+	state: SettingsState,
+	onSectionSelected: (SettingsSection) -> Unit,
+	largeTitle: Boolean,
+) {
+	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+		Text(
+			stringResource(Res.string.settings_title),
+			style = if (largeTitle) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
+			fontWeight = FontWeight.Bold,
+		)
+		SettingsGroup {
+			SettingsRow(
+				icon = SettingsIcons.Device,
+				title = stringResource(Res.string.preferences_title),
+				value = state.username,
+				selected = state.selectedSection == SettingsSection.Preferences,
+				onClick = { onSectionSelected(SettingsSection.Preferences) },
+			)
+			SettingsDivider()
+			SettingsRow(
+				icon = SettingsIcons.Sun,
+				title = stringResource(Res.string.appearance_title),
+				value = themeModeLabel(state.themeMode),
+				selected = state.selectedSection == SettingsSection.Appearance,
+				onClick = { onSectionSelected(SettingsSection.Appearance) },
+			)
+		}
+		SettingsGroup {
+			SettingsRow(
+				icon = SettingsIcons.Bell,
+				title = stringResource(Res.string.notifications_title),
+				selected = state.selectedSection == SettingsSection.Notifications,
+				onClick = { onSectionSelected(SettingsSection.Notifications) },
+			)
+			SettingsDivider()
+			SettingsRow(
+				icon = SettingsIcons.Info,
+				title = stringResource(Res.string.about_title),
+				selected = state.selectedSection == SettingsSection.About,
+				iconTone = SettingsIconTone.Neutral,
+				onClick = { onSectionSelected(SettingsSection.About) },
+			)
+		}
+	}
+}
+
+@Composable
+private fun themeModeLabel(mode: ThemeMode): String = when (mode) {
+	ThemeMode.System -> stringResource(Res.string.appearance_system_mode)
+	ThemeMode.Light -> stringResource(Res.string.appearance_light_mode)
+	ThemeMode.Dark -> stringResource(Res.string.appearance_dark_mode)
+}

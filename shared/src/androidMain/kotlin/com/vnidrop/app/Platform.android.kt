@@ -5,65 +5,71 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import android.os.Build
-import android.os.Environment
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import com.vnidrop.app.core.rememberFileSystemService
+import com.vnidrop.app.notifications.rememberAndroidLocalNotificationService
 import java.net.NetworkInterface
 
-class AndroidPlatform : Platform {
-	override val name: String = "Android ${Build.VERSION.SDK_INT}"
-	override val defaultCoreDataDir: String =
-		AndroidPlatformContextHolder.context?.filesDir?.resolve("vnidrop")?.absolutePath
-			?: (System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop")
-	override val defaultReceiveDir: String =
-		AndroidPlatformContextHolder.context
-			?.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
-			?.absolutePath
-			?: (System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop-receive")
-	override val deviceInfo: DeviceInfo = DeviceInfo(
+@Composable
+fun rememberAndroidAppDependencies(activity: ComponentActivity): AppDependencies {
+	val context = activity.applicationContext
+	val fileSystemService = rememberFileSystemService()
+	val notificationService = rememberAndroidLocalNotificationService(activity)
+	return remember(context, fileSystemService, notificationService) {
+		AppDependencies(
+			environment = PlatformEnvironment(
+				name = "Android ${Build.VERSION.SDK_INT}",
+				appVersion = context.appVersion(),
+				defaultCoreDataDir = context.filesDir.resolve("vnidrop").absolutePath,
+				defaultUsername = Build.DEVICE.takeIf(String::isNotBlank) ?: "Receiver",
+			),
+			deviceInfoProvider = AndroidDeviceInfoProvider(context),
+			fileSystemService = fileSystemService,
+			localNotificationService = notificationService,
+		)
+	}
+}
+
+private class AndroidDeviceInfoProvider(
+	private val context: Context,
+) : DeviceInfoProvider {
+	override suspend fun load(): DeviceInfo = DeviceInfo(
 		deviceName = Build.DEVICE,
 		deviceModel = listOf(Build.MANUFACTURER, Build.MODEL)
-			.filter { it.isNotBlank() }
+			.filter(String::isNotBlank)
 			.joinToString(" ")
 			.ifBlank { null },
 		operatingSystem = "Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})",
-		network = activeNetworkSummary(),
-		batteryLevel = batteryLevel(),
+		network = context.activeNetworkSummary(),
+		batteryLevel = context.batteryLevel(),
 	)
 }
 
-actual fun getPlatform(): Platform = AndroidPlatform()
+private fun Context.appVersion(): String = runCatching {
+	packageManager.getPackageInfo(packageName, 0).versionName
+}.getOrNull()?.takeIf(String::isNotBlank) ?: "0.1.0"
 
-fun attachAndroidPlatformContext(context: Context) {
-	AndroidPlatformContextHolder.context = context.applicationContext
-}
+private fun Context.activeNetworkSummary(): String? = runCatching {
+	val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+		?: return@runCatching networkInterfaceName()
+	val activeNetwork = manager.activeNetwork ?: return@runCatching networkInterfaceName()
+	val capabilities = manager.getNetworkCapabilities(activeNetwork) ?: return@runCatching networkInterfaceName()
+	when {
+		capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi-Fi"
+		capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Mobile"
+		capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
+		capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> "VPN"
+		else -> networkInterfaceName()
+	}
+}.getOrNull()
 
-private object AndroidPlatformContextHolder {
-	var context: Context? = null
-}
-
-private fun activeNetworkSummary(): String? =
-	runCatching {
-		val context = AndroidPlatformContextHolder.context ?: return@runCatching networkInterfaceName()
-		val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-			?: return@runCatching networkInterfaceName()
-		val activeNetwork = manager.activeNetwork ?: return@runCatching networkInterfaceName()
-		val capabilities = manager.getNetworkCapabilities(activeNetwork) ?: return@runCatching networkInterfaceName()
-
-		when {
-			capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "Wi-Fi"
-			capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "Mobile"
-			capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "Ethernet"
-			capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> "VPN"
-			else -> networkInterfaceName()
-		}
-	}.getOrNull()
-
-private fun batteryLevel(): String? =
-	runCatching {
-		val context = AndroidPlatformContextHolder.context ?: return@runCatching null
-		val manager = context.getSystemService(BatteryManager::class.java)
-		val level = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-		level.takeIf { it >= 0 }?.let { "$it%" }
-	}.getOrNull()
+private fun Context.batteryLevel(): String? = runCatching {
+	val manager = getSystemService(BatteryManager::class.java)
+	val level = manager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+	level.takeIf { it >= 0 }?.let { "$it%" }
+}.getOrNull()
 
 private fun networkInterfaceName(): String? =
 	NetworkInterface.getNetworkInterfaces()

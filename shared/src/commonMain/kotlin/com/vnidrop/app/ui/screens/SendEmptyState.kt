@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vnidrop.app.core.CoreUiState
+import com.vnidrop.app.core.CoreState
+import com.vnidrop.app.feature.send.SendState
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.navigation.VniDropIcons
-import com.vnidrop.app.ui.state.SendUiState
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.isActiveTransfer
 import com.vnidrop.app.ui.theme.LocalVniDropColors
@@ -30,7 +30,7 @@ import vnidrop.shared.generated.resources.send_empty_body
 import vnidrop.shared.generated.resources.send_empty_title
 
 @Composable
-internal fun SendEmptyState(windowClass: WindowClass) {
+internal fun SendEmptyState(windowClass: WindowClass, onCreateNewTransfer: () -> Unit) {
 	val colors = LocalVniDropColors.current
 	Column(
 		modifier = Modifier
@@ -64,13 +64,13 @@ internal fun SendEmptyState(windowClass: WindowClass) {
 		)
 		PrimaryButton(
 			text = stringResource(Res.string.button_create_new_transfer),
-			onClick = {},
+			onClick = onCreateNewTransfer,
 			modifier = Modifier.padding(top = 24.dp),
 		)
 	}
 }
 
-internal fun SendUiState.shouldShowEmptyState(coreState: CoreUiState): Boolean =
+internal fun SendState.shouldShowEmptyState(coreState: CoreState): Boolean =
 	!hasSelectedSource &&
 		!isSharing &&
 		coreState.lastShare == null &&

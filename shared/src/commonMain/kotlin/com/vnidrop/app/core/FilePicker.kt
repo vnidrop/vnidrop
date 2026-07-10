@@ -26,10 +26,3 @@ expect fun rememberReceiveFolderPicker(
 	onFolderPicked: (ReceiveFolder) -> Unit,
 	onError: (String) -> Unit,
 ): ReceiveFolderPicker
-
-expect suspend fun sharePickedFile(
-	repository: CoreRepository,
-	file: PickedShareFile,
-	transferName: String,
-	senderName: String,
-)

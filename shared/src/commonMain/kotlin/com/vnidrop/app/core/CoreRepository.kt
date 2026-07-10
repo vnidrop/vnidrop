@@ -1,68 +1,70 @@
 package com.vnidrop.app.core
 
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
-import uniffi.vnidrop.ReceiverRequest
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiverRequest
 import uniffi.vnidrop.ShareMetadataInput
 import uniffi.vnidrop.ShareResult
 import uniffi.vnidrop.ShareSource
 import uniffi.vnidrop.SourceKind
 import uniffi.vnidrop.StoredTransfer
 import uniffi.vnidrop.TicketInspection
+import uniffi.vnidrop.TransferMetadata
 import uniffi.vnidrop.VnidropCore
-
-data class CoreUiState(
-	val isInitialized: Boolean = false,
-	val status: String = "Not initialized",
-	val events: List<CoreEvent> = emptyList(),
-	val transfers: List<StoredTransfer> = emptyList(),
-	val lastShare: ShareResult? = null,
-	val lastInspection: TicketInspection? = null,
-	val receiverRequests: List<ReceiverRequest> = emptyList(),
-	val error: String? = null,
-)
 
 class CoreRepository(
 	private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-) {
-	private val _state = MutableStateFlow(CoreUiState())
-	val state: StateFlow<CoreUiState> = _state
+) : CoreGateway {
+	private val _state = MutableStateFlow(CoreState())
+	override val state: StateFlow<CoreState> = _state.asStateFlow()
+
+	private val _signals = MutableSharedFlow<CoreSignal>(
+		extraBufferCapacity = 64,
+		onBufferOverflow = BufferOverflow.DROP_OLDEST,
+	)
+	override val signals: SharedFlow<CoreSignal> = _signals.asSharedFlow()
 
 	private var core: VnidropCore? = null
 
-	fun shutdown() {
-		core?.shutdown()
-		core = null
-		_state.update { it.copy(isInitialized = false, status = "Not initialized") }
-	}
-
 	private val sink = object : CoreEventSink {
 		override fun onEvent(event: CoreEvent) {
-			_state.update { current ->
-				current.copy(events = (listOf(event) + current.events).take(200))
+			val model = event.toModel()
+			_state.update { current -> current.copy(events = (listOf(model) + current.events).take(MaxEvents)) }
+			if (model.phase == "approval" && model.transferId != null) {
+				_signals.tryEmit(CoreSignal.ApprovalChanged(model.transferId))
 			}
 		}
 	}
 
-	suspend fun initialize(appDataDir: String) = runCore {
+	override suspend fun initialize(appDataDir: String): Result<Unit> = runCore {
 		core?.shutdown()
 		core = VnidropCore.initialize(appDataDir, sink)
-		refreshStatus()
-		loadTransfers()
-		loadEvents()
-		_state.update { it.copy(isInitialized = true, error = null) }
+		refreshSnapshot()
+		_state.update { it.copy(isInitialized = true) }
 	}
 
-	suspend fun sharePath(path: String, transferName: String, senderName: String) = runCore {
+	override fun shutdown() {
+		core?.shutdown()
+		core = null
+		_state.value = CoreState()
+	}
+
+	override suspend fun sharePath(path: String, transferName: String, senderName: String): Result<Share> =
 		shareSources(
 			sources = listOf(
 				ShareSource(
@@ -75,17 +77,13 @@ class CoreRepository(
 			transferName = transferName,
 			senderName = senderName,
 		)
-	}
 
-	suspend fun shareFileDescriptor(
+	override suspend fun shareFileDescriptor(
 		fd: Int,
 		displayName: String,
 		transferName: String,
 		senderName: String,
-	) = runCore {
-		// The fd is borrowed from platform code. Rust duplicates it before
-		// starting the import, so Android may close the ParcelFileDescriptor
-		// once this suspend call returns.
+	): Result<Share> =
 		shareSources(
 			sources = listOf(
 				ShareSource(
@@ -98,16 +96,13 @@ class CoreRepository(
 			transferName = transferName,
 			senderName = senderName,
 		)
-	}
 
-	suspend fun shareSecurityScopedFileUrl(
+	override suspend fun shareSecurityScopedFileUrl(
 		fileUrl: String,
 		displayName: String,
 		transferName: String,
 		senderName: String,
-	) = runCore {
-		// The iOS actual for withPlatformPathAccess starts and stops the
-		// security-scoped URL lease around this entire shareFiles call.
+	): Result<Share> =
 		shareSources(
 			sources = listOf(
 				ShareSource(
@@ -120,99 +115,75 @@ class CoreRepository(
 			transferName = transferName,
 			senderName = senderName,
 		)
+
+	override suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel> = runCore {
+		requireCore().inspectTicket(ticket).toModel().also { inspection ->
+			_state.update { it.copy(lastInspection = inspection) }
+		}
 	}
 
-	suspend fun inspectTicket(ticket: String) = runCore {
-		val inspection = requireCore().inspectTicket(ticket)
-		_state.update { it.copy(lastInspection = inspection, error = null) }
-	}
-
-	suspend fun receive(ticket: String, outputDir: String, receiverName: String) = runCore {
+	override suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit> = runCore {
 		requireCore().receive(ticket, outputDir, receiverName.ifBlank { null })
-		refreshStatus()
-		loadTransfers()
+		refreshSnapshot()
 	}
 
-	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String) = runCore {
+	override suspend fun receiveWithOutputSink(
+		ticket: String,
+		outputSink: ReceiveOutputSink,
+		receiverName: String,
+	): Result<Unit> = runCore {
 		requireCore().receiveWithOutputSink(ticket, outputSink, receiverName.ifBlank { null })
-		refreshStatus()
-		loadTransfers()
+		refreshSnapshot()
 	}
 
-	suspend fun receiveIntoSecurityScopedDirectory(
+	override suspend fun receiveIntoSecurityScopedDirectory(
 		ticket: String,
 		outputDirectoryUrl: String,
 		receiverName: String,
-	) = runCore {
+	): Result<Unit> = runCore {
 		withPlatformPathAccess(SourceKind.IOS_SECURITY_SCOPED_URL, outputDirectoryUrl) {
 			requireCore().receive(ticket, outputDirectoryUrl, receiverName.ifBlank { null })
 		}
-		refreshStatus()
-		loadTransfers()
+		refreshSnapshot()
 	}
 
-	suspend fun cancel(transferId: ULong) = runCore {
+	override suspend fun cancel(transferId: ULong): Result<Unit> = runCore {
 		requireCore().cancelTransfer(transferId)
-		refreshStatus()
-		loadTransfers()
+		refreshSnapshot()
 	}
 
-	suspend fun refreshReceiverRequests(transferId: ULong) = runCore {
-		val requests = requireCore().listReceiverRequests(transferId)
-		_state.update { it.copy(receiverRequests = requests, error = null) }
+	override suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>> = runCore {
+		requireCore().listReceiverRequests(transferId).map(ReceiverRequest::toModel)
 	}
 
-	suspend fun respondReceiverRequest(requestId: String, accepted: Boolean, reason: String? = null) = runCore {
+	override suspend fun respondReceiverRequest(
+		requestId: String,
+		accepted: Boolean,
+		reason: String?,
+	): Result<Unit> = runCore {
 		requireCore().respondReceiverRequest(requestId, accepted, reason)
-		state.value.lastShare?.let { share ->
-			val requests = requireCore().listReceiverRequests(share.transferId)
-			_state.update { it.copy(receiverRequests = requests, error = null) }
-		}
 	}
 
-	suspend fun refreshTransfers() = runCore {
-		loadTransfers()
-	}
-
-	suspend fun refreshEvents() = runCore {
-		loadEvents()
-	}
-
-	suspend fun setError(message: String) {
-		_state.update { it.copy(error = message) }
-	}
-
-	private suspend fun runCore(block: suspend () -> Unit) {
-		withContext(dispatcher) {
-			try {
-				block()
-			} catch (error: Throwable) {
-				_state.update { it.copy(error = error.message ?: error.toString()) }
-			}
-		}
-	}
-
-	private fun requireCore(): VnidropCore =
-		core ?: error("Initialize the core first.")
+	override suspend fun refresh(): Result<Unit> = runCore { refreshSnapshot() }
 
 	private suspend fun shareSources(
 		sources: List<ShareSource>,
 		transferName: String,
 		senderName: String,
-	) {
+	): Result<Share> = runCore {
 		withPlatformPathAccess(sources) {
-			val result = requireCore().shareFiles(
+			requireCore().shareFiles(
 				sources = sources,
 				metadata = ShareMetadataInput(
 					transferId = nextTransferId(),
 					transferName = transferName.ifBlank { null },
 					senderName = senderName.ifBlank { null },
 				),
-			)
-			_state.update { it.copy(lastShare = result, receiverRequests = emptyList(), error = null) }
+			).toModel()
+		}.also { share ->
+			refreshSnapshot()
+			_state.update { it.copy(lastShare = share) }
 		}
-		refreshStatus()
-		loadTransfers()
 	}
 
 	private suspend fun <T> withPlatformPathAccess(
@@ -220,36 +191,101 @@ class CoreRepository(
 		index: Int = 0,
 		block: suspend () -> T,
 	): T {
-		if (index >= sources.size) {
-			return block()
-		}
+		if (index >= sources.size) return block()
 		val source = sources[index]
 		return withPlatformPathAccess(source.kind, source.value) {
 			withPlatformPathAccess(sources, index + 1, block)
 		}
 	}
 
-	private fun refreshStatus() {
-		val status = core?.status()
+	private fun refreshSnapshot() {
+		val activeCore = requireCore()
+		val status = activeCore.status()
 		_state.update {
 			it.copy(
-				status = status?.let { value ->
-					"Endpoint ${value.endpointId.take(12)}... | active=${value.activeTransfers} shares=${value.activeShares}"
-				} ?: "Not initialized",
+				status = CoreStatus(status.endpointId, status.activeTransfers, status.activeShares),
+				transfers = activeCore.listTransfers().map(StoredTransfer::toModel),
+				events = activeCore.listEvents(null).map(CoreEvent::toModel).take(MaxEvents),
 			)
 		}
 	}
 
-	private fun loadTransfers() {
-		val transfers = core?.listTransfers().orEmpty()
-		_state.update { it.copy(transfers = transfers, error = null) }
-	}
+	private suspend fun <T> runCore(block: suspend () -> T): Result<T> =
+		withContext(dispatcher) {
+			try {
+				Result.success(block())
+			} catch (error: Throwable) {
+				if (error is CancellationException) throw error
+				Result.failure(error)
+			}
+		}
 
-	private fun loadEvents() {
-		val events = core?.listEvents(null).orEmpty()
-		_state.update { it.copy(events = events.take(200), error = null) }
-	}
+	private fun requireCore(): VnidropCore = core ?: error("Initialize the core first.")
 
-	private fun nextTransferId(): ULong =
-		Random.nextLong(1, Long.MAX_VALUE).toULong()
+	private fun nextTransferId(): ULong = Random.nextLong(1, Long.MAX_VALUE).toULong()
+
+	private companion object {
+		const val MaxEvents = 200
+	}
 }
+
+private fun CoreEvent.toModel(): CoreEventModel = CoreEventModel(
+	id = id,
+	timestamp = timestamp,
+	scope = scope,
+	transferId = transferId,
+	direction = direction,
+	phase = phase,
+	kind = kind,
+	dataJson = dataJson,
+)
+
+private fun StoredTransfer.toModel(): Transfer = Transfer(
+	localId = localId,
+	transferId = transferId,
+	direction = direction,
+	status = status,
+	peerId = peerId,
+	transferName = transferName,
+	fileCount = fileCount,
+	totalSize = totalSize,
+	ticket = ticket,
+)
+
+private fun ShareResult.toModel(): Share = Share(
+	transferId = transferId,
+	ticket = ticket,
+	transferName = transferName,
+	contentHash = hash,
+	fileCount = fileCount,
+	totalSize = totalSize,
+)
+
+private fun TicketInspection.toModel(): TicketInspectionModel = TicketInspectionModel(
+	kind = kind,
+	blobTicket = blobTicket,
+	metadata = metadata?.toModel(),
+)
+
+private fun TransferMetadata.toModel(): TransferMetadataModel = TransferMetadataModel(
+	transferId = transferId,
+	transferName = transferName,
+	senderName = senderName,
+	contentHash = contentHash,
+	fileCount = fileCount,
+	totalSize = totalSize,
+)
+
+private fun ReceiverRequest.toModel(): ReceiverRequestModel = ReceiverRequestModel(
+	id = id,
+	transferId = transferId,
+	remoteEndpointId = remoteEndpointId,
+	transferName = transferName,
+	receiverName = receiverName,
+	receiverDeviceName = receiverDeviceName,
+	appVersion = appVersion,
+	status = status,
+	reason = reason,
+	requestedAt = requestedAt,
+	respondedAt = respondedAt,
+)

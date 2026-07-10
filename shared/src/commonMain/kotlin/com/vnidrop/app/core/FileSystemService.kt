@@ -25,6 +25,12 @@ interface FileSystemService {
 	fun defaultReceiveFolder(): ReceiveFolder
 	suspend fun validateReceiveFolder(folder: ReceiveFolder): FolderAccessStatus
 	fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink?
+	suspend fun sharePickedFile(
+		repository: CoreGateway,
+		file: PickedShareFile,
+		transferName: String,
+		senderName: String,
+	): Result<Share>
 }
 
 @Composable
