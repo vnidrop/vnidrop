@@ -2,6 +2,7 @@ package com.vnidrop.app.ui.state
 
 import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
+import com.vnidrop.app.core.TransferStatus
 import kotlin.math.roundToInt
 
 enum class WindowClass {
@@ -27,19 +28,19 @@ data class TransferProgress(
 	val progress: Float?,
 )
 
-fun displayNameForStatus(status: String): String =
-	when (status.lowercase()) {
-		"sharing" -> "Sharing"
-		"receiving" -> "Receiving"
-		"done" -> "Done"
-		"cancelled" -> "Cancelled"
-		"stopped" -> "Stopped"
-		"failed" -> "Failed"
-		else -> status.replaceFirstChar { it.uppercase() }
+fun displayNameForStatus(status: TransferStatus): String =
+	when (status) {
+		TransferStatus.Importing -> "Preparing"
+		TransferStatus.Sharing -> "Available"
+		TransferStatus.Receiving -> "Receiving"
+		TransferStatus.Done -> "Completed"
+		TransferStatus.Cancelled -> "Cancelled"
+		TransferStatus.Stopped -> "Stopped"
+		TransferStatus.Failed -> "Failed"
 	}
 
 fun Transfer.isActiveTransfer(): Boolean =
-	status.lowercase() in activeTransferStatuses
+	status in activeTransferStatuses
 
 fun summarizeProgress(events: List<CoreEventModel>): List<TransferProgress> =
 	events
@@ -81,7 +82,7 @@ fun formatBytes(size: ULong): String {
 }
 
 private val progressPhases = setOf("import", "ticket", "access", "transfer", "download", "export", "lifecycle")
-private val activeTransferStatuses = setOf("importing", "sharing", "receiving")
+private val activeTransferStatuses = setOf(TransferStatus.Importing, TransferStatus.Sharing, TransferStatus.Receiving)
 
 private fun eventLabel(event: CoreEventModel): String {
 	val direction = event.direction?.replaceFirstChar { it.uppercase() }

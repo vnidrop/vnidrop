@@ -3,6 +3,10 @@ package com.vnidrop.app.ui.state
 import com.vnidrop.app.feature.receive.ReceiveState
 import com.vnidrop.app.feature.send.SendState
 import com.vnidrop.app.core.Transfer
+import com.vnidrop.app.core.ShareAccessPolicy
+import com.vnidrop.app.core.PickedShareFile
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.ui.theme.resolveDarkTheme
 import kotlin.test.Test
@@ -41,7 +45,10 @@ class AppUiModelsTest {
 
 	@Test
 	fun sendStateExposesShareEligibility() {
-		val ready = SendState(selectedSource = "/tmp/payload.txt")
+		val ready = SendState(
+			selectedFile = PickedShareFile("/tmp/payload.txt", "payload.txt", 128UL),
+			transferName = "payload.txt",
+		)
 
 		assertTrue(ready.canCreateShare(coreInitialized = true))
 		assertFalse(ready.canCreateShare(coreInitialized = false))
@@ -67,24 +74,28 @@ class AppUiModelsTest {
 
 	@Test
 	fun transferActivityOnlyIncludesRunningStatuses() {
-		assertTrue(storedTransfer(status = "importing").isActiveTransfer())
-		assertTrue(storedTransfer(status = "sharing").isActiveTransfer())
-		assertTrue(storedTransfer(status = "receiving").isActiveTransfer())
-		assertFalse(storedTransfer(status = "done").isActiveTransfer())
-		assertFalse(storedTransfer(status = "failed").isActiveTransfer())
-		assertFalse(storedTransfer(status = "cancelled").isActiveTransfer())
+		assertTrue(storedTransfer(status = TransferStatus.Importing).isActiveTransfer())
+		assertTrue(storedTransfer(status = TransferStatus.Sharing).isActiveTransfer())
+		assertTrue(storedTransfer(status = TransferStatus.Receiving).isActiveTransfer())
+		assertFalse(storedTransfer(status = TransferStatus.Done).isActiveTransfer())
+		assertFalse(storedTransfer(status = TransferStatus.Failed).isActiveTransfer())
+		assertFalse(storedTransfer(status = TransferStatus.Cancelled).isActiveTransfer())
 	}
 
-	private fun storedTransfer(status: String): Transfer =
+	private fun storedTransfer(status: TransferStatus): Transfer =
 		Transfer(
 			localId = "local-1",
 			transferId = 1UL,
 			peerId = null,
-			direction = "send",
+			direction = TransferDirection.Send,
 			status = status,
 			transferName = "Demo",
+			contentHash = "hash",
 			ticket = null,
 			fileCount = 1UL,
 			totalSize = 128UL,
+			accessPolicy = ShareAccessPolicy.RequireApproval,
+			createdAt = 1L,
+			updatedAt = 1L,
 		)
 }

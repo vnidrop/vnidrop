@@ -3,10 +3,17 @@ package com.vnidrop.app.core
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.cinterop.readBytes
 import platform.Foundation.NSURL
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSFileSize
+import platform.Foundation.NSNumber
 import platform.UIKit.UIApplication
 import platform.UIKit.UIDocumentPickerDelegateProtocol
 import platform.UIKit.UIDocumentPickerViewController
+import platform.UIKit.UIDocumentInteractionController
+import platform.UIKit.UIImage
+import platform.UIKit.UIImagePNGRepresentation
 import platform.UIKit.UIModalPresentationFormSheet
 import platform.UniformTypeIdentifiers.UTTypeFolder
 import platform.UniformTypeIdentifiers.UTTypeItem
@@ -83,7 +90,21 @@ private class DocumentPickerDelegate(
 			onError("The selected iOS document URL was invalid")
 		} else {
 			val displayName = url.lastPathComponent ?: "transfer"
-			onFilePicked(PickedShareFile(url.absoluteString ?: url.path.orEmpty(), displayName))
+			val didStartAccess = url.startAccessingSecurityScopedResource()
+			val sizeBytes = try {
+				val attributes = url.path?.let { NSFileManager.defaultManager.attributesOfItemAtPath(it, null) }
+				(attributes?.get(NSFileSize) as? NSNumber)?.unsignedLongLongValue
+			} finally {
+				if (didStartAccess) url.stopAccessingSecurityScopedResource()
+			}
+			onFilePicked(
+				PickedShareFile(
+					url.absoluteString ?: url.path.orEmpty(),
+					displayName,
+					sizeBytes,
+					nativeFileIcon(url),
+				),
+			)
 		}
 		retainedPickerDelegate = null
 	}
@@ -92,3 +113,11 @@ private class DocumentPickerDelegate(
 		retainedPickerDelegate = null
 	}
 }
+
+@OptIn(ExperimentalForeignApi::class)
+private fun nativeFileIcon(url: NSURL): ByteArray? = runCatching {
+	val controller = UIDocumentInteractionController.interactionControllerWithURL(url)
+	val icon = controller.icons.lastOrNull() as? UIImage ?: return null
+	val data = UIImagePNGRepresentation(icon) ?: return null
+	data.bytes?.readBytes(data.length.toInt())
+}.getOrNull()

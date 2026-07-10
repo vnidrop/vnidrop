@@ -9,7 +9,11 @@ import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Share
+import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.TicketInspectionModel
+import com.vnidrop.app.core.Transfer
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.notifications.LocalNotification
 import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.notifications.NotificationPermission
@@ -30,15 +34,53 @@ class FakeCoreGateway : CoreGateway {
 	val requests = mutableMapOf<ULong, List<ReceiverRequestModel>>()
 	var responseResult: Result<Unit> = Result.success(Unit)
 	val responses = mutableListOf<Triple<String, Boolean, String?>>()
+	var shareResult: Result<Share> = Result.failure(UnsupportedOperationException())
+	var lastShareAccessPolicy: ShareAccessPolicy? = null
 
 	override suspend fun initialize(appDataDir: String): Result<Unit> {
 		mutableState.value = mutableState.value.copy(isInitialized = true)
 		return Result.success(Unit)
 	}
 	override fun shutdown() = Unit
-	override suspend fun sharePath(path: String, transferName: String, senderName: String) = Result.failure<Share>(UnsupportedOperationException())
-	override suspend fun shareFileDescriptor(fd: Int, displayName: String, transferName: String, senderName: String) = Result.failure<Share>(UnsupportedOperationException())
-	override suspend fun shareSecurityScopedFileUrl(fileUrl: String, displayName: String, transferName: String, senderName: String) = Result.failure<Share>(UnsupportedOperationException())
+	override suspend fun sharePath(path: String, transferName: String, senderName: String, accessPolicy: ShareAccessPolicy): Result<Share> {
+		lastShareAccessPolicy = accessPolicy
+		shareResult.onSuccess { share ->
+			mutableState.value = mutableState.value.copy(
+				transfers = listOf(
+					Transfer(
+						localId = "local-${share.transferId}",
+						transferId = share.transferId,
+						direction = TransferDirection.Send,
+						status = TransferStatus.Sharing,
+						peerId = null,
+						transferName = share.transferName,
+						contentHash = share.contentHash,
+						fileCount = share.fileCount,
+						totalSize = share.totalSize,
+						ticket = share.ticket,
+						accessPolicy = accessPolicy,
+						createdAt = 1L,
+						updatedAt = 1L,
+					),
+				) + mutableState.value.transfers,
+			)
+		}
+		return shareResult
+	}
+	override suspend fun shareFileDescriptor(
+		fd: Int,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	) = Result.failure<Share>(UnsupportedOperationException())
+	override suspend fun shareSecurityScopedFileUrl(
+		fileUrl: String,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	) = Result.failure<Share>(UnsupportedOperationException())
 	override suspend fun inspectTicket(ticket: String) = Result.failure<TicketInspectionModel>(UnsupportedOperationException())
 	override suspend fun receive(ticket: String, outputDir: String, receiverName: String) = Result.success(Unit)
 	override suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String) = Result.success(Unit)
@@ -93,5 +135,6 @@ class FakeFileSystemService(
 		file: PickedShareFile,
 		transferName: String,
 		senderName: String,
-	) = repository.sharePath(file.value, transferName, senderName)
+		accessPolicy: ShareAccessPolicy,
+	) = repository.sharePath(file.value, transferName, senderName, accessPolicy)
 }

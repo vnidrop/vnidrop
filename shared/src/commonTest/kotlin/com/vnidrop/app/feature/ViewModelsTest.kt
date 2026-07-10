@@ -2,8 +2,11 @@ package com.vnidrop.app.feature
 
 import com.vnidrop.app.DeviceInfo
 import com.vnidrop.app.PlatformEnvironment
+import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
+import com.vnidrop.app.core.Share
+import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.feature.app.AppViewModel
 import com.vnidrop.app.feature.receive.ReceiveViewModel
 import com.vnidrop.app.feature.send.SendViewModel
@@ -139,11 +142,49 @@ class ViewModelsTest {
 	fun sendViewModelOwnsSelectedFileState() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val viewModel = SendViewModel(FakeCoreGateway(), FakeFileSystemService(folder), preferences(), UiMessageController())
-		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg"))
+		viewModel.openComposer()
+		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
 		assertEquals("photo.jpg", viewModel.state.value.transferName)
-		assertTrue(viewModel.state.value.hasSelectedSource)
+		assertEquals(42UL, viewModel.state.value.selectedFile?.sizeBytes)
 		viewModel.clearSelectedSource()
-		assertFalse(viewModel.state.value.hasSelectedSource)
+		assertEquals(null, viewModel.state.value.selectedFile)
+	}
+
+	@Test
+	fun sendComposerClosesAfterSuccessfulAtomicShareCreation() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(isInitialized = true)
+			shareResult = Result.success(Share(7UL, "ticket", "photo.jpg", "hash", 1UL, 42UL))
+		}
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.openComposer()
+		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
+		viewModel.setAccessPolicy(ShareAccessPolicy.AnyoneWithTransfer)
+		viewModel.createShare()
+		advanceUntilIdle()
+
+		assertFalse(viewModel.state.value.isComposerOpen)
+		assertEquals(null, viewModel.state.value.selectedFile)
+		assertEquals(ShareAccessPolicy.AnyoneWithTransfer, core.lastShareAccessPolicy)
+		assertEquals(7UL, core.state.value.transfers.first().transferId)
+	}
+
+	@Test
+	fun sendComposerStaysOpenWhenShareCreationFails() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply { mutableState.value = CoreState(isInitialized = true) }
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.openComposer()
+		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
+		viewModel.createShare()
+		advanceUntilIdle()
+
+		assertTrue(viewModel.state.value.isComposerOpen)
+		assertEquals("photo.jpg", viewModel.state.value.selectedFile?.displayName)
+		assertFalse(viewModel.state.value.isSharing)
 	}
 
 	@Test

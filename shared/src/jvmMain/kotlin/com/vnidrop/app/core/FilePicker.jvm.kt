@@ -6,8 +6,12 @@ import java.awt.EventQueue
 import java.awt.FileDialog
 import java.awt.Frame
 import java.awt.KeyboardFocusManager
+import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
+import javax.imageio.ImageIO
 import javax.swing.JFileChooser
+import javax.swing.filechooser.FileSystemView
 
 @Composable
 actual fun rememberShareFilePicker(
@@ -75,7 +79,12 @@ private fun pickShareFile(): PickedShareFile? {
 		val file = dialog.file
 		if (directory != null && file != null) {
 			val selected = File(directory, file)
-			PickedShareFile(selected.absolutePath, selected.name)
+			PickedShareFile(
+				selected.absolutePath,
+				selected.name,
+				selected.length().takeIf { it >= 0L }?.toULong(),
+				selected.systemIconPng(),
+			)
 		} else {
 			null
 		}
@@ -83,6 +92,21 @@ private fun pickShareFile(): PickedShareFile? {
 		dialog.dispose()
 	}
 }
+
+private fun File.systemIconPng(): ByteArray? = runCatching {
+	val icon = FileSystemView.getFileSystemView().getSystemIcon(this, 128, 128)
+	val image = BufferedImage(icon.iconWidth, icon.iconHeight, BufferedImage.TYPE_INT_ARGB)
+	val graphics = image.createGraphics()
+	try {
+		icon.paintIcon(null, graphics, 0, 0)
+	} finally {
+		graphics.dispose()
+	}
+	ByteArrayOutputStream().use { output ->
+		ImageIO.write(image, "png", output)
+		output.toByteArray()
+	}
+}.getOrNull()
 
 private fun pickDirectory(): File? =
 	if (isMacOs()) {

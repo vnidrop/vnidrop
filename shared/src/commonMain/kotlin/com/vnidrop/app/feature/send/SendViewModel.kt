@@ -5,8 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.vnidrop.app.core.CoreGateway
 import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.PickedShareFile
+import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
+import com.vnidrop.app.ui.feedback.UiMessageTone
+import com.vnidrop.app.ui.feedback.UiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,26 +18,26 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-private const val DefaultTransferName = "VniDrop transfer"
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.send_transfer_created
 
 data class SendState(
-	val selectedSource: String = "",
-	val selectedDisplayName: String = "",
-	val transferName: String = DefaultTransferName,
+	val isComposerOpen: Boolean = false,
+	val selectedFile: PickedShareFile? = null,
+	val transferName: String = "",
 	val senderName: String = "",
+	val accessPolicy: ShareAccessPolicy = ShareAccessPolicy.RequireApproval,
 	val isSharing: Boolean = false,
+	val selectedTransferId: ULong? = null,
+	val transferThumbnails: Map<ULong, ByteArray> = emptyMap(),
 ) {
-	val hasSelectedSource: Boolean
-		get() = selectedSource.isNotBlank()
-
-	fun canCreateShare(coreInitialized: Boolean): Boolean = coreInitialized && hasSelectedSource && !isSharing
+	fun canCreateShare(coreInitialized: Boolean): Boolean =
+		coreInitialized && selectedFile != null && transferName.isNotBlank() && !isSharing
 }
 
 sealed interface SendEffect {
 	data object OpenFilePicker : SendEffect
 	data class CopyTicket(val ticket: String) : SendEffect
-	data class UseTicket(val ticket: String) : SendEffect
 }
 
 class SendViewModel(
@@ -48,7 +52,6 @@ class SendViewModel(
 
 	private val effects = Channel<SendEffect>(Channel.BUFFERED)
 	val effectFlow = effects.receiveAsFlow()
-	private var selectedFile: PickedShareFile? = null
 
 	init {
 		viewModelScope.launch {
@@ -60,15 +63,38 @@ class SendViewModel(
 		}
 	}
 
+	fun openComposer() {
+		if (_state.value.isSharing) return
+		_state.update {
+			it.copy(
+				isComposerOpen = true,
+				selectedFile = null,
+				transferName = "",
+				accessPolicy = ShareAccessPolicy.RequireApproval,
+			)
+		}
+	}
+
+	fun dismissComposer() {
+		if (_state.value.isSharing) return
+		_state.update {
+			it.copy(
+				isComposerOpen = false,
+				selectedFile = null,
+				transferName = "",
+				accessPolicy = ShareAccessPolicy.RequireApproval,
+			)
+		}
+	}
+
 	fun selectFile() = sendEffect(SendEffect.OpenFilePicker)
 
 	fun onFilePicked(file: PickedShareFile) {
-		selectedFile = file
 		_state.update {
 			it.copy(
-				selectedSource = file.value,
-				selectedDisplayName = file.displayName,
-				transferName = if (it.transferName.isBlank() || it.transferName == DefaultTransferName) file.displayName else it.transferName,
+				isComposerOpen = true,
+				selectedFile = file,
+				transferName = file.displayName,
 			)
 		}
 	}
@@ -76,33 +102,54 @@ class SendViewModel(
 	fun onFilePickFailed(reason: String) = messages.error(IllegalStateException(reason))
 
 	fun clearSelectedSource() {
-		selectedFile = null
-		_state.update { it.copy(selectedSource = "", selectedDisplayName = "") }
+		_state.update { it.copy(selectedFile = null, transferName = "") }
 	}
 
 	fun setTransferName(value: String) = _state.update { it.copy(transferName = value) }
 	fun setSenderName(value: String) = _state.update { it.copy(senderName = value) }
+	fun setAccessPolicy(value: ShareAccessPolicy) = _state.update { it.copy(accessPolicy = value) }
+	fun openTransfer(transferId: ULong) = _state.update { it.copy(selectedTransferId = transferId) }
+	fun closeTransferDetails() = _state.update { it.copy(selectedTransferId = null) }
 	fun copyTicket(ticket: String) = sendEffect(SendEffect.CopyTicket(ticket))
-	fun useTicket(ticket: String) = sendEffect(SendEffect.UseTicket(ticket))
 
 	fun createShare() {
 		val current = state.value
+		val file = current.selectedFile ?: return
 		if (!current.canCreateShare(coreState.value.isInitialized)) return
 		viewModelScope.launch {
 			_state.update { it.copy(isSharing = true) }
-			try {
-				val result = selectedFile?.let { file ->
-					fileSystemService.sharePickedFile(repository, file, current.transferName, current.senderName)
-				} ?: repository.sharePath(current.selectedSource, current.transferName, current.senderName)
-				result.onFailure(messages::error)
-			} finally {
-				_state.update { it.copy(isSharing = false) }
-			}
+			val result = fileSystemService.sharePickedFile(
+				repository = repository,
+				file = file,
+				transferName = current.transferName.trim(),
+				senderName = current.senderName.trim(),
+				accessPolicy = current.accessPolicy,
+			)
+			result.fold(
+				onSuccess = { share ->
+					_state.update {
+						it.copy(
+							isComposerOpen = false,
+							selectedFile = null,
+							transferName = "",
+							accessPolicy = ShareAccessPolicy.RequireApproval,
+							isSharing = false,
+							transferThumbnails = file.thumbnailBytes?.let { bytes ->
+								it.transferThumbnails + (share.transferId to bytes)
+							} ?: it.transferThumbnails,
+						)
+					}
+					messages.show(UiMessage(UiText.Resource(Res.string.send_transfer_created), UiMessageTone.Success))
+				},
+				onFailure = { error ->
+					_state.update { it.copy(isSharing = false) }
+					messages.error(error)
+				},
+			)
 		}
 	}
 
 	private fun sendEffect(effect: SendEffect) {
 		viewModelScope.launch { effects.send(effect) }
 	}
-
 }

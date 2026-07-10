@@ -13,7 +13,6 @@ import com.vnidrop.app.ui.state.WindowClass
 fun SendRoute(
 	viewModel: SendViewModel,
 	windowClass: WindowClass,
-	onUseTicket: (String) -> Unit,
 ) {
 	val state by viewModel.state.collectAsStateWithLifecycle()
 	val coreState by viewModel.coreState.collectAsStateWithLifecycle()
@@ -25,7 +24,6 @@ fun SendRoute(
 			when (effect) {
 				SendEffect.OpenFilePicker -> picker.pickFile()
 				is SendEffect.CopyTicket -> clipboard.setText(AnnotatedString(effect.ticket))
-				is SendEffect.UseTicket -> onUseTicket(effect.ticket)
 			}
 		}
 	}
@@ -34,12 +32,16 @@ fun SendRoute(
 		coreState = coreState,
 		state = state,
 		windowClass = windowClass,
+		onOpenComposer = viewModel::openComposer,
+		onDismissComposer = viewModel::dismissComposer,
 		onSelectFile = viewModel::selectFile,
 		onClearFile = viewModel::clearSelectedSource,
 		onTransferNameChanged = viewModel::setTransferName,
 		onSenderNameChanged = viewModel::setSenderName,
+		onAccessPolicyChanged = viewModel::setAccessPolicy,
 		onCreateShare = viewModel::createShare,
+		onTransferSelected = viewModel::openTransfer,
+		onCloseTransferDetails = viewModel::closeTransferDetails,
 		onCopyTicket = viewModel::copyTicket,
-		onUseTicket = viewModel::useTicket,
 	)
 }

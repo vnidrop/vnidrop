@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 data class PickedShareFile(
 	val value: String,
 	val displayName: String,
+	val sizeBytes: ULong? = null,
+	val thumbnailBytes: ByteArray? = null,
 )
 
 interface ShareFilePicker {
