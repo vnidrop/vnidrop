@@ -8,7 +8,7 @@ use uuid::Uuid;
 use crate::{
     access_policy::AccessPolicy,
     event_hub::EventHub,
-    handshake::{HandshakeResponse, RequestTransfer},
+    handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeResponse, RequestTransfer},
     repository::{ReceiverRequestInsert, Repository},
     transfer_state::ReceiverRequestStatus,
     util::now_ms,
@@ -35,6 +35,41 @@ pub(crate) struct ApprovalService {
 }
 
 impl ApprovalService {
+    pub(crate) async fn complete_delivery(
+        &self,
+        remote_endpoint_id: String,
+        receipt: DeliveryReceipt,
+    ) -> DeliveryReceiptResponse {
+        let token_hash = receipt_token_hash(&receipt.token);
+        match self
+            .repository
+            .complete_receiver_delivery(
+                &receipt.request_id,
+                receipt.transfer_id,
+                &remote_endpoint_id,
+                &token_hash,
+            )
+            .await
+        {
+            Ok(()) => {
+                self.event_hub.emit_transfer(
+					receipt.transfer_id,
+					"send",
+					"delivery",
+					"receiver-completed",
+					json!({ "request_id": receipt.request_id, "remote_endpoint_id": remote_endpoint_id }),
+				);
+                DeliveryReceiptResponse::Recorded
+            }
+            Err(error) => {
+                tracing::warn!(%error, "rejected receiver delivery receipt");
+                DeliveryReceiptResponse::Rejected {
+                    reason: "invalid-receipt".to_string(),
+                }
+            }
+        }
+    }
+
     pub(crate) fn new(
         repository: Repository,
         event_hub: Arc<EventHub>,
@@ -149,7 +184,41 @@ impl ApprovalService {
         remote_endpoint_id: String,
         request: RequestTransfer,
     ) -> HandshakeResponse {
+        let request_id = Uuid::new_v4().to_string();
+        if self
+            .repository
+            .insert_receiver_request(ReceiverRequestInsert {
+                id: &request_id,
+                transfer_id: request.transfer_id,
+                remote_endpoint_id: &remote_endpoint_id,
+                transfer_name: &request.transfer_name,
+                receiver_name: request.receiver_name.as_deref(),
+                receiver_device_name: request.receiver_device_name.as_deref(),
+                app_version: &request.app_version,
+            })
+            .await
+            .is_err()
+            || self
+                .repository
+                .update_receiver_request_status(&request_id, ReceiverRequestStatus::Accepted, None)
+                .await
+                .is_err()
+        {
+            return self
+                .deny(request.transfer_id, remote_endpoint_id, "repository-error")
+                .await;
+        }
         let token = Uuid::new_v4().to_string();
+        if self
+            .repository
+            .set_receiver_receipt_token(&request_id, &receipt_token_hash(&token))
+            .await
+            .is_err()
+        {
+            return self
+                .deny(request.transfer_id, remote_endpoint_id, "repository-error")
+                .await;
+        }
         let expires_at = now_ms() + APPROVAL_TTL_MS;
         self.event_hub.emit_transfer(
             request.transfer_id,
@@ -161,7 +230,11 @@ impl ApprovalService {
                 "expires_at": expires_at,
             }),
         );
-        HandshakeResponse::Approved { token, expires_at }
+        HandshakeResponse::Approved {
+            request_id,
+            token,
+            expires_at,
+        }
     }
 
     async fn wait_for_sender_decision(
@@ -242,7 +315,21 @@ impl ApprovalService {
                         "expires_at": expires_at,
                     }),
                 );
-                HandshakeResponse::Approved { token, expires_at }
+                if let Err(error) = self
+                    .repository
+                    .set_receiver_receipt_token(&decision.request_id, &receipt_token_hash(&token))
+                    .await
+                {
+                    tracing::error!(%error, "failed to attach delivery receipt token");
+                    return HandshakeResponse::Denied {
+                        reason: "repository-error".to_string(),
+                    };
+                }
+                HandshakeResponse::Approved {
+                    request_id: decision.request_id,
+                    token,
+                    expires_at,
+                }
             }
             Ok(Ok(decision)) => {
                 self.deny(
@@ -289,4 +376,8 @@ impl ApprovalService {
         );
         HandshakeResponse::Denied { reason }
     }
+}
+
+fn receipt_token_hash(token: &str) -> String {
+    blake3::hash(token.as_bytes()).to_hex().to_string()
 }

@@ -44,12 +44,12 @@ use crate::{
         read_stream_from_blocking_reader, validated_relative_string, wait_for_writer,
         write_stream_to_blocking_writer, AtomicOutputFile, TransferImport,
     },
-    handshake::{HandshakeResponse, HandshakeService},
+    handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeResponse, HandshakeService},
     logging::init_logging,
     repository::{Repository, TransferUpsert},
     secret::load_or_create_secret,
     ticket::{parse_transfer_ticket_with_limits, ParsedTransferTicket, VnidropTicket},
-    transfer_state::{TransferDirection, TransferStatus},
+    transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
     util::{non_empty, unique_transfer_id},
 };
 
@@ -241,6 +241,12 @@ impl VnidropCore {
     pub fn cancel_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
         self.runtime
             .block_on(self.inner.cancel_transfer(transfer_id))
+            .map_err(VnidropError::transfer)
+    }
+
+    pub fn delete_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
+        self.runtime
+            .block_on(self.inner.delete_transfer(transfer_id))
             .map_err(VnidropError::transfer)
     }
 
@@ -725,20 +731,25 @@ impl CoreInner {
         if let ReceiveTarget::Directory(output_dir) = &target {
             tokio::fs::create_dir_all(output_dir).await?;
         }
+        let sender_addr = parsed.blob_ticket.addr().clone();
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
-        if let Some(metadata) = &parsed.metadata {
-            self.request_transfer_approval(
-                transfer_id,
-                parsed.blob_ticket.addr().clone(),
-                metadata,
-                receiver_name.as_deref(),
+        let delivery_receipt = if let Some(metadata) = &parsed.metadata {
+            Some(
+                self.request_transfer_approval(
+                    transfer_id,
+                    sender_addr.clone(),
+                    metadata,
+                    receiver_name.as_deref(),
+                )
+                .await?,
             )
-            .await?;
-        }
+        } else {
+            None
+        };
         let connection = self
             .endpoint
-            .connect(parsed.blob_ticket.addr().clone(), iroh_blobs::ALPN)
+            .connect(sender_addr.clone(), iroh_blobs::ALPN)
             .await?;
         self.emit_transfer(transfer_id, "receive", "network", "connected", json!({}));
 
@@ -801,6 +812,33 @@ impl CoreInner {
             )
             .await?;
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
+        if let Some(receipt) = delivery_receipt {
+            let sender_transfer_id = receipt.transfer_id;
+            let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
+            match client.report_delivery(receipt).await {
+                Ok(DeliveryReceiptResponse::Recorded) => self.emit_transfer(
+                    transfer_id,
+                    "receive",
+                    "delivery",
+                    "receipt-recorded",
+                    json!({ "sender_transfer_id": sender_transfer_id }),
+                ),
+                Ok(DeliveryReceiptResponse::Rejected { reason }) => self.emit_transfer(
+                    transfer_id,
+                    "receive",
+                    "delivery",
+                    "receipt-rejected",
+                    json!({ "reason": reason }),
+                ),
+                Err(error) => self.emit_transfer(
+                    transfer_id,
+                    "receive",
+                    "delivery",
+                    "receipt-failed",
+                    json!({ "reason": error.to_string() }),
+                ),
+            }
+        }
         Ok(())
     }
 
@@ -905,6 +943,58 @@ impl CoreInner {
         anyhow::bail!("transfer not found")
     }
 
+    async fn delete_transfer(&self, transfer_id: u64) -> Result<()> {
+        if self
+            .active_transfers
+            .lock()
+            .await
+            .contains_key(&transfer_id)
+        {
+            anyhow::bail!("an active transfer must finish or be cancelled before deletion");
+        }
+
+        let transfer = self
+            .repository
+            .list_transfers()
+            .await?
+            .into_iter()
+            .find(|transfer| transfer.transfer_id == transfer_id)
+            .ok_or_else(|| anyhow::anyhow!("transfer not found"))?;
+
+        // Revoke a live share durably before removing its history. If the
+        // subsequent delete fails, a restart must never expose it again.
+        if transfer.status == TransferStatus::Sharing.as_str() {
+            self.repository
+                .transition_transfer_status(
+                    transfer_id,
+                    TransferStatus::Sharing,
+                    TransferStatus::Stopped,
+                )
+                .await?;
+        }
+
+        for request in self.repository.list_receiver_requests(transfer_id).await? {
+            if request.status == ReceiverRequestStatus::Requested.as_str() {
+                let _ = self
+                    .approval
+                    .respond(
+                        request.id,
+                        false,
+                        Some("transfer deleted by sender".to_string()),
+                    )
+                    .await;
+            }
+        }
+
+        self.active_shares.lock().await.remove(&transfer_id);
+        self.hash_to_transfer
+            .lock()
+            .await
+            .retain(|_, id| *id != transfer_id);
+        self.access_policy.remove_transfer(transfer_id).await;
+        self.repository.delete_transfer(transfer_id).await
+    }
+
     async fn set_transfer_access_mode(
         &self,
         transfer_id: u64,
@@ -948,7 +1038,7 @@ impl CoreInner {
         addr: iroh::EndpointAddr,
         metadata: &TransferMetadata,
         receiver_name: Option<&str>,
-    ) -> Result<()> {
+    ) -> Result<DeliveryReceipt> {
         self.emit_transfer(
             local_transfer_id,
             "receive",
@@ -966,7 +1056,11 @@ impl CoreInner {
             .await
             .map_err(|error| anyhow::anyhow!("handshake request failed: {error}"))?
         {
-            HandshakeResponse::Approved { expires_at, .. } => {
+            HandshakeResponse::Approved {
+                request_id,
+                token,
+                expires_at,
+            } => {
                 self.emit_transfer(
                     local_transfer_id,
                     "receive",
@@ -977,7 +1071,11 @@ impl CoreInner {
                         "expires_at": expires_at,
                     }),
                 );
-                Ok(())
+                Ok(DeliveryReceipt {
+                    request_id,
+                    transfer_id: metadata.transfer_id,
+                    token,
+                })
             }
             HandshakeResponse::Denied { reason } => {
                 anyhow::bail!("transfer request was denied by sender: {reason}")

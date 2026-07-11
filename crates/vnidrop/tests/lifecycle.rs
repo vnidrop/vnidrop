@@ -55,6 +55,26 @@ fn cancelling_share_updates_status_and_events() {
 }
 
 #[test]
+fn deleting_share_revokes_it_and_removes_persisted_history() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let core_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("delete.txt");
+    std::fs::write(&source_path, b"delete me").unwrap();
+
+    let sender = CoreGuard::start(core_dir.path(), Arc::new(RecordingSink::default()));
+    let share = share_path(&sender, &source_path, 101, "delete.txt", false);
+    sender.delete_transfer(share.transfer_id).unwrap();
+
+    assert!(sender.list_transfers().unwrap().is_empty());
+    assert_eq!(sender.status().active_shares, 0);
+    drop(sender);
+
+    let restarted = CoreGuard::start(core_dir.path(), Arc::new(RecordingSink::default()));
+    assert!(restarted.list_transfers().unwrap().is_empty());
+    assert_eq!(restarted.status().active_shares, 0);
+}
+
+#[test]
 fn persisted_share_is_recovered_and_can_be_stopped_after_restart() {
     let source_dir = tempfile::tempdir().unwrap();
     let core_dir = tempfile::tempdir().unwrap();

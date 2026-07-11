@@ -5056,6 +5056,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "async-channel",
+ "blake3",
  "bytes",
  "data-encoding",
  "futures",

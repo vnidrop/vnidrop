@@ -244,4 +244,5 @@ pub struct ReceiverRequest {
     pub reason: Option<String>,
     pub requested_at: i64,
     pub responded_at: Option<i64>,
+    pub completed_at: Option<i64>,
 }

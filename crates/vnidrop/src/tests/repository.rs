@@ -27,7 +27,7 @@ fn transfer(
 async fn persists_transfers_and_events_across_reopen() {
     let temp = tempfile::tempdir().unwrap();
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 3);
+    assert_eq!(repository.schema_version().await.unwrap(), 4);
     repository
         .insert_transfer(transfer(
             7,
@@ -96,6 +96,22 @@ async fn receiver_request_can_only_be_resolved_once() {
         .update_receiver_request_status("request-1", ReceiverRequestStatus::Accepted, None)
         .await
         .unwrap();
+    repository
+        .set_receiver_receipt_token("request-1", "token-hash")
+        .await
+        .unwrap();
+    repository
+        .complete_receiver_delivery("request-1", 77, "node-a", "token-hash")
+        .await
+        .unwrap();
+    repository
+        .complete_receiver_delivery("request-1", 77, "node-a", "token-hash")
+        .await
+        .unwrap();
+    assert!(repository
+        .complete_receiver_delivery("request-1", 77, "node-b", "token-hash")
+        .await
+        .is_err());
 
     assert!(repository
         .update_receiver_request_status("request-1", ReceiverRequestStatus::Refused, Some("late"),)
@@ -108,9 +124,10 @@ async fn receiver_request_can_only_be_resolved_once() {
 
     let requests = repository.list_receiver_requests(77).await.unwrap();
     assert_eq!(requests.len(), 1);
-    assert_eq!(requests[0].status, "accepted");
+    assert_eq!(requests[0].status, "completed");
     assert_eq!(requests[0].receiver_name.as_deref(), Some("receiver"));
     assert!(requests[0].responded_at.is_some());
+    assert!(requests[0].completed_at.is_some());
 }
 
 #[tokio::test]
@@ -474,7 +491,7 @@ async fn migrates_schema_v2_identity_without_losing_transfer() {
     pool.close().await;
 
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 3);
+    assert_eq!(repository.schema_version().await.unwrap(), 4);
     let stored = repository.list_transfers().await.unwrap().remove(0);
     assert_eq!(stored.transfer_id, 7);
     assert_eq!(stored.local_id, "legacy-7-send");
@@ -510,6 +527,63 @@ async fn event_reads_respect_configured_history_limit() {
     assert_eq!(events.len(), 2);
     assert_eq!(events[0].id, "event-2");
     assert_eq!(events[1].id, "event-1");
+}
+
+#[tokio::test]
+async fn deleting_transfer_removes_related_history_transactionally() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    repository
+        .insert_transfer(transfer(
+            88,
+            TransferDirection::Send,
+            TransferStatus::Stopped,
+        ))
+        .await
+        .unwrap();
+    repository
+        .insert_receiver_request(ReceiverRequestInsert {
+            id: "request-delete",
+            transfer_id: 88,
+            remote_endpoint_id: "receiver",
+            transfer_name: "demo",
+            receiver_name: None,
+            receiver_device_name: None,
+            app_version: "1.0",
+        })
+        .await
+        .unwrap();
+    repository
+        .insert_event(
+            &CoreEvent {
+                id: "event-delete".to_string(),
+                timestamp: 1,
+                scope: "transfer".to_string(),
+                transfer_id: Some(88),
+                direction: Some("send".to_string()),
+                phase: "test".to_string(),
+                kind: "created".to_string(),
+                data_json: "{}".to_string(),
+            },
+            500,
+        )
+        .await
+        .unwrap();
+
+    repository.delete_transfer(88).await.unwrap();
+
+    assert!(repository.list_transfers().await.unwrap().is_empty());
+    assert!(repository
+        .list_events(Some(88), 500)
+        .await
+        .unwrap()
+        .is_empty());
+    assert!(repository
+        .list_receiver_requests(88)
+        .await
+        .unwrap()
+        .is_empty());
+    assert!(repository.delete_transfer(88).await.is_err());
 }
 use std::str::FromStr;
 

@@ -47,11 +47,14 @@ fn public_share_receives_without_sender_approval() {
         std::fs::read(output_dir.path().join("public.txt")).unwrap(),
         b"public content"
     );
-    assert!(sender
+    let deliveries = sender
         .core
         .list_receiver_requests(share.transfer_id)
-        .unwrap()
-        .is_empty());
+        .unwrap();
+    assert_eq!(deliveries.len(), 1);
+    assert_eq!(deliveries[0].receiver_name.as_deref(), Some("Receiver"));
+    assert_eq!(deliveries[0].status, "completed");
+    assert!(deliveries[0].completed_at.is_some());
 }
 
 #[test]
@@ -93,6 +96,13 @@ fn approval_required_denies_then_allows_receiver() {
         std::fs::read(allowed_output.path().join("private.txt")).unwrap(),
         b"approved content"
     );
+    let completed = sender
+        .core
+        .list_receiver_requests(share.transfer_id)
+        .unwrap();
+    assert!(completed
+        .iter()
+        .any(|request| request.status == "completed"));
 }
 
 #[test]

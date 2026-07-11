@@ -20,7 +20,7 @@ use crate::{
     util::now_ms,
 };
 
-const SCHEMA_VERSION: i64 = 3;
+const SCHEMA_VERSION: i64 = 4;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Repository {
@@ -202,11 +202,33 @@ impl Repository {
                 reason TEXT,
                 requested_at INTEGER NOT NULL,
                 responded_at INTEGER
+                ,receipt_token_hash TEXT
+                ,completed_at INTEGER
             );
             "#,
         )
         .execute(&self.pool)
         .await?;
+
+        let receiver_columns = sqlx::query("PRAGMA table_info(receiver_requests)")
+            .fetch_all(&self.pool)
+            .await?;
+        if !receiver_columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "receipt_token_hash")
+        {
+            sqlx::query("ALTER TABLE receiver_requests ADD COLUMN receipt_token_hash TEXT")
+                .execute(&self.pool)
+                .await?;
+        }
+        if !receiver_columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "completed_at")
+        {
+            sqlx::query("ALTER TABLE receiver_requests ADD COLUMN completed_at INTEGER")
+                .execute(&self.pool)
+                .await?;
+        }
 
         sqlx::query(
             "CREATE INDEX IF NOT EXISTS idx_receiver_requests_transfer_id ON receiver_requests(transfer_id, requested_at DESC);",
@@ -583,6 +605,70 @@ impl Repository {
         Ok(())
     }
 
+    pub(crate) async fn set_receiver_receipt_token(
+        &self,
+        id: &str,
+        token_hash: &str,
+    ) -> Result<()> {
+        let result = sqlx::query(
+            "UPDATE receiver_requests SET receipt_token_hash = ?1 WHERE id = ?2 AND status = 'accepted'",
+        )
+        .bind(token_hash)
+        .bind(id)
+        .execute(&self.pool)
+        .await?;
+        require_one_changed(result.rows_affected(), "attach receiver receipt token")
+    }
+
+    pub(crate) async fn complete_receiver_delivery(
+        &self,
+        id: &str,
+        transfer_id: u64,
+        remote_endpoint_id: &str,
+        token_hash: &str,
+    ) -> Result<()> {
+        let result = sqlx::query(
+            r#"
+            UPDATE receiver_requests
+            SET status = 'completed', completed_at = ?1
+            WHERE id = ?2 AND transfer_id = ?3 AND remote_endpoint_id = ?4 AND receipt_token_hash = ?5
+              AND status = 'accepted'
+            "#,
+        )
+        .bind(now_ms())
+        .bind(id)
+        .bind(to_db_id(transfer_id)?)
+        .bind(remote_endpoint_id)
+        .bind(token_hash)
+        .execute(&self.pool)
+        .await?;
+        if result.rows_affected() == 1 {
+            return Ok(());
+        }
+        let already_recorded = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM receiver_requests
+                WHERE id = ?1 AND transfer_id = ?2 AND remote_endpoint_id = ?3
+                  AND receipt_token_hash = ?4 AND status = 'completed'
+            )
+            "#,
+        )
+        .bind(id)
+        .bind(to_db_id(transfer_id)?)
+        .bind(remote_endpoint_id)
+        .bind(token_hash)
+        .fetch_one(&self.pool)
+        .await?
+        .get::<i64, _>(0)
+            != 0;
+        if already_recorded {
+            Ok(())
+        } else {
+            anyhow::bail!("delivery receipt did not match an accepted receiver request")
+        }
+    }
+
     pub(crate) async fn expire_pending_receiver_requests(&self, reason: &str) -> Result<u64> {
         let result = sqlx::query(
             r#"
@@ -606,7 +692,7 @@ impl Repository {
             r#"
             SELECT id, transfer_id, remote_endpoint_id, transfer_name,
                    receiver_name, receiver_device_name, app_version, status,
-                   reason, requested_at, responded_at
+                   reason, requested_at, responded_at, completed_at
             FROM receiver_requests
             WHERE transfer_id = ?1
             ORDER BY requested_at DESC
@@ -650,6 +736,27 @@ impl Repository {
         .fetch_all(&self.pool)
         .await?;
         rows.into_iter().map(row_to_transfer).collect()
+    }
+
+    pub(crate) async fn delete_transfer(&self, transfer_id: u64) -> Result<()> {
+        self.maybe_fail_write()?;
+        let transfer_id = to_db_id(transfer_id)?;
+        let mut transaction = self.pool.begin().await?;
+        sqlx::query("DELETE FROM receiver_requests WHERE transfer_id = ?1")
+            .bind(transfer_id)
+            .execute(&mut *transaction)
+            .await?;
+        sqlx::query("DELETE FROM transfer_events WHERE transfer_id = ?1")
+            .bind(transfer_id)
+            .execute(&mut *transaction)
+            .await?;
+        let deleted = sqlx::query("DELETE FROM transfers WHERE transfer_id = ?1")
+            .bind(transfer_id)
+            .execute(&mut *transaction)
+            .await?;
+        require_one_changed(deleted.rows_affected(), "delete transfer")?;
+        transaction.commit().await?;
+        Ok(())
     }
 
     pub(crate) async fn list_events(
@@ -754,5 +861,6 @@ fn row_to_receiver_request(row: sqlx::sqlite::SqliteRow) -> ReceiverRequest {
         reason: row.get("reason"),
         requested_at: row.get("requested_at"),
         responded_at: row.get("responded_at"),
+        completed_at: row.get("completed_at"),
     }
 }
