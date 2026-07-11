@@ -14,6 +14,7 @@ dependencies {
 	implementation(libs.jna)
 
 	implementation(libs.compose.uiToolingPreview)
+	testImplementation(libs.kotlin.testJunit)
 }
 
 compose.desktop {
