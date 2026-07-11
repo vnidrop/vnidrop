@@ -5,6 +5,7 @@ import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.TransferDirection
 import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.core.ReceiverRequestModel
+import com.vnidrop.app.core.ReceiverDeliveryStatus
 import com.vnidrop.app.notifications.LocalNotification
 import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.notifications.NotificationPermission
@@ -55,6 +56,7 @@ class ApprovalCoordinator(
 			repository.signals.collect { signal ->
 				when (signal) {
 					is CoreSignal.ApprovalChanged -> refresh(signal.transferId)
+					is CoreSignal.ReceiverHistoryChanged -> Unit
 				}
 			}
 		}
@@ -108,7 +110,7 @@ class ApprovalCoordinator(
 	private suspend fun refresh(transferId: ULong) {
 		repository.receiverRequests(transferId).fold(
 			onSuccess = { requests ->
-				val refreshed = requests.filter { it.status == "requested" }.map(ReceiverRequestModel::toPending)
+				val refreshed = requests.filter { it.status == ReceiverDeliveryStatus.Requested }.map(ReceiverRequestModel::toPending)
 				val removed = _state.value.pending.filter { it.transferId == transferId }.map { it.id }.toSet() - refreshed.map { it.id }.toSet()
 				removed.forEach { id ->
 					notifications.cancel(notificationId(id))

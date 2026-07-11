@@ -15,6 +15,7 @@ import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
 import com.vnidrop.app.support.FakeCoreGateway
 import com.vnidrop.app.support.FakeFileSystemService
+import com.vnidrop.app.support.FakeFilePreviewRepository
 import com.vnidrop.app.support.FakeNotificationService
 import com.vnidrop.app.support.FakePreferencesRepository
 import com.vnidrop.app.ui.feedback.UiMessageController
@@ -30,6 +31,7 @@ import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -141,7 +143,7 @@ class ViewModelsTest {
 	@Test
 	fun sendViewModelOwnsSelectedFileState() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-		val viewModel = SendViewModel(FakeCoreGateway(), FakeFileSystemService(folder), preferences(), UiMessageController())
+		val viewModel = SendViewModel(FakeCoreGateway(), FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
 		viewModel.openComposer()
 		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
 		assertEquals("photo.jpg", viewModel.state.value.transferName)
@@ -157,10 +159,14 @@ class ViewModelsTest {
 			mutableState.value = CoreState(isInitialized = true)
 			shareResult = Result.success(Share(7UL, "ticket", "photo.jpg", "hash", 1UL, 42UL))
 		}
-		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		val previews = FakeFilePreviewRepository()
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), previews, UiMessageController())
 		advanceUntilIdle()
 		viewModel.openComposer()
-		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
+		val thumbnail = ByteArray(12).also {
+			it[0] = 0x89.toByte(); it[1] = 'P'.code.toByte(); it[2] = 'N'.code.toByte(); it[3] = 'G'.code.toByte()
+		}
+		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL, thumbnail))
 		viewModel.setAccessPolicy(ShareAccessPolicy.AnyoneWithTransfer)
 		viewModel.createShare()
 		advanceUntilIdle()
@@ -169,13 +175,14 @@ class ViewModelsTest {
 		assertEquals(null, viewModel.state.value.selectedFile)
 		assertEquals(ShareAccessPolicy.AnyoneWithTransfer, core.lastShareAccessPolicy)
 		assertEquals(7UL, core.state.value.transfers.first().transferId)
+		assertContentEquals(thumbnail, previews.previews.value.getValue(7UL))
 	}
 
 	@Test
 	fun sendComposerStaysOpenWhenShareCreationFails() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply { mutableState.value = CoreState(isInitialized = true) }
-		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
 		advanceUntilIdle()
 		viewModel.openComposer()
 		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
@@ -185,6 +192,36 @@ class ViewModelsTest {
 		assertTrue(viewModel.state.value.isComposerOpen)
 		assertEquals("photo.jpg", viewModel.state.value.selectedFile?.displayName)
 		assertFalse(viewModel.state.value.isSharing)
+	}
+
+	@Test
+	fun sendDeletionRemovesCoreTransferAndOwnedPreview() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(isInitialized = true, transfers = listOf(
+				com.vnidrop.app.core.Transfer(
+					localId = "send-7", transferId = 7UL,
+					direction = com.vnidrop.app.core.TransferDirection.Send,
+					status = com.vnidrop.app.core.TransferStatus.Sharing,
+					peerId = null, transferName = "Photo", contentHash = "hash",
+					fileCount = 1UL, totalSize = 42UL, ticket = "ticket",
+					accessPolicy = ShareAccessPolicy.RequireApproval, createdAt = 1, updatedAt = 1,
+				),
+			))
+		}
+		val previews = FakeFilePreviewRepository()
+		previews.save(7UL, byteArrayOf(1, 2, 3))
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), previews, UiMessageController())
+		advanceUntilIdle()
+		viewModel.openTransfer(7UL)
+		viewModel.requestDeleteTransfer()
+		viewModel.confirmDeleteTransfer()
+		advanceUntilIdle()
+
+		assertEquals(listOf(7UL), core.deletedTransfers)
+		assertFalse(7UL in previews.previews.value)
+		assertEquals(null, viewModel.state.value.selectedTransferId)
+		assertFalse(viewModel.state.value.isDeleteConfirmationOpen)
 	}
 
 	@Test

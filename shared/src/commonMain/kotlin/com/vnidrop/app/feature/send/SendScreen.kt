@@ -3,7 +3,11 @@ package com.vnidrop.app.feature.send
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.TransferDirection
@@ -15,6 +19,7 @@ fun SendScreen(
 	coreState: CoreState,
 	state: SendState,
 	windowClass: WindowClass,
+	shareActions: TransferShareActions = UnavailableTransferShareActions,
 	onOpenComposer: () -> Unit,
 	onDismissComposer: () -> Unit,
 	onSelectFile: () -> Unit,
@@ -26,13 +31,34 @@ fun SendScreen(
 	onTransferSelected: (ULong) -> Unit,
 	onCloseTransferDetails: () -> Unit,
 	onCopyTicket: (String) -> Unit,
+	onActivity: () -> Unit = {},
+	onReceivers: () -> Unit = {},
+	onShare: () -> Unit = {},
+	onCloseDetailPanel: () -> Unit = {},
+	onInvitationResult: (InvitationAction, Result<Unit>) -> Unit = { _, _ -> },
+	onRequestDelete: () -> Unit = {},
+	onDismissDelete: () -> Unit = {},
+	onConfirmDelete: () -> Unit = {},
 ) {
 	val outgoingTransfers = coreState.transfers.filter { it.direction == TransferDirection.Send }
 	val selectedTransfer = state.selectedTransferId?.let { id -> outgoingTransfers.firstOrNull { it.transferId == id } }
+	val qrCache = remember { mutableStateMapOf<String, ImageBitmap>() }
+	LaunchedEffect(outgoingTransfers.mapNotNull { it.ticket }) {
+		qrCache.keys.retainAll(outgoingTransfers.mapNotNull { it.ticket }.toSet())
+	}
 
 	Box(Modifier.fillMaxSize()) {
 		if (selectedTransfer != null) {
-			TransferDetails(selectedTransfer, onCloseTransferDetails, onCopyTicket)
+			TransferDetails(
+				transfer = selectedTransfer,
+				events = coreState.events,
+				completedReceivers = state.receiverHistory.count { it.status == com.vnidrop.app.core.ReceiverDeliveryStatus.Completed },
+				onBack = onCloseTransferDetails,
+				onActivity = onActivity,
+				onReceivers = onReceivers,
+				onShare = onShare,
+				onDelete = onRequestDelete,
+			)
 		} else {
 			TransferCatalog(
 				transfers = outgoingTransfers,
@@ -56,6 +82,33 @@ fun SendScreen(
 				onSenderNameChanged = onSenderNameChanged,
 				onAccessPolicyChanged = onAccessPolicyChanged,
 				onCreateShare = onCreateShare,
+			)
+		}
+	}
+
+	if (selectedTransfer != null && state.detailPanel != null) {
+		AdaptiveDrawer(windowClass = windowClass, onDismissRequest = onCloseDetailPanel) {
+			when (state.detailPanel) {
+				TransferDetailPanel.Activity -> TransferActivityPanel(coreState.events, selectedTransfer.transferId)
+				TransferDetailPanel.Receivers -> ReceiverHistoryPanel(state.receiverHistory, state.isLoadingReceivers)
+				TransferDetailPanel.Share -> TransferSharePanel(
+					selectedTransfer,
+					shareActions,
+					qrBitmap = selectedTransfer.ticket?.let(qrCache::get),
+					onQrRendered = { ticket, bitmap -> qrCache[ticket] = bitmap },
+					onResult = onInvitationResult,
+				)
+			}
+		}
+	}
+
+	if (selectedTransfer != null && state.isDeleteConfirmationOpen) {
+		AdaptiveDrawer(windowClass = windowClass, onDismissRequest = onDismissDelete) {
+			DeleteTransferPanel(
+				transferName = selectedTransfer.transferName,
+				isDeleting = state.isDeleting,
+				onCancel = onDismissDelete,
+				onConfirm = onConfirmDelete,
 			)
 		}
 	}

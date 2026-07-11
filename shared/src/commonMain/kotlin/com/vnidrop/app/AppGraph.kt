@@ -3,6 +3,8 @@ package com.vnidrop.app
 import com.vnidrop.app.core.CoreGateway
 import com.vnidrop.app.core.CoreRepository
 import com.vnidrop.app.feature.approvals.ApprovalCoordinator
+import com.vnidrop.app.feature.send.AppFilePreviewRepository
+import com.vnidrop.app.feature.send.createPlatformPreviewStore
 import com.vnidrop.app.logging.AppLogger
 import com.vnidrop.app.platform.AppVisibility
 import com.vnidrop.app.preferences.AppPreferencesDefaults
@@ -22,6 +24,9 @@ class AppGraph(
 ) {
 	val visibility = AppVisibility()
 	val messages = UiMessageController()
+	val filePreviewRepository = AppFilePreviewRepository(
+		createPlatformPreviewStore(dependencies.environment.defaultCoreDataDir),
+	)
 	val preferencesRepository = AppPreferencesRepository(
 		dataStore = createAppPreferencesDataStore(dependencies.environment.defaultCoreDataDir),
 		defaults = AppPreferencesDefaults(

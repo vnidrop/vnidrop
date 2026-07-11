@@ -19,6 +19,7 @@ import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.feature.send.FilePreviewRepository
 import com.vnidrop.app.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,6 +36,8 @@ class FakeCoreGateway : CoreGateway {
 	var responseResult: Result<Unit> = Result.success(Unit)
 	val responses = mutableListOf<Triple<String, Boolean, String?>>()
 	var shareResult: Result<Share> = Result.failure(UnsupportedOperationException())
+	var deleteResult: Result<Unit> = Result.success(Unit)
+	val deletedTransfers = mutableListOf<ULong>()
 	var lastShareAccessPolicy: ShareAccessPolicy? = null
 
 	override suspend fun initialize(appDataDir: String): Result<Unit> {
@@ -86,6 +89,15 @@ class FakeCoreGateway : CoreGateway {
 	override suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String) = Result.success(Unit)
 	override suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String) = Result.success(Unit)
 	override suspend fun cancel(transferId: ULong) = Result.success(Unit)
+	override suspend fun delete(transferId: ULong): Result<Unit> {
+		if (deleteResult.isSuccess) {
+			deletedTransfers += transferId
+			mutableState.value = mutableState.value.copy(
+				transfers = mutableState.value.transfers.filterNot { it.transferId == transferId },
+			)
+		}
+		return deleteResult
+	}
 	override suspend fun receiverRequests(transferId: ULong) = Result.success(requests[transferId].orEmpty())
 	override suspend fun respondReceiverRequest(requestId: String, accepted: Boolean, reason: String?): Result<Unit> {
 		responses += Triple(requestId, accepted, reason)
@@ -137,4 +149,13 @@ class FakeFileSystemService(
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	) = repository.sharePath(file.value, transferName, senderName, accessPolicy)
+}
+
+class FakeFilePreviewRepository : FilePreviewRepository {
+	private val state = MutableStateFlow<Map<ULong, ByteArray>>(emptyMap())
+	override val previews: StateFlow<Map<ULong, ByteArray>> = state
+	val restored = mutableListOf<Set<ULong>>()
+	override suspend fun restore(activeTransferIds: Set<ULong>) { restored += activeTransferIds }
+	override suspend fun save(transferId: ULong, bytes: ByteArray) { state.value = state.value + (transferId to bytes) }
+	override suspend fun remove(transferId: ULong) { state.value = state.value - transferId }
 }

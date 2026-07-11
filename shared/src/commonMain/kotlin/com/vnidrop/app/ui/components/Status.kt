@@ -28,9 +28,10 @@ fun StatusPill(label: String, modifier: Modifier = Modifier, tone: PillTone = Pi
 		PillTone.Warning -> colors.warningDefault
 		PillTone.Destructive -> colors.destructiveDefault
 	}
+	val shape = RoundedCornerShape(7.dp)
 	Row(
-		modifier = modifier.clip(RoundedCornerShape(999.dp)).background(color.copy(alpha = 0.12f))
-			.border(1.dp, color.copy(alpha = 0.32f), RoundedCornerShape(999.dp)).padding(horizontal = 10.dp, vertical = 5.dp),
+		modifier = modifier.clip(shape).background(color.copy(alpha = 0.12f))
+			.border(1.dp, color.copy(alpha = 0.32f), shape).padding(horizontal = 8.dp, vertical = 4.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
 		Box(Modifier.size(7.dp).clip(CircleShape).background(color))

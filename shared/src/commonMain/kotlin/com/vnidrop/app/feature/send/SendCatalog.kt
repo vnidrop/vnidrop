@@ -170,13 +170,18 @@ private fun TransferListItem(transfer: Transfer, thumbnailBytes: ByteArray?, onC
 			}
 			Spacer(Modifier.width(12.dp))
 			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-				Text(
-					transfer.transferName ?: stringResource(Res.string.send_new_transfer_title),
-					style = MaterialTheme.typography.bodyLarge,
-					fontWeight = FontWeight.SemiBold,
-					maxLines = 1,
-					overflow = TextOverflow.Ellipsis,
-				)
+				Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+					Text(
+						transfer.transferName ?: stringResource(Res.string.send_new_transfer_title),
+						modifier = Modifier.weight(1f, fill = false),
+						style = MaterialTheme.typography.bodyLarge,
+						fontWeight = FontWeight.SemiBold,
+						maxLines = 1,
+						overflow = TextOverflow.Ellipsis,
+					)
+					Spacer(Modifier.width(8.dp))
+					StatusPill(displayNameForStatus(transfer.status), tone = transfer.status.pillTone())
+				}
 				Text(
 					"${formatBytes(transfer.totalSize)} · ${accessPolicyLabel(transfer.accessPolicy)}",
 					color = colors.foregroundLighter,
@@ -185,7 +190,6 @@ private fun TransferListItem(transfer: Transfer, thumbnailBytes: ByteArray?, onC
 					overflow = TextOverflow.Ellipsis,
 				)
 			}
-			StatusPill(displayNameForStatus(transfer.status), tone = transfer.status.pillTone())
 			Spacer(Modifier.width(8.dp))
 			Icon(SendIcons.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
 		}

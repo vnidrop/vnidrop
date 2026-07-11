@@ -10,6 +10,8 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.getUnclippedBoundsInRoot
+import androidx.compose.ui.test.hasClickAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -281,8 +283,37 @@ class FoundationComposeTest {
 			}
 		}
 
+		val titleBounds = onNodeWithText("Photos").getUnclippedBoundsInRoot()
+		val statusBounds = onNodeWithText("Available").getUnclippedBoundsInRoot()
+		assertTrue(statusBounds.left - titleBounds.right <= 12.dp)
 		onNodeWithText("Photos").performClick()
 		runOnIdle { assertEquals(9UL, selectedId) }
+	}
+
+	@Test
+	fun transferDetailsRevealSharingOnlyAfterSelection() = runComposeUiTest {
+		val state = mutableStateOf(SendState(selectedTransferId = 9UL))
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				SendScreen(
+					coreState = CoreState(isInitialized = true, transfers = listOf(outgoingTransfer())),
+					state = state.value,
+					windowClass = WindowClass.Desktop,
+					onOpenComposer = {}, onDismissComposer = {}, onSelectFile = {}, onClearFile = {},
+					onTransferNameChanged = {}, onSenderNameChanged = {}, onAccessPolicyChanged = {},
+					onCreateShare = {}, onTransferSelected = {}, onCloseTransferDetails = {}, onCopyTicket = {},
+					onShare = { state.value = state.value.copy(detailPanel = com.vnidrop.app.feature.send.TransferDetailPanel.Share) },
+				)
+			}
+		}
+
+		onNodeWithText("Share").assertIsDisplayed()
+		onAllNodesWithText("Scan with VniDrop to receive this transfer").assertCountEquals(0)
+		onNode(hasText("Share") and hasClickAction()).performClick()
+		runOnIdle { assertEquals(com.vnidrop.app.feature.send.TransferDetailPanel.Share, state.value.detailPanel) }
+		onNodeWithText("Scan with VniDrop to receive this transfer").assertIsDisplayed()
+		onNodeWithText("Save .vnd file").assertIsDisplayed()
+		onNodeWithContentDescription("Close").assertIsDisplayed()
 	}
 
 	@Test

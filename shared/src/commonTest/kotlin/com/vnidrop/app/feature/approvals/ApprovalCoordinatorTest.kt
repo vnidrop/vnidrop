@@ -3,6 +3,7 @@ package com.vnidrop.app.feature.approvals
 import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.ReceiverRequestModel
+import com.vnidrop.app.core.ReceiverDeliveryStatus
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
@@ -88,10 +89,11 @@ class ApprovalCoordinatorTest {
 		receiverName = "Peer",
 		receiverDeviceName = "Phone",
 		appVersion = "1.0",
-		status = "requested",
+		status = ReceiverDeliveryStatus.Requested,
 		reason = null,
 		requestedAt = requestedAt,
 		respondedAt = null,
+		completedAt = null,
 	)
 
 	private fun activeTransfer() = Transfer(

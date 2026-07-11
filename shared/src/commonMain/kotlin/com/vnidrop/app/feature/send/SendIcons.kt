@@ -35,6 +35,13 @@ internal object SendIcons {
 		lineTo(5f, 12f)
 		lineTo(12f, 5f)
 	}
+	val Delete = lineIcon("Delete") {
+		moveTo(4f, 7f); lineTo(20f, 7f)
+		moveTo(9f, 7f); lineTo(9f, 4f); lineTo(15f, 4f); lineTo(15f, 7f)
+		moveTo(6f, 7f); lineTo(7f, 21f); lineTo(17f, 21f); lineTo(18f, 7f)
+		moveTo(10f, 11f); lineTo(10f, 17f)
+		moveTo(14f, 11f); lineTo(14f, 17f)
+	}
 	val ChevronRight = lineIcon("ChevronRight") {
 		moveTo(9f, 18f)
 		lineTo(15f, 12f)

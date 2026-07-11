@@ -37,6 +37,7 @@ kotlin {
 	sourceSets {
 		androidMain.dependencies {
 			implementation(libs.androidx.activity.compose)
+			implementation(libs.androidx.core.ktx)
 			implementation(libs.compose.uiToolingPreview)
 		}
 		commonMain.dependencies {
@@ -51,6 +52,7 @@ kotlin {
 			implementation(libs.androidx.datastore)
 			implementation(libs.androidx.datastore.preferences)
 			implementation(libs.kotlinx.coroutinesCore)
+			implementation(libs.qrcode.kotlin)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)

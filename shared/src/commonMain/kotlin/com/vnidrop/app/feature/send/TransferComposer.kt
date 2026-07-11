@@ -54,7 +54,6 @@ import vnidrop.shared.generated.resources.send_access_title
 import vnidrop.shared.generated.resources.send_choose_file_body
 import vnidrop.shared.generated.resources.send_choose_file_title
 import vnidrop.shared.generated.resources.send_file_size_unknown
-import vnidrop.shared.generated.resources.send_new_transfer_title
 import vnidrop.shared.generated.resources.send_review_title
 
 @Composable
@@ -73,7 +72,6 @@ internal fun TransferComposer(
 		modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
-		Text(stringResource(Res.string.send_new_transfer_title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 		val file = state.selectedFile
 		if (file == null) {
 			ChooseFileStep(onSelectFile)

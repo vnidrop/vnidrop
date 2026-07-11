@@ -40,3 +40,19 @@ fun QuietButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier
 		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
 	}
 }
+
+@Composable
+fun DestructiveButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+	Button(
+		onClick = onClick,
+		enabled = enabled,
+		modifier = modifier.heightIn(min = 44.dp),
+		shape = RoundedCornerShape(8.dp),
+		colors = ButtonDefaults.buttonColors(
+			containerColor = LocalVniDropColors.current.destructiveDefault,
+			contentColor = Color.White,
+		),
+	) {
+		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+	}
+}

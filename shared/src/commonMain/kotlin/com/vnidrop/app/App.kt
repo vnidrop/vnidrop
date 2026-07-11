@@ -45,7 +45,13 @@ fun App(dependencies: AppDependencies) {
 		AppViewModel(dependencies.environment, graph.coreRepository, graph.preferencesRepository, graph.messages)
 	}
 	val sendViewModel = viewModel {
-		SendViewModel(graph.coreRepository, dependencies.fileSystemService, graph.preferencesRepository, graph.messages)
+		SendViewModel(
+			graph.coreRepository,
+			dependencies.fileSystemService,
+			graph.preferencesRepository,
+			graph.filePreviewRepository,
+			graph.messages,
+		)
 	}
 	val receiveViewModel = viewModel {
 		ReceiveViewModel(graph.coreRepository, dependencies.fileSystemService, graph.preferencesRepository, graph.messages)

@@ -49,6 +49,9 @@ class CoreRepository(
 			if (model.phase == "approval" && model.transferId != null) {
 				_signals.tryEmit(CoreSignal.ApprovalChanged(model.transferId))
 			}
+			if (model.phase == "delivery" && model.transferId != null) {
+				_signals.tryEmit(CoreSignal.ReceiverHistoryChanged(model.transferId))
+			}
 		}
 	}
 
@@ -161,6 +164,13 @@ class CoreRepository(
 	override suspend fun cancel(transferId: ULong): Result<Unit> = runCore {
 		requireCore().cancelTransfer(transferId)
 		refreshSnapshot()
+	}
+
+	override suspend fun delete(transferId: ULong): Result<Unit> = runCore {
+		requireCore().deleteTransfer(transferId)
+		refreshSnapshot()
+		_signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
+		_signals.tryEmit(CoreSignal.ReceiverHistoryChanged(transferId))
 	}
 
 	override suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>> = runCore {
@@ -328,8 +338,16 @@ private fun ReceiverRequest.toModel(): ReceiverRequestModel = ReceiverRequestMod
 	receiverName = receiverName,
 	receiverDeviceName = receiverDeviceName,
 	appVersion = appVersion,
-	status = status,
+	status = when (status) {
+		"requested" -> ReceiverDeliveryStatus.Requested
+		"accepted" -> ReceiverDeliveryStatus.Accepted
+		"refused" -> ReceiverDeliveryStatus.Refused
+		"expired" -> ReceiverDeliveryStatus.Expired
+		"completed" -> ReceiverDeliveryStatus.Completed
+		else -> ReceiverDeliveryStatus.Unknown
+	},
 	reason = reason,
 	requestedAt = requestedAt,
 	respondedAt = respondedAt,
+	completedAt = completedAt,
 )

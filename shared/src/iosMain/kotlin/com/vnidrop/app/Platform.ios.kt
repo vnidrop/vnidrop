@@ -5,7 +5,9 @@ import androidx.compose.runtime.remember
 import com.vnidrop.app.core.rememberFileSystemService
 import com.vnidrop.app.notifications.IosLocalNotificationService
 import platform.Foundation.NSBundle
-import platform.Foundation.NSTemporaryDirectory
+import platform.Foundation.NSApplicationSupportDirectory
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
+import platform.Foundation.NSUserDomainMask
 import platform.UIKit.UIDevice
 
 @Composable
@@ -17,7 +19,7 @@ fun rememberIosAppDependencies(): AppDependencies {
 			environment = PlatformEnvironment(
 				name = device.systemName() + " " + device.systemVersion,
 				appVersion = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: "0.1.0",
-				defaultCoreDataDir = NSTemporaryDirectory() + "vnidrop",
+				defaultCoreDataDir = iosApplicationDataDirectory(),
 				defaultUsername = device.name.takeIf(String::isNotBlank) ?: "Receiver",
 			),
 			deviceInfoProvider = IosDeviceInfoProvider(device),
@@ -26,6 +28,11 @@ fun rememberIosAppDependencies(): AppDependencies {
 		)
 	}
 }
+
+private fun iosApplicationDataDirectory(): String =
+	(NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, true).firstOrNull() as? String)
+		?.trimEnd('/')?.plus("/VniDrop")
+		?: error("iOS Application Support directory is unavailable")
 
 private class IosDeviceInfoProvider(
 	private val device: UIDevice,

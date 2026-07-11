@@ -89,11 +89,21 @@ data class ReceiverRequestModel(
 	val receiverName: String?,
 	val receiverDeviceName: String?,
 	val appVersion: String,
-	val status: String,
+	val status: ReceiverDeliveryStatus,
 	val reason: String?,
 	val requestedAt: Long,
 	val respondedAt: Long?,
+	val completedAt: Long?,
 )
+
+enum class ReceiverDeliveryStatus {
+	Requested,
+	Accepted,
+	Refused,
+	Expired,
+	Completed,
+	Unknown,
+}
 
 data class CoreState(
 	val isInitialized: Boolean = false,
@@ -106,6 +116,7 @@ data class CoreState(
 
 sealed interface CoreSignal {
 	data class ApprovalChanged(val transferId: ULong) : CoreSignal
+	data class ReceiverHistoryChanged(val transferId: ULong) : CoreSignal
 }
 
 interface CoreGateway {
@@ -134,6 +145,7 @@ interface CoreGateway {
 	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit>
 	suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String): Result<Unit>
 	suspend fun cancel(transferId: ULong): Result<Unit>
+	suspend fun delete(transferId: ULong): Result<Unit>
 	suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>>
 	suspend fun respondReceiverRequest(requestId: String, accepted: Boolean, reason: String? = null): Result<Unit>
 	suspend fun refresh(): Result<Unit>
