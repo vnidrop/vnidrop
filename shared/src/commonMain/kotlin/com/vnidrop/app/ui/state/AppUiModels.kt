@@ -1,9 +1,8 @@
 package com.vnidrop.app.ui.state
 
-import com.vnidrop.app.ui.theme.ThemeMode
-import com.vnidrop.app.ui.navigation.AppDestination
-import uniffi.vnidrop.CoreEvent
-import uniffi.vnidrop.StoredTransfer
+import com.vnidrop.app.core.CoreEventModel
+import com.vnidrop.app.core.Transfer
+import com.vnidrop.app.core.TransferStatus
 import kotlin.math.roundToInt
 
 enum class WindowClass {
@@ -22,38 +21,6 @@ fun windowClassFor(widthDp: Float): WindowClass =
 fun useBottomNavigation(windowClass: WindowClass): Boolean =
 	windowClass == WindowClass.Phone
 
-data class AppUiState(
-	val destination: AppDestination = AppDestination.Send,
-	val themeMode: ThemeMode = ThemeMode.System,
-)
-
-data class SendUiState(
-	val selectedSource: String = "",
-	val selectedDisplayName: String = "",
-	val transferName: String = "VniDrop transfer",
-	val senderName: String = "",
-	val isSharing: Boolean = false,
-) {
-	val hasSelectedSource: Boolean
-		get() = selectedSource.isNotBlank()
-
-	fun canCreateShare(isCoreInitialized: Boolean): Boolean =
-		isCoreInitialized && hasSelectedSource && !isSharing
-}
-
-data class ReceiveUiState(
-	val ticket: String = "",
-	val outputDirectory: String = "",
-	val receiverName: String = "",
-	val isReceiving: Boolean = false,
-) {
-	fun canInspect(isCoreInitialized: Boolean): Boolean =
-		isCoreInitialized && ticket.isNotBlank()
-
-	fun canReceive(isCoreInitialized: Boolean): Boolean =
-		isCoreInitialized && ticket.isNotBlank() && outputDirectory.isNotBlank() && !isReceiving
-}
-
 data class TransferProgress(
 	val transferId: ULong?,
 	val phase: String,
@@ -61,18 +28,21 @@ data class TransferProgress(
 	val progress: Float?,
 )
 
-fun displayNameForStatus(status: String): String =
-	when (status.lowercase()) {
-		"sharing" -> "Sharing"
-		"receiving" -> "Receiving"
-		"done" -> "Done"
-		"cancelled" -> "Cancelled"
-		"stopped" -> "Stopped"
-		"failed" -> "Failed"
-		else -> status.replaceFirstChar { it.uppercase() }
+fun displayNameForStatus(status: TransferStatus): String =
+	when (status) {
+		TransferStatus.Importing -> "Preparing"
+		TransferStatus.Sharing -> "Available"
+		TransferStatus.Receiving -> "Receiving"
+		TransferStatus.Done -> "Completed"
+		TransferStatus.Cancelled -> "Cancelled"
+		TransferStatus.Stopped -> "Stopped"
+		TransferStatus.Failed -> "Failed"
 	}
 
-fun summarizeProgress(events: List<CoreEvent>): List<TransferProgress> =
+fun Transfer.isActiveTransfer(): Boolean =
+	status in activeTransferStatuses
+
+fun summarizeProgress(events: List<CoreEventModel>): List<TransferProgress> =
 	events
 		.filter { event -> event.transferId != null && event.phase in progressPhases }
 		.distinctBy { event -> "${event.transferId}:${event.phase}" }
@@ -86,7 +56,7 @@ fun summarizeProgress(events: List<CoreEvent>): List<TransferProgress> =
 			)
 		}
 
-fun transferSubtitle(transfer: StoredTransfer): String {
+fun transferSubtitle(transfer: Transfer): String {
 	val pieces = listOfNotNull(
 		transfer.transferName,
 		"${transfer.fileCount} file${if (transfer.fileCount == 1UL) "" else "s"}",
@@ -111,20 +81,10 @@ fun formatBytes(size: ULong): String {
 	}
 }
 
-fun friendlyCoreError(raw: String?): String? {
-	if (raw.isNullOrBlank()) return null
-	return when {
-		raw.contains("failed to parse transfer ticket", ignoreCase = true) -> "The ticket could not be read. Check that the full ticket was copied."
-		raw.contains("permission", ignoreCase = true) || raw.contains("refused", ignoreCase = true) -> "The transfer is waiting for approval or was refused by the sender."
-		raw.contains("Failed to bind sockets", ignoreCase = true) -> "VniDrop could not open its network sockets on this device."
-		raw.contains("not found", ignoreCase = true) && raw.contains("libvnidrop", ignoreCase = true) -> "The native VniDrop library is missing from this build."
-		else -> raw
-	}
-}
-
 private val progressPhases = setOf("import", "ticket", "access", "transfer", "download", "export", "lifecycle")
+private val activeTransferStatuses = setOf(TransferStatus.Importing, TransferStatus.Sharing, TransferStatus.Receiving)
 
-private fun eventLabel(event: CoreEvent): String {
+private fun eventLabel(event: CoreEventModel): String {
 	val direction = event.direction?.replaceFirstChar { it.uppercase() }
 	val phase = event.phase.replaceFirstChar { it.uppercase() }
 	val kind = event.kind.replace('-', ' ')

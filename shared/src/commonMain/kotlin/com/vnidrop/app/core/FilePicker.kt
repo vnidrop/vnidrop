@@ -5,10 +5,16 @@ import androidx.compose.runtime.Composable
 data class PickedShareFile(
 	val value: String,
 	val displayName: String,
+	val sizeBytes: ULong? = null,
+	val thumbnailBytes: ByteArray? = null,
 )
 
 interface ShareFilePicker {
 	fun pickFile()
+}
+
+interface ReceiveFolderPicker {
+	fun pickFolder()
 }
 
 @Composable
@@ -17,9 +23,8 @@ expect fun rememberShareFilePicker(
 	onError: (String) -> Unit,
 ): ShareFilePicker
 
-expect suspend fun sharePickedFile(
-	repository: CoreRepository,
-	file: PickedShareFile,
-	transferName: String,
-	senderName: String,
-)
+@Composable
+expect fun rememberReceiveFolderPicker(
+	onFolderPicked: (ReceiveFolder) -> Unit,
+	onError: (String) -> Unit,
+): ReceiveFolderPicker

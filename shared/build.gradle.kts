@@ -2,6 +2,7 @@
 
 import gobley.gradle.cargo.dsl.appleMobile
 import gobley.gradle.rust.targets.RustAndroidTarget
+import org.gradle.api.tasks.PathSensitivity
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -36,6 +37,7 @@ kotlin {
 	sourceSets {
 		androidMain.dependencies {
 			implementation(libs.androidx.activity.compose)
+			implementation(libs.androidx.core.ktx)
 			implementation(libs.compose.uiToolingPreview)
 		}
 		commonMain.dependencies {
@@ -47,10 +49,18 @@ kotlin {
 			implementation(libs.compose.uiToolingPreview)
 			implementation(libs.androidx.lifecycle.viewmodelCompose)
 			implementation(libs.androidx.lifecycle.runtimeCompose)
+			implementation(libs.androidx.datastore)
+			implementation(libs.androidx.datastore.preferences)
 			implementation(libs.kotlinx.coroutinesCore)
+			implementation(libs.qrcode.kotlin)
 		}
 		commonTest.dependencies {
 			implementation(libs.kotlin.test)
+			implementation(libs.kotlinx.coroutinesTest)
+		}
+		jvmTest.dependencies {
+			implementation(compose.desktop.currentOs)
+			implementation(libs.compose.uiTest)
 		}
 	}
 }
@@ -95,6 +105,18 @@ uniffi {
 }
 
 tasks.configureEach {
+	// Gobley does not currently treat every Rust source/API change as an input of
+	// all platform cargo tasks. Without these inputs an incremental Android build
+	// can package an older .so next to freshly generated UniFFI Kotlin bindings.
+	if (name.startsWith("cargoBuild")) {
+		inputs.files(
+			fileTree(layout.projectDirectory.dir("../crates/vnidrop")) {
+				include("Cargo.toml", "build.rs", "src/**/*.rs")
+			},
+			layout.projectDirectory.file("../Cargo.toml"),
+			layout.projectDirectory.file("../Cargo.lock"),
+		).withPathSensitivity(PathSensitivity.RELATIVE)
+	}
 	if (name.contains("Linux") || name.contains("MinGW") || name.contains("MacOSX64")) {
 		enabled = false
 	}

@@ -26,6 +26,13 @@ impl AccessPolicy {
         self.modes.write().await.insert(transfer_id, mode);
     }
 
+    pub(crate) async fn allows_without_approval(&self, transfer_id: u64) -> bool {
+        matches!(
+            self.modes.read().await.get(&transfer_id),
+            Some(TransferAccessMode::Public)
+        )
+    }
+
     pub(crate) async fn remove_transfer(&self, transfer_id: u64) {
         self.modes.write().await.remove(&transfer_id);
         self.approved_sessions
@@ -87,6 +94,20 @@ impl AccessPolicy {
                 }
             }
         }
+    }
+}
+
+pub(crate) fn mode_from_storage(value: &str) -> TransferAccessMode {
+    match value {
+        "public" => TransferAccessMode::Public,
+        _ => TransferAccessMode::ApprovalRequired,
+    }
+}
+
+pub(crate) fn mode_to_storage(mode: &TransferAccessMode) -> &'static str {
+    match mode {
+        TransferAccessMode::Public => "public",
+        TransferAccessMode::ApprovalRequired => "approval_required",
     }
 }
 

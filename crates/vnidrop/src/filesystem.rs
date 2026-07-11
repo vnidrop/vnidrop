@@ -1,21 +1,27 @@
 #[cfg(unix)]
 use std::os::fd::{FromRawFd, OwnedFd};
 use std::{
-    fs::File,
+    fs::{File, OpenOptions},
     io::{self, Read, Write},
     path::{Component, Path, PathBuf},
+    time::{Duration, SystemTime},
 };
+
+#[cfg(unix)]
+use std::os::unix::fs::OpenOptionsExt;
 
 use anyhow::{Context, Result};
 use bytes::Bytes;
 use iroh_blobs::{api::TempTag, Hash};
+use uuid::Uuid;
 
 use crate::{
-    api::{ShareSource, SourceKind},
+    api::{CoreLimits, ShareSource, SourceKind},
     util::non_empty,
 };
 
 const STREAM_BUFFER_LEN: usize = 1024 * 1024;
+const STALE_PART_AGE: Duration = Duration::from_secs(24 * 60 * 60);
 
 #[derive(Debug)]
 pub(crate) struct TransferImport {
@@ -39,6 +45,109 @@ pub(crate) enum ImportSource {
     FileDescriptor(OwnedFd),
 }
 
+pub(crate) struct AtomicOutputFile {
+    target: PathBuf,
+    temporary: PathBuf,
+    committed: bool,
+}
+
+impl AtomicOutputFile {
+    pub(crate) fn create(output_dir: &Path, relative_path: &str) -> Result<(Self, File)> {
+        let target = safe_output_path(output_dir, relative_path)?;
+        let parent = target
+            .parent()
+            .context("output file must have a parent directory")?;
+        std::fs::create_dir_all(parent)?;
+
+        let canonical_root = std::fs::canonicalize(output_dir)?;
+        let canonical_parent = std::fs::canonicalize(parent)?;
+        if !canonical_parent.starts_with(&canonical_root) {
+            anyhow::bail!("output path escapes the selected directory");
+        }
+        cleanup_stale_temporary_files(parent, STALE_PART_AGE)?;
+        if std::fs::symlink_metadata(&target).is_ok() {
+            anyhow::bail!("destination already exists: {}", target.display());
+        }
+
+        let final_name = target
+            .file_name()
+            .and_then(|name| name.to_str())
+            .context("output filename is not valid UTF-8")?;
+        let temporary = parent.join(format!(".{final_name}.vnidrop-{}.part", Uuid::new_v4()));
+        let mut options = OpenOptions::new();
+        options.write(true).create_new(true);
+        #[cfg(unix)]
+        options.custom_flags(libc::O_NOFOLLOW);
+        let file = options
+            .open(&temporary)
+            .with_context(|| format!("failed to create {}", temporary.display()))?;
+
+        // Recheck after opening the temporary file so a swapped ancestor is
+        // detected before bytes are published to the final destination.
+        let canonical_parent_after_open = std::fs::canonicalize(parent)?;
+        if canonical_parent_after_open != canonical_parent {
+            let _ = std::fs::remove_file(&temporary);
+            anyhow::bail!("output directory changed while opening destination");
+        }
+
+        Ok((
+            Self {
+                target,
+                temporary,
+                committed: false,
+            },
+            file,
+        ))
+    }
+
+    pub(crate) fn commit(mut self) -> Result<()> {
+        // Creating a hard link is an atomic no-clobber publication on the same
+        // filesystem. It fails if another writer created the destination.
+        std::fs::hard_link(&self.temporary, &self.target)
+            .with_context(|| format!("failed to commit {}", self.target.display()))?;
+        self.committed = true;
+        if let Err(error) = std::fs::remove_file(&self.temporary) {
+            tracing::warn!(%error, path = %self.temporary.display(), "failed to remove committed temporary file");
+        }
+        Ok(())
+    }
+}
+
+pub(crate) fn cleanup_stale_temporary_files(
+    directory: &Path,
+    minimum_age: Duration,
+) -> Result<u64> {
+    let now = SystemTime::now();
+    let mut removed = 0;
+    for entry in std::fs::read_dir(directory)? {
+        let entry = entry?;
+        let name = entry.file_name();
+        let name = name.to_string_lossy();
+        if !(name.starts_with('.') && name.contains(".vnidrop-") && name.ends_with(".part")) {
+            continue;
+        }
+        let metadata = entry.metadata()?;
+        let age = metadata
+            .modified()
+            .ok()
+            .and_then(|modified| now.duration_since(modified).ok())
+            .unwrap_or_default();
+        if age >= minimum_age && metadata.is_file() {
+            std::fs::remove_file(entry.path())?;
+            removed += 1;
+        }
+    }
+    Ok(removed)
+}
+
+impl Drop for AtomicOutputFile {
+    fn drop(&mut self) {
+        if !self.committed {
+            let _ = std::fs::remove_file(&self.temporary);
+        }
+    }
+}
+
 impl ImportSource {
     pub(crate) fn open(self) -> Result<File> {
         match self {
@@ -51,7 +160,22 @@ impl ImportSource {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<ImportSourceFile>> {
+    collect_import_files_with_limits(sources, &CoreLimits::default())
+}
+
+pub(crate) fn collect_import_files_with_limits(
+    sources: Vec<ShareSource>,
+    limits: &CoreLimits,
+) -> Result<Vec<ImportSourceFile>> {
+    if sources.len() as u64 > limits.max_sources {
+        anyhow::bail!(
+            "source count {} exceeds limit {}",
+            sources.len(),
+            limits.max_sources
+        );
+    }
     let mut files = Vec::new();
     for source in sources {
         match source.kind {
@@ -117,6 +241,34 @@ pub(crate) fn collect_import_files(sources: Vec<ShareSource>) -> Result<Vec<Impo
     }
     if files.is_empty() {
         anyhow::bail!("no files found in selected sources");
+    }
+    if files.len() as u64 > limits.max_collection_files {
+        anyhow::bail!(
+            "collection file count {} exceeds limit {}",
+            files.len(),
+            limits.max_collection_files
+        );
+    }
+    let mut known_total = 0u64;
+    for file in &files {
+        if file.collection_name.len() as u64 > limits.max_path_bytes {
+            anyhow::bail!(
+                "collection path exceeds {} bytes: {}",
+                limits.max_path_bytes,
+                file.collection_name
+            );
+        }
+        if let ImportSource::Path(path) = &file.source {
+            known_total = known_total
+                .checked_add(std::fs::metadata(path)?.len())
+                .context("collection size overflow")?;
+            if known_total > limits.max_total_bytes {
+                anyhow::bail!(
+                    "collection size {known_total} exceeds limit {}",
+                    limits.max_total_bytes
+                );
+            }
+        }
     }
     Ok(files)
 }
@@ -212,7 +364,7 @@ where
 pub(crate) fn write_stream_to_blocking_writer<W>(
     mut writer: W,
     rx: async_channel::Receiver<io::Result<Option<Bytes>>>,
-) -> io::Result<()>
+) -> io::Result<W>
 where
     W: Write,
 {
@@ -222,12 +374,13 @@ where
             None => break,
         }
     }
-    writer.flush()
+    writer.flush()?;
+    Ok(writer)
 }
 
-pub(crate) async fn wait_for_writer(
-    task: std::thread::JoinHandle<io::Result<()>>,
-) -> Result<io::Result<()>> {
+pub(crate) async fn wait_for_writer<T: Send + 'static>(
+    task: std::thread::JoinHandle<io::Result<T>>,
+) -> Result<io::Result<T>> {
     tokio::task::spawn_blocking(move || {
         task.join()
             .map_err(|_| anyhow::anyhow!("export writer thread panicked"))

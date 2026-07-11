@@ -48,3 +48,36 @@ bytes through Kotlin memory.
   descriptor; Rust duplicates the descriptor before streaming.
 - iOS starts the security-scoped URL lease in Kotlin and keeps it alive while
   Rust streams from the accessible file URL/path.
+
+## Durability And Filesystem Policy
+
+- SQLite records have a local UUID in addition to the protocol transfer ID.
+  Schema-v2 records are migrated in place and keep their tickets and history.
+- Imports and receives are recorded before work begins. A process restart marks
+  interrupted work failed and expires approval requests that no longer have an
+  in-memory responder.
+- Persisted shares are restored only when their root collection is complete and
+  readable. Missing or corrupt roots fail closed and emit a recovery event.
+- Receive destinations use a no-overwrite policy. Rust writes a uniquely named
+  temporary file in the destination directory, syncs it, and atomically
+  publishes it with a no-clobber hard link. Failure or cancellation removes the
+  temporary file. Stale VniDrop temporary files are cleaned on later writes.
+- Foreign output sinks receive exactly one terminal callback after a successful
+  `start_file`: `finish_file` or `abort_file`.
+
+## Blob Retention Policy
+
+Stopping a share immediately removes its provider mapping and approval state,
+so neither VniDrop nor legacy blob tickets can read it. Physical blob chunks are
+not force-deleted at stop time because content-addressed chunks may be shared by
+another active collection. They remain eligible for the blob store's garbage
+collection. Restart reconciliation never restores a stopped share.
+
+## Resource Limits
+
+`CoreLimits` controls source count, collection files and bytes, path and ticket
+sizes, metadata, retained events, pending approvals, concurrent transfers, and
+the event persistence queue. `initialize` uses conservative defaults;
+`initialize_with_limits` supports stricter deployments and tests. Cheap limits
+are checked before durable or network work, while remote collection limits are
+checked before downloading file content.

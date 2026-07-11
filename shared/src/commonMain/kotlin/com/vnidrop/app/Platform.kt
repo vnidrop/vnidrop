@@ -1,11 +1,14 @@
 package com.vnidrop.app
 
-interface Platform {
-	val name: String
-	val defaultCoreDataDir: String
-	val defaultReceiveDir: String
-	val deviceInfo: DeviceInfo
-}
+import com.vnidrop.app.core.FileSystemService
+import com.vnidrop.app.notifications.LocalNotificationService
+
+data class PlatformEnvironment(
+	val name: String,
+	val appVersion: String,
+	val defaultCoreDataDir: String,
+	val defaultUsername: String = "Receiver",
+)
 
 data class DeviceInfo(
 	val deviceName: String?,
@@ -15,4 +18,13 @@ data class DeviceInfo(
 	val batteryLevel: String?,
 )
 
-expect fun getPlatform(): Platform
+fun interface DeviceInfoProvider {
+	suspend fun load(): DeviceInfo
+}
+
+data class AppDependencies(
+	val environment: PlatformEnvironment,
+	val deviceInfoProvider: DeviceInfoProvider,
+	val fileSystemService: FileSystemService,
+	val localNotificationService: LocalNotificationService,
+)

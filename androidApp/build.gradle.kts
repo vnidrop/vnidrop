@@ -58,6 +58,6 @@ android {
 
 tasks.configureEach {
 	if (name == "mergeDebugJniLibFolders" || name == "mergeDebugNativeLibs") {
-		dependsOn(":shared:cargoBuildAndroidArm64Debug")
+		dependsOn(":shared:copyAndroidAndroidArm64Debug")
 	}
 }

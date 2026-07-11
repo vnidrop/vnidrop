@@ -24,7 +24,7 @@ impl fmt::Debug for HandshakeService {
 }
 
 impl HandshakeService {
-    pub(crate) const ALPN: &'static [u8] = b"/vnidrop/handshake/1";
+    pub(crate) const ALPN: &'static [u8] = b"/vnidrop/handshake/2";
 
     pub(crate) fn new(approval: crate::approval::ApprovalService) -> Self {
         Self { approval }
@@ -64,6 +64,14 @@ impl ProtocolHandler for HandshakeService {
                     let response = self.handle_request(remote_endpoint_id.clone(), inner).await;
                     let _ = tx.send(response).await;
                 }
+                HandshakeMessage::ReportDelivery(message) => {
+                    let WithChannels { inner, tx, .. } = message;
+                    let response = self
+                        .approval
+                        .complete_delivery(remote_endpoint_id.clone(), inner)
+                        .await;
+                    let _ = tx.send(response).await;
+                }
             }
         }
 
@@ -94,6 +102,13 @@ impl HandshakeClient {
             })
             .await
     }
+
+    pub(crate) async fn report_delivery(
+        &self,
+        receipt: DeliveryReceipt,
+    ) -> Result<DeliveryReceiptResponse, irpc::Error> {
+        self.inner.rpc(receipt).await
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -108,8 +123,27 @@ pub(crate) struct RequestTransfer {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub(crate) enum HandshakeResponse {
-    Approved { token: String, expires_at: i64 },
-    Denied { reason: String },
+    Approved {
+        request_id: String,
+        token: String,
+        expires_at: i64,
+    },
+    Denied {
+        reason: String,
+    },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub(crate) struct DeliveryReceipt {
+    pub(crate) request_id: String,
+    pub(crate) transfer_id: u64,
+    pub(crate) token: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+pub(crate) enum DeliveryReceiptResponse {
+    Recorded,
+    Rejected { reason: String },
 }
 
 #[rpc_requests(message = HandshakeMessage)]
@@ -117,4 +151,6 @@ pub(crate) enum HandshakeResponse {
 enum HandshakeProtocol {
     #[rpc(tx=oneshot::Sender<HandshakeResponse>)]
     RequestTransfer(RequestTransfer),
+    #[rpc(tx=oneshot::Sender<DeliveryReceiptResponse>)]
+    ReportDelivery(DeliveryReceipt),
 }

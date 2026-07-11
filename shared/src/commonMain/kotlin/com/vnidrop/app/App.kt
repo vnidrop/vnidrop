@@ -1,99 +1,132 @@
 package com.vnidrop.app
 
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.vnidrop.app.core.rememberShareFilePicker
-import com.vnidrop.app.logging.AppLogger
+import com.vnidrop.app.feature.app.AppViewModel
+import com.vnidrop.app.feature.app.AppGraphViewModel
+import com.vnidrop.app.feature.approvals.ApprovalModalHost
+import com.vnidrop.app.feature.receive.ReceiveRoute
+import com.vnidrop.app.feature.receive.ReceiveViewModel
+import com.vnidrop.app.feature.send.SendRoute
+import com.vnidrop.app.feature.send.SendFloatingAction
+import com.vnidrop.app.feature.send.SendViewModel
+import com.vnidrop.app.feature.settings.SettingsRoute
+import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.platform.PlatformSystemAppearance
+import com.vnidrop.app.ui.feedback.VniDropSnackbarHost
 import com.vnidrop.app.ui.navigation.AppDestination
-import com.vnidrop.app.ui.screens.ReceiveScreen
-import com.vnidrop.app.ui.screens.SendScreen
-import com.vnidrop.app.ui.screens.SettingsScreen
 import com.vnidrop.app.ui.shell.AppShell
+import com.vnidrop.app.ui.shell.ScreenScrollContainer
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.windowClassFor
 import com.vnidrop.app.ui.theme.VniDropTheme
 import com.vnidrop.app.ui.theme.rememberResolvedDarkTheme
 
 @Composable
-@Preview
-fun App() {
-	val platform = remember { getPlatform() }
-	val viewModel = viewModel {
-		VniDropAppViewModel(
-			appDataDir = platform.defaultCoreDataDir,
-			defaultReceiveDir = platform.defaultReceiveDir,
-			platformName = platform.name,
+fun App(dependencies: AppDependencies) {
+	val graphHolder = viewModel { AppGraphViewModel(dependencies) }
+	val graph = graphHolder.graph
+
+	val appViewModel = viewModel {
+		AppViewModel(dependencies.environment, graph.coreRepository, graph.preferencesRepository, graph.messages)
+	}
+	val sendViewModel = viewModel {
+		SendViewModel(
+			graph.coreRepository,
+			dependencies.fileSystemService,
+			graph.preferencesRepository,
+			graph.filePreviewRepository,
+			graph.messages,
 		)
 	}
-	val state by viewModel.state.collectAsStateWithLifecycle()
-	val coreState by viewModel.coreState.collectAsStateWithLifecycle()
-	val clipboard = LocalClipboardManager.current
-	val picker = rememberShareFilePicker(
-		onFilePicked = { file ->
-			viewModel.onEvent(VniDropAppEvent.ShareFilePicked(file))
-		},
-		onError = { error ->
-			viewModel.onEvent(VniDropAppEvent.ShareFilePickFailed(error))
-		},
-	)
-
-	LaunchedEffect(viewModel) {
-		viewModel.effectFlow.collect { effect ->
-			when (effect) {
-				VniDropAppEffect.OpenShareFilePicker -> {
-					AppLogger.info("file-picker", "open share file picker")
-					picker.pickFile()
+	val receiveViewModel = viewModel {
+		ReceiveViewModel(graph.coreRepository, dependencies.fileSystemService, graph.preferencesRepository, graph.messages)
+	}
+	val settingsViewModel = viewModel {
+		SettingsViewModel(
+			dependencies.environment,
+			dependencies.deviceInfoProvider,
+			dependencies.fileSystemService,
+			graph.preferencesRepository,
+			dependencies.localNotificationService,
+			graph.messages,
+		)
+	}
+	val appState by appViewModel.state.collectAsStateWithLifecycle()
+	val sendState by sendViewModel.state.collectAsStateWithLifecycle()
+	val sendCoreState by sendViewModel.coreState.collectAsStateWithLifecycle()
+	val approvalState by graph.approvalCoordinator.state.collectAsStateWithLifecycle()
+	val lifecycleOwner = LocalLifecycleOwner.current
+	DisposableEffect(lifecycleOwner, graph, settingsViewModel) {
+		val observer = LifecycleEventObserver { _, event ->
+			when (event) {
+				Lifecycle.Event.ON_START -> {
+					graph.visibility.setForeground(true)
+					settingsViewModel.refreshNotificationPermission()
 				}
-				is VniDropAppEffect.CopyTicket -> {
-					AppLogger.info("send", "ticket copied")
-					clipboard.setText(AnnotatedString(effect.ticket))
-				}
+				Lifecycle.Event.ON_STOP -> graph.visibility.setForeground(false)
+				else -> Unit
 			}
 		}
+		lifecycleOwner.lifecycle.addObserver(observer)
+		onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
 	}
 
-	val isDarkTheme = rememberResolvedDarkTheme(state.app.themeMode)
-	PlatformSystemAppearance(isDarkTheme)
-	LaunchedEffect(isDarkTheme) {
-		AppLogger.info("appearance", "system appearance synchronized", mapOf("dark" to isDarkTheme.toString()))
-	}
-
-	VniDropTheme(isDarkTheme = isDarkTheme) {
+	val darkTheme = rememberResolvedDarkTheme(appState.themeMode)
+	PlatformSystemAppearance(darkTheme)
+	VniDropTheme(isDarkTheme = darkTheme) {
 		BoxWithConstraints {
 			val windowClass = windowClassFor(maxWidth.value)
+			val showSendAction = appState.destination == AppDestination.Send &&
+				windowClass == WindowClass.Phone &&
+				sendState.selectedTransferId?.let { selectedId ->
+					sendCoreState.transfers.any { it.transferId == selectedId }
+				} != true &&
+				sendCoreState.transfers.any { it.direction == TransferDirection.Send }
 			AppShell(
-				selectedDestination = state.app.destination,
+				modifier = Modifier.fillMaxSize(),
+				selectedDestination = appState.destination,
 				windowClass = windowClass,
-				onDestinationSelected = { viewModel.onEvent(VniDropAppEvent.DestinationSelected(it)) },
+				onDestinationSelected = appViewModel::selectDestination,
+				overlay = {
+					VniDropSnackbarHost(graph.messages, Modifier.align(Alignment.BottomCenter))
+				},
+				floatingAction = if (showSendAction) {
+					{
+						SendFloatingAction(
+							onClick = sendViewModel::openComposer,
+							modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+						)
+					}
+				} else {
+					null
+				},
 			) {
-				when (state.app.destination) {
-					AppDestination.Send -> SendScreen(
-						coreState = coreState,
-						sendState = state.send,
-						onEvent = viewModel::onEvent,
-					)
-					AppDestination.Receive -> ReceiveScreen(
-						coreState = coreState,
-						receiveState = state.receive,
-						onEvent = viewModel::onEvent,
-					)
-					AppDestination.Settings -> SettingsScreen(
-						deviceInfo = platform.deviceInfo,
-						coreState = coreState,
-						themeMode = state.app.themeMode,
-						windowClass = windowClass,
-						onThemeModeChange = { viewModel.onEvent(VniDropAppEvent.ThemeModeChanged(it)) },
-					)
+				when (appState.destination) {
+					AppDestination.Send -> SendRoute(sendViewModel, windowClass)
+					AppDestination.Receive -> ScreenScrollContainer { ReceiveRoute(receiveViewModel) }
+					AppDestination.Settings -> ScreenScrollContainer { SettingsRoute(settingsViewModel, windowClass) }
 				}
 			}
+			ApprovalModalHost(
+				state = approvalState,
+				onAccept = graph.approvalCoordinator::accept,
+				onRefuse = graph.approvalCoordinator::refuse,
+			)
 		}
 	}
 }
