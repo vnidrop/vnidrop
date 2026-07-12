@@ -83,7 +83,11 @@ fn cancellation_during_export_aborts_open_sink_file() {
     let sink_for_worker = output_sink.clone();
     let ticket = share.ticket.clone();
     let worker = std::thread::spawn(move || {
-        receiver_core.receive_with_output_sink(ticket, sink_for_worker, Some("receiver".to_string()))
+        receiver_core.receive_with_output_sink(
+            ticket,
+            sink_for_worker,
+            Some("receiver".to_string()),
+        )
     });
 
     let request = wait_for_receiver_request(&sender.core, share.transfer_id);

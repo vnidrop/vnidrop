@@ -497,7 +497,11 @@ impl CoreInner {
         RuntimeStatus {
             endpoint_id: self.endpoint.id().to_string(),
             addr: format!("{:?}", self.endpoint.addr()),
-            active_transfers: self.active_transfers.lock().expect("active_transfers").len() as u64,
+            active_transfers: self
+                .active_transfers
+                .lock()
+                .expect("active_transfers")
+                .len() as u64,
             active_shares: self.active_shares.lock().await.len() as u64,
         }
     }
