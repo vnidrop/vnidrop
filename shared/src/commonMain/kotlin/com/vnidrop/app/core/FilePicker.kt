@@ -7,11 +7,20 @@ data class PickedShareFile(
 	val displayName: String,
 	val sizeBytes: ULong? = null,
 	val thumbnailBytes: ByteArray? = null,
+	/**
+	 * When true, [value] is a directory (filesystem path, iOS security-scoped
+	 * folder URL, or Android document tree URI). Platform share code expands or
+	 * walks it; Rust cannot treat an Android FD as a directory.
+	 */
+	val isDirectory: Boolean = false,
 )
 
 interface ShareFilePicker {
 	/** Opens a platform picker that may return one or more files. */
 	fun pickFiles()
+
+	/** Opens a platform folder picker for sharing a directory as one transfer. */
+	fun pickFolder()
 }
 
 interface ReceiveFolderPicker {

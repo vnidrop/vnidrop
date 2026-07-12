@@ -24,6 +24,7 @@ fun SendScreen(
 	onOpenComposer: () -> Unit,
 	onDismissComposer: () -> Unit,
 	onSelectFile: () -> Unit,
+	onSelectFolder: () -> Unit = {},
 	onClearFile: () -> Unit,
 	onRemoveFile: (String) -> Unit = {},
 	onTransferNameChanged: (String) -> Unit,
@@ -83,6 +84,7 @@ fun SendScreen(
 				state = state,
 				windowClass = windowClass,
 				onSelectFile = onSelectFile,
+				onSelectFolder = onSelectFolder,
 				onClearFile = onClearFile,
 				onRemoveFile = onRemoveFile,
 				onTransferNameChanged = onTransferNameChanged,
@@ -97,7 +99,12 @@ fun SendScreen(
 		AdaptiveDrawer(windowClass = windowClass, onDismissRequest = onCloseDetailPanel) {
 			when (state.detailPanel) {
 				TransferDetailPanel.Activity -> TransferActivityPanel(coreState.events, selectedTransfer.transferId)
-				TransferDetailPanel.Receivers -> ReceiverHistoryPanel(state.receiverHistory, state.isLoadingReceivers)
+				TransferDetailPanel.Receivers -> ReceiverHistoryPanel(
+					receivers = state.receiverHistory,
+					loading = state.isLoadingReceivers,
+					events = coreState.events,
+					transferTotalSize = selectedTransfer.totalSize,
+				)
 				TransferDetailPanel.Share -> TransferSharePanel(
 					selectedTransfer,
 					shareActions,

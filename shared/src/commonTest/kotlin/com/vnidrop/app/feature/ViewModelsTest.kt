@@ -247,6 +247,24 @@ class ViewModelsTest {
 	}
 
 	@Test
+	fun sendViewModelNamesFolderSelectionAfterFolderDisplayName() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val viewModel = SendViewModel(FakeCoreGateway(), FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.onFilesPicked(
+			listOf(
+				com.vnidrop.app.core.PickedShareFile(
+					value = "/tmp/photos",
+					displayName = "photos",
+					isDirectory = true,
+				),
+			),
+		)
+		assertEquals("photos", viewModel.state.value.transferName)
+		assertTrue(viewModel.state.value.selectedFiles.single().isDirectory)
+	}
+
+	@Test
 	fun sendDeletionRemovesCoreTransferAndOwnedPreview() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {

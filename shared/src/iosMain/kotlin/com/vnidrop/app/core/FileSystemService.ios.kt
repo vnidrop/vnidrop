@@ -56,7 +56,7 @@ private class IosFileSystemService : FileSystemService {
 				kind = uniffi.vnidrop.SourceKind.IOS_SECURITY_SCOPED_URL,
 				value = file.value,
 				displayName = file.displayName,
-				isDirectory = false,
+				isDirectory = file.isDirectory,
 			)
 		}
 		return repository.shareSources(sources, transferName, senderName, accessPolicy)

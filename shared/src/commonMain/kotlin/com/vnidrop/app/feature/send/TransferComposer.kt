@@ -42,6 +42,7 @@ import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_change_files
 import vnidrop.shared.generated.resources.button_choose_files
+import vnidrop.shared.generated.resources.button_choose_folder
 import vnidrop.shared.generated.resources.button_clear
 import vnidrop.shared.generated.resources.button_remove_file
 import vnidrop.shared.generated.resources.button_share_file
@@ -56,6 +57,7 @@ import vnidrop.shared.generated.resources.send_access_title
 import vnidrop.shared.generated.resources.send_choose_file_body
 import vnidrop.shared.generated.resources.send_choose_file_title
 import vnidrop.shared.generated.resources.send_file_size_unknown
+import vnidrop.shared.generated.resources.send_folder_label
 import vnidrop.shared.generated.resources.send_review_title
 import vnidrop.shared.generated.resources.send_selected_files_count
 
@@ -65,6 +67,7 @@ internal fun TransferComposer(
 	state: SendState,
 	windowClass: WindowClass,
 	onSelectFile: () -> Unit,
+	onSelectFolder: () -> Unit,
 	onClearFile: () -> Unit,
 	onRemoveFile: (String) -> Unit,
 	onTransferNameChanged: (String) -> Unit,
@@ -77,12 +80,13 @@ internal fun TransferComposer(
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
 		if (state.selectedFiles.isEmpty()) {
-			ChooseFileStep(onSelectFile)
+			ChooseFileStep(onSelectFile, onSelectFolder)
 		} else {
 			ReviewFileStep(
 				state = state,
 				windowClass = windowClass,
 				onSelectFile = onSelectFile,
+				onSelectFolder = onSelectFolder,
 				onClearFile = onClearFile,
 				onRemoveFile = onRemoveFile,
 				onTransferNameChanged = onTransferNameChanged,
@@ -96,7 +100,7 @@ internal fun TransferComposer(
 }
 
 @Composable
-private fun ChooseFileStep(onSelectFile: () -> Unit) {
+private fun ChooseFileStep(onSelectFile: () -> Unit, onSelectFolder: () -> Unit) {
 	Text(stringResource(Res.string.send_choose_file_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
 	Text(
 		stringResource(Res.string.send_choose_file_body),
@@ -111,6 +115,7 @@ private fun ChooseFileStep(onSelectFile: () -> Unit) {
 		) {
 			Icon(SendIcons.File, contentDescription = null, tint = LocalVniDropColors.current.brandLink, modifier = Modifier.size(32.dp))
 			PrimaryButton(stringResource(Res.string.button_choose_files), onClick = onSelectFile)
+			QuietButton(stringResource(Res.string.button_choose_folder), onClick = onSelectFolder)
 		}
 	}
 }
@@ -120,6 +125,7 @@ private fun ReviewFileStep(
 	state: SendState,
 	windowClass: WindowClass,
 	onSelectFile: () -> Unit,
+	onSelectFolder: () -> Unit,
 	onClearFile: () -> Unit,
 	onRemoveFile: (String) -> Unit,
 	onTransferNameChanged: (String) -> Unit,
@@ -164,11 +170,13 @@ private fun ReviewFileStep(
 		Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 			ShareButton(state, coreInitialized, onCreateShare, Modifier.fillMaxWidth())
 			QuietButton(stringResource(Res.string.button_change_files), onClick = onSelectFile, modifier = Modifier.fillMaxWidth(), enabled = !state.isSharing)
+			QuietButton(stringResource(Res.string.button_choose_folder), onClick = onSelectFolder, modifier = Modifier.fillMaxWidth(), enabled = !state.isSharing)
 		}
 	} else {
 		Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 			ShareButton(state, coreInitialized, onCreateShare)
 			QuietButton(stringResource(Res.string.button_change_files), onClick = onSelectFile, enabled = !state.isSharing)
+			QuietButton(stringResource(Res.string.button_choose_folder), onClick = onSelectFolder, enabled = !state.isSharing)
 			QuietButton(stringResource(Res.string.button_clear), onClick = onClearFile, enabled = !state.isSharing)
 		}
 	}
@@ -199,7 +207,11 @@ private fun SelectedFileCard(
 			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
 				Text(file.displayName, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
 				Text(
-					file.sizeBytes?.let(::formatBytes) ?: stringResource(Res.string.send_file_size_unknown),
+					when {
+						file.isDirectory -> stringResource(Res.string.send_folder_label)
+						file.sizeBytes != null -> formatBytes(file.sizeBytes)
+						else -> stringResource(Res.string.send_file_size_unknown)
+					},
 					color = LocalVniDropColors.current.foregroundLighter,
 					style = MaterialTheme.typography.bodySmall,
 				)

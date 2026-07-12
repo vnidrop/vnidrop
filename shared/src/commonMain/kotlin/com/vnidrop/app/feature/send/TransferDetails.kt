@@ -50,9 +50,12 @@ import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.ui.components.AppCard
 import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.PrimaryButton
+import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
+import com.vnidrop.app.ui.state.progressForReceiver
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
@@ -159,28 +162,55 @@ private fun DetailDestination(title: String, description: String, count: Int? = 
 }
 
 @Composable
-internal fun ReceiverHistoryPanel(receivers: List<ReceiverRequestModel>, loading: Boolean) {
+internal fun ReceiverHistoryPanel(
+	receivers: List<ReceiverRequestModel>,
+	loading: Boolean,
+	events: List<CoreEventModel> = emptyList(),
+	transferTotalSize: ULong? = null,
+) {
 	PanelContainer(stringResource(Res.string.transfer_receivers_title)) {
 		when {
 			loading -> Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
 			receivers.isEmpty() -> Text(stringResource(Res.string.transfer_no_receivers), color = LocalVniDropColors.current.foregroundLighter)
 			else -> receivers.forEachIndexed { index, receiver ->
 				if (index > 0) HorizontalDivider(color = LocalVniDropColors.current.borderDefault)
-				ReceiverRow(receiver)
+				val sendProgress = when (receiver.status) {
+					ReceiverDeliveryStatus.Accepted, ReceiverDeliveryStatus.Requested ->
+						progressForReceiver(events, receiver.transferId, receiver.remoteEndpointId, transferTotalSize)
+					else -> null
+				}
+				ReceiverRow(receiver, sendProgress)
 			}
 		}
 	}
 }
 
 @Composable
-private fun ReceiverRow(receiver: ReceiverRequestModel) {
+private fun ReceiverRow(receiver: ReceiverRequestModel, sendProgress: TransferProgress? = null) {
 	val name = receiver.receiverName ?: receiver.receiverDeviceName ?: stringResource(Res.string.transfer_nearby_device)
-	Column(Modifier.fillMaxWidth().padding(vertical = 13.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+	val showLiveSend = sendProgress != null &&
+		receiver.status != ReceiverDeliveryStatus.Completed &&
+		receiver.status != ReceiverDeliveryStatus.Refused &&
+		receiver.status != ReceiverDeliveryStatus.Expired
+	Column(Modifier.fillMaxWidth().padding(vertical = 13.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
 		Text(name, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
 		receiver.receiverDeviceName?.takeIf { it != name }?.let {
 			Text(it, color = LocalVniDropColors.current.foregroundLighter, style = MaterialTheme.typography.bodySmall)
 		}
-		Text(receiverStatusText(receiver.status), color = receiverStatusColor(receiver.status), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
+		if (showLiveSend) {
+			ProgressRow(
+				label = stringResource(Res.string.transfer_receiver_sending),
+				progress = sendProgress.progress,
+				detail = sendProgress.detail,
+			)
+		} else {
+			Text(
+				receiverStatusText(receiver.status),
+				color = receiverStatusColor(receiver.status),
+				style = MaterialTheme.typography.bodySmall,
+				fontWeight = FontWeight.Medium,
+			)
+		}
 		receiver.reason?.takeIf { it.isNotBlank() }?.let { reason ->
 			Text(reason, color = LocalVniDropColors.current.foregroundLighter, style = MaterialTheme.typography.bodySmall)
 		}

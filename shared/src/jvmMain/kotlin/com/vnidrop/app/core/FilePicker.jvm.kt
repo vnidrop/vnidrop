@@ -25,6 +25,23 @@ actual fun rememberShareFilePicker(
 				if (selected.isNotEmpty()) onFilesPicked(selected)
 			}
 		}
+
+		override fun pickFolder() {
+			openPicker(onError) {
+				val selected = pickDirectory(title = "Select folder to share") ?: return@openPicker
+				onFilesPicked(
+					listOf(
+						PickedShareFile(
+							value = selected.absolutePath,
+							displayName = selected.name.ifBlank { selected.absolutePath },
+							sizeBytes = null,
+							thumbnailBytes = selected.systemIconPng(),
+							isDirectory = true,
+						),
+					),
+				)
+			}
+		}
 	}
 }
 
@@ -36,7 +53,7 @@ actual fun rememberReceiveFolderPicker(
 	object : ReceiveFolderPicker {
 		override fun pickFolder() {
 			openPicker(onError) {
-				val selected = pickDirectory() ?: return@openPicker
+				val selected = pickDirectory(title = "Select receive folder") ?: return@openPicker
 				onFolderPicked(
 					ReceiveFolder(
 						kind = ReceiveFolderKind.FileSystemPath,
@@ -111,10 +128,10 @@ private fun File.systemIconPng(): ByteArray? = runCatching {
 	}
 }.getOrNull()
 
-private fun pickDirectory(): File? =
+private fun pickDirectory(title: String): File? =
 	if (isMacOs()) {
 		val dialog = withMacDirectoryDialog {
-			nativeFileDialog("Select receive folder").apply { isVisible = true }
+			nativeFileDialog(title).apply { isVisible = true }
 		}
 		try {
 			val directory = dialog.directory ?: return null
@@ -126,7 +143,7 @@ private fun pickDirectory(): File? =
 		}
 	} else {
 		val chooser = JFileChooser().apply {
-			dialogTitle = "Select receive folder"
+			dialogTitle = title
 			fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
 			isAcceptAllFileFilterUsed = false
 		}

@@ -41,7 +41,9 @@ import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.StatusPill
+import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.WindowClass
+import com.vnidrop.app.ui.state.activeSendProgress
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
 import com.vnidrop.app.ui.state.progressForTransfer
@@ -101,10 +103,15 @@ internal fun TransferCatalog(
 				)
 			}
 			items(transfers, key = Transfer::localId) { transfer ->
+				val progress = when (transfer.status) {
+					TransferStatus.Importing -> progressForTransfer(events, transfer.transferId)
+					TransferStatus.Sharing -> activeSendProgress(events, transfer.transferId, transfer.totalSize)
+					else -> null
+				}
 				TransferListItem(
 					transfer = transfer,
 					thumbnailBytes = transferThumbnails[transfer.transferId],
-					progress = progressForTransfer(events, transfer.transferId),
+					progress = progress,
 					onClick = { onTransferSelected(transfer.transferId) },
 				)
 			}
@@ -170,7 +177,7 @@ private fun SendEmptyState(onOpenComposer: () -> Unit) {
 private fun TransferListItem(
 	transfer: Transfer,
 	thumbnailBytes: ByteArray?,
-	progress: com.vnidrop.app.ui.state.TransferProgress?,
+	progress: TransferProgress?,
 	onClick: () -> Unit,
 ) {
 	val colors = LocalVniDropColors.current
@@ -203,7 +210,7 @@ private fun TransferListItem(
 					maxLines = 1,
 					overflow = TextOverflow.Ellipsis,
 				)
-				if (transfer.status == TransferStatus.Importing && progress != null) {
+				if (progress != null && transfer.status in setOf(TransferStatus.Importing, TransferStatus.Sharing)) {
 					ProgressRow(label = progress.label, progress = progress.progress, detail = progress.detail)
 				}
 			}
