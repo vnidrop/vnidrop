@@ -20,7 +20,7 @@ actual fun rememberShareFilePicker(
 	onError: (String) -> Unit,
 ): ShareFilePicker {
 	val context = LocalContext.current
-	val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+	val filesLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 		if (uris.isEmpty()) return@rememberLauncherForActivityResult
 		runCatching {
 			uris.map { uri -> context.pickedShareFile(uri) }
@@ -29,10 +29,41 @@ actual fun rememberShareFilePicker(
 			onFailure = { onError(it.message ?: "Could not open the selected files") },
 		)
 	}
-	return remember(launcher) {
+	val folderLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+		if (uri == null) return@rememberLauncherForActivityResult
+		runCatching {
+			// Read permission only — we expand the tree into file FDs at share time.
+			context.contentResolver.takePersistableUriPermission(
+				uri,
+				Intent.FLAG_GRANT_READ_URI_PERMISSION,
+			)
+			val displayName = uri.lastPathSegment
+				?.substringAfterLast(':')
+				?.substringAfterLast('/')
+				?.ifBlank { null }
+				?: "Folder"
+			listOf(
+				PickedShareFile(
+					value = uri.toString(),
+					displayName = displayName,
+					sizeBytes = null,
+					thumbnailBytes = null,
+					isDirectory = true,
+				),
+			)
+		}.fold(
+			onSuccess = onFilesPicked,
+			onFailure = { onError(it.message ?: "Could not open the selected folder") },
+		)
+	}
+	return remember(filesLauncher, folderLauncher) {
 		object : ShareFilePicker {
 			override fun pickFiles() {
-				launcher.launch(arrayOf("*/*"))
+				filesLauncher.launch(arrayOf("*/*"))
+			}
+
+			override fun pickFolder() {
+				folderLauncher.launch(null)
 			}
 		}
 	}

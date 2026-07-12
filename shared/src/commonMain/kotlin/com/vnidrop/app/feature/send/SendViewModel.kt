@@ -54,6 +54,7 @@ enum class TransferDetailPanel { Activity, Receivers, Share }
 
 sealed interface SendEffect {
 	data object OpenFilePicker : SendEffect
+	data object OpenFolderPicker : SendEffect
 	data class CopyTicket(val ticket: String) : SendEffect
 }
 
@@ -135,6 +136,7 @@ class SendViewModel(
 	}
 
 	fun selectFile() = sendEffect(SendEffect.OpenFilePicker)
+	fun selectFolder() = sendEffect(SendEffect.OpenFolderPicker)
 
 	fun onFilesPicked(files: List<PickedShareFile>) {
 		if (files.isEmpty()) return
@@ -271,9 +273,11 @@ class SendViewModel(
 		}
 	}
 
-	private fun defaultTransferName(files: List<PickedShareFile>): String = when (files.size) {
-		0 -> ""
-		1 -> files.first().displayName
+	private fun defaultTransferName(files: List<PickedShareFile>): String = when {
+		files.isEmpty() -> ""
+		files.size == 1 && files.first().isDirectory -> files.first().displayName
+		files.size == 1 -> files.first().displayName
+		files.all { it.isDirectory } -> "${files.size} folders"
 		else -> "${files.size} files"
 	}
 

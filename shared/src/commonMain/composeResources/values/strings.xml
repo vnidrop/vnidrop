@@ -10,8 +10,9 @@
     <string name="send_transfers_title">Your transfers</string>
     <string name="send_new_transfer_title">New transfer</string>
     <string name="send_choose_file_title">Choose what to share</string>
-    <string name="send_choose_file_body">Select one or more files from this device. You can review them before creating the transfer.</string>
+    <string name="send_choose_file_body">Select files or a folder from this device. You can review the selection before creating the transfer.</string>
     <string name="send_selected_files_count">%1$d files selected</string>
+    <string name="send_folder_label">Folder</string>
     <string name="button_remove_file">Remove file</string>
     <string name="button_choose_files">Choose files</string>
     <string name="button_change_files">Change files</string>

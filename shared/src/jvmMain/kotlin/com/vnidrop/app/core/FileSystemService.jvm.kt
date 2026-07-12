@@ -41,7 +41,7 @@ private class JvmFileSystemService : FileSystemService {
 				kind = uniffi.vnidrop.SourceKind.PATH,
 				value = file.value,
 				displayName = file.displayName,
-				isDirectory = false,
+				isDirectory = file.isDirectory || File(file.value).isDirectory,
 			)
 		}
 		return repository.shareSources(sources, transferName, senderName, accessPolicy)

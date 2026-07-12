@@ -46,6 +46,32 @@ actual fun rememberShareFilePicker(
 			picker.modalPresentationStyle = UIModalPresentationFormSheet
 			presenter.presentViewController(picker, animated = true, completion = null)
 		}
+
+		@OptIn(ExperimentalForeignApi::class)
+		override fun pickFolder() {
+			val presenter = UIApplication.sharedApplication.keyWindow?.rootViewController
+			if (presenter == null) {
+				onError("Could not find an iOS view controller for the folder picker")
+				return
+			}
+			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeFolder), asCopy = false)
+			val delegate = DocumentPickerDelegate(
+				onFilesPicked = { folders ->
+					val folder = folders.firstOrNull() ?: return@DocumentPickerDelegate
+					onFilesPicked(
+						listOf(
+							folder.copy(isDirectory = true),
+						),
+					)
+				},
+				onError = onError,
+				forceDirectory = true,
+			)
+			retainedPickerDelegate = delegate
+			picker.delegate = delegate
+			picker.modalPresentationStyle = UIModalPresentationFormSheet
+			presenter.presentViewController(picker, animated = true, completion = null)
+		}
 	}
 }
 
@@ -88,6 +114,7 @@ actual fun rememberReceiveFolderPicker(
 private class DocumentPickerDelegate(
 	private val onFilesPicked: (List<PickedShareFile>) -> Unit,
 	private val onError: (String) -> Unit,
+	private val forceDirectory: Boolean = false,
 ) : NSObject(), UIDocumentPickerDelegateProtocol {
 	override fun documentPicker(controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>) {
 		val files = didPickDocumentsAtURLs.mapNotNull { raw ->
@@ -95,8 +122,12 @@ private class DocumentPickerDelegate(
 			val displayName = url.lastPathComponent ?: "transfer"
 			val didStartAccess = url.startAccessingSecurityScopedResource()
 			val sizeBytes = try {
-				val attributes = url.path?.let { NSFileManager.defaultManager.attributesOfItemAtPath(it, null) }
-				(attributes?.get(NSFileSize) as? NSNumber)?.unsignedLongLongValue
+				if (forceDirectory) {
+					null
+				} else {
+					val attributes = url.path?.let { NSFileManager.defaultManager.attributesOfItemAtPath(it, null) }
+					(attributes?.get(NSFileSize) as? NSNumber)?.unsignedLongLongValue
+				}
 			} finally {
 				if (didStartAccess) url.stopAccessingSecurityScopedResource()
 			}
@@ -105,6 +136,7 @@ private class DocumentPickerDelegate(
 				displayName,
 				sizeBytes,
 				nativeFileIcon(url),
+				isDirectory = forceDirectory,
 			)
 		}
 		if (files.isEmpty()) {

@@ -24,6 +24,7 @@ fun SendRoute(
 		viewModel.effectFlow.collect { effect ->
 			when (effect) {
 				SendEffect.OpenFilePicker -> picker.pickFiles()
+				SendEffect.OpenFolderPicker -> picker.pickFolder()
 				is SendEffect.CopyTicket -> clipboard.setText(AnnotatedString(effect.ticket))
 			}
 		}
@@ -37,6 +38,7 @@ fun SendRoute(
 		onOpenComposer = viewModel::openComposer,
 		onDismissComposer = viewModel::dismissComposer,
 		onSelectFile = viewModel::selectFile,
+		onSelectFolder = viewModel::selectFolder,
 		onClearFile = viewModel::clearSelectedSource,
 		onRemoveFile = viewModel::removeSelectedFile,
 		onTransferNameChanged = viewModel::setTransferName,
