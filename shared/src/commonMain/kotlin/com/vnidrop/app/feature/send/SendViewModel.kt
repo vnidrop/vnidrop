@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.send_transfer_created
 import vnidrop.shared.generated.resources.transfer_deleted
-import vnidrop.shared.generated.resources.transfer_event_stopped
 import vnidrop.shared.generated.resources.transfer_nfc_written
 
 data class SendState(
@@ -248,21 +247,6 @@ class SendViewModel(
 					_state.update { it.copy(isSharing = false) }
 					messages.error(error)
 				},
-			)
-		}
-	}
-
-	fun cancelSelectedTransfer() {
-		val transferId = _state.value.selectedTransferId ?: return
-		viewModelScope.launch {
-			repository.cancel(transferId).fold(
-				onSuccess = {
-					repository.refresh()
-					messages.tryShow(
-						UiMessage(UiText.Resource(Res.string.transfer_event_stopped), UiMessageTone.Info),
-					)
-				},
-				onFailure = messages::error,
 			)
 		}
 	}

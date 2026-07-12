@@ -81,6 +81,31 @@ class ViewModelsTest {
 	}
 
 	@Test
+	fun settingsUsernameKeepsSpacesWhileTypingAndPersistsAfterDebounce() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = SettingsViewModel(
+			environment(),
+			{ DeviceInfo("Device", null, "OS", null, null) },
+			FakeFileSystemService(folder),
+			preferences,
+			FakeNotificationService(),
+			UiMessageController(),
+		)
+		advanceUntilIdle()
+
+		viewModel.setUsername("Ada ")
+		// Immediate local state must keep the trailing space so multi-word names can be typed.
+		assertEquals("Ada ", viewModel.state.value.username)
+		assertEquals("Receiver", preferences.mutablePreferences.value.username)
+
+		testScheduler.advanceTimeBy(400)
+		advanceUntilIdle()
+		assertEquals("Ada", preferences.mutablePreferences.value.username)
+		assertEquals("Ada", viewModel.state.value.username)
+	}
+
+	@Test
 	fun settingsKeepsNotificationsDisabledWhenPermissionIsDenied() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()

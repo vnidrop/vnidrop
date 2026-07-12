@@ -50,9 +50,7 @@ import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.ui.components.AppCard
 import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.PrimaryButton
-import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
-import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
 import com.vnidrop.app.ui.theme.LocalVniDropColors
@@ -69,16 +67,13 @@ enum class InvitationAction { Export, Share, Nfc }
 internal fun TransferDetails(
 	transfer: Transfer,
 	events: List<CoreEventModel>,
-	progress: TransferProgress? = null,
 	pendingReceivers: Int = 0,
 	completedReceivers: Int,
-	canCancel: Boolean = false,
 	onBack: () -> Unit,
 	onActivity: () -> Unit,
 	onReceivers: () -> Unit,
 	onShare: () -> Unit,
 	onDelete: () -> Unit,
-	onCancel: () -> Unit = {},
 ) {
 	LazyColumn(
 		modifier = Modifier.fillMaxSize().statusBarsPadding(),
@@ -106,24 +101,6 @@ internal fun TransferDetails(
 				DetailValue(stringResource(Res.string.metadata_size), formatBytes(transfer.totalSize))
 				HorizontalDivider(color = LocalVniDropColors.current.borderDefault)
 				DetailValue(stringResource(Res.string.send_access_title), accessPolicyLabel(transfer.accessPolicy))
-				if (progress != null && transfer.status.isLiveProgressStatus()) {
-					HorizontalDivider(color = LocalVniDropColors.current.borderDefault)
-					ProgressRow(
-						label = progress.label,
-						progress = progress.progress,
-						detail = progress.detail,
-						modifier = Modifier.padding(top = 8.dp),
-					)
-				}
-			}
-		}
-		if (canCancel) {
-			item {
-				SecondaryButton(
-					stringResource(Res.string.button_stop_sharing),
-					onClick = onCancel,
-					modifier = Modifier.fillMaxWidth(),
-				)
 			}
 		}
 		item {
@@ -162,11 +139,6 @@ private fun receiversDescription(pending: Int, completed: Int): String = when {
 	completed > 0 -> stringResource(Res.string.transfer_receivers_completed_count, completed)
 	else -> stringResource(Res.string.transfer_receivers_description)
 }
-
-private fun com.vnidrop.app.core.TransferStatus.isLiveProgressStatus(): Boolean =
-	this == com.vnidrop.app.core.TransferStatus.Importing ||
-		this == com.vnidrop.app.core.TransferStatus.Sharing ||
-		this == com.vnidrop.app.core.TransferStatus.Receiving
 
 @Composable
 private fun DetailDestination(title: String, description: String, count: Int? = null, onClick: () -> Unit) {

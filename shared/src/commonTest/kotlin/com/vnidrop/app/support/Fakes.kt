@@ -169,7 +169,9 @@ class FakePreferencesRepository(
 ) : PreferencesRepository {
 	val mutablePreferences = MutableStateFlow(initial)
 	override val preferences = mutablePreferences
-	override suspend fun setUsername(username: String) { mutablePreferences.value = mutablePreferences.value.copy(username = username) }
+	override suspend fun setUsername(username: String) {
+		mutablePreferences.value = mutablePreferences.value.copy(username = username.trim())
+	}
 	override suspend fun setReceiveFolder(folder: ReceiveFolder) { mutablePreferences.value = mutablePreferences.value.copy(receiveFolder = folder) }
 	override suspend fun resetReceiveFolder() = Unit
 	override suspend fun setThemeMode(mode: ThemeMode) { mutablePreferences.value = mutablePreferences.value.copy(themeMode = mode) }

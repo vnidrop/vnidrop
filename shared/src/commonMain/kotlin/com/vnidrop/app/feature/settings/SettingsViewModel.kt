@@ -16,8 +16,10 @@ import com.vnidrop.app.ui.feedback.UiMessageController
 import com.vnidrop.app.ui.feedback.UiMessageTone
 import com.vnidrop.app.ui.feedback.UiText
 import com.vnidrop.app.ui.theme.ThemeMode
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -71,19 +73,26 @@ class SettingsViewModel(
 	private val effects = Channel<SettingsEffect>(Channel.BUFFERED)
 	val effectFlow = effects.receiveAsFlow()
 	private var enableNotificationsAfterSettings = false
+	private var usernamePersistJob: Job? = null
 
 	init {
 		viewModelScope.launch {
 			preferencesRepository.preferences.collect { preferences ->
-				_state.update {
-					it.copy(
-						username = preferences.username,
+				val previousFolder = _state.value.receiveFolder
+				// While the user is typing, keep the in-progress value. DataStore
+				// echoes can race keystrokes and trim trailing spaces mid-edit.
+				val editingUsername = usernamePersistJob?.isActive == true
+				_state.update { current ->
+					current.copy(
+						username = if (editingUsername) current.username else preferences.username,
 						receiveFolder = preferences.receiveFolder,
 						themeMode = preferences.themeMode,
 						notificationsEnabled = preferences.notificationsEnabled,
 					)
 				}
-				validateFolder(preferences.receiveFolder)
+				if (preferences.receiveFolder != previousFolder) {
+					validateFolder(preferences.receiveFolder)
+				}
 			}
 		}
 		refreshNotificationPermission()
@@ -96,7 +105,12 @@ class SettingsViewModel(
 	}
 
 	fun setUsername(value: String) {
-		viewModelScope.launch { preferencesRepository.setUsername(value) }
+		_state.update { it.copy(username = value) }
+		usernamePersistJob?.cancel()
+		usernamePersistJob = viewModelScope.launch {
+			delay(UsernamePersistDebounceMs)
+			preferencesRepository.setUsername(value)
+		}
 	}
 
 	fun setThemeMode(mode: ThemeMode) {
@@ -202,5 +216,9 @@ class SettingsViewModel(
 		_state.update { it.copy(isValidatingFolder = true) }
 		val status = fileSystemService.validateReceiveFolder(folder)
 		_state.update { it.copy(folderAccessStatus = status, isValidatingFolder = false) }
+	}
+
+	private companion object {
+		const val UsernamePersistDebounceMs = 350L
 	}
 }
