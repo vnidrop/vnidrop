@@ -19,3 +19,6 @@ captures
 node_modules/
 target/
 .junie
+
+# Local design export scratch
+output/
