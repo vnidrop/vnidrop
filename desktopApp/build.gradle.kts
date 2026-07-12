@@ -25,6 +25,15 @@ compose.desktop {
 			targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 			packageName = "com.vnidrop.app"
 			packageVersion = "1.0.0"
+			macOS {
+				iconFile.set(project.file("../assets/macos/app-icon.icns"))
+			}
+			windows {
+				iconFile.set(project.file("../assets/windows/app-icon.ico"))
+			}
+			linux {
+				iconFile.set(project.file("../assets/linux/app-icon.png"))
+			}
 			fileAssociation(
 				mimeType = "application/vnd.vnidrop.transfer",
 				extension = "vnd",
