@@ -12,7 +12,7 @@ the production API:
 - `handshake.rs`: malformed protocol response handling.
 - `limits.rs`: core-limit validation.
 - `repository.rs`: schema, persistence, and transition invariants.
-- `runtime.rs`: public error mapping and runtime orchestration.
+- `runtime.rs`: public error mapping and orchestration (mirrors `src/runtime/`).
 - `secret.rs`: node identity persistence and file permissions.
 - `ticket.rs`: ticket encoding, parsing, and metadata validation.
 - `transfer_state.rs`: persisted enum parsing and legal lifecycle transitions.
