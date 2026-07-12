@@ -1,31 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:aapt="http://schemas.android.com/aapt"
-        android:width="108dp"
-        android:height="108dp"
-        android:viewportWidth="108"
-        android:viewportHeight="108">
-	<path
-		android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-		<aapt:attr name="android:fillColor">
-			<gradient
-				android:endX="85.84757"
-				android:endY="92.4963"
-				android:startX="42.9492"
-				android:startY="49.59793"
-				android:type="linear">
-				<item
-					android:color="#44000000"
-					android:offset="0.0"/>
-				<item
-					android:color="#00000000"
-					android:offset="1.0"/>
-			</gradient>
-		</aapt:attr>
-	</path>
-	<path
-		android:fillColor="#FFFFFF"
-		android:fillType="nonZero"
-		android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-		android:strokeWidth="1"
-		android:strokeColor="#00000000"/>
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="0.26"
+        android:scaleY="0.26"
+        android:translateX="18.02"
+        android:translateY="15.84">
+        <path
+            android:fillType="evenOdd"
+            android:pathData="M69.70,55.35L95.12,55.35C102.09,55.35 107.42,61.09 107.42,68.06L107.42,159.49C107.42,167.69 103.73,173.43 103.73,179.99C103.73,199.67 119.72,215.25 141.04,215.25C162.36,215.25 177.53,199.67 177.53,179.99C177.53,173.43 174.66,167.69 174.66,159.49L174.66,68.06C174.66,61.09 179.99,55.35 186.96,55.35L205.82,55.35C214.84,55.35 222.22,62.73 222.22,71.75L222.22,159.49C222.22,202.95 186.55,238.21 141.04,238.21C95.53,238.21 59.04,202.95 59.04,159.49L59.04,111.93L65.60,111.93L65.60,94.71C59.45,94.71 54.53,92.66 54.53,88.56L54.53,79.95C54.53,76.26 57.40,73.39 61.09,73.39L69.70,73.39ZM74.62,78.31C73.39,78.31 72.57,79.54 72.57,80.77L72.57,87.33C72.57,88.97 73.80,89.79 75.44,89.79L81.18,89.79C82.82,89.79 83.64,88.56 83.64,86.92L83.64,81.18C83.64,79.54 82.41,78.31 80.77,78.31Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:startX="59" android:startY="55" android:endX="222" android:endY="238" android:type="linear">
+                    <item android:color="#FFA855F7" android:offset="0" />
+                    <item android:color="#FF9D4DF4" android:offset="0.48" />
+                    <item android:color="#FF7C2AEF" android:offset="1" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:pathData="M140.63,126.28C134.48,134.48 121.36,150.88 115.62,162.77C108.24,177.53 111.52,193.11 122.18,201.31C132.43,207.87 148.01,207.87 158.67,200.90C168.92,193.52 172.20,177.53 165.64,162.77C159.90,150.88 147.19,134.48 140.63,126.28Z">
+            <aapt:attr name="android:fillColor">
+                <gradient android:startX="116" android:startY="126" android:endX="166" android:endY="208" android:type="linear">
+                    <item android:color="#FFA855F7" android:offset="0" />
+                    <item android:color="#FF9D4DF4" android:offset="0.48" />
+                    <item android:color="#FF7C2AEF" android:offset="1" />
+                </gradient>
+            </aapt:attr>
+        </path>
+        <path android:fillColor="#FFD8B4FE" android:pathData="M181.22,55.76H205.82C214.88,55.76 222.22,63.10 222.22,72.16V95.53Z" />
+    </group>
 </vector>
