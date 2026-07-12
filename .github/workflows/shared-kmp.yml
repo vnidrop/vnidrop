@@ -1,0 +1,95 @@
+name: Shared KMP
+
+on:
+  pull_request:
+    paths:
+      - "shared/**"
+      - "crates/vnidrop/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "androidApp/**"
+      - "desktopApp/**"
+      - ".github/workflows/shared-kmp.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "shared/**"
+      - "crates/vnidrop/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "gradle/**"
+      - "gradlew"
+      - "gradlew.bat"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "androidApp/**"
+      - "desktopApp/**"
+      - ".github/workflows/shared-kmp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  jvm-test:
+    # Host Rust embedding is enabled only for the current Gobley host target.
+    # Linux/Windows JVM cargo builds are disabled in shared/build.gradle.kts, so
+    # jvmTest must run on macOS (arm64) to match local development.
+    runs-on: macos-latest
+    timeout-minutes: 75
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin,aarch64-linux-android
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-shared-kmp-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-shared-kmp-
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools platforms;android-36
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r27c
+          link-to-sdk: true
+          add-to-path: false
+
+      - name: Export Android NDK location
+        run: |
+          echo "ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+          echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
+
+      - name: Run shared JVM tests
+        run: ./gradlew :shared:jvmTest --no-daemon --stacktrace
