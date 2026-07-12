@@ -24,6 +24,11 @@ import androidx.compose.runtime.mutableStateOf
 import com.vnidrop.app.feature.approvals.ApprovalModalHost
 import com.vnidrop.app.feature.approvals.ApprovalState
 import com.vnidrop.app.feature.approvals.PendingApproval
+import com.vnidrop.app.feature.receive.ReceiveHistoryDeleteTarget
+import com.vnidrop.app.feature.receive.ReceiveInvitationActions
+import com.vnidrop.app.feature.receive.ReceiveMethodAvailability
+import com.vnidrop.app.feature.receive.ReceiveScreen
+import com.vnidrop.app.feature.receive.ReceiveState
 import com.vnidrop.app.feature.settings.SettingsScreen
 import com.vnidrop.app.feature.settings.SettingsSection
 import com.vnidrop.app.feature.settings.SettingsState
@@ -317,6 +322,46 @@ class FoundationComposeTest {
 	}
 
 	@Test
+	fun receiveHistoryOffersPerItemDeleteAndConfirmedClearAll() = runComposeUiTest {
+		val state = mutableStateOf(ReceiveState())
+		val actions = object : ReceiveInvitationActions {
+			override val fileAvailability = ReceiveMethodAvailability.Available
+			override val qrAvailability = ReceiveMethodAvailability.Hidden
+			override val nfcAvailability = ReceiveMethodAvailability.Hidden
+			override fun pickInvitation(onResult: (Result<String>) -> Unit) = Unit
+			override fun scanQrCode(onResult: (Result<String>) -> Unit) = Unit
+			override fun readNfcInvitation(onResult: (Result<String>) -> Unit) = Unit
+			override fun cancel() = Unit
+		}
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				ReceiveScreen(
+					coreState = CoreState(isInitialized = true, transfers = listOf(receivedTransfer())),
+					state = state.value,
+					windowClass = WindowClass.Phone,
+					actions = actions,
+					onOpenAcquisition = {},
+					onDismissAcquisition = {},
+					onReceiverNameChanged = {},
+					onInvitationResult = { _, _ -> },
+					onWaitingForNfc = {},
+					onReceive = {},
+					onRequestDeleteHistoryItem = { state.value = state.value.copy(historyDeleteTarget = ReceiveHistoryDeleteTarget.Transfer(it)) },
+					onRequestClearHistory = { state.value = state.value.copy(historyDeleteTarget = ReceiveHistoryDeleteTarget.All) },
+					onDismissHistoryDelete = { state.value = state.value.copy(historyDeleteTarget = null) },
+					onConfirmHistoryDelete = {},
+				)
+			}
+		}
+
+		onNodeWithContentDescription("Delete from receive history").assertIsDisplayed()
+		onNodeWithText("Clear history").performClick()
+		onNodeWithText("Clear receive history?").assertIsDisplayed()
+		onNodeWithText("Downloaded files will remain on this device.", substring = true).assertIsDisplayed()
+		onNodeWithContentDescription("Close").assertIsDisplayed()
+	}
+
+	@Test
 	fun snackbarActionAndCancellationAreForwarded() = runComposeUiTest {
 		val controller = UiMessageController()
 		var actionCount = 0
@@ -360,5 +405,21 @@ class FoundationComposeTest {
 		accessPolicy = ShareAccessPolicy.RequireApproval,
 		createdAt = 1L,
 		updatedAt = 1L,
+	)
+
+	private fun receivedTransfer() = Transfer(
+		localId = "receive-10",
+		transferId = 10UL,
+		direction = TransferDirection.Receive,
+		status = TransferStatus.Done,
+		peerId = "sender",
+		transferName = "Holiday photos",
+		contentHash = "received-hash",
+		fileCount = 3UL,
+		totalSize = 4096UL,
+		ticket = null,
+		accessPolicy = ShareAccessPolicy.RequireApproval,
+		createdAt = 1L,
+		updatedAt = 2L,
 	)
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,7 +20,9 @@ import com.vnidrop.app.feature.app.AppViewModel
 import com.vnidrop.app.feature.app.AppGraphViewModel
 import com.vnidrop.app.feature.approvals.ApprovalModalHost
 import com.vnidrop.app.feature.receive.ReceiveRoute
+import com.vnidrop.app.feature.receive.ReceiveFloatingAction
 import com.vnidrop.app.feature.receive.ReceiveViewModel
+import com.vnidrop.app.feature.receive.ReceiveMethod
 import com.vnidrop.app.feature.send.SendRoute
 import com.vnidrop.app.feature.send.SendFloatingAction
 import com.vnidrop.app.feature.send.SendViewModel
@@ -35,6 +38,8 @@ import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.windowClassFor
 import com.vnidrop.app.ui.theme.VniDropTheme
 import com.vnidrop.app.ui.theme.rememberResolvedDarkTheme
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 
 @Composable
 fun App(dependencies: AppDependencies) {
@@ -69,8 +74,22 @@ fun App(dependencies: AppDependencies) {
 	val appState by appViewModel.state.collectAsStateWithLifecycle()
 	val sendState by sendViewModel.state.collectAsStateWithLifecycle()
 	val sendCoreState by sendViewModel.coreState.collectAsStateWithLifecycle()
+	val receiveState by receiveViewModel.state.collectAsStateWithLifecycle()
+	val receiveCoreState by receiveViewModel.coreState.collectAsStateWithLifecycle()
 	val approvalState by graph.approvalCoordinator.state.collectAsStateWithLifecycle()
 	val lifecycleOwner = LocalLifecycleOwner.current
+	LaunchedEffect(dependencies.externalInvitations, appViewModel, receiveViewModel) {
+		dependencies.externalInvitations.invitations.collect { invitation ->
+			appViewModel.selectDestination(AppDestination.Receive)
+			if (invitation.isSuccess) {
+				receiveViewModel.coreState.filter { it.isInitialized }.first()
+				receiveViewModel.state.filter { state ->
+					!state.isInspecting && !state.isReceiving && state.ticket.isBlank()
+				}.first()
+			}
+			receiveViewModel.onInvitationResult(ReceiveMethod.InvitationFile, invitation)
+		}
+	}
 	DisposableEffect(lifecycleOwner, graph, settingsViewModel) {
 		val observer = LifecycleEventObserver { _, event ->
 			when (event) {
@@ -97,6 +116,10 @@ fun App(dependencies: AppDependencies) {
 					sendCoreState.transfers.any { it.transferId == selectedId }
 				} != true &&
 				sendCoreState.transfers.any { it.direction == TransferDirection.Send }
+			val showReceiveAction = appState.destination == AppDestination.Receive &&
+				windowClass == WindowClass.Phone &&
+				!receiveState.isAcquisitionOpen &&
+				receiveCoreState.transfers.any { it.direction == TransferDirection.Receive }
 			AppShell(
 				modifier = Modifier.fillMaxSize(),
 				selectedDestination = appState.destination,
@@ -112,13 +135,20 @@ fun App(dependencies: AppDependencies) {
 							modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
 						)
 					}
+				} else if (showReceiveAction) {
+					{
+						ReceiveFloatingAction(
+							onClick = receiveViewModel::openAcquisition,
+							modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+						)
+					}
 				} else {
 					null
 				},
 			) {
 				when (appState.destination) {
 					AppDestination.Send -> SendRoute(sendViewModel, windowClass)
-					AppDestination.Receive -> ScreenScrollContainer { ReceiveRoute(receiveViewModel) }
+					AppDestination.Receive -> ReceiveRoute(receiveViewModel, windowClass)
 					AppDestination.Settings -> ScreenScrollContainer { SettingsRoute(settingsViewModel, windowClass) }
 				}
 			}

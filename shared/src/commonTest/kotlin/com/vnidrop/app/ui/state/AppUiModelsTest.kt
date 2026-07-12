@@ -60,15 +60,14 @@ class AppUiModelsTest {
 	fun receiveStateExposesInspectAndReceiveEligibility() {
 		val ready = ReceiveState(
 			ticket = "ticket",
-			outputDirectory = "/tmp/out",
+			inspection = com.vnidrop.app.core.TicketInspectionModel("vnidrop", "blob", null),
 			folderAccessStatus = com.vnidrop.app.core.FolderAccessStatus.Writable,
 		)
 
-		assertTrue(ready.canInspect(coreInitialized = true))
 		assertTrue(ready.canReceive(coreInitialized = true))
-		assertFalse(ready.canInspect(coreInitialized = false))
+		assertFalse(ready.canReceive(coreInitialized = false))
 		assertFalse(ready.copy(ticket = "").canReceive(coreInitialized = true))
-		assertFalse(ready.copy(outputDirectory = "").canReceive(coreInitialized = true))
+		assertFalse(ready.copy(inspection = null).canReceive(coreInitialized = true))
 		assertFalse(ready.copy(isReceiving = true).canReceive(coreInitialized = true))
 	}
 

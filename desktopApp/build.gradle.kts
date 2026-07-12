@@ -25,6 +25,11 @@ compose.desktop {
 			targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 			packageName = "com.vnidrop.app"
 			packageVersion = "1.0.0"
+			fileAssociation(
+				mimeType = "application/vnd.vnidrop.transfer",
+				extension = "vnd",
+				description = "VniDrop Invitation",
+			)
 		}
 	}
 }

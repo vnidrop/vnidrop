@@ -7,7 +7,11 @@ import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.core.Share
 import com.vnidrop.app.core.ShareAccessPolicy
+import com.vnidrop.app.core.Transfer
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.feature.app.AppViewModel
+import com.vnidrop.app.feature.receive.ReceiveHistoryDeleteTarget
 import com.vnidrop.app.feature.receive.ReceiveViewModel
 import com.vnidrop.app.feature.send.SendViewModel
 import com.vnidrop.app.feature.settings.SettingsViewModel
@@ -227,12 +231,81 @@ class ViewModelsTest {
 	@Test
 	fun receiveViewModelBuildsStateFromPreferences() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-		val core = FakeCoreGateway().apply { mutableState.value = mutableState.value.copy(isInitialized = true) }
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(com.vnidrop.app.core.TicketInspectionModel(
+				kind = "vnidrop",
+				blobTicket = "blob",
+				metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
+			))
+		}
 		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
 		advanceUntilIdle()
-		viewModel.setTicket("ticket")
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("ticket"))
+		advanceUntilIdle()
 		assertTrue(viewModel.state.value.canReceive(coreInitialized = true))
 		assertEquals("Receiver", viewModel.state.value.receiverName)
+	}
+
+	@Test
+	fun receiveViewModelDeletesOneTerminalHistoryItem() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(isInitialized = true, transfers = listOf(receivedTransfer(21UL, TransferStatus.Done)))
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+
+		viewModel.requestDeleteHistoryItem(21UL)
+		viewModel.confirmHistoryDelete()
+		advanceUntilIdle()
+
+		assertEquals(listOf(21UL), core.deletedTransfers)
+		assertEquals(null, viewModel.state.value.historyDeleteTarget)
+	}
+
+	@Test
+	fun receiveViewModelClearHistoryUsesAtomicCoreOperationAndKeepsActiveReceive() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			clearReceiveHistoryResult = Result.success(2UL)
+			mutableState.value = CoreState(
+				isInitialized = true,
+				transfers = listOf(
+					receivedTransfer(21UL, TransferStatus.Done),
+					receivedTransfer(22UL, TransferStatus.Failed),
+					receivedTransfer(23UL, TransferStatus.Receiving),
+				),
+			)
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+
+		viewModel.requestClearHistory()
+		assertEquals(ReceiveHistoryDeleteTarget.All, viewModel.state.value.historyDeleteTarget)
+		viewModel.confirmHistoryDelete()
+		advanceUntilIdle()
+
+		assertEquals(1, core.clearReceiveHistoryCount)
+		assertEquals(listOf(23UL), core.state.value.transfers.map(Transfer::transferId))
+	}
+
+	@Test
+	fun receiveViewModelKeepsDeleteConfirmationAfterFailure() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			deleteResult = Result.failure(IllegalStateException("database busy"))
+			mutableState.value = CoreState(isInitialized = true, transfers = listOf(receivedTransfer(21UL, TransferStatus.Done)))
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+
+		viewModel.requestDeleteHistoryItem(21UL)
+		viewModel.confirmHistoryDelete()
+		advanceUntilIdle()
+
+		assertEquals(ReceiveHistoryDeleteTarget.Transfer(21UL), viewModel.state.value.historyDeleteTarget)
+		assertFalse(viewModel.state.value.isDeletingHistory)
 	}
 
 	private fun preferences() = FakePreferencesRepository(
@@ -240,6 +313,22 @@ class ViewModelsTest {
 	)
 
 	private fun environment() = PlatformEnvironment("Test", "1.0", "/tmp/vnidrop")
+
+	private fun receivedTransfer(id: ULong, status: TransferStatus) = Transfer(
+		localId = "receive-$id",
+		transferId = id,
+		direction = TransferDirection.Receive,
+		status = status,
+		peerId = null,
+		transferName = "Received $id",
+		contentHash = "hash-$id",
+		fileCount = 1UL,
+		totalSize = 42UL,
+		ticket = null,
+		accessPolicy = ShareAccessPolicy.RequireApproval,
+		createdAt = 1L,
+		updatedAt = 1L,
+	)
 
 	private companion object {
 		val folder = ReceiveFolder(ReceiveFolderKind.FileSystemPath, "/tmp", "Downloads")

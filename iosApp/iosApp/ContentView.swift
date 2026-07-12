@@ -58,16 +58,68 @@ final class VniDropHostViewController: UIViewController {
 }
 
 struct ComposeView: UIViewControllerRepresentable {
+    let externalInvitations: ExternalInvitationController
+
     func makeUIViewController(context: Self.Context) -> UIViewController {
-        VniDropHostViewController(composeController: MainViewControllerKt.MainViewController())
+        VniDropHostViewController(
+            composeController: MainViewControllerKt.MainViewController(
+                externalInvitations: externalInvitations
+            )
+        )
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Self.Context) {}
 }
 
 struct ContentView: View {
+    let externalInvitations: ExternalInvitationController
+
     var body: some View {
-        ComposeView()
+        ComposeView(externalInvitations: externalInvitations)
             .ignoresSafeArea()
+            .onOpenURL(perform: openInvitation)
+    }
+
+    private func openInvitation(_ url: URL) {
+        guard url.pathExtension.caseInsensitiveCompare("vnd") == .orderedSame else {
+            externalInvitations.reportOpenFailure(message: "This is not a VniDrop invitation")
+            return
+        }
+
+        let hasSecurityAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if hasSecurityAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        do {
+            let values = try url.resourceValues(forKeys: [.fileSizeKey])
+            if let fileSize = values.fileSize, fileSize > 65_536 {
+                throw InvitationOpenError.tooLarge
+            }
+            let data = try Data(contentsOf: url, options: .mappedIfSafe)
+            guard data.count <= 65_536 else { throw InvitationOpenError.tooLarge }
+            guard let raw = String(data: data, encoding: .utf8) else {
+                throw InvitationOpenError.invalidEncoding
+            }
+            externalInvitations.openInvitation(raw: raw)
+        } catch {
+            externalInvitations.reportOpenFailure(
+                message: (error as? LocalizedError)?.errorDescription ?? "The invitation could not be opened"
+            )
+        }
+    }
+}
+
+private enum InvitationOpenError: LocalizedError {
+    case tooLarge
+    case invalidEncoding
+
+    var errorDescription: String? {
+        switch self {
+        case .tooLarge: "The invitation is too large"
+        case .invalidEncoding: "The invitation is not valid text"
+        }
     }
 }

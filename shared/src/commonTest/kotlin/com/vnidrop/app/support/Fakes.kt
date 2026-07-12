@@ -36,8 +36,11 @@ class FakeCoreGateway : CoreGateway {
 	var responseResult: Result<Unit> = Result.success(Unit)
 	val responses = mutableListOf<Triple<String, Boolean, String?>>()
 	var shareResult: Result<Share> = Result.failure(UnsupportedOperationException())
+	var inspectionResult: Result<TicketInspectionModel> = Result.failure(UnsupportedOperationException())
 	var deleteResult: Result<Unit> = Result.success(Unit)
+	var clearReceiveHistoryResult: Result<ULong> = Result.success(0UL)
 	val deletedTransfers = mutableListOf<ULong>()
+	var clearReceiveHistoryCount = 0
 	var lastShareAccessPolicy: ShareAccessPolicy? = null
 
 	override suspend fun initialize(appDataDir: String): Result<Unit> {
@@ -84,7 +87,7 @@ class FakeCoreGateway : CoreGateway {
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	) = Result.failure<Share>(UnsupportedOperationException())
-	override suspend fun inspectTicket(ticket: String) = Result.failure<TicketInspectionModel>(UnsupportedOperationException())
+	override suspend fun inspectTicket(ticket: String) = inspectionResult
 	override suspend fun receive(ticket: String, outputDir: String, receiverName: String) = Result.success(Unit)
 	override suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String) = Result.success(Unit)
 	override suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String) = Result.success(Unit)
@@ -97,6 +100,21 @@ class FakeCoreGateway : CoreGateway {
 			)
 		}
 		return deleteResult
+	}
+	override suspend fun clearReceiveHistory(): Result<ULong> {
+		clearReceiveHistoryCount += 1
+		clearReceiveHistoryResult.onSuccess {
+			mutableState.value = mutableState.value.copy(
+				transfers = mutableState.value.transfers.filterNot { transfer ->
+					transfer.direction == TransferDirection.Receive && transfer.status in setOf(
+						TransferStatus.Done,
+						TransferStatus.Failed,
+						TransferStatus.Cancelled,
+					)
+				},
+			)
+		}
+		return clearReceiveHistoryResult
 	}
 	override suspend fun receiverRequests(transferId: ULong) = Result.success(requests[transferId].orEmpty())
 	override suspend fun respondReceiverRequest(requestId: String, accepted: Boolean, reason: String?): Result<Unit> {

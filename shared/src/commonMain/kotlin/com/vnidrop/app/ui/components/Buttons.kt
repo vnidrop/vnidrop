@@ -42,6 +42,18 @@ fun QuietButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier
 }
 
 @Composable
+fun DestructiveQuietButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+	TextButton(
+		onClick = onClick,
+		enabled = enabled,
+		modifier = modifier.heightIn(min = 40.dp),
+		colors = ButtonDefaults.textButtonColors(contentColor = LocalVniDropColors.current.destructiveDefault),
+	) {
+		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
+	}
+}
+
+@Composable
 fun DestructiveButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
 	Button(
 		onClick = onClick,
