@@ -37,7 +37,8 @@ private class IosFileSystemService : FileSystemService {
 				}
 			}
 			ReceiveFolderKind.IosSecurityScopedUrl -> validateSecurityScopedUrl(folder.value)
-			ReceiveFolderKind.AndroidTreeUri -> FolderAccessStatus.Unavailable
+			ReceiveFolderKind.AndroidTreeUri,
+			ReceiveFolderKind.AndroidPublicDownloads -> FolderAccessStatus.Unavailable
 		}
 
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null

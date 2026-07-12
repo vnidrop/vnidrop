@@ -65,10 +65,12 @@ bytes through Kotlin memory.
   falls back to an exclusive rename (`renameat2(RENAME_NOREPLACE)` /
   `renamex_np(RENAME_EXCL)`). Failure or cancellation removes the temporary
   file. Stale VniDrop temporary files are cleaned on later writes.
-- Android defaults to the app-specific external Downloads directory
-  (`getExternalFilesDir`), which is always writable by the process. Shared
-  system folders require a SAF tree URI via the folder picker; those receives
-  stream through `ReceiveOutputSink` instead of raw filesystem paths.
+- Android defaults to the shared system Downloads collection via MediaStore
+  (`ReceiveFolderKind.AndroidPublicDownloads` on API 29+). Files show up in the
+  user's Downloads UI like a browser download. Custom folders still use a SAF
+  tree URI from the folder picker. Both Android sinks stream through
+  `ReceiveOutputSink` instead of raw filesystem paths. Pre-Android 10 falls
+  back to the public Downloads path with legacy storage permission.
 - Foreign output sinks receive exactly one terminal callback after a successful
   `start_file`: `finish_file` or `abort_file`.
 

@@ -39,13 +39,46 @@ class AppPreferencesRepositoryTest {
 		assertEquals(true, repository.preferences.first().notificationsEnabled)
 	}
 
-	private fun repositoryForTest(): AppPreferencesRepository {
+	@Test
+	fun legacyAndroidAppDownloadsPathIsPromotedToDefault() = runBlocking {
+		val publicDefault = ReceiveFolder(
+			kind = ReceiveFolderKind.AndroidPublicDownloads,
+			value = "media-store:downloads",
+			displayName = "Downloads",
+		)
+		val repository = repositoryForTest(default = publicDefault)
+		repository.setReceiveFolder(
+			ReceiveFolder(
+				kind = ReceiveFolderKind.FileSystemPath,
+				value = "/storage/emulated/0/Android/data/com.vnidrop.app/files/Downloads",
+				displayName = "App downloads",
+			),
+		)
+
+		assertEquals(publicDefault, repository.preferences.first().receiveFolder)
+	}
+
+	@Test
+	fun customFileSystemFolderIsNotPromotedAway() = runBlocking {
+		val repository = repositoryForTest()
+		val custom = ReceiveFolder(
+			kind = ReceiveFolderKind.FileSystemPath,
+			value = "/tmp/custom-receive",
+			displayName = "Custom",
+		)
+		repository.setReceiveFolder(custom)
+		assertEquals(custom, repository.preferences.first().receiveFolder)
+	}
+
+	private fun repositoryForTest(
+		default: ReceiveFolder = defaultFolder,
+	): AppPreferencesRepository {
 		val directory = Files.createTempDirectory("vnidrop-preferences-test").toString()
 		return AppPreferencesRepository(
 			dataStore = createAppPreferencesDataStore(directory),
 			defaults = AppPreferencesDefaults(
 				username = "Device Name",
-				receiveFolder = defaultFolder,
+				receiveFolder = default,
 				themeMode = ThemeMode.System,
 			),
 		)
