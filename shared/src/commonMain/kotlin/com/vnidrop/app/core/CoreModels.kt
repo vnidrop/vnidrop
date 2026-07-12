@@ -146,6 +146,7 @@ interface CoreGateway {
 	suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String): Result<Unit>
 	suspend fun cancel(transferId: ULong): Result<Unit>
 	suspend fun delete(transferId: ULong): Result<Unit>
+	suspend fun clearReceiveHistory(): Result<ULong>
 	suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>>
 	suspend fun respondReceiverRequest(requestId: String, accepted: Boolean, reason: String? = null): Result<Unit>
 	suspend fun refresh(): Result<Unit>

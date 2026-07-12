@@ -585,6 +585,149 @@ async fn deleting_transfer_removes_related_history_transactionally() {
         .is_empty());
     assert!(repository.delete_transfer(88).await.is_err());
 }
+
+#[tokio::test]
+async fn deleting_receive_history_only_removes_terminal_receives_and_dependants() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    let records = [
+        (100, TransferDirection::Receive, TransferStatus::Done),
+        (101, TransferDirection::Receive, TransferStatus::Failed),
+        (102, TransferDirection::Receive, TransferStatus::Cancelled),
+        (103, TransferDirection::Receive, TransferStatus::Receiving),
+        (104, TransferDirection::Send, TransferStatus::Done),
+        (105, TransferDirection::Send, TransferStatus::Sharing),
+    ];
+
+    for (transfer_id, direction, status) in records {
+        repository
+            .insert_transfer(transfer(transfer_id, direction, status))
+            .await
+            .unwrap();
+        let request_id = format!("request-{transfer_id}");
+        repository
+            .insert_receiver_request(ReceiverRequestInsert {
+                id: &request_id,
+                transfer_id,
+                remote_endpoint_id: "receiver",
+                transfer_name: "demo",
+                receiver_name: None,
+                receiver_device_name: None,
+                app_version: "1.0",
+            })
+            .await
+            .unwrap();
+        repository
+            .insert_event(
+                &CoreEvent {
+                    id: format!("event-{transfer_id}"),
+                    timestamp: transfer_id as i64,
+                    scope: "transfer".to_string(),
+                    transfer_id: Some(transfer_id),
+                    direction: Some(direction.as_str().to_string()),
+                    phase: "test".to_string(),
+                    kind: "created".to_string(),
+                    data_json: "{}".to_string(),
+                },
+                500,
+            )
+            .await
+            .unwrap();
+    }
+
+    assert_eq!(repository.delete_receive_history().await.unwrap(), 3);
+
+    let remaining = repository.list_transfers().await.unwrap();
+    assert_eq!(remaining.len(), 3);
+    for transfer_id in [103, 104, 105] {
+        assert!(remaining
+            .iter()
+            .any(|transfer| transfer.transfer_id == transfer_id));
+        assert_eq!(
+            repository
+                .list_receiver_requests(transfer_id)
+                .await
+                .unwrap()
+                .len(),
+            1
+        );
+        assert_eq!(
+            repository
+                .list_events(Some(transfer_id), 500)
+                .await
+                .unwrap()
+                .len(),
+            1
+        );
+    }
+    for transfer_id in [100, 101, 102] {
+        assert!(repository
+            .list_receiver_requests(transfer_id)
+            .await
+            .unwrap()
+            .is_empty());
+        assert!(repository
+            .list_events(Some(transfer_id), 500)
+            .await
+            .unwrap()
+            .is_empty());
+    }
+    assert_eq!(repository.delete_receive_history().await.unwrap(), 0);
+}
+
+#[tokio::test]
+async fn receive_history_mid_transaction_failure_preserves_all_related_rows() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    repository
+        .insert_transfer(transfer(
+            106,
+            TransferDirection::Receive,
+            TransferStatus::Done,
+        ))
+        .await
+        .unwrap();
+    repository
+        .insert_receiver_request(ReceiverRequestInsert {
+            id: "request-preserved",
+            transfer_id: 106,
+            remote_endpoint_id: "receiver",
+            transfer_name: "demo",
+            receiver_name: None,
+            receiver_device_name: None,
+            app_version: "1.0",
+        })
+        .await
+        .unwrap();
+    repository
+        .insert_event(
+            &CoreEvent {
+                id: "event-preserved".to_string(),
+                timestamp: 1,
+                scope: "transfer".to_string(),
+                transfer_id: Some(106),
+                direction: Some("receive".to_string()),
+                phase: "test".to_string(),
+                kind: "created".to_string(),
+                data_json: "{}".to_string(),
+            },
+            500,
+        )
+        .await
+        .unwrap();
+    repository.fail_receive_history_after_dependants();
+
+    assert!(repository.delete_receive_history().await.is_err());
+    assert_eq!(repository.list_transfers().await.unwrap().len(), 1);
+    assert_eq!(
+        repository.list_receiver_requests(106).await.unwrap().len(),
+        1
+    );
+    assert_eq!(
+        repository.list_events(Some(106), 500).await.unwrap().len(),
+        1
+    );
+}
 use std::str::FromStr;
 
 use sqlx::sqlite::{SqliteConnectOptions, SqlitePoolOptions};

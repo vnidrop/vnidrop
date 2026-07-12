@@ -250,6 +250,12 @@ impl VnidropCore {
             .map_err(VnidropError::transfer)
     }
 
+    pub fn delete_receive_history(&self) -> Result<u64, VnidropError> {
+        self.runtime
+            .block_on(self.inner.delete_receive_history())
+            .map_err(VnidropError::repository)
+    }
+
     pub fn set_transfer_access_mode(
         &self,
         transfer_id: u64,
@@ -992,7 +998,18 @@ impl CoreInner {
             .await
             .retain(|_, id| *id != transfer_id);
         self.access_policy.remove_transfer(transfer_id).await;
+        // Events are persisted asynchronously. Drain events emitted before this
+        // request so none can be written back after the transfer is deleted.
+        self.event_hub.flush().await;
         self.repository.delete_transfer(transfer_id).await
+    }
+
+    async fn delete_receive_history(&self) -> Result<u64> {
+        // Transfer events are persisted on a background task. Drain everything
+        // emitted before this request so cleared history cannot be reinserted
+        // after the repository transaction commits.
+        self.event_hub.flush().await;
+        self.repository.delete_receive_history().await
     }
 
     async fn set_transfer_access_mode(

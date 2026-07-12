@@ -27,6 +27,8 @@ pub(crate) struct Repository {
     pool: SqlitePool,
     #[cfg(test)]
     fail_next_write: Arc<AtomicBool>,
+    #[cfg(test)]
+    fail_receive_history_after_dependants: Arc<AtomicBool>,
 }
 
 pub(crate) struct TransferUpsert<'a> {
@@ -80,6 +82,8 @@ impl Repository {
             pool,
             #[cfg(test)]
             fail_next_write: Arc::new(AtomicBool::new(false)),
+            #[cfg(test)]
+            fail_receive_history_after_dependants: Arc::new(AtomicBool::new(false)),
         };
         repository.ensure_schema().await?;
         Ok(repository)
@@ -483,6 +487,12 @@ impl Repository {
     }
 
     #[cfg(test)]
+    pub(crate) fn fail_receive_history_after_dependants(&self) {
+        self.fail_receive_history_after_dependants
+            .store(true, Ordering::SeqCst);
+    }
+
+    #[cfg(test)]
     fn maybe_fail_write(&self) -> Result<()> {
         if self.fail_next_write.swap(false, Ordering::SeqCst) {
             anyhow::bail!("injected repository write failure");
@@ -757,6 +767,60 @@ impl Repository {
         require_one_changed(deleted.rows_affected(), "delete transfer")?;
         transaction.commit().await?;
         Ok(())
+    }
+
+    pub(crate) async fn delete_receive_history(&self) -> Result<u64> {
+        self.maybe_fail_write()?;
+        let mut transaction = self.pool.begin().await?;
+
+        // Delete dependants before their transfer rows. Keep the terminal-state
+        // predicate on every statement so receive work that is still active and
+        // every send record remain outside this transaction's scope.
+        sqlx::query(
+            r#"
+            DELETE FROM receiver_requests
+            WHERE transfer_id IN (
+                SELECT transfer_id
+                FROM transfers
+                WHERE direction = 'receive'
+                  AND status IN ('done', 'failed', 'cancelled')
+            )
+            "#,
+        )
+        .execute(&mut *transaction)
+        .await?;
+        sqlx::query(
+            r#"
+            DELETE FROM transfer_events
+            WHERE transfer_id IN (
+                SELECT transfer_id
+                FROM transfers
+                WHERE direction = 'receive'
+                  AND status IN ('done', 'failed', 'cancelled')
+            )
+            "#,
+        )
+        .execute(&mut *transaction)
+        .await?;
+        #[cfg(test)]
+        if self
+            .fail_receive_history_after_dependants
+            .swap(false, Ordering::SeqCst)
+        {
+            anyhow::bail!("injected receive history failure after dependant deletion");
+        }
+        let deleted = sqlx::query(
+            r#"
+            DELETE FROM transfers
+            WHERE direction = 'receive'
+              AND status IN ('done', 'failed', 'cancelled')
+            "#,
+        )
+        .execute(&mut *transaction)
+        .await?;
+
+        transaction.commit().await?;
+        Ok(deleted.rows_affected())
     }
 
     pub(crate) async fn list_events(
