@@ -8,6 +8,10 @@ on:
       - "crates/vnidrop/**"
       - ".github/workflows/rust-core.yml"
   push:
+    # Only after merge (or direct master pushes). Feature-branch work is covered
+    # by pull_request so we do not run the same job twice on every PR update.
+    branches:
+      - master
     paths:
       - "Cargo.toml"
       - "Cargo.lock"
@@ -16,6 +20,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: rust-core-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:

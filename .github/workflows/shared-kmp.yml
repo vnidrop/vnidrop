@@ -37,6 +37,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: shared-kmp-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   jvm-test:
     # Host Rust embedding is enabled only for the current Gobley host target.
