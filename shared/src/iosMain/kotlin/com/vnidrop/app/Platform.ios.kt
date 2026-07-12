@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.vnidrop.app.core.rememberFileSystemService
 import com.vnidrop.app.notifications.IosLocalNotificationService
+import com.vnidrop.app.feature.receive.ExternalInvitationController
 import platform.Foundation.NSBundle
 import platform.Foundation.NSApplicationSupportDirectory
 import platform.Foundation.NSSearchPathForDirectoriesInDomains
@@ -11,7 +12,7 @@ import platform.Foundation.NSUserDomainMask
 import platform.UIKit.UIDevice
 
 @Composable
-fun rememberIosAppDependencies(): AppDependencies {
+fun rememberIosAppDependencies(externalInvitations: ExternalInvitationController): AppDependencies {
 	val fileSystemService = rememberFileSystemService()
 	return remember(fileSystemService) {
 		val device = UIDevice.currentDevice
@@ -25,6 +26,7 @@ fun rememberIosAppDependencies(): AppDependencies {
 			deviceInfoProvider = IosDeviceInfoProvider(device),
 			fileSystemService = fileSystemService,
 			localNotificationService = IosLocalNotificationService(),
+			externalInvitations = externalInvitations,
 		)
 	}
 }

@@ -47,14 +47,7 @@ class AppPreferencesRepository(
 		.map { prefs ->
 			AppPreferences(
 				username = prefs[PreferenceKeys.Username]?.takeIf { it.isNotBlank() } ?: defaults.username,
-				receiveFolder = ReceiveFolder(
-					kind = prefs[PreferenceKeys.ReceiveFolderKind]?.let { receiveFolderKindOrNull(it) }
-						?: defaults.receiveFolder.kind,
-					value = prefs[PreferenceKeys.ReceiveFolderValue]?.takeIf { it.isNotBlank() }
-						?: defaults.receiveFolder.value,
-					displayName = prefs[PreferenceKeys.ReceiveFolderDisplayName]?.takeIf { it.isNotBlank() }
-						?: defaults.receiveFolder.displayName,
-				),
+				receiveFolder = resolveReceiveFolder(prefs, defaults.receiveFolder),
 				themeMode = prefs[PreferenceKeys.ThemeMode]?.let { themeModeOrNull(it) } ?: defaults.themeMode,
 				notificationsEnabled = prefs[PreferenceKeys.NotificationsEnabled] ?: defaults.notificationsEnabled,
 			)
@@ -103,6 +96,32 @@ private object PreferenceKeys {
 	val ReceiveFolderDisplayName = stringPreferencesKey("receive_folder_display_name")
 	val ThemeMode = stringPreferencesKey("theme_mode")
 	val NotificationsEnabled = booleanPreferencesKey("notifications_enabled")
+}
+
+private fun resolveReceiveFolder(prefs: Preferences, defaults: ReceiveFolder): ReceiveFolder {
+	val kind = prefs[PreferenceKeys.ReceiveFolderKind]?.let { receiveFolderKindOrNull(it) }
+		?: defaults.kind
+	val value = prefs[PreferenceKeys.ReceiveFolderValue]?.takeIf { it.isNotBlank() }
+		?: defaults.value
+	val displayName = prefs[PreferenceKeys.ReceiveFolderDisplayName]?.takeIf { it.isNotBlank() }
+		?: defaults.displayName
+	// Older Android builds defaulted to app-private "Downloads" paths that are
+	// invisible in the system Downloads UI. Promote those back to the shared
+	// public Downloads default so receive matches desktop expectations.
+	if (kind == ReceiveFolderKind.FileSystemPath && isLegacyAndroidAppDownloadsPath(value)) {
+		return defaults
+	}
+	return ReceiveFolder(kind = kind, value = value, displayName = displayName)
+}
+
+private fun isLegacyAndroidAppDownloadsPath(path: String): Boolean {
+	// Typical: /storage/emulated/0/Android/data/<pkg>/files/Download[s]
+	val normalized = path.replace('\\', '/')
+	return normalized.contains("/Android/data/") &&
+		(normalized.endsWith("/files/Download") ||
+			normalized.endsWith("/files/Downloads") ||
+			normalized.contains("/files/Download/") ||
+			normalized.contains("/files/Downloads/"))
 }
 
 private fun receiveFolderKindOrNull(raw: String): ReceiveFolderKind? =

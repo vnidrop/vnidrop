@@ -2,6 +2,7 @@ package com.vnidrop.app
 
 import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.notifications.LocalNotificationService
+import com.vnidrop.app.feature.receive.ExternalInvitationController
 
 data class PlatformEnvironment(
 	val name: String,
@@ -27,4 +28,5 @@ data class AppDependencies(
 	val deviceInfoProvider: DeviceInfoProvider,
 	val fileSystemService: FileSystemService,
 	val localNotificationService: LocalNotificationService,
+	val externalInvitations: ExternalInvitationController,
 )

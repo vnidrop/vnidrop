@@ -173,6 +173,12 @@ class CoreRepository(
 		_signals.tryEmit(CoreSignal.ReceiverHistoryChanged(transferId))
 	}
 
+	override suspend fun clearReceiveHistory(): Result<ULong> = runCore {
+		val deleted = requireCore().deleteReceiveHistory()
+		refreshSnapshot()
+		deleted
+	}
+
 	override suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>> = runCore {
 		requireCore().listReceiverRequests(transferId).map(ReceiverRequest::toModel)
 	}

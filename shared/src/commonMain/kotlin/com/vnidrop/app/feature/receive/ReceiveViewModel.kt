@@ -7,26 +7,46 @@ import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
+import com.vnidrop.app.core.TicketInspectionModel
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
+import com.vnidrop.app.ui.feedback.UiMessageTone
+import com.vnidrop.app.ui.feedback.UiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.receive_completed
+import vnidrop.shared.generated.resources.receive_history_cleared
+import vnidrop.shared.generated.resources.transfer_deleted
+
+sealed interface ReceiveHistoryDeleteTarget {
+	data class Transfer(val transferId: ULong) : ReceiveHistoryDeleteTarget
+	data object All : ReceiveHistoryDeleteTarget
+}
 
 data class ReceiveState(
+	val isAcquisitionOpen: Boolean = false,
 	val ticket: String = "",
-	val outputDirectory: String = "",
+	val method: ReceiveMethod? = null,
+	val inspection: TicketInspectionModel? = null,
 	val receiverName: String = "",
 	val receiveFolder: ReceiveFolder? = null,
 	val folderAccessStatus: FolderAccessStatus = FolderAccessStatus.Unavailable,
+	val isInspecting: Boolean = false,
 	val isReceiving: Boolean = false,
+	val isWaitingForNfc: Boolean = false,
+	val historyDeleteTarget: ReceiveHistoryDeleteTarget? = null,
+	val isDeletingHistory: Boolean = false,
 ) {
-	fun canInspect(coreInitialized: Boolean): Boolean = coreInitialized && ticket.isNotBlank()
 	fun canReceive(coreInitialized: Boolean): Boolean =
-		coreInitialized && ticket.isNotBlank() && outputDirectory.isNotBlank() &&
-			folderAccessStatus == FolderAccessStatus.Writable && !isReceiving
+		coreInitialized && ticket.isNotBlank() && inspection != null &&
+			folderAccessStatus == FolderAccessStatus.Writable && !isReceiving && !isInspecting
 }
 
 class ReceiveViewModel(
@@ -47,7 +67,6 @@ class ReceiveViewModel(
 					current.copy(
 						receiverName = current.receiverName.ifBlank { preferences.username },
 						receiveFolder = preferences.receiveFolder,
-						outputDirectory = preferences.receiveFolder.value,
 						folderAccessStatus = status,
 					)
 				}
@@ -55,14 +74,58 @@ class ReceiveViewModel(
 		}
 	}
 
-	fun setTicket(value: String) = _state.update { it.copy(ticket = value) }
-	fun setOutputDirectory(value: String) = _state.update { it.copy(outputDirectory = value) }
+	fun openAcquisition() = _state.update { it.copy(isAcquisitionOpen = true) }
+	fun dismissAcquisition() {
+		if (!_state.value.isReceiving && !_state.value.isInspecting) resetAcquisition()
+	}
 	fun setReceiverName(value: String) = _state.update { it.copy(receiverName = value) }
+	fun setWaitingForNfc(waiting: Boolean) = _state.update { it.copy(isWaitingForNfc = waiting) }
+	fun requestDeleteHistoryItem(transferId: ULong) {
+		val canDelete = coreState.value.transfers.any { transfer ->
+			transfer.transferId == transferId && transfer.direction == TransferDirection.Receive && transfer.status.isTerminalReceiveHistory()
+		}
+		if (canDelete) _state.update { it.copy(historyDeleteTarget = ReceiveHistoryDeleteTarget.Transfer(transferId)) }
+	}
+	fun requestClearHistory() {
+		if (coreState.value.transfers.any { it.direction == TransferDirection.Receive && it.status.isTerminalReceiveHistory() }) {
+			_state.update { it.copy(historyDeleteTarget = ReceiveHistoryDeleteTarget.All) }
+		}
+	}
+	fun dismissHistoryDelete() {
+		if (!_state.value.isDeletingHistory) _state.update { it.copy(historyDeleteTarget = null) }
+	}
+	fun confirmHistoryDelete() {
+		val target = _state.value.historyDeleteTarget ?: return
+		if (_state.value.isDeletingHistory) return
+		viewModelScope.launch {
+			_state.update { it.copy(isDeletingHistory = true) }
+			val result = when (target) {
+				is ReceiveHistoryDeleteTarget.Transfer -> repository.delete(target.transferId).map { Unit }
+				ReceiveHistoryDeleteTarget.All -> repository.clearReceiveHistory().map { Unit }
+			}
+			result.fold(
+				onSuccess = {
+					_state.update { it.copy(historyDeleteTarget = null, isDeletingHistory = false) }
+					val message = when (target) {
+						is ReceiveHistoryDeleteTarget.Transfer -> Res.string.transfer_deleted
+						ReceiveHistoryDeleteTarget.All -> Res.string.receive_history_cleared
+					}
+					messages.tryShow(UiMessage(UiText.Resource(message), UiMessageTone.Success))
+				},
+				onFailure = { error ->
+					_state.update { it.copy(isDeletingHistory = false) }
+					messages.error(error)
+				},
+			)
+		}
+	}
 
-	fun inspectTicket() {
-		val current = state.value
-		if (!current.canInspect(coreState.value.isInitialized)) return
-		viewModelScope.launch { repository.inspectTicket(current.ticket).onFailure(messages::error) }
+	fun onInvitationResult(method: ReceiveMethod, result: Result<String>) {
+		_state.update { it.copy(isWaitingForNfc = false) }
+		result.fold(
+			onSuccess = { raw -> inspectInvitation(method, raw) },
+			onFailure = messages::error,
+		)
 	}
 
 	fun receive() {
@@ -71,21 +134,64 @@ class ReceiveViewModel(
 		if (!current.canReceive(coreState.value.isInitialized)) return
 		viewModelScope.launch {
 			_state.update { it.copy(isReceiving = true) }
-			try {
-				val outputSink = fileSystemService.createReceiveOutputSink(folder)
-				val result = when {
-					outputSink != null -> repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
-					folder.kind == ReceiveFolderKind.IosSecurityScopedUrl -> repository.receiveIntoSecurityScopedDirectory(
-						current.ticket,
-						folder.value,
-						current.receiverName,
-					)
-					else -> repository.receive(current.ticket, current.outputDirectory, current.receiverName)
-				}
-				result.onFailure(messages::error)
-			} finally {
-				_state.update { it.copy(isReceiving = false) }
+			val outputSink = fileSystemService.createReceiveOutputSink(folder)
+			val result = when {
+				outputSink != null -> repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
+				folder.kind == ReceiveFolderKind.IosSecurityScopedUrl -> repository.receiveIntoSecurityScopedDirectory(
+					current.ticket,
+					folder.value,
+					current.receiverName,
+				)
+				else -> repository.receive(current.ticket, folder.value, current.receiverName)
 			}
+			result.fold(
+				onSuccess = {
+					resetAcquisition()
+					messages.tryShow(UiMessage(UiText.Resource(Res.string.receive_completed), UiMessageTone.Success))
+				},
+				onFailure = { error ->
+					_state.update { it.copy(isReceiving = false) }
+					messages.error(error)
+				},
+			)
 		}
 	}
+
+	private fun inspectInvitation(method: ReceiveMethod, raw: String) {
+		val ticket = raw.trim()
+		if (ticket.isBlank()) return messages.error(IllegalArgumentException("The invitation is empty"))
+		viewModelScope.launch {
+			_state.update {
+				it.copy(
+					isAcquisitionOpen = true,
+					ticket = ticket,
+					method = method,
+					inspection = null,
+					isInspecting = true,
+				)
+			}
+			repository.inspectTicket(ticket).fold(
+				onSuccess = { inspection -> _state.update { it.copy(inspection = inspection, isInspecting = false) } },
+				onFailure = { error ->
+					_state.update { it.copy(ticket = "", method = null, inspection = null, isInspecting = false) }
+					messages.error(error)
+				},
+			)
+		}
+	}
+
+	private fun resetAcquisition() = _state.update {
+		it.copy(
+			isAcquisitionOpen = false,
+			ticket = "",
+			method = null,
+			inspection = null,
+			isInspecting = false,
+			isReceiving = false,
+			isWaitingForNfc = false,
+		)
+	}
 }
+
+internal fun TransferStatus.isTerminalReceiveHistory(): Boolean =
+	this == TransferStatus.Done || this == TransferStatus.Failed || this == TransferStatus.Cancelled

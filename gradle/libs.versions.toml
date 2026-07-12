@@ -18,6 +18,7 @@ kotlinx-coroutines = "1.11.0"
 material3 = "1.11.0-alpha07"
 qrcode = "4.5.0"
 jna = "5.17.0"
+google-code-scanner = "16.1.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -45,6 +46,7 @@ kotlinx-coroutinesTest = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-te
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 qrcode-kotlin = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcode" }
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
+google-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "google-code-scanner" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

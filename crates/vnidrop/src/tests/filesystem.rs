@@ -118,6 +118,25 @@ fn atomic_output_commits_without_overwriting() {
 }
 
 #[test]
+fn atomic_output_commit_does_not_clobber_existing_peer() {
+    let output = tempfile::tempdir().unwrap();
+    let target = output.path().join("peer.txt");
+    std::fs::write(&target, b"original").unwrap();
+
+    let (pending, mut file) = AtomicOutputFile::create(output.path(), "other.txt").unwrap();
+    std::io::Write::write_all(&mut file, b"new").unwrap();
+    drop(file);
+    pending.commit().unwrap();
+
+    // Existing peer must stay intact while a different file commits.
+    assert_eq!(std::fs::read(&target).unwrap(), b"original");
+    assert_eq!(
+        std::fs::read(output.path().join("other.txt")).unwrap(),
+        b"new"
+    );
+}
+
+#[test]
 fn dropped_atomic_output_removes_partial_file() {
     let output = tempfile::tempdir().unwrap();
     let (pending, mut file) = AtomicOutputFile::create(output.path(), "partial.txt").unwrap();

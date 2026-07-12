@@ -5,9 +5,14 @@ import uniffi.vnidrop.ReceiveOutputSink
 
 enum class ReceiveFolderKind {
 	FileSystemPath,
+	/** Shared system Downloads via MediaStore (Android 10+). */
+	AndroidPublicDownloads,
 	AndroidTreeUri,
 	IosSecurityScopedUrl,
 }
+
+/** Stable token stored in preferences for [ReceiveFolderKind.AndroidPublicDownloads]. */
+const val AndroidPublicDownloadsToken = "media-store:downloads"
 
 data class ReceiveFolder(
 	val kind: ReceiveFolderKind,

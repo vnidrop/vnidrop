@@ -1,6 +1,8 @@
 @file:OptIn(gobley.gradle.InternalGobleyGradleApi::class)
 
 import gobley.gradle.cargo.dsl.appleMobile
+import gobley.gradle.cargo.dsl.jvm
+import gobley.gradle.GobleyHost
 import gobley.gradle.rust.targets.RustAndroidTarget
 import org.gradle.api.tasks.PathSensitivity
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -38,6 +40,7 @@ kotlin {
 		androidMain.dependencies {
 			implementation(libs.androidx.activity.compose)
 			implementation(libs.androidx.core.ktx)
+			implementation(libs.google.code.scanner)
 			implementation(libs.compose.uiToolingPreview)
 		}
 		commonMain.dependencies {
@@ -87,6 +90,13 @@ cargo {
 	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop")
 	publishJvmArtifacts = true
 	androidTargetsToBuild.set(setOf(RustAndroidTarget.Arm64))
+	builds.jvm {
+		variants {
+			// Desktop distributions are built per host. Do not publish disabled
+			// cross-platform native jars into the app runtime classpath.
+			embedRustLibrary.set(rustTarget == GobleyHost.current.rustTarget)
+		}
+	}
 	builds.appleMobile {
 		variants {
 			buildTaskProvider.configure {

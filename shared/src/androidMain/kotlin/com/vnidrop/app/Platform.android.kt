@@ -10,10 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import com.vnidrop.app.core.rememberFileSystemService
 import com.vnidrop.app.notifications.rememberAndroidLocalNotificationService
+import com.vnidrop.app.feature.receive.ExternalInvitationController
 import java.net.NetworkInterface
 
 @Composable
-fun rememberAndroidAppDependencies(activity: ComponentActivity): AppDependencies {
+fun rememberAndroidAppDependencies(activity: ComponentActivity, externalInvitations: ExternalInvitationController): AppDependencies {
 	val context = activity.applicationContext
 	val fileSystemService = rememberFileSystemService()
 	val notificationService = rememberAndroidLocalNotificationService(activity)
@@ -28,6 +29,7 @@ fun rememberAndroidAppDependencies(activity: ComponentActivity): AppDependencies
 			deviceInfoProvider = AndroidDeviceInfoProvider(context),
 			fileSystemService = fileSystemService,
 			localNotificationService = notificationService,
+			externalInvitations = externalInvitations,
 		)
 	}
 }
