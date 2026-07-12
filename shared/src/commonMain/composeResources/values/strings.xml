@@ -10,7 +10,11 @@
     <string name="send_transfers_title">Your transfers</string>
     <string name="send_new_transfer_title">New transfer</string>
     <string name="send_choose_file_title">Choose what to share</string>
-    <string name="send_choose_file_body">Select one file from this device. You can review its details before creating the transfer.</string>
+    <string name="send_choose_file_body">Select one or more files from this device. You can review them before creating the transfer.</string>
+    <string name="send_selected_files_count">%1$d files selected</string>
+    <string name="button_remove_file">Remove file</string>
+    <string name="button_choose_files">Choose files</string>
+    <string name="button_change_files">Change files</string>
     <string name="send_review_title">Review transfer</string>
     <string name="send_access_title">Who can receive it?</string>
     <string name="send_access_approval">Ask before each download</string>
@@ -58,7 +62,7 @@
     <string name="transfer_event_updated">Transfer updated</string>
     <string name="button_choose_file">Choose file</string>
     <string name="button_change_file">Change file</string>
-    <string name="button_share_file">Share file</string>
+    <string name="button_share_file">Share files</string>
     <string name="button_sharing_file">Preparing transfer…</string>
     <string name="button_copy_ticket">Copy transfer link</string>
     <string name="send_new_transfer_description">Create a new transfer</string>

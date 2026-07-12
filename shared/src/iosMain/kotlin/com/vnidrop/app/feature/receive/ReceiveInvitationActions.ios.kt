@@ -19,8 +19,9 @@ private var retainedInvitationDelegate: InvitationDocumentDelegate? = null
 actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions = remember {
 	object : ReceiveInvitationActions {
 		override val fileAvailability = ReceiveMethodAvailability.Available
-		override val qrAvailability = ReceiveMethodAvailability.Unavailable
-		override val nfcAvailability = ReceiveMethodAvailability.Unavailable
+		// Hide unfinished iOS methods so the method list only shows what works.
+		override val qrAvailability = ReceiveMethodAvailability.Hidden
+		override val nfcAvailability = ReceiveMethodAvailability.Hidden
 
 		@OptIn(ExperimentalForeignApi::class)
 		override fun pickInvitation(onResult: (Result<String>) -> Unit) {

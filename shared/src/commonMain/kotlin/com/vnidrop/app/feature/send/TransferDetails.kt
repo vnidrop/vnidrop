@@ -181,6 +181,9 @@ private fun ReceiverRow(receiver: ReceiverRequestModel) {
 			Text(it, color = LocalVniDropColors.current.foregroundLighter, style = MaterialTheme.typography.bodySmall)
 		}
 		Text(receiverStatusText(receiver.status), color = receiverStatusColor(receiver.status), style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium)
+		receiver.reason?.takeIf { it.isNotBlank() }?.let { reason ->
+			Text(reason, color = LocalVniDropColors.current.foregroundLighter, style = MaterialTheme.typography.bodySmall)
+		}
 	}
 }
 

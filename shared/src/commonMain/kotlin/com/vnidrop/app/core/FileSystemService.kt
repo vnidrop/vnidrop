@@ -36,6 +36,14 @@ interface FileSystemService {
 		transferName: String,
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
+	): Result<Share> = sharePickedFiles(repository, listOf(file), transferName, senderName, accessPolicy)
+
+	suspend fun sharePickedFiles(
+		repository: CoreGateway,
+		files: List<PickedShareFile>,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
 	): Result<Share>
 }
 

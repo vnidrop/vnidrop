@@ -15,13 +15,14 @@ import javax.swing.filechooser.FileSystemView
 
 @Composable
 actual fun rememberShareFilePicker(
-	onFilePicked: (PickedShareFile) -> Unit,
+	onFilesPicked: (List<PickedShareFile>) -> Unit,
 	onError: (String) -> Unit,
-): ShareFilePicker = remember(onFilePicked, onError) {
+): ShareFilePicker = remember(onFilesPicked, onError) {
 	object : ShareFilePicker {
-		override fun pickFile() {
+		override fun pickFiles() {
 			openPicker(onError) {
-				pickShareFile()?.let(onFilePicked)
+				val selected = pickShareFiles()
+				if (selected.isNotEmpty()) onFilesPicked(selected)
 			}
 		}
 	}
@@ -71,22 +72,24 @@ private fun activeFrame(): Frame? {
 		?: Frame.getFrames().firstOrNull { it.isVisible }
 }
 
-private fun pickShareFile(): PickedShareFile? {
-	val dialog = nativeFileDialog("Select file to share")
+private fun pickShareFiles(): List<PickedShareFile> {
+	val dialog = nativeFileDialog("Select files to share").apply {
+		isMultipleMode = true
+	}
 	return try {
 		dialog.isVisible = true
-		val directory = dialog.directory
-		val file = dialog.file
-		if (directory != null && file != null) {
-			val selected = File(directory, file)
+		val directory = dialog.directory ?: return emptyList()
+		val names = dialog.files?.map { it.name }.orEmpty().ifEmpty {
+			dialog.file?.let { listOf(it) }.orEmpty()
+		}
+		names.map { name ->
+			val selected = File(directory, name)
 			PickedShareFile(
 				selected.absolutePath,
 				selected.name,
 				selected.length().takeIf { it >= 0L }?.toULong(),
 				selected.systemIconPng(),
 			)
-		} else {
-			null
 		}
 	} finally {
 		dialog.dispose()

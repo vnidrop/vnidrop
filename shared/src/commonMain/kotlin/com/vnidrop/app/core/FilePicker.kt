@@ -10,7 +10,8 @@ data class PickedShareFile(
 )
 
 interface ShareFilePicker {
-	fun pickFile()
+	/** Opens a platform picker that may return one or more files. */
+	fun pickFiles()
 }
 
 interface ReceiveFolderPicker {
@@ -19,7 +20,7 @@ interface ReceiveFolderPicker {
 
 @Composable
 expect fun rememberShareFilePicker(
-	onFilePicked: (PickedShareFile) -> Unit,
+	onFilesPicked: (List<PickedShareFile>) -> Unit,
 	onError: (String) -> Unit,
 ): ShareFilePicker
 

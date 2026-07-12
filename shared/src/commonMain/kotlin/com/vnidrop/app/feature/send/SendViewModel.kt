@@ -29,7 +29,7 @@ import vnidrop.shared.generated.resources.transfer_nfc_written
 
 data class SendState(
 	val isComposerOpen: Boolean = false,
-	val selectedFile: PickedShareFile? = null,
+	val selectedFiles: List<PickedShareFile> = emptyList(),
 	val transferName: String = "",
 	val senderName: String = "",
 	val accessPolicy: ShareAccessPolicy = ShareAccessPolicy.RequireApproval,
@@ -42,8 +42,12 @@ data class SendState(
 	val isDeleteConfirmationOpen: Boolean = false,
 	val isDeleting: Boolean = false,
 ) {
+	val selectedFile: PickedShareFile? get() = selectedFiles.singleOrNull()
+	val totalSelectedBytes: ULong
+		get() = selectedFiles.fold(0UL) { acc, file -> acc + (file.sizeBytes ?: 0UL) }
+
 	fun canCreateShare(coreInitialized: Boolean): Boolean =
-		coreInitialized && selectedFile != null && transferName.isNotBlank() && !isSharing
+		coreInitialized && selectedFiles.isNotEmpty() && transferName.isNotBlank() && !isSharing
 }
 
 enum class TransferDetailPanel { Activity, Receivers, Share }
@@ -111,7 +115,7 @@ class SendViewModel(
 		_state.update {
 			it.copy(
 				isComposerOpen = true,
-				selectedFile = null,
+				selectedFiles = emptyList(),
 				transferName = "",
 				accessPolicy = ShareAccessPolicy.RequireApproval,
 			)
@@ -123,7 +127,7 @@ class SendViewModel(
 		_state.update {
 			it.copy(
 				isComposerOpen = false,
-				selectedFile = null,
+				selectedFiles = emptyList(),
 				transferName = "",
 				accessPolicy = ShareAccessPolicy.RequireApproval,
 			)
@@ -132,12 +136,13 @@ class SendViewModel(
 
 	fun selectFile() = sendEffect(SendEffect.OpenFilePicker)
 
-	fun onFilePicked(file: PickedShareFile) {
+	fun onFilesPicked(files: List<PickedShareFile>) {
+		if (files.isEmpty()) return
 		_state.update {
 			it.copy(
 				isComposerOpen = true,
-				selectedFile = file,
-				transferName = file.displayName,
+				selectedFiles = files,
+				transferName = defaultTransferName(files),
 			)
 		}
 	}
@@ -145,7 +150,21 @@ class SendViewModel(
 	fun onFilePickFailed(reason: String) = messages.error(IllegalStateException(reason))
 
 	fun clearSelectedSource() {
-		_state.update { it.copy(selectedFile = null, transferName = "") }
+		_state.update { it.copy(selectedFiles = emptyList(), transferName = "") }
+	}
+
+	fun removeSelectedFile(value: String) {
+		_state.update { current ->
+			val remaining = current.selectedFiles.filterNot { it.value == value }
+			current.copy(
+				selectedFiles = remaining,
+				transferName = when {
+					remaining.isEmpty() -> ""
+					current.transferName == defaultTransferName(current.selectedFiles) -> defaultTransferName(remaining)
+					else -> current.transferName
+				},
+			)
+		}
 	}
 
 	fun setTransferName(value: String) = _state.update { it.copy(transferName = value) }
@@ -218,24 +237,25 @@ class SendViewModel(
 
 	fun createShare() {
 		val current = state.value
-		val file = current.selectedFile ?: return
+		if (current.selectedFiles.isEmpty()) return
 		if (!current.canCreateShare(coreState.value.isInitialized)) return
 		viewModelScope.launch {
 			_state.update { it.copy(isSharing = true) }
-			val result = fileSystemService.sharePickedFile(
+			val result = fileSystemService.sharePickedFiles(
 				repository = repository,
-				file = file,
+				files = current.selectedFiles,
 				transferName = current.transferName.trim(),
 				senderName = current.senderName.trim(),
 				accessPolicy = current.accessPolicy,
 			)
 			result.fold(
 				onSuccess = { share ->
-					file.thumbnailBytes?.let { filePreviewRepository.save(share.transferId, it) }
+					current.selectedFiles.firstNotNullOfOrNull { it.thumbnailBytes }
+						?.let { filePreviewRepository.save(share.transferId, it) }
 					_state.update {
 						it.copy(
 							isComposerOpen = false,
-							selectedFile = null,
+							selectedFiles = emptyList(),
 							transferName = "",
 							accessPolicy = ShareAccessPolicy.RequireApproval,
 							isSharing = false,
@@ -249,6 +269,12 @@ class SendViewModel(
 				},
 			)
 		}
+	}
+
+	private fun defaultTransferName(files: List<PickedShareFile>): String = when (files.size) {
+		0 -> ""
+		1 -> files.first().displayName
+		else -> "${files.size} files"
 	}
 
 	private fun sendEffect(effect: SendEffect) {

@@ -23,12 +23,12 @@ private var retainedPickerDelegate: DocumentPickerDelegate? = null
 
 @Composable
 actual fun rememberShareFilePicker(
-	onFilePicked: (PickedShareFile) -> Unit,
+	onFilesPicked: (List<PickedShareFile>) -> Unit,
 	onError: (String) -> Unit,
-): ShareFilePicker = remember(onFilePicked, onError) {
+): ShareFilePicker = remember(onFilesPicked, onError) {
 	object : ShareFilePicker {
 		@OptIn(ExperimentalForeignApi::class)
-		override fun pickFile() {
+		override fun pickFiles() {
 			val presenter = UIApplication.sharedApplication.keyWindow?.rootViewController
 			if (presenter == null) {
 				onError("Could not find an iOS view controller for the document picker")
@@ -36,7 +36,11 @@ actual fun rememberShareFilePicker(
 			}
 
 			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeItem), asCopy = false)
-			val delegate = DocumentPickerDelegate(onFilePicked, onError)
+			picker.allowsMultipleSelection = true
+			val delegate = DocumentPickerDelegate(
+				onFilesPicked = onFilesPicked,
+				onError = onError,
+			)
 			retainedPickerDelegate = delegate
 			picker.delegate = delegate
 			picker.modalPresentationStyle = UIModalPresentationFormSheet
@@ -61,7 +65,8 @@ actual fun rememberReceiveFolderPicker(
 
 			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeFolder), asCopy = false)
 			val delegate = DocumentPickerDelegate(
-				onFilePicked = { folder ->
+				onFilesPicked = { folders ->
+					val folder = folders.firstOrNull() ?: return@DocumentPickerDelegate
 					onFolderPicked(
 						ReceiveFolder(
 							kind = ReceiveFolderKind.IosSecurityScopedUrl,
@@ -81,14 +86,12 @@ actual fun rememberReceiveFolderPicker(
 }
 
 private class DocumentPickerDelegate(
-	private val onFilePicked: (PickedShareFile) -> Unit,
+	private val onFilesPicked: (List<PickedShareFile>) -> Unit,
 	private val onError: (String) -> Unit,
 ) : NSObject(), UIDocumentPickerDelegateProtocol {
 	override fun documentPicker(controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>) {
-		val url = didPickDocumentsAtURLs.firstOrNull() as? NSURL
-		if (url == null) {
-			onError("The selected iOS document URL was invalid")
-		} else {
+		val files = didPickDocumentsAtURLs.mapNotNull { raw ->
+			val url = raw as? NSURL ?: return@mapNotNull null
 			val displayName = url.lastPathComponent ?: "transfer"
 			val didStartAccess = url.startAccessingSecurityScopedResource()
 			val sizeBytes = try {
@@ -97,14 +100,17 @@ private class DocumentPickerDelegate(
 			} finally {
 				if (didStartAccess) url.stopAccessingSecurityScopedResource()
 			}
-			onFilePicked(
-				PickedShareFile(
-					url.absoluteString ?: url.path.orEmpty(),
-					displayName,
-					sizeBytes,
-					nativeFileIcon(url),
-				),
+			PickedShareFile(
+				url.absoluteString ?: url.path.orEmpty(),
+				displayName,
+				sizeBytes,
+				nativeFileIcon(url),
 			)
+		}
+		if (files.isEmpty()) {
+			onError("The selected iOS document URL was invalid")
+		} else {
+			onFilesPicked(files)
 		}
 		retainedPickerDelegate = null
 	}

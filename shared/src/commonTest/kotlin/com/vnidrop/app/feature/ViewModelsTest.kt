@@ -174,7 +174,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val viewModel = SendViewModel(FakeCoreGateway(), FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
 		viewModel.openComposer()
-		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
+		viewModel.onFilesPicked(listOf(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL)))
 		assertEquals("photo.jpg", viewModel.state.value.transferName)
 		assertEquals(42UL, viewModel.state.value.selectedFile?.sizeBytes)
 		viewModel.clearSelectedSource()
@@ -195,7 +195,7 @@ class ViewModelsTest {
 		val thumbnail = ByteArray(12).also {
 			it[0] = 0x89.toByte(); it[1] = 'P'.code.toByte(); it[2] = 'N'.code.toByte(); it[3] = 'G'.code.toByte()
 		}
-		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL, thumbnail))
+		viewModel.onFilesPicked(listOf(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL, thumbnail)))
 		viewModel.setAccessPolicy(ShareAccessPolicy.AnyoneWithTransfer)
 		viewModel.createShare()
 		advanceUntilIdle()
@@ -214,13 +214,36 @@ class ViewModelsTest {
 		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
 		advanceUntilIdle()
 		viewModel.openComposer()
-		viewModel.onFilePicked(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL))
+		viewModel.onFilesPicked(listOf(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL)))
 		viewModel.createShare()
 		advanceUntilIdle()
 
 		assertTrue(viewModel.state.value.isComposerOpen)
 		assertEquals("photo.jpg", viewModel.state.value.selectedFile?.displayName)
 		assertFalse(viewModel.state.value.isSharing)
+	}
+
+	@Test
+	fun sendViewModelSupportsMultipleFilesAndDefaultName() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(isInitialized = true)
+			shareResult = Result.success(Share(9UL, "ticket", "2 files", "hash", 2UL, 84UL))
+		}
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.onFilesPicked(
+			listOf(
+				com.vnidrop.app.core.PickedShareFile("/tmp/a.jpg", "a.jpg", 40UL),
+				com.vnidrop.app.core.PickedShareFile("/tmp/b.jpg", "b.jpg", 44UL),
+			),
+		)
+		assertEquals("2 files", viewModel.state.value.transferName)
+		assertEquals(2, viewModel.state.value.selectedFiles.size)
+		viewModel.createShare()
+		advanceUntilIdle()
+		assertEquals(2, core.lastShareSourceCount)
+		assertTrue(viewModel.state.value.selectedFiles.isEmpty())
 	}
 
 	@Test
