@@ -3,6 +3,7 @@ package com.vnidrop.app.feature.receive
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vnidrop.app.core.CoreGateway
+import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.ReceiveFolder
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.button_retry
 import vnidrop.shared.generated.resources.receive_completed
 import vnidrop.shared.generated.resources.receive_history_cleared
 import vnidrop.shared.generated.resources.transfer_deleted
@@ -40,6 +42,8 @@ data class ReceiveState(
 	val folderAccessStatus: FolderAccessStatus = FolderAccessStatus.Unavailable,
 	val isInspecting: Boolean = false,
 	val isReceiving: Boolean = false,
+	val activeReceiveTransferId: ULong? = null,
+	val lastReceiveError: String? = null,
 	val isWaitingForNfc: Boolean = false,
 	val historyDeleteTarget: ReceiveHistoryDeleteTarget? = null,
 	val isDeletingHistory: Boolean = false,
@@ -69,6 +73,20 @@ class ReceiveViewModel(
 						receiveFolder = preferences.receiveFolder,
 						folderAccessStatus = status,
 					)
+				}
+			}
+		}
+		viewModelScope.launch {
+			repository.signals.collect { signal ->
+				when (signal) {
+					is CoreSignal.TransfersChanged -> {
+						repository.refresh()
+						if (_state.value.isReceiving && signal.transferId != 0UL) {
+							_state.update { it.copy(activeReceiveTransferId = signal.transferId) }
+						}
+					}
+					is CoreSignal.ApprovalChanged,
+					is CoreSignal.ReceiverHistoryChanged -> Unit
 				}
 			}
 		}
@@ -133,7 +151,9 @@ class ReceiveViewModel(
 		val folder = current.receiveFolder ?: return
 		if (!current.canReceive(coreState.value.isInitialized)) return
 		viewModelScope.launch {
-			_state.update { it.copy(isReceiving = true) }
+			_state.update {
+				it.copy(isReceiving = true, lastReceiveError = null, activeReceiveTransferId = null)
+			}
 			val outputSink = fileSystemService.createReceiveOutputSink(folder)
 			val result = when {
 				outputSink != null -> repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
@@ -150,9 +170,45 @@ class ReceiveViewModel(
 					messages.tryShow(UiMessage(UiText.Resource(Res.string.receive_completed), UiMessageTone.Success))
 				},
 				onFailure = { error ->
-					_state.update { it.copy(isReceiving = false) }
-					messages.error(error)
+					val message = error.message?.takeIf(String::isNotBlank) ?: "Something went wrong."
+					_state.update {
+						it.copy(
+							isReceiving = false,
+							activeReceiveTransferId = null,
+							lastReceiveError = message,
+						)
+					}
+					messages.tryShow(
+						UiMessage(
+							text = UiText.Dynamic(message),
+							tone = UiMessageTone.Error,
+							actionLabel = UiText.Resource(Res.string.button_retry),
+							onAction = { receive() },
+						),
+					)
 				},
+			)
+		}
+	}
+
+	fun cancelActiveReceive() {
+		val transferId = _state.value.activeReceiveTransferId
+			?: coreState.value.transfers.firstOrNull {
+				it.direction == TransferDirection.Receive && it.status == TransferStatus.Receiving
+			}?.transferId
+			?: coreState.value.events.firstOrNull {
+				it.direction == "receive" && it.transferId != null
+			}?.transferId
+			?: return
+		viewModelScope.launch {
+			repository.cancel(transferId).fold(
+				onSuccess = {
+					_state.update {
+						it.copy(isReceiving = false, activeReceiveTransferId = null, lastReceiveError = null)
+					}
+					repository.refresh()
+				},
+				onFailure = messages::error,
 			)
 		}
 	}
@@ -188,6 +244,8 @@ class ReceiveViewModel(
 			inspection = null,
 			isInspecting = false,
 			isReceiving = false,
+			activeReceiveTransferId = null,
+			lastReceiveError = null,
 			isWaitingForNfc = false,
 		)
 	}

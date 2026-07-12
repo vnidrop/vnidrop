@@ -2,6 +2,7 @@ package com.vnidrop.app.ui.state
 
 import com.vnidrop.app.feature.receive.ReceiveState
 import com.vnidrop.app.feature.send.SendState
+import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.PickedShareFile
@@ -81,6 +82,34 @@ class AppUiModelsTest {
 		assertFalse(storedTransfer(status = TransferStatus.Cancelled).isActiveTransfer())
 	}
 
+	@Test
+	fun parseProgressUnderstandsCorePayloadKeys() {
+		assertEquals(0.5f, parseProgress("""{"offset":50,"size":100}"""))
+		assertEquals(0.25f, parseProgress("""{"exported":25,"file_size":100}"""))
+		assertEquals(0.8f, parseProgress("""{"downloaded":80,"total_size":100}"""))
+		assertEquals(0.1f, parseProgress("""{"end_offset":10}""", sizeHint = 100.0))
+		assertEquals(null, parseProgress("""{"end_offset":10}"""))
+	}
+
+	@Test
+	fun progressForTransferUsesNewestMatchingEvent() {
+		val events = listOf(
+			event(id = "new", phase = "export", kind = "progress", data = """{"exported":75,"file_size":100,"file_name":"a.bin"}"""),
+			event(id = "old", phase = "export", kind = "progress", data = """{"exported":10,"file_size":100,"file_name":"a.bin"}"""),
+		)
+		val progress = progressForTransfer(events, 7UL)
+		assertEquals(0.75f, progress?.progress)
+		assertEquals("Saving files", progress?.label)
+		assertEquals("a.bin", progress?.detail)
+	}
+
+	@Test
+	fun canCancelOnlyActiveStatuses() {
+		assertTrue(storedTransfer(status = TransferStatus.Sharing).canCancelTransfer())
+		assertTrue(storedTransfer(status = TransferStatus.Receiving).canCancelTransfer())
+		assertFalse(storedTransfer(status = TransferStatus.Done).canCancelTransfer())
+	}
+
 	private fun storedTransfer(status: TransferStatus): Transfer =
 		Transfer(
 			localId = "local-1",
@@ -97,4 +126,21 @@ class AppUiModelsTest {
 			createdAt = 1L,
 			updatedAt = 1L,
 		)
+
+	private fun event(
+		id: String,
+		phase: String,
+		kind: String,
+		data: String,
+		transferId: ULong = 7UL,
+	) = CoreEventModel(
+		id = id,
+		timestamp = 1L,
+		scope = "transfer",
+		transferId = transferId,
+		direction = "receive",
+		phase = phase,
+		kind = kind,
+		dataJson = data,
+	)
 }

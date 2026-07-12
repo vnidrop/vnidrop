@@ -55,6 +55,14 @@ fn public_share_receives_without_sender_approval() {
     assert_eq!(deliveries[0].receiver_name.as_deref(), Some("Receiver"));
     assert_eq!(deliveries[0].status, "completed");
     assert!(deliveries[0].completed_at.is_some());
+    assert!(
+        sender.sink.events().iter().any(|event| {
+            event.phase == "delivery"
+                && event.kind == "receiver-completed"
+                && event.transfer_id == Some(share.transfer_id)
+        }),
+        "delivery receipts must emit a delivery phase event for UI live updates"
+    );
 }
 
 #[test]

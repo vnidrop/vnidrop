@@ -36,7 +36,7 @@ bytes through Kotlin memory.
 - Transfer statuses: `sharing`, `receiving`, `done`, `failed`, `cancelled`,
   `stopped`.
 - Main event phases: `endpoint`, `import`, `ticket`, `handshake`, `approval`,
-  `access`, `transfer`, `download`, `export`, `lifecycle`, `error`.
+  `access`, `transfer`, `download`, `export`, `delivery`, `lifecycle`, `error`.
 - Events are sent to `CoreEventSink` immediately and persisted through the event
   hub. `list_events` flushes queued persistence before reading SQLite.
 - `shutdown()` is idempotent and flushes events before stopping the router.

@@ -53,5 +53,6 @@ fun SendRoute(
 		onRequestDelete = viewModel::requestDeleteTransfer,
 		onDismissDelete = viewModel::dismissDeleteTransfer,
 		onConfirmDelete = viewModel::confirmDeleteTransfer,
+		onCancelTransfer = viewModel::cancelSelectedTransfer,
 	)
 }

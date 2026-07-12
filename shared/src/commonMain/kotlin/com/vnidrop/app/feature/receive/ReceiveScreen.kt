@@ -45,15 +45,18 @@ import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.ui.components.AdaptiveDrawer
 import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.DestructiveQuietButton
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
+import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
+import com.vnidrop.app.ui.state.progressForTransfer
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.*
@@ -80,6 +83,7 @@ fun ReceiveScreen(
 	onInvitationResult: (ReceiveMethod, Result<String>) -> Unit,
 	onWaitingForNfc: (Boolean) -> Unit,
 	onReceive: () -> Unit,
+	onCancelReceive: () -> Unit = {},
 	onRequestDeleteHistoryItem: (ULong) -> Unit,
 	onRequestClearHistory: () -> Unit,
 	onDismissHistoryDelete: () -> Unit,
@@ -102,7 +106,11 @@ fun ReceiveScreen(
 				}
 			}
 			items(transfers, key = Transfer::localId) { transfer ->
-				ReceiveTransferRow(transfer, onDelete = { onRequestDeleteHistoryItem(transfer.transferId) })
+				ReceiveTransferRow(
+					transfer = transfer,
+					progress = progressForTransfer(coreState.events, transfer.transferId),
+					onDelete = { onRequestDeleteHistoryItem(transfer.transferId) },
+				)
 			}
 		}
 	}
@@ -120,8 +128,10 @@ fun ReceiveScreen(
 				InvitationReviewPanel(
 					state = state,
 					coreInitialized = coreState.isInitialized,
+					events = coreState.events,
 					onReceiverNameChanged = onReceiverNameChanged,
 					onReceive = onReceive,
+					onCancelReceive = onCancelReceive,
 				)
 			}
 		}
@@ -230,7 +240,14 @@ private fun ReceiveMethodRow(icon: ImageVector, title: String, description: Stri
 }
 
 @Composable
-private fun InvitationReviewPanel(state: ReceiveState, coreInitialized: Boolean, onReceiverNameChanged: (String) -> Unit, onReceive: () -> Unit) {
+private fun InvitationReviewPanel(
+	state: ReceiveState,
+	coreInitialized: Boolean,
+	events: List<com.vnidrop.app.core.CoreEventModel>,
+	onReceiverNameChanged: (String) -> Unit,
+	onReceive: () -> Unit,
+	onCancelReceive: () -> Unit,
+) {
 	Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
 		Text(stringResource(Res.string.receive_review_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
 		if (state.isInspecting) Box(Modifier.fillMaxWidth().padding(40.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -248,18 +265,41 @@ private fun InvitationReviewPanel(state: ReceiveState, coreInitialized: Boolean,
 				color = if (state.folderAccessStatus == FolderAccessStatus.Writable) LocalVniDropColors.current.foregroundLight else LocalVniDropColors.current.destructiveDefault,
 				style = MaterialTheme.typography.bodySmall,
 			)
-			PrimaryButton(
-				if (state.isReceiving) stringResource(Res.string.button_receiving) else stringResource(Res.string.button_receive),
-				onClick = onReceive,
-				modifier = Modifier.fillMaxWidth(),
-				enabled = state.canReceive(coreInitialized),
-			)
+			if (state.isReceiving) {
+				val progressId = state.activeReceiveTransferId
+					?: events.firstOrNull { it.direction == "receive" && it.transferId != null }?.transferId
+				val progress = progressId?.let { progressForTransfer(events, it) }
+				ProgressRow(
+					label = progress?.label ?: stringResource(Res.string.progress_receiving),
+					progress = progress?.progress,
+					detail = progress?.detail,
+				)
+				SecondaryButton(
+					stringResource(Res.string.button_cancel_receive),
+					onClick = onCancelReceive,
+					modifier = Modifier.fillMaxWidth(),
+				)
+			} else {
+				PrimaryButton(
+					stringResource(Res.string.button_receive),
+					onClick = onReceive,
+					modifier = Modifier.fillMaxWidth(),
+					enabled = state.canReceive(coreInitialized),
+				)
+			}
+			state.lastReceiveError?.let { error ->
+				Text(error, color = LocalVniDropColors.current.destructiveDefault, style = MaterialTheme.typography.bodySmall)
+			}
 		}
 	}
 }
 
 @Composable
-private fun ReceiveTransferRow(transfer: Transfer, onDelete: () -> Unit) {
+private fun ReceiveTransferRow(
+	transfer: Transfer,
+	progress: com.vnidrop.app.ui.state.TransferProgress?,
+	onDelete: () -> Unit,
+) {
 	Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp), color = LocalVniDropColors.current.backgroundSurface200) {
 		Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
 			Box(Modifier.size(44.dp).background(LocalVniDropColors.current.backgroundSurface300, RoundedCornerShape(10.dp)), contentAlignment = Alignment.Center) {
@@ -269,6 +309,9 @@ private fun ReceiveTransferRow(transfer: Transfer, onDelete: () -> Unit) {
 			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
 				Text(transfer.transferName ?: stringResource(Res.string.receive_unknown_transfer), fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis)
 				Text("${formatBytes(transfer.totalSize)} · ${displayNameForStatus(transfer.status)}", color = LocalVniDropColors.current.foregroundLighter, style = MaterialTheme.typography.bodySmall)
+				if (transfer.status == TransferStatus.Receiving && progress != null) {
+					ProgressRow(label = progress.label, progress = progress.progress, detail = progress.detail)
+				}
 			}
 			if (transfer.status.isTerminalReceiveHistory()) {
 				IconButton(onClick = onDelete) {

@@ -15,9 +15,42 @@ import androidx.compose.ui.unit.dp
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 
 @Composable
-fun ProgressRow(label: String, progress: Float?, modifier: Modifier = Modifier) {
+fun ProgressRow(
+	label: String,
+	progress: Float?,
+	modifier: Modifier = Modifier,
+	detail: String? = null,
+) {
 	Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-		Text(label, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+		Row(
+			Modifier.fillMaxWidth(),
+			horizontalArrangement = Arrangement.SpaceBetween,
+			verticalAlignment = Alignment.CenterVertically,
+		) {
+			Text(
+				label,
+				style = MaterialTheme.typography.bodyMedium,
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
+				modifier = Modifier.weight(1f, fill = false),
+			)
+			if (progress != null) {
+				Text(
+					"${(progress * 100).toInt()}%",
+					color = LocalVniDropColors.current.foregroundLighter,
+					style = MaterialTheme.typography.labelSmall,
+				)
+			}
+		}
+		if (detail != null) {
+			Text(
+				detail,
+				color = LocalVniDropColors.current.foregroundLighter,
+				style = MaterialTheme.typography.bodySmall,
+				maxLines = 1,
+				overflow = TextOverflow.Ellipsis,
+			)
+		}
 		if (progress == null) LinearProgressIndicator(Modifier.fillMaxWidth())
 		else LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
 	}

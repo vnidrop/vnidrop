@@ -44,6 +44,7 @@ class FakeCoreGateway : CoreGateway {
 	var deleteResult: Result<Unit> = Result.success(Unit)
 	var clearReceiveHistoryResult: Result<ULong> = Result.success(0UL)
 	val deletedTransfers = mutableListOf<ULong>()
+	val cancelledTransfers = mutableListOf<ULong>()
 	var clearReceiveHistoryCount = 0
 	var receiveCount = 0
 	var lastReceiveTicket: String? = null
@@ -127,7 +128,10 @@ class FakeCoreGateway : CoreGateway {
 		awaitReceiveIfNeeded()
 		return receiveResult
 	}
-	override suspend fun cancel(transferId: ULong) = Result.success(Unit)
+	override suspend fun cancel(transferId: ULong): Result<Unit> {
+		cancelledTransfers += transferId
+		return Result.success(Unit)
+	}
 	override suspend fun delete(transferId: ULong): Result<Unit> {
 		if (deleteResult.isSuccess) {
 			deletedTransfers += transferId

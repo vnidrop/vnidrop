@@ -56,7 +56,8 @@ class ApprovalCoordinator(
 			repository.signals.collect { signal ->
 				when (signal) {
 					is CoreSignal.ApprovalChanged -> refresh(signal.transferId)
-					is CoreSignal.ReceiverHistoryChanged -> Unit
+					is CoreSignal.ReceiverHistoryChanged,
+					is CoreSignal.TransfersChanged -> Unit
 				}
 			}
 		}

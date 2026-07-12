@@ -45,6 +45,8 @@ enum EventPhase {
     Handshake,
     Approval,
     Transfer,
+    /// Delivery receipts from receivers (completed download acknowledgements).
+    Delivery,
 }
 
 impl EventPhase {
@@ -65,6 +67,7 @@ impl EventPhase {
             "handshake" => Some(Self::Handshake),
             "approval" => Some(Self::Approval),
             "transfer" => Some(Self::Transfer),
+            "delivery" => Some(Self::Delivery),
             _ => None,
         }
     }
@@ -86,6 +89,7 @@ impl EventPhase {
             Self::Handshake => "handshake",
             Self::Approval => "approval",
             Self::Transfer => "transfer",
+            Self::Delivery => "delivery",
         }
     }
 }

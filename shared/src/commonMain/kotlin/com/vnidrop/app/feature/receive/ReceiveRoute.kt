@@ -27,6 +27,7 @@ fun ReceiveRoute(viewModel: ReceiveViewModel, windowClass: WindowClass) {
 		onInvitationResult = viewModel::onInvitationResult,
 		onWaitingForNfc = viewModel::setWaitingForNfc,
 		onReceive = viewModel::receive,
+		onCancelReceive = viewModel::cancelActiveReceive,
 		onRequestDeleteHistoryItem = viewModel::requestDeleteHistoryItem,
 		onRequestClearHistory = viewModel::requestClearHistory,
 		onDismissHistoryDelete = viewModel::dismissHistoryDelete,
