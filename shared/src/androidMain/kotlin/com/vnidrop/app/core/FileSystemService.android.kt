@@ -22,14 +22,17 @@ private class AndroidFileSystemService(
 	private val context: Context,
 ) : FileSystemService {
 	override fun defaultReceiveFolder(): ReceiveFolder {
+		// App-specific external storage is always writable without SAF or
+		// legacy storage permissions. It is NOT the shared system Downloads
+		// gallery — that still requires "Choose folder" (tree URI).
 		val path = context
 			.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
 			?.absolutePath
-			?: (System.getProperty("java.io.tmpdir") ?: "/data/local/tmp/vnidrop-receive")
+			?: context.filesDir.resolve("Downloads").apply { mkdirs() }.absolutePath
 		return ReceiveFolder(
 			kind = ReceiveFolderKind.FileSystemPath,
 			value = path,
-			displayName = "Downloads",
+			displayName = "App downloads",
 		)
 	}
 
@@ -64,11 +67,27 @@ private class AndroidFileSystemService(
 		}
 	}
 
+	/**
+	 * Probe a real create/write/delete instead of [java.io.File.canWrite].
+	 *
+	 * Scoped storage often reports public directories as writable even when
+	 * the process cannot create files there. A probe matches what receive needs.
+	 */
 	private fun validatePath(path: String): FolderAccessStatus =
 		runCatching {
 			val directory = java.io.File(path)
-			if (!directory.exists()) directory.mkdirs()
-			if (directory.isDirectory && directory.canWrite()) FolderAccessStatus.Writable else FolderAccessStatus.Unavailable
+			if (!directory.exists() && !directory.mkdirs()) {
+				return FolderAccessStatus.Unavailable
+			}
+			if (!directory.isDirectory) return FolderAccessStatus.Unavailable
+			val probe = java.io.File(directory, ".vnidrop-write-test-${UUID.randomUUID()}")
+			try {
+				probe.outputStream().use { stream -> stream.write(1) }
+				if (!probe.exists()) return FolderAccessStatus.Unavailable
+				FolderAccessStatus.Writable
+			} finally {
+				probe.delete()
+			}
 		}.getOrDefault(FolderAccessStatus.Unavailable)
 
 	private fun validateTreeUri(value: String): FolderAccessStatus {

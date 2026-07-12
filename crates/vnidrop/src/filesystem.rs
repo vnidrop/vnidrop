@@ -101,15 +101,131 @@ impl AtomicOutputFile {
     }
 
     pub(crate) fn commit(mut self) -> Result<()> {
-        // Creating a hard link is an atomic no-clobber publication on the same
-        // filesystem. It fails if another writer created the destination.
-        std::fs::hard_link(&self.temporary, &self.target)
+        publish_temp_as_final(&self.temporary, &self.target)
             .with_context(|| format!("failed to commit {}", self.target.display()))?;
         self.committed = true;
-        if let Err(error) = std::fs::remove_file(&self.temporary) {
-            tracing::warn!(%error, path = %self.temporary.display(), "failed to remove committed temporary file");
-        }
         Ok(())
+    }
+}
+
+/// Publish a fully written temporary file as the final destination without
+/// clobbering an existing peer.
+///
+/// Prefer a same-directory hard link (atomic no-clobber on most Unix volumes).
+/// Android's emulated external storage and some FUSE mounts reject hard links
+/// even when ordinary create/write/rename work, so fall back to an exclusive
+/// rename when the link is unsupported.
+fn publish_temp_as_final(temporary: &Path, target: &Path) -> io::Result<()> {
+    match std::fs::hard_link(temporary, target) {
+        Ok(()) => {
+            if let Err(error) = std::fs::remove_file(temporary) {
+                tracing::warn!(
+                    %error,
+                    path = %temporary.display(),
+                    "failed to remove committed temporary file"
+                );
+            }
+            Ok(())
+        }
+        Err(error) if is_hard_link_unsupported(&error) => rename_no_replace(temporary, target),
+        Err(error) => Err(error),
+    }
+}
+
+fn is_hard_link_unsupported(error: &io::Error) -> bool {
+    match error.raw_os_error() {
+        Some(code)
+            if code == libc::EPERM
+                || code == libc::EACCES
+                || code == libc::EOPNOTSUPP
+                || code == libc::ENOTSUP
+                || code == libc::EXDEV
+                || code == libc::EINVAL
+                || code == libc::ENOSYS =>
+        {
+            true
+        }
+        _ => matches!(
+            error.kind(),
+            io::ErrorKind::Unsupported | io::ErrorKind::PermissionDenied
+        ),
+    }
+}
+
+fn rename_no_replace(from: &Path, to: &Path) -> io::Result<()> {
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    {
+        match renameat2_noreplace(from, to) {
+            Ok(()) => return Ok(()),
+            Err(error)
+                if error.raw_os_error() == Some(libc::ENOSYS)
+                    || error.raw_os_error() == Some(libc::EINVAL) => {}
+            Err(error) => return Err(error),
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        match renamex_np_excl(from, to) {
+            Ok(()) => return Ok(()),
+            Err(error) if error.raw_os_error() == Some(libc::ENOTSUP) => {}
+            Err(error) => return Err(error),
+        }
+    }
+
+    // Last resort: refuse an existing destination, then rename. There is a
+    // small race versus concurrent writers, but this path only runs when the
+    // platform lacks both hard links and exclusive rename.
+    if std::fs::symlink_metadata(to).is_ok() {
+        return Err(io::Error::new(
+            io::ErrorKind::AlreadyExists,
+            format!("destination already exists: {}", to.display()),
+        ));
+    }
+    std::fs::rename(from, to)
+}
+
+#[cfg(any(target_os = "linux", target_os = "android"))]
+fn renameat2_noreplace(from: &Path, to: &Path) -> io::Result<()> {
+    use std::ffi::CString;
+    use std::os::unix::ffi::OsStrExt;
+
+    let from_c = CString::new(from.as_os_str().as_bytes())
+        .map_err(|error| io::Error::new(io::ErrorKind::InvalidInput, error))?;
+    let to_c = CString::new(to.as_os_str().as_bytes())
+        .map_err(|error| io::Error::new(io::ErrorKind::InvalidInput, error))?;
+    // Android defines RENAME_NOREPLACE as c_int while renameat2 takes c_uint.
+    let flags = libc::RENAME_NOREPLACE as libc::c_uint;
+    let rc = unsafe {
+        libc::renameat2(
+            libc::AT_FDCWD,
+            from_c.as_ptr(),
+            libc::AT_FDCWD,
+            to_c.as_ptr(),
+            flags,
+        )
+    };
+    if rc == 0 {
+        Ok(())
+    } else {
+        Err(io::Error::last_os_error())
+    }
+}
+
+#[cfg(target_os = "macos")]
+fn renamex_np_excl(from: &Path, to: &Path) -> io::Result<()> {
+    use std::ffi::CString;
+    use std::os::unix::ffi::OsStrExt;
+
+    let from_c = CString::new(from.as_os_str().as_bytes())
+        .map_err(|error| io::Error::new(io::ErrorKind::InvalidInput, error))?;
+    let to_c = CString::new(to.as_os_str().as_bytes())
+        .map_err(|error| io::Error::new(io::ErrorKind::InvalidInput, error))?;
+    let rc = unsafe { libc::renamex_np(from_c.as_ptr(), to_c.as_ptr(), libc::RENAME_EXCL) };
+    if rc == 0 {
+        Ok(())
+    } else {
+        Err(io::Error::last_os_error())
     }
 }
 

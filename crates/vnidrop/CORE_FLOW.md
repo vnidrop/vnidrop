@@ -59,9 +59,16 @@ bytes through Kotlin memory.
 - Persisted shares are restored only when their root collection is complete and
   readable. Missing or corrupt roots fail closed and emit a recovery event.
 - Receive destinations use a no-overwrite policy. Rust writes a uniquely named
-  temporary file in the destination directory, syncs it, and atomically
-  publishes it with a no-clobber hard link. Failure or cancellation removes the
-  temporary file. Stale VniDrop temporary files are cleaned on later writes.
+  temporary file in the destination directory, syncs it, and publishes it with
+  a no-clobber hard link when the filesystem supports it. On platforms that
+  reject hard links (notably Android emulated external storage), publication
+  falls back to an exclusive rename (`renameat2(RENAME_NOREPLACE)` /
+  `renamex_np(RENAME_EXCL)`). Failure or cancellation removes the temporary
+  file. Stale VniDrop temporary files are cleaned on later writes.
+- Android defaults to the app-specific external Downloads directory
+  (`getExternalFilesDir`), which is always writable by the process. Shared
+  system folders require a SAF tree URI via the folder picker; those receives
+  stream through `ReceiveOutputSink` instead of raw filesystem paths.
 - Foreign output sinks receive exactly one terminal callback after a successful
   `start_file`: `finish_file` or `abort_file`.
 
