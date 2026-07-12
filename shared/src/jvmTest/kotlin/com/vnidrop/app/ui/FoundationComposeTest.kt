@@ -227,7 +227,7 @@ class FoundationComposeTest {
 
 		onNodeWithText("New transfer").performClick()
 		onNodeWithText("Choose what to share").assertIsDisplayed()
-		onNodeWithText("Choose file").assertIsDisplayed()
+		onNodeWithText("Choose files").assertIsDisplayed()
 	}
 
 	@Test
@@ -239,7 +239,7 @@ class FoundationComposeTest {
 					coreState = CoreState(isInitialized = true),
 					state = SendState(
 						isComposerOpen = true,
-						selectedFile = PickedShareFile("/tmp/photos.zip", "photos.zip", 1536UL),
+						selectedFiles = listOf(PickedShareFile("/tmp/photos.zip", "photos.zip", 1536UL)),
 						transferName = "photos.zip",
 						senderName = "Sender",
 					),

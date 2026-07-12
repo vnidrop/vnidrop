@@ -67,8 +67,43 @@ class FakeCoreGateway : CoreGateway {
 		return Result.success(Unit)
 	}
 	override fun shutdown() = Unit
-	override suspend fun sharePath(path: String, transferName: String, senderName: String, accessPolicy: ShareAccessPolicy): Result<Share> {
+	var lastShareSourceCount: Int = 0
+	override suspend fun sharePath(path: String, transferName: String, senderName: String, accessPolicy: ShareAccessPolicy): Result<Share> =
+		shareSources(
+			sources = listOf(
+				uniffi.vnidrop.ShareSource(
+					kind = uniffi.vnidrop.SourceKind.PATH,
+					value = path,
+					displayName = path.substringAfterLast('/'),
+					isDirectory = false,
+				),
+			),
+			transferName = transferName,
+			senderName = senderName,
+			accessPolicy = accessPolicy,
+		)
+	override suspend fun shareFileDescriptor(
+		fd: Int,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	) = Result.failure<Share>(UnsupportedOperationException())
+	override suspend fun shareSecurityScopedFileUrl(
+		fileUrl: String,
+		displayName: String,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	) = Result.failure<Share>(UnsupportedOperationException())
+	override suspend fun shareSources(
+		sources: List<uniffi.vnidrop.ShareSource>,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	): Result<Share> {
 		lastShareAccessPolicy = accessPolicy
+		lastShareSourceCount = sources.size
 		shareResult.onSuccess { share ->
 			mutableState.value = mutableState.value.copy(
 				transfers = listOf(
@@ -92,20 +127,6 @@ class FakeCoreGateway : CoreGateway {
 		}
 		return shareResult
 	}
-	override suspend fun shareFileDescriptor(
-		fd: Int,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	) = Result.failure<Share>(UnsupportedOperationException())
-	override suspend fun shareSecurityScopedFileUrl(
-		fileUrl: String,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	) = Result.failure<Share>(UnsupportedOperationException())
 	override suspend fun inspectTicket(ticket: String) = inspectionResult
 	override suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit> {
 		receiveCount += 1
@@ -202,13 +223,23 @@ class FakeFileSystemService(
 	override fun defaultReceiveFolder() = folder
 	override suspend fun validateReceiveFolder(folder: ReceiveFolder) = FolderAccessStatus.Writable
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
-	override suspend fun sharePickedFile(
+	override suspend fun sharePickedFiles(
 		repository: CoreGateway,
-		file: PickedShareFile,
+		files: List<PickedShareFile>,
 		transferName: String,
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
-	) = repository.sharePath(file.value, transferName, senderName, accessPolicy)
+	): Result<Share> {
+		val sources = files.map { file ->
+			uniffi.vnidrop.ShareSource(
+				kind = uniffi.vnidrop.SourceKind.PATH,
+				value = file.value,
+				displayName = file.displayName,
+				isDirectory = false,
+			)
+		}
+		return repository.shareSources(sources, transferName, senderName, accessPolicy)
+	}
 }
 
 class FakeFilePreviewRepository : FilePreviewRepository {

@@ -197,12 +197,13 @@ class CoreRepository(
 
 	override suspend fun refresh(): Result<Unit> = runCore { refreshSnapshot() }
 
-	private suspend fun shareSources(
+	override suspend fun shareSources(
 		sources: List<ShareSource>,
 		transferName: String,
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	): Result<Share> = runCore {
+		require(sources.isNotEmpty()) { "Select at least one file to share" }
 		withPlatformPathAccess(sources) {
 			requireCore().shareFiles(
 				sources = sources,

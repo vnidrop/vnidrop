@@ -63,22 +63,30 @@ private class AndroidFileSystemService(
 			ReceiveFolderKind.IosSecurityScopedUrl -> null
 		}
 
-	override suspend fun sharePickedFile(
+	override suspend fun sharePickedFiles(
 		repository: CoreGateway,
-		file: PickedShareFile,
+		files: List<PickedShareFile>,
 		transferName: String,
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	): Result<Share> = runCatching {
-		context.contentResolver.openFileDescriptor(Uri.parse(file.value), "r").use { descriptor ->
-			checkNotNull(descriptor) { "Could not open selected file descriptor" }
-			repository.shareFileDescriptor(
-				fd = descriptor.fd,
-				displayName = file.displayName,
-				transferName = transferName,
-				senderName = senderName,
-				accessPolicy = accessPolicy,
-			).getOrThrow()
+		require(files.isNotEmpty()) { "Select at least one file to share" }
+		val descriptors = files.map { file ->
+			context.contentResolver.openFileDescriptor(Uri.parse(file.value), "r")
+				?: error("Could not open selected file descriptor for ${file.displayName}")
+		}
+		try {
+			val sources = files.zip(descriptors) { file, descriptor ->
+				uniffi.vnidrop.ShareSource(
+					kind = uniffi.vnidrop.SourceKind.FILE_DESCRIPTOR,
+					value = descriptor.fd.toString(),
+					displayName = file.displayName,
+					isDirectory = false,
+				)
+			}
+			repository.shareSources(sources, transferName, senderName, accessPolicy).getOrThrow()
+		} finally {
+			descriptors.forEach { it.close() }
 		}
 	}
 

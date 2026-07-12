@@ -16,18 +16,22 @@ import androidx.compose.ui.platform.LocalContext
 
 @Composable
 actual fun rememberShareFilePicker(
-	onFilePicked: (PickedShareFile) -> Unit,
+	onFilesPicked: (List<PickedShareFile>) -> Unit,
 	onError: (String) -> Unit,
 ): ShareFilePicker {
 	val context = LocalContext.current
-	val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-		if (uri != null) {
-			onFilePicked(context.pickedShareFile(uri))
-		}
+	val launcher = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+		if (uris.isEmpty()) return@rememberLauncherForActivityResult
+		runCatching {
+			uris.map { uri -> context.pickedShareFile(uri) }
+		}.fold(
+			onSuccess = onFilesPicked,
+			onFailure = { onError(it.message ?: "Could not open the selected files") },
+		)
 	}
 	return remember(launcher) {
 		object : ShareFilePicker {
-			override fun pickFile() {
+			override fun pickFiles() {
 				launcher.launch(arrayOf("*/*"))
 			}
 		}

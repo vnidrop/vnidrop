@@ -47,7 +47,7 @@ class AppUiModelsTest {
 	@Test
 	fun sendStateExposesShareEligibility() {
 		val ready = SendState(
-			selectedFile = PickedShareFile("/tmp/payload.txt", "payload.txt", 128UL),
+			selectedFiles = listOf(PickedShareFile("/tmp/payload.txt", "payload.txt", 128UL)),
 			transferName = "payload.txt",
 		)
 

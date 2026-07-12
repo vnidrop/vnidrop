@@ -142,6 +142,13 @@ interface CoreGateway {
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	): Result<Share>
+	/** Multi-source share used by multi-file pickers. */
+	suspend fun shareSources(
+		sources: List<uniffi.vnidrop.ShareSource>,
+		transferName: String,
+		senderName: String,
+		accessPolicy: ShareAccessPolicy,
+	): Result<Share>
 	suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel>
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit>
 	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit>

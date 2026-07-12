@@ -28,11 +28,22 @@ private class JvmFileSystemService : FileSystemService {
 
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
 
-	override suspend fun sharePickedFile(
+	override suspend fun sharePickedFiles(
 		repository: CoreGateway,
-		file: PickedShareFile,
+		files: List<PickedShareFile>,
 		transferName: String,
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
-	): Result<Share> = repository.sharePath(file.value, transferName, senderName, accessPolicy)
+	): Result<Share> {
+		require(files.isNotEmpty()) { "Select at least one file to share" }
+		val sources = files.map { file ->
+			uniffi.vnidrop.ShareSource(
+				kind = uniffi.vnidrop.SourceKind.PATH,
+				value = file.value,
+				displayName = file.displayName,
+				isDirectory = false,
+			)
+		}
+		return repository.shareSources(sources, transferName, senderName, accessPolicy)
+	}
 }

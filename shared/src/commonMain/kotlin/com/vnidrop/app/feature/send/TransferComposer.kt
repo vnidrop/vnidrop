@@ -16,6 +16,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -39,9 +40,10 @@ import com.vnidrop.app.ui.state.formatBytes
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
-import vnidrop.shared.generated.resources.button_change_file
-import vnidrop.shared.generated.resources.button_choose_file
+import vnidrop.shared.generated.resources.button_change_files
+import vnidrop.shared.generated.resources.button_choose_files
 import vnidrop.shared.generated.resources.button_clear
+import vnidrop.shared.generated.resources.button_remove_file
 import vnidrop.shared.generated.resources.button_share_file
 import vnidrop.shared.generated.resources.button_sharing_file
 import vnidrop.shared.generated.resources.field_sender_name
@@ -55,6 +57,7 @@ import vnidrop.shared.generated.resources.send_choose_file_body
 import vnidrop.shared.generated.resources.send_choose_file_title
 import vnidrop.shared.generated.resources.send_file_size_unknown
 import vnidrop.shared.generated.resources.send_review_title
+import vnidrop.shared.generated.resources.send_selected_files_count
 
 @Composable
 internal fun TransferComposer(
@@ -63,6 +66,7 @@ internal fun TransferComposer(
 	windowClass: WindowClass,
 	onSelectFile: () -> Unit,
 	onClearFile: () -> Unit,
+	onRemoveFile: (String) -> Unit,
 	onTransferNameChanged: (String) -> Unit,
 	onSenderNameChanged: (String) -> Unit,
 	onAccessPolicyChanged: (ShareAccessPolicy) -> Unit,
@@ -72,16 +76,15 @@ internal fun TransferComposer(
 		modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 12.dp),
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 	) {
-		val file = state.selectedFile
-		if (file == null) {
+		if (state.selectedFiles.isEmpty()) {
 			ChooseFileStep(onSelectFile)
 		} else {
 			ReviewFileStep(
-				file = file,
 				state = state,
 				windowClass = windowClass,
 				onSelectFile = onSelectFile,
 				onClearFile = onClearFile,
+				onRemoveFile = onRemoveFile,
 				onTransferNameChanged = onTransferNameChanged,
 				onSenderNameChanged = onSenderNameChanged,
 				onAccessPolicyChanged = onAccessPolicyChanged,
@@ -107,18 +110,18 @@ private fun ChooseFileStep(onSelectFile: () -> Unit) {
 			verticalArrangement = Arrangement.spacedBy(14.dp),
 		) {
 			Icon(SendIcons.File, contentDescription = null, tint = LocalVniDropColors.current.brandLink, modifier = Modifier.size(32.dp))
-			PrimaryButton(stringResource(Res.string.button_choose_file), onClick = onSelectFile)
+			PrimaryButton(stringResource(Res.string.button_choose_files), onClick = onSelectFile)
 		}
 	}
 }
 
 @Composable
 private fun ReviewFileStep(
-	file: PickedShareFile,
 	state: SendState,
 	windowClass: WindowClass,
 	onSelectFile: () -> Unit,
 	onClearFile: () -> Unit,
+	onRemoveFile: (String) -> Unit,
 	onTransferNameChanged: (String) -> Unit,
 	onSenderNameChanged: (String) -> Unit,
 	onAccessPolicyChanged: (ShareAccessPolicy) -> Unit,
@@ -126,7 +129,20 @@ private fun ReviewFileStep(
 	coreInitialized: Boolean,
 ) {
 	Text(stringResource(Res.string.send_review_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
-	SelectedFileCard(file)
+	if (state.selectedFiles.size > 1) {
+		Text(
+			stringResource(Res.string.send_selected_files_count, state.selectedFiles.size),
+			color = LocalVniDropColors.current.foregroundLighter,
+			style = MaterialTheme.typography.bodyMedium,
+		)
+	}
+	state.selectedFiles.forEach { file ->
+		SelectedFileCard(
+			file = file,
+			canRemove = state.selectedFiles.size > 1 && !state.isSharing,
+			onRemove = { onRemoveFile(file.value) },
+		)
+	}
 	Field(state.transferName, onTransferNameChanged, stringResource(Res.string.field_transfer_name))
 	Field(state.senderName, onSenderNameChanged, stringResource(Res.string.field_sender_name))
 	Text(stringResource(Res.string.send_access_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
@@ -147,12 +163,12 @@ private fun ReviewFileStep(
 	if (windowClass == WindowClass.Phone) {
 		Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 			ShareButton(state, coreInitialized, onCreateShare, Modifier.fillMaxWidth())
-			QuietButton(stringResource(Res.string.button_change_file), onClick = onSelectFile, modifier = Modifier.fillMaxWidth(), enabled = !state.isSharing)
+			QuietButton(stringResource(Res.string.button_change_files), onClick = onSelectFile, modifier = Modifier.fillMaxWidth(), enabled = !state.isSharing)
 		}
 	} else {
 		Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
 			ShareButton(state, coreInitialized, onCreateShare)
-			QuietButton(stringResource(Res.string.button_change_file), onClick = onSelectFile, enabled = !state.isSharing)
+			QuietButton(stringResource(Res.string.button_change_files), onClick = onSelectFile, enabled = !state.isSharing)
 			QuietButton(stringResource(Res.string.button_clear), onClick = onClearFile, enabled = !state.isSharing)
 		}
 	}
@@ -169,7 +185,11 @@ private fun ShareButton(state: SendState, coreInitialized: Boolean, onCreateShar
 }
 
 @Composable
-private fun SelectedFileCard(file: PickedShareFile) {
+private fun SelectedFileCard(
+	file: PickedShareFile,
+	canRemove: Boolean,
+	onRemove: () -> Unit,
+) {
 	Surface(shape = RoundedCornerShape(14.dp), color = LocalVniDropColors.current.backgroundSurface200) {
 		Row(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
 			Box(Modifier.size(44.dp).background(LocalVniDropColors.current.backgroundSurface300, RoundedCornerShape(11.dp))) {
@@ -183,6 +203,11 @@ private fun SelectedFileCard(file: PickedShareFile) {
 					color = LocalVniDropColors.current.foregroundLighter,
 					style = MaterialTheme.typography.bodySmall,
 				)
+			}
+			if (canRemove) {
+				IconButton(onClick = onRemove) {
+					Icon(SendIcons.Delete, stringResource(Res.string.button_remove_file), tint = LocalVniDropColors.current.destructiveDefault)
+				}
 			}
 		}
 	}

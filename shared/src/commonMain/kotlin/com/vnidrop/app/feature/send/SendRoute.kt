@@ -17,13 +17,13 @@ fun SendRoute(
 	val state by viewModel.state.collectAsStateWithLifecycle()
 	val coreState by viewModel.coreState.collectAsStateWithLifecycle()
 	val clipboard = LocalClipboardManager.current
-	val picker = rememberShareFilePicker(viewModel::onFilePicked, viewModel::onFilePickFailed)
+	val picker = rememberShareFilePicker(viewModel::onFilesPicked, viewModel::onFilePickFailed)
 	val shareActions = rememberTransferShareActions()
 
 	LaunchedEffect(viewModel) {
 		viewModel.effectFlow.collect { effect ->
 			when (effect) {
-				SendEffect.OpenFilePicker -> picker.pickFile()
+				SendEffect.OpenFilePicker -> picker.pickFiles()
 				is SendEffect.CopyTicket -> clipboard.setText(AnnotatedString(effect.ticket))
 			}
 		}
@@ -38,6 +38,7 @@ fun SendRoute(
 		onDismissComposer = viewModel::dismissComposer,
 		onSelectFile = viewModel::selectFile,
 		onClearFile = viewModel::clearSelectedSource,
+		onRemoveFile = viewModel::removeSelectedFile,
 		onTransferNameChanged = viewModel::setTransferName,
 		onSenderNameChanged = viewModel::setSenderName,
 		onAccessPolicyChanged = viewModel::setAccessPolicy,
