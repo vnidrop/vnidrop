@@ -24,8 +24,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.send_transfer_created
-import vnidrop.shared.generated.resources.transfer_nfc_written
 import vnidrop.shared.generated.resources.transfer_deleted
+import vnidrop.shared.generated.resources.transfer_event_stopped
+import vnidrop.shared.generated.resources.transfer_nfc_written
 
 data class SendState(
 	val isComposerOpen: Boolean = false,
@@ -70,13 +71,19 @@ class SendViewModel(
 	init {
 		viewModelScope.launch {
 			repository.signals.collect { signal ->
-				val transferId = when (signal) {
-					is CoreSignal.ReceiverHistoryChanged -> signal.transferId
-					is CoreSignal.ApprovalChanged -> signal.transferId
+				when (signal) {
+					is CoreSignal.TransfersChanged -> repository.refresh()
+					is CoreSignal.ReceiverHistoryChanged -> {
+						if (signal.transferId == _state.value.selectedTransferId) {
+							refreshReceivers(signal.transferId)
+						}
+					}
+					is CoreSignal.ApprovalChanged -> {
+						if (signal.transferId == _state.value.selectedTransferId) {
+							refreshReceivers(signal.transferId)
+						}
+					}
 				}
-				if (transferId == _state.value.selectedTransferId &&
-					_state.value.detailPanel == TransferDetailPanel.Receivers
-				) refreshReceivers(transferId)
 			}
 		}
 		viewModelScope.launch {
@@ -241,6 +248,21 @@ class SendViewModel(
 					_state.update { it.copy(isSharing = false) }
 					messages.error(error)
 				},
+			)
+		}
+	}
+
+	fun cancelSelectedTransfer() {
+		val transferId = _state.value.selectedTransferId ?: return
+		viewModelScope.launch {
+			repository.cancel(transferId).fold(
+				onSuccess = {
+					repository.refresh()
+					messages.tryShow(
+						UiMessage(UiText.Resource(Res.string.transfer_event_stopped), UiMessageTone.Info),
+					)
+				},
+				onFailure = messages::error,
 			)
 		}
 	}

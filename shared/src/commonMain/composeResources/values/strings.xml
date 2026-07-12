@@ -111,6 +111,16 @@
     <string name="button_inspect_ticket">Inspect ticket</string>
     <string name="button_receive">Receive</string>
     <string name="button_receiving">Receiving...</string>
+    <string name="button_retry">Retry</string>
+    <string name="button_stop_sharing">Stop sharing</string>
+    <string name="button_cancel_receive">Cancel receive</string>
+    <string name="progress_receiving">Receiving files</string>
+    <string name="progress_preparing">Preparing transfer</string>
+    <string name="transfer_receivers_pending">%1$d waiting</string>
+    <string name="transfer_receivers_completed_count">%1$d completed</string>
+    <string name="transfer_event_downloading">Downloading files</string>
+    <string name="transfer_event_saving">Saving files</string>
+    <string name="transfer_event_connecting">Connecting to sender</string>
     <string name="ticket_details_title">Ticket details</string>
     <string name="ticket_no_metadata">This ticket does not include VniDrop metadata.</string>
     <string name="settings_title">Settings</string>

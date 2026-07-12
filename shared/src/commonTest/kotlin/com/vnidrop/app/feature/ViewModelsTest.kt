@@ -364,6 +364,23 @@ class ViewModelsTest {
 		assertEquals("ticket-xyz", viewModel.state.value.ticket)
 		assertFalse(viewModel.state.value.isReceiving)
 		assertTrue(viewModel.state.value.inspection != null)
+		assertEquals("sender refused", viewModel.state.value.lastReceiveError)
+	}
+
+	@Test
+	fun receiveViewModelCancelUsesActiveTransferId() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(
+				isInitialized = true,
+				transfers = listOf(receivedTransfer(33UL, TransferStatus.Receiving)),
+			)
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.cancelActiveReceive()
+		advanceUntilIdle()
+		assertEquals(listOf(33UL), core.cancelledTransfers)
 	}
 
 	@Test

@@ -9,10 +9,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import com.vnidrop.app.core.CoreState
+import com.vnidrop.app.core.ReceiverDeliveryStatus
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.TransferDirection
 import com.vnidrop.app.ui.components.AdaptiveDrawer
 import com.vnidrop.app.ui.state.WindowClass
+import com.vnidrop.app.ui.state.canCancelTransfer
+import com.vnidrop.app.ui.state.progressForTransfer
 
 @Composable
 fun SendScreen(
@@ -39,6 +42,7 @@ fun SendScreen(
 	onRequestDelete: () -> Unit = {},
 	onDismissDelete: () -> Unit = {},
 	onConfirmDelete: () -> Unit = {},
+	onCancelTransfer: () -> Unit = {},
 ) {
 	val outgoingTransfers = coreState.transfers.filter { it.direction == TransferDirection.Send }
 	val selectedTransfer = state.selectedTransferId?.let { id -> outgoingTransfers.firstOrNull { it.transferId == id } }
@@ -52,17 +56,24 @@ fun SendScreen(
 			TransferDetails(
 				transfer = selectedTransfer,
 				events = coreState.events,
-				completedReceivers = state.receiverHistory.count { it.status == com.vnidrop.app.core.ReceiverDeliveryStatus.Completed },
+				progress = progressForTransfer(coreState.events, selectedTransfer.transferId),
+				pendingReceivers = state.receiverHistory.count {
+					it.status == ReceiverDeliveryStatus.Requested || it.status == ReceiverDeliveryStatus.Accepted
+				},
+				completedReceivers = state.receiverHistory.count { it.status == ReceiverDeliveryStatus.Completed },
+				canCancel = selectedTransfer.canCancelTransfer(),
 				onBack = onCloseTransferDetails,
 				onActivity = onActivity,
 				onReceivers = onReceivers,
 				onShare = onShare,
 				onDelete = onRequestDelete,
+				onCancel = onCancelTransfer,
 			)
 		} else {
 			TransferCatalog(
 				transfers = outgoingTransfers,
 				transferThumbnails = state.transferThumbnails,
+				events = coreState.events,
 				windowClass = windowClass,
 				onOpenComposer = onOpenComposer,
 				onTransferSelected = onTransferSelected,

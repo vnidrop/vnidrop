@@ -34,14 +34,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
+import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.StatusPill
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
+import com.vnidrop.app.ui.state.progressForTransfer
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.resources.decodeToImageBitmap
@@ -71,6 +74,7 @@ internal fun SendFloatingAction(onClick: () -> Unit, modifier: Modifier = Modifi
 internal fun TransferCatalog(
 	transfers: List<Transfer>,
 	transferThumbnails: Map<ULong, ByteArray>,
+	events: List<CoreEventModel> = emptyList(),
 	windowClass: WindowClass,
 	onOpenComposer: () -> Unit,
 	onTransferSelected: (ULong) -> Unit,
@@ -97,7 +101,12 @@ internal fun TransferCatalog(
 				)
 			}
 			items(transfers, key = Transfer::localId) { transfer ->
-				TransferListItem(transfer, transferThumbnails[transfer.transferId]) { onTransferSelected(transfer.transferId) }
+				TransferListItem(
+					transfer = transfer,
+					thumbnailBytes = transferThumbnails[transfer.transferId],
+					progress = progressForTransfer(events, transfer.transferId),
+					onClick = { onTransferSelected(transfer.transferId) },
+				)
 			}
 		}
 	}
@@ -158,7 +167,12 @@ private fun SendEmptyState(onOpenComposer: () -> Unit) {
 }
 
 @Composable
-private fun TransferListItem(transfer: Transfer, thumbnailBytes: ByteArray?, onClick: () -> Unit) {
+private fun TransferListItem(
+	transfer: Transfer,
+	thumbnailBytes: ByteArray?,
+	progress: com.vnidrop.app.ui.state.TransferProgress?,
+	onClick: () -> Unit,
+) {
 	val colors = LocalVniDropColors.current
 	Surface(onClick = onClick, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(16.dp), color = colors.backgroundSurface200) {
 		Row(modifier = Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -169,7 +183,7 @@ private fun TransferListItem(transfer: Transfer, thumbnailBytes: ByteArray?, onC
 				FileArtwork(thumbnailBytes, Modifier.fillMaxSize())
 			}
 			Spacer(Modifier.width(12.dp))
-			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+			Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 				Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 					Text(
 						transfer.transferName ?: stringResource(Res.string.send_new_transfer_title),
@@ -189,6 +203,9 @@ private fun TransferListItem(transfer: Transfer, thumbnailBytes: ByteArray?, onC
 					maxLines = 1,
 					overflow = TextOverflow.Ellipsis,
 				)
+				if (transfer.status == TransferStatus.Importing && progress != null) {
+					ProgressRow(label = progress.label, progress = progress.progress, detail = progress.detail)
+				}
 			}
 			Spacer(Modifier.width(8.dp))
 			Icon(SendIcons.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))

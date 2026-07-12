@@ -46,11 +46,15 @@ class CoreRepository(
 		override fun onEvent(event: CoreEvent) {
 			val model = event.toModel()
 			_state.update { current -> current.copy(events = (listOf(model) + current.events).take(MaxEvents)) }
-			if (model.phase == "approval" && model.transferId != null) {
-				_signals.tryEmit(CoreSignal.ApprovalChanged(model.transferId))
-			}
-			if (model.phase == "delivery" && model.transferId != null) {
-				_signals.tryEmit(CoreSignal.ReceiverHistoryChanged(model.transferId))
+			val transferId = model.transferId
+			if (transferId != null) {
+				when (model.phase) {
+					"approval" -> _signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
+					"delivery" -> _signals.tryEmit(CoreSignal.ReceiverHistoryChanged(transferId))
+				}
+				if (model.shouldRefreshTransfers()) {
+					_signals.tryEmit(CoreSignal.TransfersChanged(transferId))
+				}
 			}
 		}
 	}
@@ -268,6 +272,13 @@ private fun CoreEvent.toModel(): CoreEventModel = CoreEventModel(
 	kind = kind,
 	dataJson = dataJson,
 )
+
+private fun CoreEventModel.shouldRefreshTransfers(): Boolean =
+	phase in setOf("lifecycle", "error", "ticket", "import", "download", "export", "handshake") &&
+		kind in setOf(
+			"started", "done", "created", "failed", "cancelled", "share-stopped",
+			"found-collection", "connected",
+		)
 
 private fun StoredTransfer.toModel(): Transfer = Transfer(
 	localId = localId,

@@ -117,6 +117,8 @@ data class CoreState(
 sealed interface CoreSignal {
 	data class ApprovalChanged(val transferId: ULong) : CoreSignal
 	data class ReceiverHistoryChanged(val transferId: ULong) : CoreSignal
+	/** Transfer status/history changed enough to re-read the durable snapshot. */
+	data class TransfersChanged(val transferId: ULong) : CoreSignal
 }
 
 interface CoreGateway {
