@@ -7,10 +7,9 @@ import com.vnidrop.app.feature.send.DesktopShareBridge
 import com.vnidrop.app.feature.receive.ExternalInvitationController
 import com.vnidrop.app.feature.receive.MaxVniDropInvitationBytes
 import com.vnidrop.app.feature.receive.VniDropInvitationExtension
+import com.vnidrop.app.feature.receive.decodeInvitationBytes
 import java.awt.Desktop
 import java.io.File
-import java.nio.ByteBuffer
-import java.nio.charset.CodingErrorAction
 
 fun main(args: Array<String>) {
 	val externalInvitations = ExternalInvitationController()
@@ -45,12 +44,7 @@ private fun ExternalInvitationController.openFile(file: File) {
 	val result = runCatching {
 		require(file.extension.equals(VniDropInvitationExtension, ignoreCase = true)) { "This is not a VniDrop invitation" }
 		val bytes = file.inputStream().use { it.readNBytes(MaxVniDropInvitationBytes + 1) }
-		require(bytes.size <= MaxVniDropInvitationBytes) { "The invitation is too large" }
-		Charsets.UTF_8.newDecoder()
-			.onMalformedInput(CodingErrorAction.REPORT)
-			.onUnmappableCharacter(CodingErrorAction.REPORT)
-			.decode(ByteBuffer.wrap(bytes))
-			.toString()
+		decodeInvitationBytes(bytes)
 	}
 	result.fold(::openInvitation) { error ->
 		reportOpenFailure(error.message ?: "The invitation could not be opened")

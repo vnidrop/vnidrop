@@ -40,6 +40,7 @@ import com.vnidrop.app.ui.theme.VniDropTheme
 import com.vnidrop.app.ui.theme.rememberResolvedDarkTheme
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 
 @Composable
 fun App(dependencies: AppDependencies) {
@@ -82,7 +83,20 @@ fun App(dependencies: AppDependencies) {
 		dependencies.externalInvitations.invitations.collect { invitation ->
 			appViewModel.selectDestination(AppDestination.Receive)
 			if (invitation.isSuccess) {
-				receiveViewModel.coreState.filter { it.isInitialized }.first()
+				// Cold-open can race app startup. Wait for core before inspecting so
+				// the ticket is not dropped as "not initialized", but do not block
+				// forever if initialization failed.
+				val ready = withTimeoutOrNull(30_000) {
+					receiveViewModel.coreState.filter { it.isInitialized }.first()
+				}
+				if (ready == null) {
+					receiveViewModel.onInvitationResult(
+						ReceiveMethod.InvitationFile,
+						Result.failure(IllegalStateException("VniDrop is still starting up. Open the invitation again in a moment.")),
+					)
+					return@collect
+				}
+				// Avoid clobbering an in-flight inspection or receive.
 				receiveViewModel.state.filter { state ->
 					!state.isInspecting && !state.isReceiving && state.ticket.isBlank()
 				}.first()

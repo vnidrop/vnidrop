@@ -11,8 +11,7 @@ import com.vnidrop.app.feature.receive.ExternalInvitationController
 import com.vnidrop.app.feature.receive.MaxVniDropInvitationBytes
 import com.vnidrop.app.feature.receive.VniDropInvitationExtension
 import com.vnidrop.app.feature.receive.VniDropInvitationMimeType
-import java.nio.ByteBuffer
-import java.nio.charset.CodingErrorAction
+import com.vnidrop.app.feature.receive.decodeInvitationBytes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -53,15 +52,13 @@ class MainActivity : ComponentActivity() {
 
 	private fun readInvitation(uri: Uri, declaredType: String?): Result<String> = runCatching {
 		val resolvedType = declaredType ?: contentResolver.getType(uri)
-		val hasExpectedName = uri.lastPathSegment?.endsWith(".$VniDropInvitationExtension", ignoreCase = true) == true
+		val path = uri.path.orEmpty()
+		val lastSegment = uri.lastPathSegment.orEmpty()
+		val hasExpectedName = lastSegment.endsWith(".$VniDropInvitationExtension", ignoreCase = true) ||
+			path.endsWith(".$VniDropInvitationExtension", ignoreCase = true)
 		require(resolvedType == VniDropInvitationMimeType || hasExpectedName) { "This is not a VniDrop invitation" }
 		val bytes = contentResolver.openInputStream(uri)?.use { it.readNBytes(MaxVniDropInvitationBytes + 1) }
 			?: error("The invitation could not be opened")
-		require(bytes.size <= MaxVniDropInvitationBytes) { "The invitation is too large" }
-		Charsets.UTF_8.newDecoder()
-			.onMalformedInput(CodingErrorAction.REPORT)
-			.onUnmappableCharacter(CodingErrorAction.REPORT)
-			.decode(ByteBuffer.wrap(bytes))
-			.toString()
+		decodeInvitationBytes(bytes)
 	}
 }

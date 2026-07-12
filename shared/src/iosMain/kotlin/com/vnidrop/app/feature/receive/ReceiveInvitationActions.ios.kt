@@ -54,8 +54,10 @@ private class InvitationDocumentDelegate(
 			requireNotNull(url) { "The selected invitation URL was invalid" }
 			val path = url.path ?: error("The invitation path was invalid")
 			val data = NSFileManager.defaultManager.contentsAtPath(path) ?: error("The invitation could not be opened")
-			require(data.length.toLong() <= MaxInvitationBytes) { "The invitation is too large" }
-			data.bytes?.readBytes(data.length.toInt())?.decodeToString() ?: error("The invitation is empty")
+			val length = data.length.toInt()
+			require(length <= MaxInvitationBytes) { "The invitation is too large" }
+			val bytes = data.bytes?.readBytes(length) ?: error("The invitation is empty")
+			decodeInvitationBytes(bytes)
 		})
 		retainedInvitationDelegate = null
 	}

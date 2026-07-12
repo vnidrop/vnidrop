@@ -322,6 +322,45 @@ class FoundationComposeTest {
 	}
 
 	@Test
+	fun phoneReceiveEmptyStateOpensAcquisitionMethods() = runComposeUiTest {
+		val state = mutableStateOf(ReceiveState())
+		val actions = object : ReceiveInvitationActions {
+			override val fileAvailability = ReceiveMethodAvailability.Available
+			override val qrAvailability = ReceiveMethodAvailability.Hidden
+			override val nfcAvailability = ReceiveMethodAvailability.Hidden
+			override fun pickInvitation(onResult: (Result<String>) -> Unit) = Unit
+			override fun scanQrCode(onResult: (Result<String>) -> Unit) = Unit
+			override fun readNfcInvitation(onResult: (Result<String>) -> Unit) = Unit
+			override fun cancel() = Unit
+		}
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				ReceiveScreen(
+					coreState = CoreState(isInitialized = true),
+					state = state.value,
+					windowClass = WindowClass.Phone,
+					actions = actions,
+					onOpenAcquisition = { state.value = state.value.copy(isAcquisitionOpen = true) },
+					onDismissAcquisition = {},
+					onReceiverNameChanged = {},
+					onInvitationResult = { _, _ -> },
+					onWaitingForNfc = {},
+					onReceive = {},
+					onRequestDeleteHistoryItem = {},
+					onRequestClearHistory = {},
+					onDismissHistoryDelete = {},
+					onConfirmHistoryDelete = {},
+				)
+			}
+		}
+
+		onNodeWithText("Receive your first file").assertIsDisplayed()
+		onNodeWithText("Receive files").performClick()
+		onNodeWithText("How would you like to connect?").assertIsDisplayed()
+		onNodeWithText("Open a .vnd invitation").assertIsDisplayed()
+	}
+
+	@Test
 	fun receiveHistoryOffersPerItemDeleteAndConfirmedClearAll() = runComposeUiTest {
 		val state = mutableStateOf(ReceiveState())
 		val actions = object : ReceiveInvitationActions {

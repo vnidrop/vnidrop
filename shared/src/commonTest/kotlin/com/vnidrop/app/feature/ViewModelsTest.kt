@@ -308,6 +308,137 @@ class ViewModelsTest {
 		assertFalse(viewModel.state.value.isDeletingHistory)
 	}
 
+	@Test
+	fun receiveViewModelCompletesSuccessfulReceiveAndResetsAcquisition() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(
+				com.vnidrop.app.core.TicketInspectionModel(
+					kind = "vnidrop",
+					blobTicket = "blob",
+					metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
+				),
+			)
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("ticket-abc"))
+		advanceUntilIdle()
+
+		viewModel.receive()
+		advanceUntilIdle()
+
+		assertEquals(1, core.receiveCount)
+		assertEquals("ticket-abc", core.lastReceiveTicket)
+		assertEquals("Receiver", core.lastReceiveReceiverName)
+		assertFalse(viewModel.state.value.isAcquisitionOpen)
+		assertEquals("", viewModel.state.value.ticket)
+		assertFalse(viewModel.state.value.isReceiving)
+	}
+
+	@Test
+	fun receiveViewModelKeepsReviewStateWhenReceiveFails() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(
+				com.vnidrop.app.core.TicketInspectionModel(
+					kind = "vnidrop",
+					blobTicket = "blob",
+					metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
+				),
+			)
+			receiveResult = Result.failure(IllegalStateException("sender refused"))
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.QrCode, Result.success("ticket-xyz"))
+		advanceUntilIdle()
+
+		viewModel.receive()
+		advanceUntilIdle()
+
+		assertEquals(1, core.receiveCount)
+		assertTrue(viewModel.state.value.isAcquisitionOpen)
+		assertEquals("ticket-xyz", viewModel.state.value.ticket)
+		assertFalse(viewModel.state.value.isReceiving)
+		assertTrue(viewModel.state.value.inspection != null)
+	}
+
+	@Test
+	fun receiveViewModelClearsTicketWhenInspectionFailsButKeepsAcquisitionOpen() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.failure(IllegalArgumentException("invalid ticket"))
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("bad-ticket"))
+		advanceUntilIdle()
+
+		assertTrue(viewModel.state.value.isAcquisitionOpen)
+		assertEquals("", viewModel.state.value.ticket)
+		assertEquals(null, viewModel.state.value.inspection)
+		assertFalse(viewModel.state.value.isInspecting)
+	}
+
+	@Test
+	fun receiveViewModelIgnoresDeleteForActiveReceive() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(
+				isInitialized = true,
+				transfers = listOf(receivedTransfer(21UL, TransferStatus.Receiving)),
+			)
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+
+		viewModel.requestDeleteHistoryItem(21UL)
+		assertEquals(null, viewModel.state.value.historyDeleteTarget)
+	}
+
+	@Test
+	fun receiveViewModelDismissResetsIdleAcquisitionButNotWhileReceiving() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(
+				com.vnidrop.app.core.TicketInspectionModel(
+					kind = "vnidrop",
+					blobTicket = "blob",
+					metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
+				),
+			)
+			// Keep receive suspended so dismiss can be asserted mid-transfer.
+			receiveResult = Result.success(Unit)
+			receiveSuspend = true
+		}
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		advanceUntilIdle()
+
+		viewModel.openAcquisition()
+		viewModel.dismissAcquisition()
+		assertFalse(viewModel.state.value.isAcquisitionOpen)
+
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("ticket"))
+		advanceUntilIdle()
+		viewModel.receive()
+		// Start receive but do not finish the suspended core call yet.
+		testScheduler.runCurrent()
+		assertTrue(viewModel.state.value.isReceiving)
+		viewModel.dismissAcquisition()
+		assertTrue(viewModel.state.value.isAcquisitionOpen)
+		assertEquals("ticket", viewModel.state.value.ticket)
+
+		core.completeSuspendedReceive()
+		advanceUntilIdle()
+		assertFalse(viewModel.state.value.isAcquisitionOpen)
+	}
+
 	private fun preferences() = FakePreferencesRepository(
 		AppPreferences("Receiver", folder, ThemeMode.System, notificationsEnabled = false),
 	)

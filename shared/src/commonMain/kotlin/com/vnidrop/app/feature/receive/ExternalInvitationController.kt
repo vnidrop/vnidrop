@@ -34,3 +34,19 @@ internal fun validateInvitation(raw: String): Result<String> = runCatching {
 	require(raw.encodeToByteArray().size <= MaxVniDropInvitationBytes) { "The invitation is too large" }
 	raw
 }
+
+/**
+ * Decode invitation document bytes as strict UTF-8 text.
+ *
+ * Hosts often receive invitation files as opaque binary streams. Reject payloads
+ * that are not valid UTF-8 so binary junk never reaches ticket inspection.
+ */
+fun decodeInvitationBytes(bytes: ByteArray): String {
+	require(bytes.isNotEmpty()) { "The invitation is empty" }
+	require(bytes.size <= MaxVniDropInvitationBytes) { "The invitation is too large" }
+	val text = bytes.decodeToString()
+	// decodeToString() replaces malformed sequences; require a lossless round-trip.
+	require(text.encodeToByteArray().contentEquals(bytes)) { "The invitation is not valid text" }
+	require(text.isNotBlank()) { "The invitation is empty" }
+	return text
+}

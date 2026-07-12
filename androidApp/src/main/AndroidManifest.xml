@@ -24,10 +24,25 @@
 
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
+			<!-- Preferred: exact VniDrop invitation MIME type. -->
 			<intent-filter>
 				<action android:name="android.intent.action.VIEW"/>
 				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE"/>
 				<data android:mimeType="application/vnd.vnidrop.transfer"/>
+			</intent-filter>
+			<!-- Fallback: .vnd files often arrive as octet-stream / unknown MIME. -->
+			<intent-filter>
+				<action android:name="android.intent.action.VIEW"/>
+				<category android:name="android.intent.category.DEFAULT"/>
+				<category android:name="android.intent.category.BROWSABLE"/>
+				<data android:scheme="content"/>
+				<data android:scheme="file"/>
+				<data android:mimeType="*/*"/>
+				<data android:pathPattern=".*\\.vnd"/>
+				<data android:pathPattern=".*\\..*\\.vnd"/>
+				<data android:pathPattern=".*\\..*\\..*\\.vnd"/>
+				<data android:pathPattern=".*\\..*\\..*\\..*\\.vnd"/>
 			</intent-filter>
 		</activity>
 		<provider

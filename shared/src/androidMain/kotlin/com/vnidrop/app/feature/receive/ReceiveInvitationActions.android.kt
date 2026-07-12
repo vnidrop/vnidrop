@@ -26,8 +26,7 @@ actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions {
 		callback(runCatching {
 			val bytes = context.contentResolver.openInputStream(uri)?.use { it.readNBytes(MaxInvitationBytes + 1) }
 				?: error("The invitation could not be opened")
-			require(bytes.size <= MaxInvitationBytes) { "The invitation is too large" }
-			bytes.decodeToString()
+			decodeInvitationBytes(bytes)
 		})
 	}
 	val nfcAdapter = remember(activity) { activity?.let(NfcAdapter::getDefaultAdapter) }
@@ -38,12 +37,15 @@ actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions {
 			override val nfcAvailability = if (nfcAdapter?.isEnabled == true) ReceiveMethodAvailability.Available else ReceiveMethodAvailability.Unavailable
 
 			override fun pickInvitation(onResult: (Result<String>) -> Unit) {
+				// Stop NFC reader before another acquisition path so only one method is active.
+				cancel()
 				fileResult = onResult
-				filePicker.launch(arrayOf(InvitationMimeType, "application/octet-stream", "text/plain"))
+				filePicker.launch(arrayOf(InvitationMimeType, "application/octet-stream", "text/plain", "*/*"))
 			}
 
 			override fun scanQrCode(onResult: (Result<String>) -> Unit) {
 				val host = activity ?: return onResult(Result.failure(UnsupportedOperationException("QR scanning is unavailable")))
+				cancel()
 				val options = GmsBarcodeScannerOptions.Builder()
 					.setBarcodeFormats(Barcode.FORMAT_QR_CODE)
 					.enableAutoZoom()
@@ -54,12 +56,16 @@ actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions {
 						onResult(if (value.isNullOrBlank()) Result.failure(IllegalArgumentException("The QR code is empty")) else Result.success(value))
 					}
 					.addOnFailureListener { onResult(Result.failure(it)) }
+					.addOnCanceledListener {
+						onResult(Result.failure(IllegalStateException("QR scanning was cancelled")))
+					}
 			}
 
 			override fun readNfcInvitation(onResult: (Result<String>) -> Unit) {
 				val host = activity ?: return onResult(Result.failure(UnsupportedOperationException("NFC is unavailable")))
 				val adapter = nfcAdapter?.takeIf { it.isEnabled }
 					?: return onResult(Result.failure(UnsupportedOperationException("NFC is unavailable")))
+				cancel()
 				adapter.enableReaderMode(host, { tag ->
 					val result = runCatching {
 						val ndef = Ndef.get(tag) ?: error("This NFC tag does not contain an invitation")
@@ -68,7 +74,7 @@ actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions {
 							val record = ndef.ndefMessage?.records?.firstOrNull { record ->
 								record.tnf == android.nfc.NdefRecord.TNF_MIME_MEDIA && record.type.decodeToString() == InvitationMimeType
 							} ?: error("This NFC tag does not contain a VniDrop invitation")
-							record.payload.decodeToString()
+							decodeInvitationBytes(record.payload)
 						} finally { ndef.close() }
 					}
 					host.runOnUiThread {

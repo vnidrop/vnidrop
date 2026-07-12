@@ -18,7 +18,7 @@ actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions = rememb
 		override fun pickInvitation(onResult: (Result<String>) -> Unit) {
 			EventQueue.invokeLater {
 				val dialog = FileDialog(activeFrame(), "Open VniDrop invitation", FileDialog.LOAD).apply {
-					setFilenameFilter { _, name -> name.endsWith(".vnd", ignoreCase = true) }
+					setFilenameFilter { _, name -> name.endsWith(".$VniDropInvitationExtension", ignoreCase = true) }
 				}
 				try {
 					dialog.isVisible = true
@@ -40,8 +40,9 @@ actual fun rememberReceiveInvitationActions(): ReceiveInvitationActions = rememb
 }
 
 private fun readInvitation(file: File): Result<String> = runCatching {
-	require(file.length() <= MaxInvitationBytes) { "The invitation is too large" }
-	file.readText()
+	require(file.extension.equals(VniDropInvitationExtension, ignoreCase = true)) { "This is not a VniDrop invitation" }
+	val bytes = file.inputStream().use { it.readNBytes(MaxInvitationBytes + 1) }
+	decodeInvitationBytes(bytes)
 }
 
 private fun activeFrame(): Frame? =
