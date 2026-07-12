@@ -6,7 +6,10 @@ use std::{
     collections::HashMap,
     ops::Deref,
     path::Path,
-    sync::{Arc, Mutex},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc, Condvar, Mutex,
+    },
     time::{Duration, Instant},
 };
 
@@ -97,6 +100,9 @@ pub struct MemoryOutputSink {
     terminal: Mutex<HashMap<String, &'static str>>,
     fail_writes: bool,
     write_delay: Duration,
+    /// When set, every write waits until [Self::release_write_gate] opens the gate.
+    write_gate: Option<Arc<(Mutex<bool>, Condvar)>>,
+    write_entered: AtomicBool,
 }
 
 impl MemoryOutputSink {
@@ -106,6 +112,8 @@ impl MemoryOutputSink {
             terminal: Mutex::new(HashMap::new()),
             fail_writes: true,
             write_delay: Duration::ZERO,
+            write_gate: None,
+            write_entered: AtomicBool::new(false),
         }
     }
 
@@ -115,6 +123,32 @@ impl MemoryOutputSink {
             terminal: Mutex::new(HashMap::new()),
             fail_writes: false,
             write_delay: delay,
+            write_gate: None,
+            write_entered: AtomicBool::new(false),
+        }
+    }
+
+    /// Park every `write_chunk` until [Self::release_write_gate] is called.
+    ///
+    /// Used to hold export mid-file so cancel can run from another thread
+    /// without racing a multi-megabyte slow-write loop.
+    pub fn block_first_write() -> Self {
+        Self {
+            files: Mutex::new(HashMap::new()),
+            terminal: Mutex::new(HashMap::new()),
+            fail_writes: false,
+            write_delay: Duration::ZERO,
+            write_gate: Some(Arc::new((Mutex::new(false), Condvar::new()))),
+            write_entered: AtomicBool::new(false),
+        }
+    }
+
+    pub fn release_write_gate(&self) {
+        if let Some(gate) = &self.write_gate {
+            let (lock, cvar) = gate.as_ref();
+            let mut open = lock.lock().unwrap();
+            *open = true;
+            cvar.notify_all();
         }
     }
 
@@ -129,6 +163,10 @@ impl MemoryOutputSink {
     pub fn has_started(&self, relative_path: &str) -> bool {
         self.files.lock().unwrap().contains_key(relative_path)
     }
+
+    pub fn has_entered_write(&self) -> bool {
+        self.write_entered.load(Ordering::SeqCst)
+    }
 }
 
 impl ReceiveOutputSink for MemoryOutputSink {
@@ -138,6 +176,14 @@ impl ReceiveOutputSink for MemoryOutputSink {
     }
 
     fn write_chunk(&self, relative_path: String, bytes: Vec<u8>) -> Result<(), VnidropError> {
+        self.write_entered.store(true, Ordering::SeqCst);
+        if let Some(gate) = &self.write_gate {
+            let (lock, cvar) = gate.as_ref();
+            let mut open = lock.lock().unwrap();
+            while !*open {
+                open = cvar.wait(open).unwrap();
+            }
+        }
         if !self.write_delay.is_zero() {
             std::thread::sleep(self.write_delay);
         }

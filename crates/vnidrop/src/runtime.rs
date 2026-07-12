@@ -1,5 +1,6 @@
 use std::{
     collections::HashMap,
+    future::Future,
     io,
     path::{Path, PathBuf},
     str::FromStr,
@@ -59,6 +60,19 @@ pub struct VnidropCore {
     inner: Arc<CoreInner>,
 }
 
+impl VnidropCore {
+    /// Drive work on this core's multi-thread runtime from a sync API boundary.
+    ///
+    /// Uses [`tokio::runtime::Handle::block_on`] rather than exclusive
+    /// [`Runtime::block_on`] so a concurrent call (for example cancel while
+    /// another thread is blocked inside `receive`) cannot deadlock the runtime
+    /// driver. UniFFI and tests both rely on that: receive runs on a worker
+    /// thread while cancel/approve arrive from the UI or test harness thread.
+    fn block_on<F: Future>(&self, future: F) -> F::Output {
+        self.runtime.handle().block_on(future)
+    }
+}
+
 struct CoreInner {
     // Kotlin owns app lifecycle and platform file picking; this Rust object
     // owns the Iroh endpoint, blob store, transfer history, and byte streaming.
@@ -71,7 +85,9 @@ struct CoreInner {
     limits: CoreLimits,
     transfer_slots: Semaphore,
     access_policy: Arc<AccessPolicy>,
-    active_transfers: TokioMutex<HashMap<u64, ActiveTransfer>>,
+    /// Sync mutex so cancel can remove + signal without awaiting (and without
+    /// holding a Tokio lock across repository I/O).
+    active_transfers: std::sync::Mutex<HashMap<u64, ActiveTransfer>>,
     // Newly imported shares retain a TempTag for the lifetime of this process.
     // Restored shares have no in-memory tag, but remain tracked so they can be
     // counted and explicitly revoked after a restart.
@@ -173,7 +189,7 @@ impl VnidropCore {
     }
 
     pub fn status(&self) -> RuntimeStatus {
-        self.runtime.block_on(self.inner.status())
+        self.block_on(self.inner.status())
     }
 
     pub fn share_files(
@@ -181,8 +197,7 @@ impl VnidropCore {
         sources: Vec<ShareSource>,
         metadata: ShareMetadataInput,
     ) -> Result<ShareResult, VnidropError> {
-        self.runtime
-            .block_on(self.inner.share_files(sources, metadata))
+        self.block_on(self.inner.share_files(sources, metadata))
             .map_err(VnidropError::transfer)
     }
 
@@ -195,7 +210,7 @@ impl VnidropCore {
         if let Err(error) = parse_transfer_ticket_with_limits(&ticket, &self.inner.limits)
             .context("failed to parse transfer ticket")
         {
-            self.runtime.block_on(async {
+            self.block_on(async {
                 self.inner.emit_endpoint(
                     "error",
                     "invalid-ticket",
@@ -206,8 +221,7 @@ impl VnidropCore {
             return Err(VnidropError::ticket(error));
         }
         let output_dir = platform_path(&output_dir).map_err(VnidropError::filesystem)?;
-        self.runtime
-            .block_on(self.inner.receive(ticket, output_dir, receiver_name))
+        self.block_on(self.inner.receive(ticket, output_dir, receiver_name))
             .map_err(VnidropError::transfer)
     }
 
@@ -220,7 +234,7 @@ impl VnidropCore {
         if let Err(error) = parse_transfer_ticket_with_limits(&ticket, &self.inner.limits)
             .context("failed to parse transfer ticket")
         {
-            self.runtime.block_on(async {
+            self.block_on(async {
                 self.inner.emit_endpoint(
                     "error",
                     "invalid-ticket",
@@ -230,29 +244,54 @@ impl VnidropCore {
             });
             return Err(VnidropError::ticket(error));
         }
-        self.runtime
-            .block_on(
-                self.inner
-                    .receive_with_output_sink(ticket, output_sink, receiver_name),
-            )
-            .map_err(VnidropError::transfer)
+        self.block_on(
+            self.inner
+                .receive_with_output_sink(ticket, output_sink, receiver_name),
+        )
+        .map_err(VnidropError::transfer)
     }
 
     pub fn cancel_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
-        self.runtime
-            .block_on(self.inner.cancel_transfer(transfer_id))
+        // Fire the oneshot on this thread before entering the runtime so a
+        // blocked export write cannot prevent the cancel signal from being
+        // delivered (the receive `select!` observes it on the next yield).
+        if let Some(direction) = self.inner.take_active_transfer(transfer_id) {
+            let expected = match direction {
+                TransferDirection::Send => TransferStatus::Importing,
+                TransferDirection::Receive => TransferStatus::Receiving,
+            };
+            return self
+                .block_on(async {
+                    self.inner
+                        .repository
+                        .transition_transfer_status(
+                            transfer_id,
+                            expected,
+                            TransferStatus::Cancelled,
+                        )
+                        .await?;
+                    self.inner.emit_transfer(
+                        transfer_id,
+                        direction.as_str(),
+                        "lifecycle",
+                        "cancel-requested",
+                        json!({}),
+                    );
+                    Ok::<(), anyhow::Error>(())
+                })
+                .map_err(VnidropError::transfer);
+        }
+        self.block_on(self.inner.cancel_idle_or_share(transfer_id))
             .map_err(VnidropError::transfer)
     }
 
     pub fn delete_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
-        self.runtime
-            .block_on(self.inner.delete_transfer(transfer_id))
+        self.block_on(self.inner.delete_transfer(transfer_id))
             .map_err(VnidropError::transfer)
     }
 
     pub fn delete_receive_history(&self) -> Result<u64, VnidropError> {
-        self.runtime
-            .block_on(self.inner.delete_receive_history())
+        self.block_on(self.inner.delete_receive_history())
             .map_err(VnidropError::repository)
     }
 
@@ -261,8 +300,7 @@ impl VnidropCore {
         transfer_id: u64,
         mode: TransferAccessMode,
     ) -> Result<(), VnidropError> {
-        self.runtime
-            .block_on(self.inner.set_transfer_access_mode(transfer_id, mode))
+        self.block_on(self.inner.set_transfer_access_mode(transfer_id, mode))
             .map_err(VnidropError::permission)
     }
 
@@ -271,20 +309,18 @@ impl VnidropCore {
         transfer_id: u64,
         endpoint_id: String,
     ) -> Result<(), VnidropError> {
-        self.runtime
-            .block_on(
-                self.inner
-                    .approve_endpoint_for_transfer(transfer_id, endpoint_id),
-            )
-            .map_err(VnidropError::permission)
+        self.block_on(
+            self.inner
+                .approve_endpoint_for_transfer(transfer_id, endpoint_id),
+        )
+        .map_err(VnidropError::permission)
     }
 
     pub fn list_receiver_requests(
         &self,
         transfer_id: u64,
     ) -> Result<Vec<ReceiverRequest>, VnidropError> {
-        self.runtime
-            .block_on(self.inner.repository.list_receiver_requests(transfer_id))
+        self.block_on(self.inner.repository.list_receiver_requests(transfer_id))
             .map_err(VnidropError::repository)
     }
 
@@ -294,20 +330,17 @@ impl VnidropCore {
         accepted: bool,
         reason: Option<String>,
     ) -> Result<(), VnidropError> {
-        self.runtime
-            .block_on(self.inner.approval.respond(request_id, accepted, reason))
+        self.block_on(self.inner.approval.respond(request_id, accepted, reason))
             .map_err(VnidropError::permission)
     }
 
     pub fn list_transfers(&self) -> Result<Vec<StoredTransfer>, VnidropError> {
-        self.runtime
-            .block_on(self.inner.repository.list_transfers())
+        self.block_on(self.inner.repository.list_transfers())
             .map_err(VnidropError::repository)
     }
 
     pub fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>, VnidropError> {
-        self.runtime
-            .block_on(self.inner.list_events(transfer_id))
+        self.block_on(self.inner.list_events(transfer_id))
             .map_err(VnidropError::repository)
     }
 
@@ -327,7 +360,7 @@ impl VnidropCore {
     }
 
     pub fn shutdown(&self) {
-        self.runtime.block_on(self.inner.shutdown());
+        self.block_on(self.inner.shutdown());
     }
 }
 
@@ -439,7 +472,7 @@ impl CoreInner {
             transfer_slots: Semaphore::new(limits.max_concurrent_transfers as usize),
             limits,
             access_policy,
-            active_transfers: TokioMutex::new(HashMap::new()),
+            active_transfers: std::sync::Mutex::new(HashMap::new()),
             active_shares: TokioMutex::new(restored_active_shares),
             hash_to_transfer: TokioMutex::new(restored_hashes),
             connection_endpoints: TokioMutex::new(HashMap::new()),
@@ -464,7 +497,7 @@ impl CoreInner {
         RuntimeStatus {
             endpoint_id: self.endpoint.id().to_string(),
             addr: format!("{:?}", self.endpoint.addr()),
-            active_transfers: self.active_transfers.lock().await.len() as u64,
+            active_transfers: self.active_transfers.lock().expect("active_transfers").len() as u64,
             active_shares: self.active_shares.lock().await.len() as u64,
         }
     }
@@ -509,18 +542,24 @@ impl CoreInner {
             })
             .await?;
         let (cancel, mut cancelled) = oneshot::channel();
-        self.active_transfers.lock().await.insert(
-            transfer_id,
-            ActiveTransfer {
-                direction: TransferDirection::Send,
-                cancel,
-            },
-        );
+        self.active_transfers
+            .lock()
+            .expect("active_transfers")
+            .insert(
+                transfer_id,
+                ActiveTransfer {
+                    direction: TransferDirection::Send,
+                    cancel,
+                },
+            );
         let (result, was_cancelled) = tokio::select! {
             result = self.share_files_inner(sources, metadata) => (result, false),
             _ = &mut cancelled => (Err(anyhow::anyhow!("transfer cancelled")), true),
         };
-        self.active_transfers.lock().await.remove(&transfer_id);
+        self.active_transfers
+            .lock()
+            .expect("active_transfers")
+            .remove(&transfer_id);
         if let Err(error) = &result {
             if was_cancelled {
                 self.emit_transfer(transfer_id, "send", "lifecycle", "cancelled", json!({}));
@@ -689,20 +728,26 @@ impl CoreInner {
         // Cancellation is cooperative: it stops our receive future and marks
         // local state while lower-level Iroh work unwinds naturally.
         let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
-        self.active_transfers.lock().await.insert(
-            transfer_id,
-            ActiveTransfer {
-                direction: TransferDirection::Receive,
-                cancel: shutdown_tx,
-            },
-        );
+        self.active_transfers
+            .lock()
+            .expect("active_transfers")
+            .insert(
+                transfer_id,
+                ActiveTransfer {
+                    direction: TransferDirection::Receive,
+                    cancel: shutdown_tx,
+                },
+            );
 
         let (result, cancelled) = tokio::select! {
             result = self.receive_inner(transfer_id, parsed, target, receiver_name) => (result, false),
             _ = &mut shutdown_rx => (Err(anyhow::anyhow!("transfer cancelled")), true),
         };
 
-        self.active_transfers.lock().await.remove(&transfer_id);
+        self.active_transfers
+            .lock()
+            .expect("active_transfers")
+            .remove(&transfer_id);
         if let Err(error) = &result {
             if cancelled {
                 self.emit_transfer(transfer_id, "receive", "lifecycle", "cancelled", json!({}));
@@ -898,35 +943,20 @@ impl CoreInner {
         Ok(())
     }
 
-    async fn cancel_transfer(&self, transfer_id: u64) -> Result<()> {
-        let mut active_transfers = self.active_transfers.lock().await;
-        if let Some(direction) = active_transfers
-            .get(&transfer_id)
-            .map(|active| active.direction)
-        {
-            let expected = match direction {
-                TransferDirection::Send => TransferStatus::Importing,
-                TransferDirection::Receive => TransferStatus::Receiving,
-            };
-            self.repository
-                .transition_transfer_status(transfer_id, expected, TransferStatus::Cancelled)
-                .await?;
-            let active = active_transfers
-                .remove(&transfer_id)
-                .ok_or_else(|| anyhow::anyhow!("active transfer registration disappeared"))?;
-            drop(active_transfers);
-            let _ = active.cancel.send(());
-            self.emit_transfer(
-                transfer_id,
-                direction.as_str(),
-                "lifecycle",
-                "cancel-requested",
-                json!({}),
-            );
-            return Ok(());
-        }
-        drop(active_transfers);
+    /// Remove an in-flight transfer and fire its cancel oneshot synchronously.
+    fn take_active_transfer(&self, transfer_id: u64) -> Option<TransferDirection> {
+        let active = self
+            .active_transfers
+            .lock()
+            .expect("active_transfers")
+            .remove(&transfer_id)?;
+        let direction = active.direction;
+        let _ = active.cancel.send(());
+        Some(direction)
+    }
 
+    /// Stop a live share or report missing when no active transfer was found.
+    async fn cancel_idle_or_share(&self, transfer_id: u64) -> Result<()> {
         let mut active_shares = self.active_shares.lock().await;
         if active_shares.contains_key(&transfer_id) {
             self.repository
@@ -953,7 +983,7 @@ impl CoreInner {
         if self
             .active_transfers
             .lock()
-            .await
+            .expect("active_transfers")
             .contains_key(&transfer_id)
         {
             anyhow::bail!("an active transfer must finish or be cancelled before deletion");
@@ -1389,6 +1419,10 @@ impl CoreInner {
                             "exported": exported,
                         }),
                     );
+                    // Yield so outer `select!` cancel can land between chunks.
+                    // Sink writes are synchronous (foreign FFI); without this,
+                    // a single poll can drain the stream and miss cancellation.
+                    tokio::task::yield_now().await;
                 }
                 ExportRangesItem::Error(error) => {
                     anyhow::bail!("export failed for {relative_path}: {error}");

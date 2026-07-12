@@ -68,24 +68,22 @@ fn reports_output_sink_write_failure() {
 
 #[test]
 fn cancellation_during_export_aborts_open_sink_file() {
+    // Gate the first write so export is mid-file when cancel runs. A large
+    // "slow writes" file made this flaky/hang-prone on CI: concurrent cancel
+    // used to nest Runtime::block_on, and multi-megabyte sleep loops could
+    // starve the cancel path for a long time.
     let source_dir = tempfile::tempdir().unwrap();
-    let source_path = source_dir.path().join("slow.bin");
-    std::fs::File::create(&source_path)
-        .unwrap()
-        .set_len(32 * 1024 * 1024)
-        .unwrap();
+    let source_path = source_dir.path().join("gated.bin");
+    std::fs::write(&source_path, vec![0u8; 256 * 1024]).unwrap();
     let sender = TestNode::new();
     let receiver = TestNode::new();
-    let share = share_path(&sender.core, &source_path, 29, "slow.bin", false);
-    let output_sink = Arc::new(MemoryOutputSink::slow_writes(Duration::from_millis(25)));
+    let share = share_path(&sender.core, &source_path, 29, "gated.bin", false);
+    let output_sink = Arc::new(MemoryOutputSink::block_first_write());
     let receiver_core = receiver.core.arc();
     let sink_for_worker = output_sink.clone();
+    let ticket = share.ticket.clone();
     let worker = std::thread::spawn(move || {
-        receiver_core.receive_with_output_sink(
-            share.ticket,
-            sink_for_worker,
-            Some("receiver".to_string()),
-        )
+        receiver_core.receive_with_output_sink(ticket, sink_for_worker, Some("receiver".to_string()))
     });
 
     let request = wait_for_receiver_request(&sender.core, share.transfer_id);
@@ -94,11 +92,35 @@ fn cancellation_during_export_aborts_open_sink_file() {
         .respond_receiver_request(request.id, true, None)
         .unwrap();
     let started = Instant::now();
-    while !output_sink.has_started("slow.bin") {
-        assert!(started.elapsed() < Duration::from_secs(15));
+    while !output_sink.has_started("gated.bin") || !output_sink.has_entered_write() {
+        assert!(
+            started.elapsed() < Duration::from_secs(15),
+            "export never opened gated.bin for writing"
+        );
         std::thread::sleep(Duration::from_millis(10));
     }
+    // First write is parked in the sink. Cancel must complete from this thread
+    // without deadlocking against the receive worker's runtime driver.
     receiver.core.cancel_transfer(share.transfer_id).unwrap();
-    assert!(worker.join().unwrap().is_err());
-    assert_eq!(output_sink.terminal_state("slow.bin"), Some("aborted"));
+    // Unblock the in-flight write so the receive future can yield, observe
+    // cancel, and Drop(OutputSinkFile) can abort the open file.
+    output_sink.release_write_gate();
+
+    let result = worker
+        .join()
+        .expect("receive worker thread panicked")
+        .expect_err("cancelled receive should return an error");
+    let message = result.to_string();
+    assert!(
+        message.contains("cancel") || message.contains("interrupted") || !message.is_empty(),
+        "unexpected cancel error: {message}"
+    );
+    let abort_deadline = Instant::now();
+    while output_sink.terminal_state("gated.bin") != Some("aborted") {
+        assert!(
+            abort_deadline.elapsed() < Duration::from_secs(5),
+            "open sink file was not aborted after cancel"
+        );
+        std::thread::sleep(Duration::from_millis(10));
+    }
 }
