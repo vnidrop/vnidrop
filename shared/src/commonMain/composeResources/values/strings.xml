@@ -123,6 +123,7 @@
     <string name="progress_preparing">Preparing transfer</string>
     <string name="transfer_receivers_pending">%1$d waiting</string>
     <string name="transfer_receivers_completed_count">%1$d completed</string>
+    <string name="transfer_receiver_sending">Sending</string>
     <string name="transfer_event_downloading">Downloading files</string>
     <string name="transfer_event_saving">Saving files</string>
     <string name="transfer_event_connecting">Connecting to sender</string>

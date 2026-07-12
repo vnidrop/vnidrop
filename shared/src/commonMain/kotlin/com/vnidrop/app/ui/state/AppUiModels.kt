@@ -68,6 +68,105 @@ fun progressForTransfer(events: List<CoreEventModel>, transferId: ULong): Transf
 	)
 }
 
+/**
+ * Live byte progress for one receiver on an outgoing share.
+ *
+ * Core emits `transfer` phase events per provider connection with
+ * `endpoint_id` (and `connection_id`). Multiple blob requests for the same
+ * receiver are aggregated so multi-file collections show a single bar.
+ *
+ * Falls back to mapping `connection_id` → endpoint via provider
+ * `client-connected` events when older events lack `endpoint_id`.
+ */
+fun progressForReceiver(
+	events: List<CoreEventModel>,
+	transferId: ULong,
+	remoteEndpointId: String,
+	totalSizeHint: ULong? = null,
+): TransferProgress? {
+	if (remoteEndpointId.isBlank()) return null
+	val connectionIds = connectionIdsForEndpoint(events, remoteEndpointId)
+	val transferEvents = events.filter { event ->
+		event.transferId == transferId &&
+			event.direction == "send" &&
+			event.phase == "transfer" &&
+			event.kind in setOf("started", "progress", "completed", "aborted") &&
+			eventBelongsToReceiver(event, remoteEndpointId, connectionIds)
+	}
+	if (transferEvents.isEmpty()) return null
+
+	val latest = transferEvents.first()
+	if (latest.kind == "aborted") {
+		return TransferProgress(
+			transferId = transferId,
+			phase = "transfer",
+			kind = "aborted",
+			label = "Send interrupted",
+			progress = null,
+			detail = null,
+		)
+	}
+	if (latest.kind == "completed" && transferEvents.none { it.kind == "progress" || it.kind == "started" }) {
+		return TransferProgress(
+			transferId = transferId,
+			phase = "transfer",
+			kind = "completed",
+			label = "Send completed",
+			progress = 1f,
+			detail = null,
+		)
+	}
+
+	val progress = aggregateReceiverProgress(transferEvents, totalSizeHint)
+	return TransferProgress(
+		transferId = transferId,
+		phase = "transfer",
+		kind = latest.kind,
+		label = "Sending",
+		progress = progress,
+		detail = progressDetail(latest),
+	)
+}
+
+/**
+ * Best send-side progress for a transfer (any receiver), used on catalog cards
+ * while status is Sharing.
+ */
+fun activeSendProgress(
+	events: List<CoreEventModel>,
+	transferId: ULong,
+	totalSizeHint: ULong? = null,
+): TransferProgress? {
+	val endpointIds = events
+		.asSequence()
+		.filter { it.transferId == transferId && it.direction == "send" && it.phase == "transfer" }
+		.mapNotNull { findString(it.dataJson, "endpoint_id") }
+		.distinct()
+		.toList()
+	if (endpointIds.isEmpty()) {
+		// Fall back to connection-scoped events without endpoint attribution.
+		val relevant = events.filter {
+			it.transferId == transferId &&
+				it.direction == "send" &&
+				it.phase == "transfer" &&
+				it.kind in setOf("started", "progress")
+		}
+		if (relevant.isEmpty()) return null
+		return TransferProgress(
+			transferId = transferId,
+			phase = "transfer",
+			kind = relevant.first().kind,
+			label = "Sending to receiver",
+			progress = aggregateReceiverProgress(relevant, totalSizeHint),
+			detail = progressDetail(relevant.first()),
+		)
+	}
+	return endpointIds
+		.mapNotNull { progressForReceiver(events, transferId, it, totalSizeHint) }
+		.firstOrNull { it.kind == "progress" || it.kind == "started" }
+		?: endpointIds.mapNotNull { progressForReceiver(events, transferId, it, totalSizeHint) }.firstOrNull()
+}
+
 fun summarizeProgress(events: List<CoreEventModel>): List<TransferProgress> =
 	events
 		.mapNotNull { it.transferId }
@@ -181,11 +280,107 @@ private fun findKnownSize(events: List<CoreEventModel>, transferId: ULong): Doub
 	return null
 }
 
+/**
+ * Aggregate multi-blob provider progress for one receiver connection.
+ *
+ * For each `request_id`, take the latest known size/offset/completion, then
+ * sum transferred / sum sizes. Prefer the transfer's total size when the
+ * collection size is known and larger than the sum of observed blob sizes.
+ */
+private fun aggregateReceiverProgress(
+	events: List<CoreEventModel>,
+	totalSizeHint: ULong?,
+): Float? {
+	// Events are newest-first; walk oldest→newest so later states win.
+	val chronological = events.asReversed()
+	data class BlobState(var size: Double? = null, var offset: Double = 0.0, var completed: Boolean = false, var aborted: Boolean = false)
+	val byRequest = linkedMapOf<String, BlobState>()
+	var connectionScopedOffset: Double? = null
+	var connectionScopedSize: Double? = null
+
+	for (event in chronological) {
+		val requestKey = findNumber(event.dataJson, "request_id")?.toLong()?.toString()
+			?: findString(event.dataJson, "request_id")
+		val size = findNumber(event.dataJson, "size")
+		val endOffset = findNumber(event.dataJson, "end_offset")
+			?: findNumber(event.dataJson, "offset")
+			?: findNumber(event.dataJson, "transferred")
+
+		if (requestKey != null) {
+			val state = byRequest.getOrPut(requestKey) { BlobState() }
+			if (size != null && size > 0) state.size = size
+			when (event.kind) {
+				"progress", "started" -> {
+					if (endOffset != null) state.offset = maxOf(state.offset, endOffset)
+					state.aborted = false
+				}
+				"completed" -> {
+					state.completed = true
+					state.size?.let { state.offset = it }
+				}
+				"aborted" -> state.aborted = true
+			}
+		} else {
+			if (size != null && size > 0) connectionScopedSize = size
+			if (endOffset != null) connectionScopedOffset = endOffset
+		}
+	}
+
+	if (byRequest.isNotEmpty()) {
+		val active = byRequest.values.filterNot { it.aborted }
+		if (active.isEmpty()) return null
+		val transferred = active.sumOf { state ->
+			when {
+				state.completed -> state.size ?: state.offset
+				else -> state.offset
+			}
+		}
+		val observedSize = active.mapNotNull { it.size }.sum()
+		val total = totalSizeHint?.toDouble()?.takeIf { it > 0 }
+			?: observedSize.takeIf { it > 0 }
+		if (total == null || total <= 0.0) return null
+		return (transferred / total).toFloat().coerceIn(0f, 1f)
+	}
+
+	val total = totalSizeHint?.toDouble()?.takeIf { it > 0 }
+		?: connectionScopedSize?.takeIf { it > 0 }
+	val transferred = connectionScopedOffset
+	if (transferred == null || total == null || total <= 0.0) return null
+	return (transferred / total).toFloat().coerceIn(0f, 1f)
+}
+
+private fun connectionIdsForEndpoint(events: List<CoreEventModel>, remoteEndpointId: String): Set<String> {
+	val ids = mutableSetOf<String>()
+	for (event in events) {
+		val endpoint = findString(event.dataJson, "endpoint_id") ?: continue
+		if (endpoint != remoteEndpointId) continue
+		findNumber(event.dataJson, "connection_id")?.toLong()?.toString()?.let(ids::add)
+		findString(event.dataJson, "connection_id")?.let(ids::add)
+	}
+	return ids
+}
+
+private fun eventBelongsToReceiver(
+	event: CoreEventModel,
+	remoteEndpointId: String,
+	connectionIds: Set<String>,
+): Boolean {
+	val endpoint = findString(event.dataJson, "endpoint_id")
+	if (endpoint != null) return endpoint == remoteEndpointId
+	val connectionId = findNumber(event.dataJson, "connection_id")?.toLong()?.toString()
+		?: findString(event.dataJson, "connection_id")
+		?: return false
+	return connectionId in connectionIds
+}
+
 private fun findNumber(json: String, key: String): Double? {
 	val marker = "\"$key\":"
 	val start = json.indexOf(marker)
 	if (start < 0) return null
 	val valueStart = start + marker.length
+	val raw = json.substring(valueStart).trimStart()
+	// Skip JSON null so endpoint_id:null does not parse as a number key neighbor.
+	if (raw.startsWith("null")) return null
 	val valueEnd = json.indexOfAny(charArrayOf(',', '}', ']'), valueStart).takeIf { it >= 0 } ?: json.length
 	return json.substring(valueStart, valueEnd).trim().trim('"').toDoubleOrNull()
 }
@@ -195,6 +390,7 @@ private fun findString(json: String, key: String): String? {
 	val start = json.indexOf(marker)
 	if (start < 0) return null
 	val after = json.substring(start + marker.length).trimStart()
+	if (after.startsWith("null")) return null
 	if (!after.startsWith('"')) return null
 	val end = after.indexOf('"', 1)
 	if (end <= 1) return null

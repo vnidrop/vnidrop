@@ -1485,7 +1485,8 @@ impl CoreInner {
                         message.inner.connection_id,
                         message.inner.request_id,
                         message.rx,
-                    );
+                    )
+                    .await;
                 }
                 let _ = message.tx.send(Ok(())).await;
             }
@@ -1497,7 +1498,8 @@ impl CoreInner {
                         message.inner.connection_id,
                         message.inner.request_id,
                         message.rx,
-                    );
+                    )
+                    .await;
                 }
             }
             ProviderMessage::GetManyRequestReceived(message) => {
@@ -1531,7 +1533,8 @@ impl CoreInner {
                         message.inner.connection_id,
                         message.inner.request_id,
                         message.rx,
-                    );
+                    )
+                    .await;
                 }
                 let _ = message.tx.send(Ok(())).await;
             }
@@ -1545,7 +1548,8 @@ impl CoreInner {
                         message.inner.connection_id,
                         message.inner.request_id,
                         message.rx,
-                    );
+                    )
+                    .await;
                 }
             }
             ProviderMessage::ObserveRequestReceived(message) => {
@@ -1618,7 +1622,7 @@ impl CoreInner {
             .await
     }
 
-    fn track_request_updates(
+    async fn track_request_updates(
         self: &Arc<Self>,
         transfer_id: u64,
         connection_id: u64,
@@ -1628,6 +1632,15 @@ impl CoreInner {
         // Request update tasks are tied to individual provider streams.  Router
         // shutdown closes those streams; only the long-lived provider receiver
         // is tracked directly for explicit shutdown.
+        //
+        // Attach the remote endpoint id when known so the send UI can attribute
+        // byte progress to a specific receiver (not just an opaque connection).
+        let endpoint_id = self
+            .connection_endpoints
+            .lock()
+            .await
+            .get(&connection_id)
+            .cloned();
         let core = self.clone();
         tokio::spawn(async move {
             while let Ok(Some(update)) = rx.recv().await {
@@ -1640,6 +1653,7 @@ impl CoreInner {
                         json!({
                             "connection_id": connection_id,
                             "request_id": request_id,
+                            "endpoint_id": endpoint_id,
                             "hash": started.hash.to_string(),
                             "size": started.size,
                             "index": started.index,
@@ -1653,6 +1667,7 @@ impl CoreInner {
                         json!({
                             "connection_id": connection_id,
                             "request_id": request_id,
+                            "endpoint_id": endpoint_id,
                             "end_offset": progress.end_offset,
                         }),
                     ),
@@ -1661,14 +1676,22 @@ impl CoreInner {
                         "send",
                         "transfer",
                         "completed",
-                        json!({ "connection_id": connection_id, "request_id": request_id }),
+                        json!({
+                            "connection_id": connection_id,
+                            "request_id": request_id,
+                            "endpoint_id": endpoint_id,
+                        }),
                     ),
                     RequestUpdate::Aborted(_) => core.emit_transfer(
                         transfer_id,
                         "send",
                         "transfer",
                         "aborted",
-                        json!({ "connection_id": connection_id, "request_id": request_id }),
+                        json!({
+                            "connection_id": connection_id,
+                            "request_id": request_id,
+                            "endpoint_id": endpoint_id,
+                        }),
                     ),
                 }
             }

@@ -104,6 +104,109 @@ class AppUiModelsTest {
 	}
 
 	@Test
+	fun progressForReceiverAggregatesMultiBlobSendByEndpoint() {
+		val events = listOf(
+			// newest first
+			event(
+				id = "p2",
+				phase = "transfer",
+				kind = "progress",
+				data = """{"connection_id":9,"request_id":2,"endpoint_id":"peer-a","end_offset":40}""",
+				direction = "send",
+			),
+			event(
+				id = "s2",
+				phase = "transfer",
+				kind = "started",
+				data = """{"connection_id":9,"request_id":2,"endpoint_id":"peer-a","size":50}""",
+				direction = "send",
+			),
+			event(
+				id = "c1",
+				phase = "transfer",
+				kind = "completed",
+				data = """{"connection_id":9,"request_id":1,"endpoint_id":"peer-a"}""",
+				direction = "send",
+			),
+			event(
+				id = "s1",
+				phase = "transfer",
+				kind = "started",
+				data = """{"connection_id":9,"request_id":1,"endpoint_id":"peer-a","size":50}""",
+				direction = "send",
+			),
+			// different receiver should not mix in
+			event(
+				id = "other",
+				phase = "transfer",
+				kind = "progress",
+				data = """{"connection_id":3,"request_id":7,"endpoint_id":"peer-b","end_offset":99}""",
+				direction = "send",
+			),
+		)
+		// blob1 complete 50 + blob2 40 = 90 / total hint 100
+		val progress = progressForReceiver(events, 7UL, "peer-a", totalSizeHint = 100UL)
+		assertEquals(0.9f, progress?.progress)
+		assertEquals("Sending", progress?.label)
+		assertEquals(null, progressForReceiver(events, 7UL, "missing"))
+	}
+
+	@Test
+	fun progressForReceiverFallsBackToConnectionMap() {
+		val events = listOf(
+			event(
+				id = "prog",
+				phase = "transfer",
+				kind = "progress",
+				data = """{"connection_id":4,"request_id":1,"end_offset":25}""",
+				direction = "send",
+			),
+			event(
+				id = "start",
+				phase = "transfer",
+				kind = "started",
+				data = """{"connection_id":4,"request_id":1,"size":100}""",
+				direction = "send",
+			),
+			CoreEventModel(
+				id = "conn",
+				timestamp = 1L,
+				scope = "endpoint",
+				transferId = null,
+				direction = null,
+				phase = "provider",
+				kind = "client-connected",
+				dataJson = """{"connection_id":4,"endpoint_id":"peer-z"}""",
+			),
+		)
+		val progress = progressForReceiver(events, 7UL, "peer-z")
+		assertEquals(0.25f, progress?.progress)
+	}
+
+	@Test
+	fun activeSendProgressPicksLiveReceiverSend() {
+		val events = listOf(
+			event(
+				id = "p",
+				phase = "transfer",
+				kind = "progress",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a","end_offset":30}""",
+				direction = "send",
+			),
+			event(
+				id = "s",
+				phase = "transfer",
+				kind = "started",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a","size":100}""",
+				direction = "send",
+			),
+		)
+		val progress = activeSendProgress(events, 7UL, totalSizeHint = 100UL)
+		assertEquals(0.3f, progress?.progress)
+		assertEquals("Sending", progress?.label)
+	}
+
+	@Test
 	fun canCancelOnlyActiveStatuses() {
 		assertTrue(storedTransfer(status = TransferStatus.Sharing).canCancelTransfer())
 		assertTrue(storedTransfer(status = TransferStatus.Receiving).canCancelTransfer())
@@ -133,12 +236,13 @@ class AppUiModelsTest {
 		kind: String,
 		data: String,
 		transferId: ULong = 7UL,
+		direction: String = "receive",
 	) = CoreEventModel(
 		id = id,
 		timestamp = 1L,
 		scope = "transfer",
 		transferId = transferId,
-		direction = "receive",
+		direction = direction,
 		phase = phase,
 		kind = kind,
 		dataJson = data,
