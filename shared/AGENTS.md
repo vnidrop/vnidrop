@@ -58,8 +58,9 @@ Optional:
 ./gradlew :androidApp:assembleDebug
 ```
 
-CI `:shared:jvmTest` runs on **macOS** (Gobley host cargo). Prefer macOS for
-local parity.
+CI `:shared:jvmTest` currently runs on **macOS**. Gobley host cargo follows the
+current host and architecture, including Linux and Windows; use macOS only when
+exact CI parity is required.
 
 When Kotlin changes touch UniFFI-generated APIs, rebuild/test with a full
 `jvmTest` so Gobley/native pieces stay aligned.

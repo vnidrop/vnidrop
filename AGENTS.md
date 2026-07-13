@@ -100,9 +100,10 @@ Other targets (slower / machine-dependent):
 ./gradlew :desktopApp:run
 ```
 
-**Note:** `jvmTest` CI runs on **macOS** because Gobley host cargo is enabled for
-the current Gobley host; Linux JVM cargo may be disabled in
-`shared/build.gradle.kts`. Prefer macOS for local parity with CI.
+**Note:** `jvmTest` CI currently runs on **macOS**. Gobley host cargo is enabled
+for the current host and architecture, so local Linux and Windows builds embed
+their matching desktop Rust library. Prefer macOS only when exact CI parity is
+required.
 
 ### What to run before finishing
 

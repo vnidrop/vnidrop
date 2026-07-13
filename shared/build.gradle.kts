@@ -2,10 +2,30 @@
 
 import gobley.gradle.cargo.dsl.appleMobile
 import gobley.gradle.cargo.dsl.jvm
+import gobley.gradle.cargo.tasks.CargoBuildTask
+import gobley.gradle.cargo.tasks.CargoCheckTask
 import gobley.gradle.GobleyHost
 import gobley.gradle.rust.targets.RustAndroidTarget
+import gobley.gradle.rust.targets.RustAppleMobileTarget
+import gobley.gradle.rust.targets.RustTarget
+import org.gradle.api.DefaultTask
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+abstract class VerifyHostCargoTaskSelection : DefaultTask() {
+	@get:Input
+	abstract val mismatches: ListProperty<String>
+
+	@TaskAction
+	fun verify() {
+		check(mismatches.get().isEmpty()) {
+			"Cargo tasks do not match the current host: ${mismatches.get().joinToString()}"
+		}
+	}
+}
 
 plugins {
 	alias(libs.plugins.kotlinMultiplatform)
@@ -18,13 +38,15 @@ plugins {
 }
 
 kotlin {
-	listOf(
-		iosArm64(),
-		iosSimulatorArm64()
-	).forEach { iosTarget ->
-		iosTarget.binaries.framework {
-			baseName = "Shared"
-			isStatic = true
+	if (GobleyHost.current.platform == GobleyHost.Platform.MacOS) {
+		listOf(
+			iosArm64(),
+			iosSimulatorArm64()
+		).forEach { iosTarget ->
+			iosTarget.binaries.framework {
+				baseName = "Shared"
+				isStatic = true
+			}
 		}
 	}
 
@@ -86,6 +108,14 @@ android {
 	}
 }
 
+val hostCargoTargets = buildSet<RustTarget> {
+	add(GobleyHost.current.rustTarget)
+	addAll(RustAndroidTarget.entries)
+	if (GobleyHost.current.platform == GobleyHost.Platform.MacOS) {
+		addAll(RustAppleMobileTarget.entries)
+	}
+}
+
 cargo {
 	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop")
 	publishJvmArtifacts = true
@@ -106,12 +136,49 @@ cargo {
 			}
 		}
 	}
+	builds.configureEach {
+		val buildOnCurrentHost = rustTarget in hostCargoTargets
+		installTargetBeforeBuild.set(buildOnCurrentHost)
+		variants {
+			buildTaskProvider.configure {
+				enabled = buildOnCurrentHost
+			}
+			checkTaskProvider.configure {
+				enabled = buildOnCurrentHost
+			}
+		}
+	}
 }
 
 uniffi {
 	generateFromLibrary {
 		namespace = "vnidrop"
 	}
+}
+
+val verifyHostCargoTaskSelection = tasks.register<VerifyHostCargoTaskSelection>(
+	"verifyHostCargoTaskSelection"
+) {
+	group = "verification"
+	description = "Verifies that Cargo tasks are enabled only for targets supported by this host."
+	mismatches.convention(emptyList())
+}
+
+afterEvaluate {
+	verifyHostCargoTaskSelection.configure {
+		mismatches.set(buildList {
+			tasks.withType<CargoBuildTask>().forEach {
+				if (it.enabled != (it.target.get() in hostCargoTargets)) add(it.path)
+			}
+			tasks.withType<CargoCheckTask>().forEach {
+				if (it.enabled != (it.target.get() in hostCargoTargets)) add(it.path)
+			}
+		})
+	}
+}
+
+tasks.named("check") {
+	dependsOn(verifyHostCargoTaskSelection)
 }
 
 tasks.configureEach {
@@ -126,8 +193,5 @@ tasks.configureEach {
 			layout.projectDirectory.file("../Cargo.toml"),
 			layout.projectDirectory.file("../Cargo.lock"),
 		).withPathSensitivity(PathSensitivity.RELATIVE)
-	}
-	if (name.contains("Linux") || name.contains("MinGW") || name.contains("MacOSX64")) {
-		enabled = false
 	}
 }

@@ -44,8 +44,7 @@ concurrency:
 jobs:
   jvm-test:
     # Host Rust embedding is enabled only for the current Gobley host target.
-    # Linux/Windows JVM cargo builds are disabled in shared/build.gradle.kts, so
-    # jvmTest must run on macOS (arm64) to match local development.
+    # This job stays on macOS to cover the Apple targets as well as JVM tests.
     runs-on: macos-latest
     timeout-minutes: 75
     steps:
