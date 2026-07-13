@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
@@ -36,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 fun AppSidebarNavigation(
 	selected: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
+	dividerTopInset: Dp = 0.dp,
 	modifier: Modifier = Modifier,
 ) {
 	val colors = LocalVniDropColors.current
@@ -62,7 +64,8 @@ fun AppSidebarNavigation(
 		}
 		Box(
 			modifier = Modifier
-				.align(Alignment.CenterEnd)
+				.align(Alignment.TopEnd)
+				.padding(top = dividerTopInset)
 				.width(1.dp)
 				.fillMaxHeight()
 				.background(colors.borderDefault),
