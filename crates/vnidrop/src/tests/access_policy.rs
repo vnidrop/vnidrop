@@ -82,3 +82,16 @@ async fn public_mode_allows_without_session() {
     );
     assert_eq!(policy.decide(7, None).await, AccessDecision::Allow);
 }
+
+#[tokio::test]
+async fn approve_endpoint_grants_time_limited_session() {
+    let policy = AccessPolicy::new();
+    policy
+        .set_mode(11, TransferAccessMode::ApprovalRequired)
+        .await;
+    policy.approve_endpoint(11, "node-b".to_string()).await;
+    assert_eq!(
+        policy.decide(11, Some("node-b")).await,
+        AccessDecision::Allow
+    );
+}

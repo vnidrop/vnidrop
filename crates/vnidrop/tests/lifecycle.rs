@@ -252,6 +252,34 @@ fn access_mode_update_requires_active_persisted_share() {
 }
 
 #[test]
+fn approve_endpoint_requires_active_share_and_nonempty_id() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("shared.txt");
+    std::fs::write(&source_path, b"content").unwrap();
+    let sender = TestNode::new();
+    let share = share_path(&sender.core, &source_path, 42, "shared.txt", false);
+
+    assert!(sender
+        .core
+        .approve_endpoint_for_transfer(share.transfer_id, "   ".to_string())
+        .is_err());
+    assert!(sender
+        .core
+        .approve_endpoint_for_transfer(999, "endpoint-a".to_string())
+        .is_err());
+    sender
+        .core
+        .approve_endpoint_for_transfer(share.transfer_id, "endpoint-a".to_string())
+        .unwrap();
+
+    sender.core.cancel_transfer(share.transfer_id).unwrap();
+    assert!(sender
+        .core
+        .approve_endpoint_for_transfer(share.transfer_id, "endpoint-a".to_string())
+        .is_err());
+}
+
+#[test]
 fn source_limit_rejection_creates_no_transfer_state() {
     let core_dir = tempfile::tempdir().unwrap();
     let source_dir = tempfile::tempdir().unwrap();

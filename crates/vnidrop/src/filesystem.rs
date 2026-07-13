@@ -582,6 +582,24 @@ fn duplicate_file_descriptor(value: &str) -> Result<OwnedFd> {
     if duplicated < 0 {
         return Err(io::Error::last_os_error()).context("failed to duplicate file descriptor");
     }
-    let owned = unsafe { OwnedFd::from_raw_fd(duplicated) };
-    Ok(owned)
+
+    // Only regular files are valid share sources. Reject directories, sockets,
+    // and other fd types that a compromised UI could pass by integer.
+    let mut stat = std::mem::MaybeUninit::<libc::stat>::uninit();
+    let rc = unsafe { libc::fstat(duplicated, stat.as_mut_ptr()) };
+    if rc != 0 {
+        let error = io::Error::last_os_error();
+        unsafe {
+            libc::close(duplicated);
+        }
+        return Err(error).context("failed to fstat file descriptor");
+    }
+    let mode = unsafe { stat.assume_init() }.st_mode;
+    if mode & libc::S_IFMT != libc::S_IFREG {
+        unsafe {
+            libc::close(duplicated);
+        }
+        anyhow::bail!("file descriptor must refer to a regular file");
+    }
+    Ok(unsafe { OwnedFd::from_raw_fd(duplicated) })
 }

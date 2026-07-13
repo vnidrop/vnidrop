@@ -1,0 +1,11 @@
+# Known transitive advisories we cannot fully clear without upstream iroh bumps.
+# cargo audit in CI fails on new unlisted vulnerabilities.
+[advisories]
+ignore = [
+    # rsa: Marvin timing side-channel; no fixed release; pulled by iroh stack.
+    "RUSTSEC-2023-0071",
+    # quick-xml / crossbeam-epoch: transitive; track via iroh/dependency updates.
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
+    "RUSTSEC-2026-0204",
+]

@@ -6,7 +6,7 @@ use tokio::sync::{oneshot, Mutex};
 use uuid::Uuid;
 
 use crate::{
-    access_policy::AccessPolicy,
+    access_policy::{AccessPolicy, APPROVAL_SESSION_TTL_MS},
     event_hub::EventHub,
     handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeResponse, RequestTransfer},
     repository::{ReceiverRequestInsert, Repository},
@@ -14,7 +14,7 @@ use crate::{
     util::now_ms,
 };
 
-const APPROVAL_TTL_MS: i64 = 10 * 60 * 1000;
+const APPROVAL_TTL_MS: i64 = APPROVAL_SESSION_TTL_MS;
 const APPROVAL_WAIT_TIMEOUT: Duration = Duration::from_secs(120);
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

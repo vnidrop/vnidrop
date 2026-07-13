@@ -31,6 +31,7 @@ import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.approval_connection_request
+import vnidrop.shared.generated.resources.approval_endpoint_id
 import vnidrop.shared.generated.resources.approval_pending_count
 import vnidrop.shared.generated.resources.button_approve
 import vnidrop.shared.generated.resources.button_refuse
@@ -77,6 +78,12 @@ fun ApprovalModalHost(
 					"$receiver wants to receive ${request.transferName}.",
 					style = MaterialTheme.typography.bodyLarge,
 					color = colors.foregroundLight,
+				)
+				// Trusted identity is the endpoint id; display names are peer-provided.
+				Text(
+					stringResource(Res.string.approval_endpoint_id, request.remoteEndpointId),
+					style = MaterialTheme.typography.bodySmall,
+					color = colors.foregroundLighter,
 				)
 				if (state.pending.size > 1) {
 					Text(

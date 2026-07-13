@@ -27,6 +27,8 @@ data class PendingApproval(
 	val transferName: String,
 	val receiverName: String?,
 	val receiverDeviceName: String?,
+	/** Cryptographic peer identity from the Iroh connection — not display-name spoofable. */
+	val remoteEndpointId: String,
 	val requestedAt: Long,
 )
 
@@ -162,6 +164,7 @@ private fun ReceiverRequestModel.toPending(): PendingApproval = PendingApproval(
 	transferName = transferName,
 	receiverName = receiverName,
 	receiverDeviceName = receiverDeviceName,
+	remoteEndpointId = remoteEndpointId,
 	requestedAt = requestedAt,
 )
 

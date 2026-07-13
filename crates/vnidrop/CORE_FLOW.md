@@ -91,7 +91,12 @@ collection. Restart reconciliation never restores a stopped share.
 
 `CoreLimits` controls source count, collection files and bytes, path and ticket
 sizes, metadata, retained events, pending approvals, concurrent transfers, and
-the event persistence queue. `initialize` uses conservative defaults;
+the event persistence queue. `initialize` uses conservative defaults (including
+bounded ticket size, pending approvals, and total collection bytes);
 `initialize_with_limits` supports stricter deployments and tests. Cheap limits
 are checked before durable or network work, while remote collection limits are
 checked before downloading file content.
+
+Manual `approve_endpoint_for_transfer` only applies to active shares, requires a
+non-empty endpoint id, and creates a time-limited session (same TTL as handshake
+approval), never a permanent grant.

@@ -51,6 +51,7 @@ import vnidrop.shared.generated.resources.field_sender_name
 import vnidrop.shared.generated.resources.field_transfer_name
 import vnidrop.shared.generated.resources.send_access_anyone
 import vnidrop.shared.generated.resources.send_access_anyone_description
+import vnidrop.shared.generated.resources.send_access_anyone_warning
 import vnidrop.shared.generated.resources.send_access_approval
 import vnidrop.shared.generated.resources.send_access_approval_description
 import vnidrop.shared.generated.resources.send_access_title
@@ -166,6 +167,13 @@ private fun ReviewFileStep(
 		selected = state.accessPolicy == ShareAccessPolicy.AnyoneWithTransfer,
 		onClick = { onAccessPolicyChanged(ShareAccessPolicy.AnyoneWithTransfer) },
 	)
+	if (state.accessPolicy == ShareAccessPolicy.AnyoneWithTransfer) {
+		Text(
+			stringResource(Res.string.send_access_anyone_warning),
+			color = LocalVniDropColors.current.destructiveDefault,
+			style = MaterialTheme.typography.bodySmall,
+		)
+	}
 	if (windowClass == WindowClass.Phone) {
 		Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 			ShareButton(state, coreInitialized, onCreateShare, Modifier.fillMaxWidth())
