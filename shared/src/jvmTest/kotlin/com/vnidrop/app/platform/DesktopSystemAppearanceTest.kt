@@ -10,10 +10,13 @@ import kotlin.test.assertTrue
 
 class DesktopSystemAppearanceTest {
 	@Test
-	fun customWindowChromeIsMacOsOnly() {
+	fun customWindowChromeSupportsMacOsAndLinux() {
 		assertTrue(DesktopAppearanceBridge.isMacOs("Mac OS X"))
-		assertFalse(DesktopAppearanceBridge.isMacOs("Windows 11"))
+		assertFalse(DesktopAppearanceBridge.isLinux("Mac OS X"))
+		assertTrue(DesktopAppearanceBridge.isLinux("Linux"))
 		assertFalse(DesktopAppearanceBridge.isMacOs("Linux"))
+		assertFalse(DesktopAppearanceBridge.isMacOs("Windows 11"))
+		assertFalse(DesktopAppearanceBridge.isLinux("Windows 11"))
 	}
 
 	@Test

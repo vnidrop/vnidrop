@@ -65,6 +65,7 @@ object DesktopAppearanceBridge {
 	var applyNativeAppearance: ((Boolean) -> Unit)? = null
 
 	fun isMacOs(): Boolean = isMacOs(System.getProperty("os.name"))
+	fun isLinux(): Boolean = isLinux(System.getProperty("os.name"))
 
 	fun toggleMaximized(window: Window) {
 		if (!isMacOs()) return
@@ -76,6 +77,9 @@ object DesktopAppearanceBridge {
 
 	internal fun isMacOs(osName: String): Boolean =
 		osName.startsWith("Mac", ignoreCase = true)
+
+	internal fun isLinux(osName: String): Boolean =
+		osName.startsWith("Linux", ignoreCase = true)
 
 	internal fun toggledWindowState(currentState: Int): Int =
 		if (currentState and Frame.MAXIMIZED_BOTH == Frame.MAXIMIZED_BOTH) {
