@@ -5,6 +5,9 @@ use tokio::sync::RwLock;
 use crate::api::TransferAccessMode;
 use crate::util::now_ms;
 
+/// Default lifetime for endpoint approval sessions (matches handshake approval TTL).
+pub(crate) const APPROVAL_SESSION_TTL_MS: i64 = 10 * 60 * 1000;
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum AccessDecision {
     Allow,
@@ -42,8 +45,13 @@ impl AccessPolicy {
     }
 
     pub(crate) async fn approve_endpoint(&self, transfer_id: u64, endpoint_id: String) {
-        self.approve_endpoint_until(transfer_id, endpoint_id, None)
-            .await;
+        // Never grant permanent sessions from the public API: always expire.
+        self.approve_endpoint_until(
+            transfer_id,
+            endpoint_id,
+            Some(now_ms() + APPROVAL_SESSION_TTL_MS),
+        )
+        .await;
     }
 
     pub(crate) async fn approve_endpoint_until(
@@ -63,16 +71,13 @@ impl AccessPolicy {
         transfer_id: u64,
         endpoint_id: Option<&str>,
     ) -> AccessDecision {
-        match self
-            .modes
-            .read()
-            .await
-            .get(&transfer_id)
-            .cloned()
-            .unwrap_or(TransferAccessMode::Public)
-        {
-            TransferAccessMode::Public => AccessDecision::Allow,
-            TransferAccessMode::ApprovalRequired => {
+        // Unknown transfers fail closed. Never treat a missing mode as Public.
+        match self.modes.read().await.get(&transfer_id).cloned() {
+            None => AccessDecision::Deny {
+                reason: "unknown-transfer",
+            },
+            Some(TransferAccessMode::Public) => AccessDecision::Allow,
+            Some(TransferAccessMode::ApprovalRequired) => {
                 let Some(endpoint_id) = endpoint_id else {
                     return AccessDecision::Deny {
                         reason: "missing-endpoint-id",

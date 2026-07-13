@@ -23,8 +23,10 @@ pub(crate) fn init_logging(app_data_dir: &Path) -> Result<()> {
     fs::create_dir_all(&log_dir)?;
     let writer = SizeRotatingWriter::new(log_dir, MAX_LOG_BYTES, MAX_LOG_FILES);
     let (writer, guard) = tracing_appender::non_blocking(writer);
+    // Default to info so ticket-adjacent and endpoint noise is not retained at
+    // debug volume in app logs. Operators can raise with RUST_LOG.
     let filter = EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| EnvFilter::new("vnidrop=debug,iroh=info,iroh_blobs=info,warn"));
+        .unwrap_or_else(|_| EnvFilter::new("vnidrop=info,iroh=info,iroh_blobs=info,warn"));
 
     let subscriber = tracing_subscriber::registry()
         .with(filter)

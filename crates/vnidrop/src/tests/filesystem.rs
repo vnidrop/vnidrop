@@ -62,6 +62,26 @@ fn file_descriptor_source_rejects_invalid_values() {
     }
 }
 
+#[cfg(unix)]
+#[test]
+fn file_descriptor_source_rejects_directory_fds() {
+    let temp = tempfile::tempdir().unwrap();
+    let dir = std::fs::File::open(temp.path()).unwrap();
+    use std::os::fd::AsRawFd;
+    let error = collect_import_files(vec![ShareSource {
+        kind: SourceKind::FileDescriptor,
+        value: dir.as_raw_fd().to_string(),
+        display_name: Some("folder".to_string()),
+        is_directory: false,
+    }])
+    .unwrap_err()
+    .to_string();
+    assert!(
+        error.contains("regular file"),
+        "directory fd must be rejected: {error}"
+    );
+}
+
 #[test]
 fn android_content_uri_must_be_opened_by_platform_code() {
     let error = collect_import_files(vec![ShareSource {

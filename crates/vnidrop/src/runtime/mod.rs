@@ -16,7 +16,7 @@ mod share;
 pub use facade::VnidropCore;
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     path::PathBuf,
     str::FromStr,
     sync::{atomic::AtomicBool, Arc},
@@ -68,7 +68,9 @@ pub(super) struct CoreInner {
     // Restored shares have no in-memory tag, but remain tracked so they can be
     // counted and explicitly revoked after a restart.
     pub(super) active_shares: TokioMutex<HashMap<u64, Option<TempTag>>>,
-    pub(super) hash_to_transfer: TokioMutex<HashMap<String, u64>>,
+    /// Content hash → active share transfer ids (root and collection members).
+    /// Multiple transfers can share the same content-addressed hash.
+    pub(super) hash_to_transfer: TokioMutex<HashMap<String, HashSet<u64>>>,
     pub(super) connection_endpoints: TokioMutex<HashMap<u64, String>>,
     pub(super) provider_task: TokioMutex<Option<JoinHandle<()>>>,
     pub(super) shutdown_started: AtomicBool,
@@ -130,18 +132,12 @@ impl CoreInner {
         let access_policy = AccessPolicy::new();
         // Restore share ownership and access mode before the router can serve
         // any request. Unknown persisted modes fail closed in mode_from_storage.
-        let mut restored_hashes = HashMap::new();
+        // Register root + every collection member so child gets stay under ACL.
+        let mut restored_hashes: HashMap<String, HashSet<u64>> = HashMap::new();
         let mut restored_active_shares = HashMap::new();
         for share in repository.list_active_shares().await? {
             let transfer_id = share.transfer_id;
-            let valid_root = match Hash::from_str(&share.content_hash) {
-                Ok(hash) => {
-                    store.blobs().has(hash).await.unwrap_or(false)
-                        && Collection::load(hash, store.as_ref()).await.is_ok()
-                }
-                Err(_) => false,
-            };
-            if !valid_root {
+            let Ok(root_hash) = Hash::from_str(&share.content_hash) else {
                 repository
                     .transition_transfer_status(
                         transfer_id,
@@ -157,8 +153,39 @@ impl CoreInner {
                     json!({ "content_hash": share.content_hash }),
                 );
                 continue;
+            };
+            let collection = if store.blobs().has(root_hash).await.unwrap_or(false) {
+                Collection::load(root_hash, store.as_ref()).await.ok()
+            } else {
+                None
+            };
+            let Some(collection) = collection else {
+                repository
+                    .transition_transfer_status(
+                        transfer_id,
+                        TransferStatus::Sharing,
+                        TransferStatus::Failed,
+                    )
+                    .await?;
+                event_hub.emit_transfer(
+                    transfer_id,
+                    TransferDirection::Send.as_str(),
+                    "recovery",
+                    "share-root-missing-or-corrupt",
+                    json!({ "content_hash": share.content_hash }),
+                );
+                continue;
+            };
+            restored_hashes
+                .entry(root_hash.to_string())
+                .or_default()
+                .insert(transfer_id);
+            for (_, member_hash) in collection.iter() {
+                restored_hashes
+                    .entry(member_hash.to_string())
+                    .or_default()
+                    .insert(transfer_id);
             }
-            restored_hashes.insert(share.content_hash, transfer_id);
             restored_active_shares.insert(transfer_id, None);
             access_policy
                 .set_mode(transfer_id, mode_from_storage(&share.access_mode))
@@ -222,6 +249,25 @@ impl CoreInner {
     ) {
         self.event_hub
             .emit_transfer(transfer_id, direction, phase, kind, data);
+    }
+
+    pub(super) async fn register_share_hashes(
+        &self,
+        transfer_id: u64,
+        hashes: impl IntoIterator<Item = Hash>,
+    ) {
+        let mut map = self.hash_to_transfer.lock().await;
+        for hash in hashes {
+            map.entry(hash.to_string()).or_default().insert(transfer_id);
+        }
+    }
+
+    pub(super) async fn unregister_transfer_hashes(&self, transfer_id: u64) {
+        let mut map = self.hash_to_transfer.lock().await;
+        map.retain(|_, transfers| {
+            transfers.remove(&transfer_id);
+            !transfers.is_empty()
+        });
     }
 
     pub(super) async fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>> {

@@ -43,3 +43,8 @@ jobs:
         env:
           RUSTDOCFLAGS: -D warnings
         run: cargo doc --workspace --no-deps
+      - name: Install cargo-audit
+        run: cargo install cargo-audit --locked
+      - name: Audit Rust dependencies
+        # Ignores are listed in .cargo/audit.toml for known transitive issues.
+        run: cargo audit

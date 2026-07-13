@@ -51,10 +51,7 @@ impl CoreInner {
                 .await?;
             active_shares.remove(&transfer_id);
             drop(active_shares);
-            self.hash_to_transfer
-                .lock()
-                .await
-                .retain(|_, id| *id != transfer_id);
+            self.unregister_transfer_hashes(transfer_id).await;
             self.access_policy.remove_transfer(transfer_id).await;
             self.emit_transfer(transfer_id, "send", "lifecycle", "share-stopped", json!({}));
             return Ok(());
@@ -106,10 +103,7 @@ impl CoreInner {
         }
 
         self.active_shares.lock().await.remove(&transfer_id);
-        self.hash_to_transfer
-            .lock()
-            .await
-            .retain(|_, id| *id != transfer_id);
+        self.unregister_transfer_hashes(transfer_id).await;
         self.access_policy.remove_transfer(transfer_id).await;
         // Events are persisted asynchronously. Drain events emitted before this
         // request so none can be written back after the transfer is deleted.
@@ -149,6 +143,21 @@ impl CoreInner {
         transfer_id: u64,
         endpoint_id: String,
     ) -> Result<()> {
+        let endpoint_id = endpoint_id.trim().to_string();
+        if endpoint_id.is_empty() {
+            anyhow::bail!("endpoint id must not be empty");
+        }
+        if endpoint_id.len() as u64 > self.limits.max_metadata_bytes {
+            anyhow::bail!(
+                "endpoint id is {} bytes, limit is {}",
+                endpoint_id.len(),
+                self.limits.max_metadata_bytes
+            );
+        }
+        // Only live shares can gain receiver sessions.
+        if !self.active_shares.lock().await.contains_key(&transfer_id) {
+            anyhow::bail!("transfer is not an active share");
+        }
         self.access_policy
             .approve_endpoint(transfer_id, endpoint_id.clone())
             .await;

@@ -22,6 +22,7 @@
     <string name="send_access_approval_description">You approve or refuse every new receiver.</string>
     <string name="send_access_anyone">Anyone with this transfer</string>
     <string name="send_access_anyone_description">No approval is required. Only use this for files you are comfortable sharing.</string>
+    <string name="send_access_anyone_warning">Anyone who has the ticket can download until you stop the share. Do not use this for private or sensitive files.</string>
     <string name="send_file_size_unknown">Size unavailable</string>
     <string name="send_transfer_created">Transfer created.</string>
     <string name="send_transfer_details_title">Transfer details</string>
@@ -128,7 +129,7 @@
     <string name="transfer_event_saving">Saving files</string>
     <string name="transfer_event_connecting">Connecting to sender</string>
     <string name="ticket_details_title">Ticket details</string>
-    <string name="ticket_no_metadata">This ticket does not include VniDrop metadata.</string>
+
     <string name="settings_title">Settings</string>
     <string name="settings_subtitle">Configure the local node and app appearance.</string>
     <string name="node_title">Node</string>
@@ -173,6 +174,7 @@
     <string name="value_on">On</string>
     <string name="value_off">Off</string>
     <string name="approval_connection_request">Connection request</string>
+    <string name="approval_endpoint_id">Endpoint ID: %1$s</string>
     <string name="approval_pending_count">%1$d requests are waiting</string>
     <string name="core_status_ready">Ready</string>
     <string name="event_log_title">Event log</string>

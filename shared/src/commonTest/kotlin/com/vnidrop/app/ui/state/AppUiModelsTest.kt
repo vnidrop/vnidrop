@@ -61,7 +61,10 @@ class AppUiModelsTest {
 	fun receiveStateExposesInspectAndReceiveEligibility() {
 		val ready = ReceiveState(
 			ticket = "ticket",
-			inspection = com.vnidrop.app.core.TicketInspectionModel("vnidrop", "blob", null),
+			inspection = com.vnidrop.app.core.TicketInspectionModel(
+				kind = "vnidrop",
+				metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
+			),
 			folderAccessStatus = com.vnidrop.app.core.FolderAccessStatus.Writable,
 		)
 

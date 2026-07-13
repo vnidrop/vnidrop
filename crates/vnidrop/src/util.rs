@@ -11,7 +11,3 @@ pub(crate) fn now_ms() -> i64 {
         .map(|duration| duration.as_millis() as i64)
         .unwrap_or_default()
 }
-
-pub(crate) fn unique_transfer_id() -> u64 {
-    now_ms() as u64
-}

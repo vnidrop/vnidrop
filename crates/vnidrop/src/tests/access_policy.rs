@@ -5,6 +5,23 @@ use crate::{
 };
 
 #[tokio::test]
+async fn unknown_transfer_fails_closed() {
+    let policy = AccessPolicy::new();
+    assert_eq!(
+        policy.decide(1, Some("node-a")).await,
+        AccessDecision::Deny {
+            reason: "unknown-transfer"
+        }
+    );
+    assert_eq!(
+        policy.decide(1, None).await,
+        AccessDecision::Deny {
+            reason: "unknown-transfer"
+        }
+    );
+}
+
+#[tokio::test]
 async fn requires_approved_endpoint_when_locked() {
     let policy = AccessPolicy::new();
     policy
@@ -52,5 +69,29 @@ async fn rejects_expired_approval_sessions() {
         AccessDecision::Deny {
             reason: "approval-required"
         }
+    );
+}
+
+#[tokio::test]
+async fn public_mode_allows_without_session() {
+    let policy = AccessPolicy::new();
+    policy.set_mode(7, TransferAccessMode::Public).await;
+    assert_eq!(
+        policy.decide(7, Some("node-a")).await,
+        AccessDecision::Allow
+    );
+    assert_eq!(policy.decide(7, None).await, AccessDecision::Allow);
+}
+
+#[tokio::test]
+async fn approve_endpoint_grants_time_limited_session() {
+    let policy = AccessPolicy::new();
+    policy
+        .set_mode(11, TransferAccessMode::ApprovalRequired)
+        .await;
+    policy.approve_endpoint(11, "node-b".to_string()).await;
+    assert_eq!(
+        policy.decide(11, Some("node-b")).await,
+        AccessDecision::Allow
     );
 }

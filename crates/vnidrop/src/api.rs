@@ -23,12 +23,15 @@ impl Default for CoreLimits {
         Self {
             max_sources: 128,
             max_collection_files: 10_000,
-            max_total_bytes: 1024 * 1024 * 1024 * 1024,
+            // Cap extreme disk fill while still allowing multi-GB folders.
+            max_total_bytes: 256 * 1024 * 1024 * 1024,
             max_path_bytes: 4_096,
-            max_ticket_bytes: 1024 * 1024,
+            // vnd1 tickets are small JSON+base64; 256 KiB is a generous ceiling.
+            max_ticket_bytes: 256 * 1024,
             max_metadata_bytes: 16 * 1024,
             max_events: 500,
-            max_pending_approvals: 1_024,
+            // Bound handshake spam / notification pressure on the sender.
+            max_pending_approvals: 64,
             max_concurrent_transfers: 8,
             event_queue_capacity: 1_024,
         }
@@ -183,7 +186,6 @@ pub struct StoredTransfer {
 pub struct ShareResult {
     pub transfer_id: u64,
     pub ticket: String,
-    pub blob_ticket: String,
     pub hash: String,
     pub transfer_name: String,
     pub file_count: u64,
@@ -227,8 +229,7 @@ impl TransferMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct TicketInspection {
     pub kind: String,
-    pub blob_ticket: String,
-    pub metadata: Option<TransferMetadata>,
+    pub metadata: TransferMetadata,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]

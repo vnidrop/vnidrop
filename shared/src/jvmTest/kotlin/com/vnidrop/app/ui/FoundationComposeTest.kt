@@ -427,6 +427,7 @@ class FoundationComposeTest {
 		transferName = "Photos",
 		receiverName = "Alice",
 		receiverDeviceName = "Phone",
+		remoteEndpointId = "endpoint-alice",
 		requestedAt = 1L,
 	)
 

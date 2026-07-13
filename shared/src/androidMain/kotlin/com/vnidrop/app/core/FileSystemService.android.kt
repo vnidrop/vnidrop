@@ -225,8 +225,7 @@ private class AndroidMediaStoreDownloadsSink(
 			"MediaStore Downloads requires Android 10 or newer"
 		}
 		check(relativePath !in pending) { "Output stream is already open for $relativePath" }
-		val parts = relativePath.split('/').filter { it.isNotBlank() }
-		require(parts.isNotEmpty()) { "relative path must not be empty" }
+		val parts = requireSafeRelativePathParts(relativePath)
 		val finalName = parts.last()
 		val relativeDir = mediaStoreRelativePath(parts.dropLast(1))
 		check(!mediaStoreItemExists(finalName, relativeDir)) {
@@ -346,6 +345,8 @@ private class AndroidTreeReceiveOutputSink(
 
 	override fun startFile(relativePath: String) {
 		check(relativePath !in pending) { "Output stream is already open for $relativePath" }
+		// Defense in depth: Rust also validates, but sinks must reject traversal alone.
+		requireSafeRelativePathParts(relativePath)
 		val (parent, finalName) = resolveParent(relativePath)
 		check(findChild(parent, finalName) == null) { "Destination already exists: $relativePath" }
 		val temporaryName = ".$finalName.vnidrop-${UUID.randomUUID()}.part"
@@ -391,8 +392,7 @@ private class AndroidTreeReceiveOutputSink(
 	}
 
 	private fun resolveParent(relativePath: String): Pair<Uri, String> {
-		val parts = relativePath.split('/').filter { it.isNotBlank() }
-		require(parts.isNotEmpty()) { "relative path must not be empty" }
+		val parts = requireSafeRelativePathParts(relativePath)
 		var parent = DocumentsContract.buildDocumentUriUsingTree(
 			treeUri,
 			DocumentsContract.getTreeDocumentId(treeUri),
@@ -427,4 +427,19 @@ private class AndroidTreeReceiveOutputSink(
 		}
 		return null
 	}
+}
+
+/**
+ * Split a receive relative path and reject traversal / absolute-style components.
+ * Rust already validates; this keeps Android sinks safe if called incorrectly.
+ */
+private fun requireSafeRelativePathParts(relativePath: String): List<String> {
+	val parts = relativePath.split('/').filter { it.isNotBlank() }
+	require(parts.isNotEmpty()) { "relative path must not be empty" }
+	require(parts.none { part ->
+		part == "." || part == ".." || part.contains('\\') || part.contains('\u0000')
+	}) {
+		"relative path contains invalid components: $relativePath"
+	}
+	return parts
 }

@@ -299,11 +299,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {
 			mutableState.value = mutableState.value.copy(isInitialized = true)
-			inspectionResult = Result.success(com.vnidrop.app.core.TicketInspectionModel(
-				kind = "vnidrop",
-				blobTicket = "blob",
-				metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
-			))
+			inspectionResult = Result.success(sampleTicketInspection())
 		}
 		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
 		advanceUntilIdle()
@@ -379,13 +375,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {
 			mutableState.value = mutableState.value.copy(isInitialized = true)
-			inspectionResult = Result.success(
-				com.vnidrop.app.core.TicketInspectionModel(
-					kind = "vnidrop",
-					blobTicket = "blob",
-					metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
-				),
-			)
+			inspectionResult = Result.success(sampleTicketInspection())
 		}
 		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
 		advanceUntilIdle()
@@ -408,13 +398,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {
 			mutableState.value = mutableState.value.copy(isInitialized = true)
-			inspectionResult = Result.success(
-				com.vnidrop.app.core.TicketInspectionModel(
-					kind = "vnidrop",
-					blobTicket = "blob",
-					metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
-				),
-			)
+			inspectionResult = Result.success(sampleTicketInspection())
 			receiveResult = Result.failure(IllegalStateException("sender refused"))
 		}
 		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
@@ -489,13 +473,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {
 			mutableState.value = mutableState.value.copy(isInitialized = true)
-			inspectionResult = Result.success(
-				com.vnidrop.app.core.TicketInspectionModel(
-					kind = "vnidrop",
-					blobTicket = "blob",
-					metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
-				),
-			)
+			inspectionResult = Result.success(sampleTicketInspection())
 			// Keep receive suspended so dismiss can be asserted mid-transfer.
 			receiveResult = Result.success(Unit)
 			receiveSuspend = true
@@ -542,6 +520,11 @@ class ViewModelsTest {
 		accessPolicy = ShareAccessPolicy.RequireApproval,
 		createdAt = 1L,
 		updatedAt = 1L,
+	)
+
+	private fun sampleTicketInspection() = com.vnidrop.app.core.TicketInspectionModel(
+		kind = "vnidrop",
+		metadata = com.vnidrop.app.core.TransferMetadataModel(1UL, "Photo", null, "hash", 1UL, 42UL),
 	)
 
 	private companion object {
