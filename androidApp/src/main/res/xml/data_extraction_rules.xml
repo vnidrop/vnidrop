@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Exclude core identity, tickets, history, and blob store from cloud backup
+     and device-to-device transfer. -->
+<data-extraction-rules>
+	<cloud-backup>
+		<exclude domain="file" path="vnidrop"/>
+	</cloud-backup>
+	<device-transfer>
+		<exclude domain="file" path="vnidrop"/>
+	</device-transfer>
+</data-extraction-rules>

@@ -77,8 +77,7 @@ data class TransferMetadataModel(
 
 data class TicketInspectionModel(
 	val kind: String,
-	val blobTicket: String,
-	val metadata: TransferMetadataModel?,
+	val metadata: TransferMetadataModel,
 )
 
 data class ReceiverRequestModel(

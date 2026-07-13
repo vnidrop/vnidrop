@@ -32,7 +32,6 @@ import vnidrop.shared.generated.resources.metadata_size
 import vnidrop.shared.generated.resources.metadata_transfer
 import vnidrop.shared.generated.resources.progress_title
 import vnidrop.shared.generated.resources.ticket_details_title
-import vnidrop.shared.generated.resources.ticket_no_metadata
 import vnidrop.shared.generated.resources.unknown_sender
 
 @Composable
@@ -60,15 +59,14 @@ fun ProgressSection(coreState: CoreState) {
 
 @Composable
 fun TicketInspectionCard(inspection: TicketInspectionModel) {
+	val metadata = inspection.metadata
 	AppCard(title = stringResource(Res.string.ticket_details_title)) {
 		MetadataRow(stringResource(Res.string.metadata_kind), inspection.kind)
-		inspection.metadata?.let { metadata ->
-			MetadataRow(stringResource(Res.string.metadata_transfer), metadata.transferName)
-			MetadataRow(stringResource(Res.string.metadata_sender), metadata.senderName ?: stringResource(Res.string.unknown_sender))
-			MetadataRow(stringResource(Res.string.metadata_files), metadata.fileCount.toString())
-			MetadataRow(stringResource(Res.string.metadata_size), formatBytes(metadata.totalSize))
-			MetadataRow(stringResource(Res.string.metadata_hash), metadata.contentHash)
-		} ?: EmptyText(stringResource(Res.string.ticket_no_metadata))
+		MetadataRow(stringResource(Res.string.metadata_transfer), metadata.transferName)
+		MetadataRow(stringResource(Res.string.metadata_sender), metadata.senderName ?: stringResource(Res.string.unknown_sender))
+		MetadataRow(stringResource(Res.string.metadata_files), metadata.fileCount.toString())
+		MetadataRow(stringResource(Res.string.metadata_size), formatBytes(metadata.totalSize))
+		MetadataRow(stringResource(Res.string.metadata_hash), metadata.contentHash)
 	}
 }
 

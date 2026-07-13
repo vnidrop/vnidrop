@@ -335,8 +335,7 @@ private fun ShareResult.toModel(): Share = Share(
 
 private fun TicketInspection.toModel(): TicketInspectionModel = TicketInspectionModel(
 	kind = kind,
-	blobTicket = blobTicket,
-	metadata = metadata?.toModel(),
+	metadata = metadata.toModel(),
 )
 
 private fun TransferMetadata.toModel(): TransferMetadataModel = TransferMetadataModel(

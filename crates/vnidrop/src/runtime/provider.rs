@@ -71,41 +71,37 @@ impl CoreInner {
                 );
             }
             ProviderMessage::GetRequestReceived(message) => {
-                let transfer_id = self.transfer_for_hash(message.inner.request.hash).await;
-                if let Some(transfer_id) = transfer_id {
-                    let decision = self
-                        .access_decision(transfer_id, message.inner.connection_id)
-                        .await;
-                    if let AccessDecision::Deny { reason } = decision {
-                        self.emit_transfer(
+                match self
+                    .authorize_hash(message.inner.request.hash, message.inner.connection_id)
+                    .await
+                {
+                    Ok(transfer_id) => {
+                        self.track_request_updates(
                             transfer_id,
-                            "send",
-                            "access",
-                            "request-denied",
-                            json!({
-                                "connection_id": message.inner.connection_id,
-                                "request_id": message.inner.request_id,
-                                "reason": reason,
-                            }),
+                            message.inner.connection_id,
+                            message.inner.request_id,
+                            message.rx,
+                        )
+                        .await;
+                        let _ = message.tx.send(Ok(())).await;
+                    }
+                    Err(reason) => {
+                        self.emit_denied_request(
+                            message.inner.connection_id,
+                            message.inner.request_id,
+                            reason,
                         );
                         let _ = message
                             .tx
                             .send(Err(iroh_blobs::provider::events::AbortReason::Permission))
                             .await;
-                        return;
                     }
-                    self.track_request_updates(
-                        transfer_id,
-                        message.inner.connection_id,
-                        message.inner.request_id,
-                        message.rx,
-                    )
-                    .await;
                 }
-                let _ = message.tx.send(Ok(())).await;
             }
             ProviderMessage::GetRequestReceivedNotify(message) => {
-                if let Some(transfer_id) = self.transfer_for_hash(message.inner.request.hash).await
+                if let Ok(transfer_id) = self
+                    .authorize_hash(message.inner.request.hash, message.inner.connection_id)
+                    .await
                 {
                     self.track_request_updates(
                         transfer_id,
@@ -117,44 +113,36 @@ impl CoreInner {
                 }
             }
             ProviderMessage::GetManyRequestReceived(message) => {
-                let transfer_id = self
-                    .transfer_for_any_hash(&message.inner.request.hashes)
-                    .await;
-                if let Some(transfer_id) = transfer_id {
-                    let decision = self
-                        .access_decision(transfer_id, message.inner.connection_id)
-                        .await;
-                    if let AccessDecision::Deny { reason } = decision {
-                        self.emit_transfer(
+                match self
+                    .authorize_hashes(&message.inner.request.hashes, message.inner.connection_id)
+                    .await
+                {
+                    Ok(transfer_id) => {
+                        self.track_request_updates(
                             transfer_id,
-                            "send",
-                            "access",
-                            "request-denied",
-                            json!({
-                                "connection_id": message.inner.connection_id,
-                                "request_id": message.inner.request_id,
-                                "reason": reason,
-                            }),
+                            message.inner.connection_id,
+                            message.inner.request_id,
+                            message.rx,
+                        )
+                        .await;
+                        let _ = message.tx.send(Ok(())).await;
+                    }
+                    Err(reason) => {
+                        self.emit_denied_request(
+                            message.inner.connection_id,
+                            message.inner.request_id,
+                            reason,
                         );
                         let _ = message
                             .tx
                             .send(Err(iroh_blobs::provider::events::AbortReason::Permission))
                             .await;
-                        return;
                     }
-                    self.track_request_updates(
-                        transfer_id,
-                        message.inner.connection_id,
-                        message.inner.request_id,
-                        message.rx,
-                    )
-                    .await;
                 }
-                let _ = message.tx.send(Ok(())).await;
             }
             ProviderMessage::GetManyRequestReceivedNotify(message) => {
-                if let Some(transfer_id) = self
-                    .transfer_for_any_hash(&message.inner.request.hashes)
+                if let Ok(transfer_id) = self
+                    .authorize_hashes(&message.inner.request.hashes, message.inner.connection_id)
                     .await
                 {
                     self.track_request_updates(
@@ -167,15 +155,38 @@ impl CoreInner {
                 }
             }
             ProviderMessage::ObserveRequestReceived(message) => {
-                self.emit_endpoint(
-                    "provider",
-                    "observe-request",
-                    json!({
-                        "connection_id": message.inner.connection_id,
-                        "request_id": message.inner.request_id,
-                    }),
-                );
-                let _ = message.tx.send(Ok(())).await;
+                // Observe can leak presence of content; use the same ACL as get.
+                match self
+                    .authorize_hash(message.inner.request.hash, message.inner.connection_id)
+                    .await
+                {
+                    Ok(_) => {
+                        self.emit_endpoint(
+                            "provider",
+                            "observe-request",
+                            json!({
+                                "connection_id": message.inner.connection_id,
+                                "request_id": message.inner.request_id,
+                            }),
+                        );
+                        let _ = message.tx.send(Ok(())).await;
+                    }
+                    Err(reason) => {
+                        self.emit_endpoint(
+                            "provider",
+                            "observe-denied",
+                            json!({
+                                "connection_id": message.inner.connection_id,
+                                "request_id": message.inner.request_id,
+                                "reason": reason,
+                            }),
+                        );
+                        let _ = message
+                            .tx
+                            .send(Err(iroh_blobs::provider::events::AbortReason::Permission))
+                            .await;
+                    }
+                }
             }
             ProviderMessage::ObserveRequestReceivedNotify(message) => {
                 self.emit_endpoint(
@@ -209,35 +220,81 @@ impl CoreInner {
         }
     }
 
-    pub(super) async fn transfer_for_hash(&self, hash: Hash) -> Option<u64> {
+    fn emit_denied_request(&self, connection_id: u64, request_id: u64, reason: &'static str) {
+        self.emit_endpoint(
+            "provider",
+            "request-denied",
+            json!({
+                "connection_id": connection_id,
+                "request_id": request_id,
+                "reason": reason,
+            }),
+        );
+    }
+
+    /// Default-deny: hash must belong to an active share the peer may read.
+    pub(super) async fn authorize_hash(
+        &self,
+        hash: Hash,
+        connection_id: u64,
+    ) -> Result<u64, &'static str> {
+        let transfer_ids = self.transfer_ids_for_hash(hash).await;
+        if transfer_ids.is_empty() {
+            return Err("unknown-hash");
+        }
+        self.allow_any_transfer(&transfer_ids, connection_id).await
+    }
+
+    /// Every hash in a multi-get must be authorized; progress is attributed to
+    /// the first allowing transfer id.
+    pub(super) async fn authorize_hashes(
+        &self,
+        hashes: &[Hash],
+        connection_id: u64,
+    ) -> Result<u64, &'static str> {
+        if hashes.is_empty() {
+            return Err("empty-request");
+        }
+        let mut attributed = None;
+        for hash in hashes {
+            let transfer_id = self.authorize_hash(*hash, connection_id).await?;
+            attributed.get_or_insert(transfer_id);
+        }
+        attributed.ok_or("empty-request")
+    }
+
+    pub(super) async fn transfer_ids_for_hash(&self, hash: Hash) -> Vec<u64> {
         self.hash_to_transfer
             .lock()
             .await
             .get(&hash.to_string())
-            .copied()
+            .map(|set| set.iter().copied().collect())
+            .unwrap_or_default()
     }
 
-    pub(super) async fn transfer_for_any_hash(&self, hashes: &[Hash]) -> Option<u64> {
-        let map = self.hash_to_transfer.lock().await;
-        hashes
-            .iter()
-            .find_map(|hash| map.get(&hash.to_string()).copied())
-    }
-
-    pub(super) async fn access_decision(
+    async fn allow_any_transfer(
         &self,
-        transfer_id: u64,
+        transfer_ids: &[u64],
         connection_id: u64,
-    ) -> AccessDecision {
+    ) -> Result<u64, &'static str> {
         let endpoint_id = self
             .connection_endpoints
             .lock()
             .await
             .get(&connection_id)
             .cloned();
-        self.access_policy
-            .decide(transfer_id, endpoint_id.as_deref())
-            .await
+        let mut last_reason = "approval-required";
+        for transfer_id in transfer_ids {
+            match self
+                .access_policy
+                .decide(*transfer_id, endpoint_id.as_deref())
+                .await
+            {
+                AccessDecision::Allow => return Ok(*transfer_id),
+                AccessDecision::Deny { reason } => last_reason = reason,
+            }
+        }
+        Err(last_reason)
     }
 
     pub(super) async fn track_request_updates(

@@ -63,16 +63,13 @@ impl AccessPolicy {
         transfer_id: u64,
         endpoint_id: Option<&str>,
     ) -> AccessDecision {
-        match self
-            .modes
-            .read()
-            .await
-            .get(&transfer_id)
-            .cloned()
-            .unwrap_or(TransferAccessMode::Public)
-        {
-            TransferAccessMode::Public => AccessDecision::Allow,
-            TransferAccessMode::ApprovalRequired => {
+        // Unknown transfers fail closed. Never treat a missing mode as Public.
+        match self.modes.read().await.get(&transfer_id).cloned() {
+            None => AccessDecision::Deny {
+                reason: "unknown-transfer",
+            },
+            Some(TransferAccessMode::Public) => AccessDecision::Allow,
+            Some(TransferAccessMode::ApprovalRequired) => {
                 let Some(endpoint_id) = endpoint_id else {
                     return AccessDecision::Deny {
                         reason: "missing-endpoint-id",

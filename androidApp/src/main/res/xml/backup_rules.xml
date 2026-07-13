@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Exclude core identity, tickets, history, and blob store from Auto Backup. -->
+<full-backup-content>
+	<exclude domain="file" path="vnidrop"/>
+</full-backup-content>

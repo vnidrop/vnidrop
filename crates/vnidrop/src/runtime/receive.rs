@@ -26,7 +26,6 @@ use crate::{
     repository::TransferUpsert,
     ticket::{parse_transfer_ticket_with_limits, ParsedTransferTicket},
     transfer_state::{TransferDirection, TransferStatus},
-    util::unique_transfer_id,
 };
 
 pub(super) enum ReceiveTarget {
@@ -135,11 +134,7 @@ impl CoreInner {
                 return Err(error);
             }
         };
-        let transfer_id = parsed
-            .metadata
-            .as_ref()
-            .map(|metadata| metadata.transfer_id)
-            .unwrap_or_else(unique_transfer_id);
+        let transfer_id = parsed.metadata.transfer_id;
         self.persist_receive_start(transfer_id, &parsed, receiver_name.as_deref())
             .await?;
         // Cancellation is cooperative: it stops our receive future and marks
@@ -202,19 +197,15 @@ impl CoreInner {
         let sender_addr = parsed.blob_ticket.addr().clone();
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
-        let delivery_receipt = if let Some(metadata) = &parsed.metadata {
-            Some(
-                self.request_transfer_approval(
-                    transfer_id,
-                    sender_addr.clone(),
-                    metadata,
-                    receiver_name.as_deref(),
-                )
-                .await?,
+        // Every VniDrop ticket carries metadata and must complete the handshake.
+        let delivery_receipt = self
+            .request_transfer_approval(
+                transfer_id,
+                sender_addr.clone(),
+                &parsed.metadata,
+                receiver_name.as_deref(),
             )
-        } else {
-            None
-        };
+            .await?;
         let connection = self
             .endpoint
             .connect(sender_addr.clone(), iroh_blobs::ALPN)
@@ -280,32 +271,30 @@ impl CoreInner {
             )
             .await?;
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
-        if let Some(receipt) = delivery_receipt {
-            let sender_transfer_id = receipt.transfer_id;
-            let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
-            match client.report_delivery(receipt).await {
-                Ok(DeliveryReceiptResponse::Recorded) => self.emit_transfer(
-                    transfer_id,
-                    "receive",
-                    "delivery",
-                    "receipt-recorded",
-                    json!({ "sender_transfer_id": sender_transfer_id }),
-                ),
-                Ok(DeliveryReceiptResponse::Rejected { reason }) => self.emit_transfer(
-                    transfer_id,
-                    "receive",
-                    "delivery",
-                    "receipt-rejected",
-                    json!({ "reason": reason }),
-                ),
-                Err(error) => self.emit_transfer(
-                    transfer_id,
-                    "receive",
-                    "delivery",
-                    "receipt-failed",
-                    json!({ "reason": error.to_string() }),
-                ),
-            }
+        let sender_transfer_id = delivery_receipt.transfer_id;
+        let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
+        match client.report_delivery(delivery_receipt).await {
+            Ok(DeliveryReceiptResponse::Recorded) => self.emit_transfer(
+                transfer_id,
+                "receive",
+                "delivery",
+                "receipt-recorded",
+                json!({ "sender_transfer_id": sender_transfer_id }),
+            ),
+            Ok(DeliveryReceiptResponse::Rejected { reason }) => self.emit_transfer(
+                transfer_id,
+                "receive",
+                "delivery",
+                "receipt-rejected",
+                json!({ "reason": reason }),
+            ),
+            Err(error) => self.emit_transfer(
+                transfer_id,
+                "receive",
+                "delivery",
+                "receipt-failed",
+                json!({ "reason": error.to_string() }),
+            ),
         }
         Ok(())
     }
@@ -323,25 +312,11 @@ impl CoreInner {
                 peer_id: Some(&peer_id),
                 direction: TransferDirection::Receive,
                 status: TransferStatus::Receiving,
-                transfer_name: parsed
-                    .metadata
-                    .as_ref()
-                    .map(|metadata| metadata.transfer_name.as_str()),
-                content_hash: parsed
-                    .metadata
-                    .as_ref()
-                    .map(|metadata| metadata.content_hash.as_str()),
+                transfer_name: Some(parsed.metadata.transfer_name.as_str()),
+                content_hash: Some(parsed.metadata.content_hash.as_str()),
                 ticket: None,
-                file_count: parsed
-                    .metadata
-                    .as_ref()
-                    .map(|metadata| metadata.file_count)
-                    .unwrap_or_default(),
-                total_size: parsed
-                    .metadata
-                    .as_ref()
-                    .map(|metadata| metadata.total_size)
-                    .unwrap_or_default(),
+                file_count: parsed.metadata.file_count,
+                total_size: parsed.metadata.total_size,
                 access_mode: mode_to_storage(&TransferAccessMode::ApprovalRequired),
             })
             .await?;

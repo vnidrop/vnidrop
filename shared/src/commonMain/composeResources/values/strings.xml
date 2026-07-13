@@ -128,7 +128,7 @@
     <string name="transfer_event_saving">Saving files</string>
     <string name="transfer_event_connecting">Connecting to sender</string>
     <string name="ticket_details_title">Ticket details</string>
-    <string name="ticket_no_metadata">This ticket does not include VniDrop metadata.</string>
+
     <string name="settings_title">Settings</string>
     <string name="settings_subtitle">Configure the local node and app appearance.</string>
     <string name="node_title">Node</string>

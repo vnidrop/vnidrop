@@ -255,8 +255,8 @@ private fun InvitationReviewPanel(
 			val metadata = inspection.metadata
 			Surface(shape = RoundedCornerShape(14.dp), color = LocalVniDropColors.current.backgroundSurface200) {
 				Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-					Text(metadata?.transferName ?: stringResource(Res.string.receive_unknown_transfer), fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
-					if (metadata != null) Text("${metadata.fileCount} ${stringResource(Res.string.metadata_files).lowercase()} · ${formatBytes(metadata.totalSize)}", color = LocalVniDropColors.current.foregroundLighter)
+					Text(metadata.transferName, fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis)
+					Text("${metadata.fileCount} ${stringResource(Res.string.metadata_files).lowercase()} · ${formatBytes(metadata.totalSize)}", color = LocalVniDropColors.current.foregroundLighter)
 				}
 			}
 			Field(state.receiverName, onReceiverNameChanged, stringResource(Res.string.field_receiver_name))

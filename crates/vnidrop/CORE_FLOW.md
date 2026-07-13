@@ -12,24 +12,29 @@ bytes through Kotlin memory.
    file into `iroh-blobs`, stores a collection, and returns a VniDrop ticket.
 3. New VniDrop shares are `ApprovalRequired` by default. A copied ticket is not
    enough to read bytes until the sender approves the receiver endpoint.
-4. The sender observes receiver requests through `CoreEvent` entries with
+4. The blob provider is **default-deny**: only hashes registered for an active
+   share (collection root **and** each member blob) may be served, and only when
+   access policy allows that remote endpoint. Unknown hashes are refused.
+5. The sender observes receiver requests through `CoreEvent` entries with
    `phase="approval"` and can query them with
    `list_receiver_requests(transfer_id)`.
-5. `respond_receiver_request(request_id, accepted, reason)` accepts or refuses a
+6. `respond_receiver_request(request_id, accepted, reason)` accepts or refuses a
    pending request. Accepted requests create a time-limited access session for
    the receiver endpoint.
+7. Ticket strings are capabilities. Share events emit hash/size metadata only —
+   never the full ticket payload.
 
 ## Receive
 
 1. `receive(ticket, output_dir, receiver_name)` parses and validates the ticket.
 2. VniDrop tickets first connect to the handshake ALPN
-   `/vnidrop/handshake/1` and send `RequestTransfer` metadata to the sender.
+   `/vnidrop/handshake/2` and send `RequestTransfer` metadata to the sender.
 3. If approved, the receiver connects to the blobs ALPN, downloads the
    collection, and streams files to `output_dir`.
 4. If refused, expired, unknown, or cancelled, the receive transfer is marked
    `failed` or `cancelled` and emits an error/lifecycle event.
-5. Legacy raw `BlobTicket` values do not carry VniDrop metadata, so they bypass
-   the app approval handshake and use the underlying blob ticket directly.
+5. Only `vnd1:` VniDrop tickets are accepted. Raw iroh `BlobTicket` strings are
+   rejected at parse time so receive always runs the approval handshake.
 
 ## Core States And Events
 
@@ -77,7 +82,7 @@ bytes through Kotlin memory.
 ## Blob Retention Policy
 
 Stopping a share immediately removes its provider mapping and approval state,
-so neither VniDrop nor legacy blob tickets can read it. Physical blob chunks are
+so outstanding VniDrop tickets can no longer download content. Physical blob chunks are
 not force-deleted at stop time because content-addressed chunks may be shared by
 another active collection. They remain eligible for the blob store's garbage
 collection. Restart reconciliation never restores a stopped share.

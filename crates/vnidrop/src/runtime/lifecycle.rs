@@ -51,10 +51,7 @@ impl CoreInner {
                 .await?;
             active_shares.remove(&transfer_id);
             drop(active_shares);
-            self.hash_to_transfer
-                .lock()
-                .await
-                .retain(|_, id| *id != transfer_id);
+            self.unregister_transfer_hashes(transfer_id).await;
             self.access_policy.remove_transfer(transfer_id).await;
             self.emit_transfer(transfer_id, "send", "lifecycle", "share-stopped", json!({}));
             return Ok(());
@@ -106,10 +103,7 @@ impl CoreInner {
         }
 
         self.active_shares.lock().await.remove(&transfer_id);
-        self.hash_to_transfer
-            .lock()
-            .await
-            .retain(|_, id| *id != transfer_id);
+        self.unregister_transfer_hashes(transfer_id).await;
         self.access_policy.remove_transfer(transfer_id).await;
         // Events are persisted asynchronously. Drain events emitted before this
         // request so none can be written back after the transfer is deleted.

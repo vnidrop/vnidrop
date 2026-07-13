@@ -31,10 +31,7 @@ fn metadata_ticket_round_trips() {
     let parsed = parse_transfer_ticket(&encoded).unwrap();
 
     assert_eq!(parsed.blob_ticket.hash(), blob_ticket.hash());
-    assert_eq!(
-        parsed.metadata.unwrap().transfer_name,
-        metadata.transfer_name
-    );
+    assert_eq!(parsed.metadata.transfer_name, metadata.transfer_name);
 }
 
 #[test]
@@ -58,6 +55,16 @@ fn metadata_ticket_tolerates_wrapped_whitespace() {
 #[test]
 fn invalid_ticket_is_rejected() {
     assert!(parse_transfer_ticket("not-a-ticket").is_err());
+}
+
+#[test]
+fn rejects_raw_blob_tickets() {
+    let raw = blob_ticket(3).to_string();
+    let error = parse_transfer_ticket(&raw).unwrap_err().to_string();
+    assert!(
+        error.contains("not a VniDrop ticket"),
+        "raw BlobTicket must not be accepted as a transfer invitation: {error}"
+    );
 }
 
 #[test]

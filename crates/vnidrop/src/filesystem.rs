@@ -27,6 +27,9 @@ const STALE_PART_AGE: Duration = Duration::from_secs(24 * 60 * 60);
 pub(crate) struct TransferImport {
     pub(crate) tag: TempTag,
     pub(crate) root_hash: Hash,
+    /// Per-file content hashes in the collection. Provider ACL maps these too
+    /// so child blob gets are not fail-open when only the root is tracked.
+    pub(crate) member_hashes: Vec<Hash>,
     pub(crate) total_size: u64,
     pub(crate) file_count: u64,
     pub(crate) default_name: String,

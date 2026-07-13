@@ -100,7 +100,7 @@ fn persisted_share_is_recovered_and_can_be_stopped_after_restart() {
 }
 
 #[test]
-fn stopped_share_rejects_direct_legacy_blob_ticket() {
+fn stopped_share_rejects_receive() {
     let source_dir = tempfile::tempdir().unwrap();
     let output_dir = tempfile::tempdir().unwrap();
     let source_path = source_dir.path().join("revoked.txt");
@@ -111,13 +111,59 @@ fn stopped_share_rejects_direct_legacy_blob_ticket() {
 
     sender.core.cancel_transfer(share.transfer_id).unwrap();
     let result = receiver.core.receive(
-        share.blob_ticket,
+        share.ticket,
         output_dir.path().to_string_lossy().to_string(),
         Some("receiver".to_string()),
     );
 
     assert!(result.is_err(), "a stopped share must not serve blob bytes");
     assert!(!output_dir.path().join("revoked.txt").exists());
+}
+
+#[test]
+fn ticket_created_event_does_not_include_full_ticket() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("secret.txt");
+    std::fs::write(&source_path, b"capability material").unwrap();
+    let sender = TestNode::new();
+    let share = share_path(&sender.core, &source_path, 40, "secret.txt", false);
+
+    let ticket_events: Vec<_> = sender
+        .sink
+        .events()
+        .into_iter()
+        .filter(|event| event.phase == "ticket" && event.kind == "created")
+        .collect();
+    assert_eq!(ticket_events.len(), 1);
+    let data = &ticket_events[0].data_json;
+    assert!(
+        !data.contains(&share.ticket),
+        "events must not retain the full vnd1 ticket capability"
+    );
+    assert!(
+        !data.contains("vnd1:"),
+        "events must not embed ticket prefixes"
+    );
+    assert!(
+        data.contains(&share.hash),
+        "events should still record the content hash for diagnostics"
+    );
+}
+
+#[test]
+fn receive_rejects_non_vnidrop_ticket_input() {
+    let output_dir = tempfile::tempdir().unwrap();
+    let receiver = TestNode::new();
+
+    let result = receiver.core.receive(
+        "blobaaabcdefghijklmnopqrstuvwxyz0123456789".to_string(),
+        output_dir.path().to_string_lossy().to_string(),
+        Some("receiver".to_string()),
+    );
+    assert!(
+        result.is_err(),
+        "non-vnd1 tickets must be rejected before network work"
+    );
 }
 
 #[test]

@@ -224,12 +224,7 @@ impl VnidropCore {
             .context("failed to parse transfer ticket")
             .map_err(VnidropError::ticket)?;
         Ok(TicketInspection {
-            kind: if parsed.metadata.is_some() {
-                "vnidrop".to_string()
-            } else {
-                "legacy".to_string()
-            },
-            blob_ticket: parsed.blob_ticket.to_string(),
+            kind: "vnidrop".to_string(),
             metadata: parsed.metadata,
         })
     }

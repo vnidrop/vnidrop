@@ -183,7 +183,6 @@ pub struct StoredTransfer {
 pub struct ShareResult {
     pub transfer_id: u64,
     pub ticket: String,
-    pub blob_ticket: String,
     pub hash: String,
     pub transfer_name: String,
     pub file_count: u64,
@@ -227,8 +226,7 @@ impl TransferMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct TicketInspection {
     pub kind: String,
-    pub blob_ticket: String,
-    pub metadata: Option<TransferMetadata>,
+    pub metadata: TransferMetadata,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]

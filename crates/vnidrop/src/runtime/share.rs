@@ -138,7 +138,7 @@ impl CoreInner {
             import.file_count,
             import.total_size,
         );
-        let ticket = VnidropTicket::new(blob_ticket.clone(), ticket_metadata)
+        let ticket = VnidropTicket::new(blob_ticket, ticket_metadata)
             .encode()
             .context("failed to encode VniDrop transfer ticket")?;
         let content_hash = import.root_hash.to_string();
@@ -160,10 +160,13 @@ impl CoreInner {
                 access_mode: mode_to_storage(&access_mode),
             })
             .await?;
-        self.hash_to_transfer
-            .lock()
-            .await
-            .insert(content_hash, metadata.transfer_id);
+        // Map root + every collection member so provider ACL cannot fail-open
+        // on child blob hashes that are not the collection root.
+        self.register_share_hashes(
+            metadata.transfer_id,
+            std::iter::once(import.root_hash).chain(import.member_hashes.iter().copied()),
+        )
+        .await;
         self.access_policy
             .set_mode(metadata.transfer_id, access_mode)
             .await;
@@ -172,13 +175,13 @@ impl CoreInner {
             .await
             .insert(metadata.transfer_id, Some(import.tag));
 
+        // Tickets are capabilities: never persist the full string in events.
         self.emit_transfer(
             metadata.transfer_id,
             "send",
             "ticket",
             "created",
             json!({
-                "ticket": ticket,
                 "hash": import.root_hash.to_string(),
                 "total_size": import.total_size,
                 "file_count": import.file_count,
@@ -188,7 +191,6 @@ impl CoreInner {
         Ok(ShareResult {
             transfer_id: metadata.transfer_id,
             ticket,
-            blob_ticket: blob_ticket.to_string(),
             hash: import.root_hash.to_string(),
             transfer_name,
             file_count: import.file_count,
@@ -242,6 +244,7 @@ impl CoreInner {
             .into_iter()
             .map(|(name, tag, _)| ((name, tag.hash()), tag))
             .unzip::<_, _, Collection, Vec<_>>();
+        let member_hashes = collection.iter().map(|(_, hash)| *hash).collect::<Vec<_>>();
         let collection_tag = collection.clone().store(&self.store).await?;
         let root_hash = collection_tag.hash();
         let file_count = tags.len() as u64;
@@ -258,6 +261,7 @@ impl CoreInner {
         Ok(TransferImport {
             tag: collection_tag,
             root_hash,
+            member_hashes,
             total_size,
             file_count,
             default_name,
