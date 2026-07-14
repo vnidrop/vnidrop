@@ -5,6 +5,7 @@ import com.vnidrop.app.logging.AppLogger
 import com.vnidrop.app.logging.platformNowMillis
 import com.vnidrop.app.preferences.PreferencesRepository
 import com.vnidrop.app.util.randomUuidString
+import kotlinx.coroutines.CancellationException
 
 data class BugReportDraft(
 	val whatHappened: String,
@@ -24,7 +25,7 @@ class BugReportService(
 	private val appVersion: String,
 	private val platform: String,
 	private val logReader: () -> String = {
-		LogRedactor.redact(AppLogger.readLatestLogs(AppLogger.DefaultBugReportLogBytes))
+		AppLogger.readLatestLogs(AppLogger.DefaultBugReportLogBytes)
 	},
 ) {
 	fun assemble(
@@ -32,25 +33,25 @@ class BugReportService(
 		deviceInfo: DeviceInfo?,
 		installId: String,
 	): BugReport {
-		val logs = if (draft.includeLogs) logReader() else ""
+		val logs = if (draft.includeLogs) readReportLogs() else ""
 		return BugReport(
 			id = randomUuidString(),
 			timestampMillis = platformNowMillis(),
-			installId = installId,
-			appVersion = appVersion,
-			platform = platform,
-			whatHappened = draft.whatHappened.trim().take(MaxFieldLength),
-			expected = draft.expected.trim().take(MaxFieldLength),
-			steps = draft.steps.trim().take(MaxFieldLength),
-			contact = draft.contact.trim().take(MaxContactLength),
+			installId = sanitizeDiagnosticsInstallId(installId),
+			appVersion = appVersion.takeUtf8Bytes(DiagnosticsJson.MaxAppVersionBytes),
+			platform = platform.takeUtf8Bytes(DiagnosticsJson.MaxPlatformBytes),
+			whatHappened = draft.whatHappened.trim().takeUtf8Bytes(MaxFieldBytes),
+			expected = draft.expected.trim().takeUtf8Bytes(MaxFieldBytes),
+			steps = draft.steps.trim().takeUtf8Bytes(MaxFieldBytes),
+			contact = draft.contact.trim().takeUtf8Bytes(MaxContactBytes),
 			includeLogs = draft.includeLogs,
 			logs = logs,
 			device = DeviceSnapshot(
-				deviceName = deviceInfo?.deviceName,
-				deviceModel = deviceInfo?.deviceModel,
-				operatingSystem = deviceInfo?.operatingSystem ?: platform,
-				network = deviceInfo?.network,
-				batteryLevel = deviceInfo?.batteryLevel,
+				deviceName = deviceInfo?.deviceName?.takeUtf8Bytes(128),
+				deviceModel = deviceInfo?.deviceModel?.takeUtf8Bytes(128),
+				operatingSystem = (deviceInfo?.operatingSystem ?: platform).takeUtf8Bytes(192),
+				network = deviceInfo?.network?.takeUtf8Bytes(96),
+				batteryLevel = deviceInfo?.batteryLevel?.takeUtf8Bytes(64),
 			),
 			breadcrumbs = breadcrumbs.snapshot(),
 		)
@@ -67,7 +68,13 @@ class BugReportService(
 		}
 		val installId = preferencesRepository.ensureDiagnosticsInstallId()
 		val report = assemble(draft, deviceInfo, installId)
-		val send = transport.sendBugReport(report)
+		val send = try {
+			transport.sendBugReport(report)
+		} catch (cancelled: CancellationException) {
+			throw cancelled
+		} catch (error: Throwable) {
+			Result.failure(error)
+		}
 		return send.fold(
 			onSuccess = {
 				AppLogger.info("bug_report", "submitted", mapOf("id" to report.id))
@@ -80,10 +87,14 @@ class BugReportService(
 		)
 	}
 
-	fun previewLogBytes(): Int = logReader().encodeToByteArray().size
+	fun previewLogBytes(): Int = readReportLogs().encodeToByteArray().size
+
+	private fun readReportLogs(): String =
+		LogRedactor.redact(logReader()).takeUtf8Bytes(MaxLogBytes)
 
 	companion object {
-		private const val MaxFieldLength = 4_000
-		private const val MaxContactLength = 320
+		internal const val MaxLogBytes = 192 * 1024
+		private const val MaxFieldBytes = 4_000
+		private const val MaxContactBytes = 320
 	}
 }

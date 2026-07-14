@@ -12,6 +12,12 @@ data class TelemetryEvent(
 	val schemaVersion: Int = DiagnosticsSchemaVersion,
 )
 
+/** One idempotent upload unit; [id] remains stable when delivery is retried. */
+data class TelemetryBatch(
+	val id: String,
+	val events: List<TelemetryEvent>,
+)
+
 data class Breadcrumb(
 	val name: String,
 	val timestampMillis: Long,
@@ -28,8 +34,8 @@ data class CrashReport(
 	val exceptionMessage: String,
 	val stackTrace: String,
 	val breadcrumbs: List<Breadcrumb>,
-	/** Whether diagnostics was opted in when the crash was captured. */
-	val diagnosticsEnabledAtCapture: Boolean,
+	/** `null` only while a startup crash is waiting for the persisted preference to load. */
+	val diagnosticsEnabledAtCapture: Boolean?,
 	val schemaVersion: Int = DiagnosticsSchemaVersion,
 )
 

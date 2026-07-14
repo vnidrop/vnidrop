@@ -1,6 +1,8 @@
 package com.vnidrop.app.diagnostics
 
 import com.vnidrop.app.logging.platformNowMillis
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
 /**
  * Fixed-size ring of high-level app breadcrumbs for crash / bug context.
@@ -9,6 +11,7 @@ import com.vnidrop.app.logging.platformNowMillis
  * Updates are best-effort under concurrency; losing a breadcrumb is preferable
  * to blocking a dying process on a lock.
  */
+@OptIn(ExperimentalAtomicApi::class)
 class BreadcrumbBuffer(
 	private val capacity: Int = DefaultCapacity,
 ) {
@@ -16,28 +19,29 @@ class BreadcrumbBuffer(
 		require(capacity > 0) { "capacity must be positive" }
 	}
 
-	@Volatile
-	private var items: List<Breadcrumb> = emptyList()
+	private val items = AtomicReference<List<Breadcrumb>>(emptyList())
 
 	fun add(name: String, properties: Map<String, String> = emptyMap(), timestampMillis: Long = platformNowMillis()) {
+		val sanitizedName = sanitizeDiagnosticName(name)
+		if (sanitizedName.isBlank()) return
 		val crumb = Breadcrumb(
-			name = name.take(MaxNameLength),
+			name = sanitizedName,
 			timestampMillis = timestampMillis,
-			properties = LogRedactor.redactMap(properties).mapValues { it.value.take(MaxPropertyValueLength) },
+			properties = sanitizeDiagnosticProperties(properties),
 		)
-		val current = items
-		items = (current + crumb).takeLast(capacity)
+		while (true) {
+			val current = items.load()
+			if (items.compareAndSet(current, (current + crumb).takeLast(capacity))) return
+		}
 	}
 
-	fun snapshot(): List<Breadcrumb> = items
+	fun snapshot(): List<Breadcrumb> = items.load()
 
 	fun clear() {
-		items = emptyList()
+		items.store(emptyList())
 	}
 
 	companion object {
 		const val DefaultCapacity = 40
-		private const val MaxNameLength = 64
-		private const val MaxPropertyValueLength = 128
 	}
 }

@@ -10,13 +10,16 @@ import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferDirection
 import com.vnidrop.app.core.TransferStatus
+import com.vnidrop.app.diagnostics.BreadcrumbBuffer
+import com.vnidrop.app.diagnostics.BugReportService
+import com.vnidrop.app.diagnostics.DiagnosticsTransport
+import com.vnidrop.app.diagnostics.NoOpDiagnosticsTransport
+import com.vnidrop.app.diagnostics.RecordingDiagnosticsTransport
 import com.vnidrop.app.feature.app.AppViewModel
 import com.vnidrop.app.feature.receive.ReceiveHistoryDeleteTarget
 import com.vnidrop.app.feature.receive.ReceiveViewModel
 import com.vnidrop.app.feature.send.SendViewModel
-import com.vnidrop.app.diagnostics.BugReportService
-import com.vnidrop.app.diagnostics.NoOpDiagnosticsTransport
-import com.vnidrop.app.diagnostics.BreadcrumbBuffer
+import com.vnidrop.app.feature.settings.SettingsSection
 import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
@@ -163,6 +166,24 @@ class ViewModelsTest {
 		advanceUntilIdle()
 		assertEquals("", viewModel.state.value.bugWhatHappened)
 		assertEquals("", viewModel.state.value.bugExpected)
+	}
+
+	@Test
+	fun settingsKeepsBugReportWhenDeliveryIsUnavailable() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val viewModel = settingsViewModel(transport = NoOpDiagnosticsTransport())
+		advanceUntilIdle()
+		viewModel.selectSection(SettingsSection.BugReport)
+		viewModel.setBugWhatHappened("Transfer stuck")
+		viewModel.setBugExpected("It should finish")
+
+		viewModel.submitBugReport()
+		advanceUntilIdle()
+
+		assertEquals("Transfer stuck", viewModel.state.value.bugWhatHappened)
+		assertEquals("It should finish", viewModel.state.value.bugExpected)
+		assertEquals(SettingsSection.BugReport, viewModel.state.value.selectedSection)
+		assertFalse(viewModel.state.value.isSubmittingBugReport)
 	}
 
 	@Test
@@ -512,6 +533,7 @@ class ViewModelsTest {
 	private fun settingsViewModel(
 		preferences: PreferencesRepository = preferences(),
 		notifications: FakeNotificationService = FakeNotificationService(),
+		transport: DiagnosticsTransport = RecordingDiagnosticsTransport(),
 	) = SettingsViewModel(
 		environment(),
 		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
@@ -521,7 +543,7 @@ class ViewModelsTest {
 		UiMessageController(),
 		BugReportService(
 			preferencesRepository = preferences,
-			transport = NoOpDiagnosticsTransport(),
+			transport = transport,
 			breadcrumbs = BreadcrumbBuffer(),
 			appVersion = "1.0",
 			platform = "Test",

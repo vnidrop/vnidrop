@@ -1,0 +1,30 @@
+{
+  "name": "vnidrop-diagnostics-api",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "predeploy": "npm run check",
+    "deploy": "wrangler deploy",
+    "deploy:dry-run": "wrangler deploy --dry-run",
+    "db:migrate:local": "wrangler d1 migrations apply vnidrop-diagnostics --local",
+    "db:migrate:remote": "wrangler d1 migrations apply vnidrop-diagnostics --remote",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typegen": "wrangler types",
+    "types:check": "wrangler types --check",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test/tsconfig.json",
+    "check": "npm run types:check && npm run typecheck && npm test && npm run deploy:dry-run"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.18.4",
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.110.0"
+  }
+}

@@ -13,8 +13,16 @@ private class JvmPendingCrashStore(
 
 	@Synchronized
 	override fun write(report: CrashReport) {
+		if (!isValidDiagnosticId(report.id)) return
 		directory.mkdirs()
-		File(directory, "${report.id}.crash").writeText(CrashReportCodec.encode(report), StandardCharsets.UTF_8)
+		val target = File(directory, "${report.id}.crash")
+		val temporary = File(directory, ".${report.id}.tmp")
+		val payload = CrashReportCodec.encode(report)
+		temporary.writeText(payload, StandardCharsets.UTF_8)
+		if (!temporary.renameTo(target)) {
+			target.writeText(payload, StandardCharsets.UTF_8)
+			temporary.delete()
+		}
 	}
 
 	@Synchronized
@@ -31,6 +39,34 @@ private class JvmPendingCrashStore(
 
 	@Synchronized
 	override fun delete(id: String) {
+		if (!isValidDiagnosticId(id)) return
 		File(directory, "$id.crash").delete()
+	}
+
+	@Synchronized
+	override fun prune(olderThanTimestampMillis: Long, maxCount: Int) {
+		require(maxCount > 0) { "maxCount must be positive" }
+		if (!directory.isDirectory) return
+		directory.listFiles { file -> file.isFile && file.name.endsWith(".tmp") }
+			.orEmpty()
+			.forEach(File::delete)
+		val reports = directory
+			.listFiles { file -> file.isFile && file.name.endsWith(".crash") }
+			.orEmpty()
+			.mapNotNull { file ->
+				val report = runCatching {
+					CrashReportCodec.decode(file.readText(StandardCharsets.UTF_8))
+				}.getOrNull()
+				if (report == null) {
+					file.delete()
+					null
+				} else {
+					file to report
+				}
+			}
+			.sortedByDescending { (_, report) -> report.timestampMillis }
+		reports.forEachIndexed { index, (file, report) ->
+			if (index >= maxCount || report.timestampMillis < olderThanTimestampMillis) file.delete()
+		}
 	}
 }
