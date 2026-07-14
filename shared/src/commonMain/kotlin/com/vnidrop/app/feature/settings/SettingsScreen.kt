@@ -22,6 +22,13 @@ fun SettingsScreen(
 	onResetFolder: () -> Unit,
 	onNotificationsChanged: (Boolean) -> Unit,
 	onOpenNotificationSettings: () -> Unit,
+	onDiagnosticsChanged: (Boolean) -> Unit,
+	onBugWhatChanged: (String) -> Unit,
+	onBugExpectedChanged: (String) -> Unit,
+	onBugStepsChanged: (String) -> Unit,
+	onBugContactChanged: (String) -> Unit,
+	onBugIncludeLogsChanged: (Boolean) -> Unit,
+	onSubmitBugReport: () -> Unit,
 ) {
 	if (windowClass == WindowClass.Desktop) {
 		Row(
@@ -37,12 +44,20 @@ fun SettingsScreen(
 					section = state.selectedSection.takeUnless { it == SettingsSection.Overview } ?: SettingsSection.Preferences,
 					onBack = {},
 					showBack = false,
+					onSectionSelected = onSectionSelected,
 					onUsernameChanged = onUsernameChanged,
 					onThemeModeChanged = onThemeModeChanged,
 					onChooseFolder = onChooseFolder,
 					onResetFolder = onResetFolder,
 					onNotificationsChanged = onNotificationsChanged,
 					onOpenNotificationSettings = onOpenNotificationSettings,
+					onDiagnosticsChanged = onDiagnosticsChanged,
+					onBugWhatChanged = onBugWhatChanged,
+					onBugExpectedChanged = onBugExpectedChanged,
+					onBugStepsChanged = onBugStepsChanged,
+					onBugContactChanged = onBugContactChanged,
+					onBugIncludeLogsChanged = onBugIncludeLogsChanged,
+					onSubmitBugReport = onSubmitBugReport,
 				)
 			}
 		}
@@ -52,14 +67,30 @@ fun SettingsScreen(
 			else -> SettingsSectionContent(
 				state = state,
 				section = state.selectedSection,
-				onBack = { onSectionSelected(SettingsSection.Overview) },
+				onBack = {
+					onSectionSelected(
+						if (state.selectedSection == SettingsSection.BugReport) {
+							SettingsSection.About
+						} else {
+							SettingsSection.Overview
+						},
+					)
+				},
 				showBack = true,
+				onSectionSelected = onSectionSelected,
 				onUsernameChanged = onUsernameChanged,
 				onThemeModeChanged = onThemeModeChanged,
 				onChooseFolder = onChooseFolder,
 				onResetFolder = onResetFolder,
 				onNotificationsChanged = onNotificationsChanged,
 				onOpenNotificationSettings = onOpenNotificationSettings,
+				onDiagnosticsChanged = onDiagnosticsChanged,
+				onBugWhatChanged = onBugWhatChanged,
+				onBugExpectedChanged = onBugExpectedChanged,
+				onBugStepsChanged = onBugStepsChanged,
+				onBugContactChanged = onBugContactChanged,
+				onBugIncludeLogsChanged = onBugIncludeLogsChanged,
+				onSubmitBugReport = onSubmitBugReport,
 			)
 		}
 	}
@@ -71,18 +102,43 @@ private fun SettingsSectionContent(
 	section: SettingsSection,
 	onBack: () -> Unit,
 	showBack: Boolean,
+	onSectionSelected: (SettingsSection) -> Unit,
 	onUsernameChanged: (String) -> Unit,
 	onThemeModeChanged: (ThemeMode) -> Unit,
 	onChooseFolder: () -> Unit,
 	onResetFolder: () -> Unit,
 	onNotificationsChanged: (Boolean) -> Unit,
 	onOpenNotificationSettings: () -> Unit,
+	onDiagnosticsChanged: (Boolean) -> Unit,
+	onBugWhatChanged: (String) -> Unit,
+	onBugExpectedChanged: (String) -> Unit,
+	onBugStepsChanged: (String) -> Unit,
+	onBugContactChanged: (String) -> Unit,
+	onBugIncludeLogsChanged: (Boolean) -> Unit,
+	onSubmitBugReport: () -> Unit,
 ) {
 	when (section) {
 		SettingsSection.Overview -> Unit
 		SettingsSection.Preferences -> PreferencesSettings(state, onUsernameChanged, onChooseFolder, onResetFolder, onBack, showBack)
 		SettingsSection.Appearance -> AppearanceSettings(state.themeMode, onThemeModeChanged, onBack, showBack)
 		SettingsSection.Notifications -> NotificationSettings(state, onNotificationsChanged, onOpenNotificationSettings, onBack, showBack)
-		SettingsSection.About -> AboutSettings(state, onBack, showBack)
+		SettingsSection.About -> AboutSettings(
+			state = state,
+			onDiagnosticsChanged = onDiagnosticsChanged,
+			onReportBug = { onSectionSelected(SettingsSection.BugReport) },
+			onBack = onBack,
+			showBack = showBack,
+		)
+		SettingsSection.BugReport -> BugReportSettings(
+			state = state,
+			onWhatChanged = onBugWhatChanged,
+			onExpectedChanged = onBugExpectedChanged,
+			onStepsChanged = onBugStepsChanged,
+			onContactChanged = onBugContactChanged,
+			onIncludeLogsChanged = onBugIncludeLogsChanged,
+			onSubmit = onSubmitBugReport,
+			onBack = onBack,
+			showBack = showBack,
+		)
 	}
 }

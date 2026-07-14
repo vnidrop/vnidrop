@@ -1,6 +1,7 @@
 package com.vnidrop.app.logging
 
 import java.io.File
+import java.io.RandomAccessFile
 import java.nio.charset.StandardCharsets
 
 actual fun createPlatformLogStore(appDataDir: String, policy: LogRotationPolicy): PlatformLogStore =
@@ -37,6 +38,32 @@ private class JvmPlatformLogStore(
 			.map { file -> LogFileInfo(file.name, file.absolutePath, file.length(), file.lastModified()) }
 	}
 
+	@Synchronized
+	override fun readLatest(maxBytes: Long): String {
+		if (maxBytes <= 0) return ""
+		directory.mkdirs()
+		val files = listOf(activeFile) +
+			(1..policy.maxFiles).map { File(directory, "app.$it.log") }
+		val chunks = ArrayList<ByteArray>()
+		var remaining = maxBytes
+		for (file in files) {
+			if (remaining <= 0 || !file.isFile) continue
+			val slice = readTail(file, remaining)
+			if (slice.isEmpty()) continue
+			chunks.add(0, slice)
+			remaining -= slice.size.toLong()
+		}
+		if (chunks.isEmpty()) return ""
+		val total = chunks.sumOf { it.size }
+		val out = ByteArray(total)
+		var offset = 0
+		for (chunk in chunks) {
+			chunk.copyInto(out, offset)
+			offset += chunk.size
+		}
+		return String(out, StandardCharsets.UTF_8)
+	}
+
 	private fun rotate() {
 		if (policy.maxFiles == 0) {
 			activeFile.delete()
@@ -51,6 +78,26 @@ private class JvmPlatformLogStore(
 		}
 		if (activeFile.exists()) {
 			activeFile.renameTo(File(directory, "app.1.log"))
+		}
+	}
+}
+
+private fun readTail(file: File, maxBytes: Long): ByteArray {
+	if (!file.isFile || file.length() == 0L || maxBytes <= 0) return ByteArray(0)
+	val length = file.length()
+	val start = (length - maxBytes).coerceAtLeast(0L)
+	val size = (length - start).toInt()
+	RandomAccessFile(file, "r").use { raf ->
+		raf.seek(start)
+		val bytes = ByteArray(size)
+		raf.readFully(bytes)
+		if (start == 0L) return bytes
+		// Align to the next full line when we start mid-file.
+		val newline = bytes.indexOf('\n'.code.toByte())
+		return if (newline in 0 until bytes.lastIndex) {
+			bytes.copyOfRange(newline + 1, bytes.size)
+		} else {
+			bytes
 		}
 	}
 }

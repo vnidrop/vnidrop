@@ -2,6 +2,8 @@ package com.vnidrop.app
 
 import com.vnidrop.app.core.CoreGateway
 import com.vnidrop.app.core.CoreRepository
+import com.vnidrop.app.diagnostics.DiagnosticsCoordinator
+import com.vnidrop.app.diagnostics.NoOpDiagnosticsTransport
 import com.vnidrop.app.feature.approvals.ApprovalCoordinator
 import com.vnidrop.app.feature.send.AppFilePreviewRepository
 import com.vnidrop.app.feature.send.createPlatformPreviewStore
@@ -34,7 +36,16 @@ class AppGraph(
 			receiveFolder = dependencies.fileSystemService.defaultReceiveFolder(),
 			themeMode = ThemeMode.System,
 			notificationsEnabled = false,
+			diagnosticsEnabled = false,
 		),
+	)
+	val diagnostics = DiagnosticsCoordinator.create(
+		appDataDir = dependencies.environment.defaultCoreDataDir,
+		appVersion = dependencies.environment.appVersion,
+		platform = dependencies.environment.name,
+		preferencesRepository = preferencesRepository,
+		scope = applicationScope,
+		transport = NoOpDiagnosticsTransport(),
 	)
 	val approvalCoordinator = ApprovalCoordinator(
 		repository = coreRepository,
@@ -47,6 +58,7 @@ class AppGraph(
 
 	init {
 		AppLogger.initialize(dependencies.environment.defaultCoreDataDir)
+		diagnostics.start()
 	}
 
 	fun close() {

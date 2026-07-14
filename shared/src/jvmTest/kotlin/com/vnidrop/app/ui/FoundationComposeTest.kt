@@ -86,6 +86,13 @@ class FoundationComposeTest {
 					onResetFolder = {},
 					onNotificationsChanged = {},
 					onOpenNotificationSettings = {},
+					onDiagnosticsChanged = {},
+					onBugWhatChanged = {},
+					onBugExpectedChanged = {},
+					onBugStepsChanged = {},
+					onBugContactChanged = {},
+					onBugIncludeLogsChanged = {},
+					onSubmitBugReport = {},
 				)
 			}
 		}
@@ -108,6 +115,13 @@ class FoundationComposeTest {
 					onResetFolder = {},
 					onNotificationsChanged = { enabled = it },
 					onOpenNotificationSettings = {},
+					onDiagnosticsChanged = {},
+					onBugWhatChanged = {},
+					onBugExpectedChanged = {},
+					onBugStepsChanged = {},
+					onBugContactChanged = {},
+					onBugIncludeLogsChanged = {},
+					onSubmitBugReport = {},
 				)
 			}
 		}
@@ -133,6 +147,13 @@ class FoundationComposeTest {
 					onResetFolder = {},
 					onNotificationsChanged = {},
 					onOpenNotificationSettings = { opened = true },
+					onDiagnosticsChanged = {},
+					onBugWhatChanged = {},
+					onBugExpectedChanged = {},
+					onBugStepsChanged = {},
+					onBugContactChanged = {},
+					onBugIncludeLogsChanged = {},
+					onSubmitBugReport = {},
 				)
 			}
 		}

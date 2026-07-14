@@ -28,5 +28,12 @@ fun SettingsRoute(viewModel: SettingsViewModel, windowClass: WindowClass) {
 		onResetFolder = viewModel::resetReceiveFolder,
 		onNotificationsChanged = viewModel::setNotificationsEnabled,
 		onOpenNotificationSettings = viewModel::openNotificationSettings,
+		onDiagnosticsChanged = viewModel::setDiagnosticsEnabled,
+		onBugWhatChanged = viewModel::setBugWhatHappened,
+		onBugExpectedChanged = viewModel::setBugExpected,
+		onBugStepsChanged = viewModel::setBugSteps,
+		onBugContactChanged = viewModel::setBugContact,
+		onBugIncludeLogsChanged = viewModel::setBugIncludeLogs,
+		onSubmitBugReport = viewModel::submitBugReport,
 	)
 }
