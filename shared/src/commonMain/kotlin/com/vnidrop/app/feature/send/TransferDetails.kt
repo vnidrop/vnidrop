@@ -37,8 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -59,7 +59,6 @@ import com.vnidrop.app.ui.state.progressForReceiver
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
-import qrcode.QRCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import vnidrop.shared.generated.resources.*
@@ -247,7 +246,7 @@ internal fun TransferSharePanel(
 		val renderedBitmap by produceState(qrBitmap, ticket, qrBitmap) {
 			if (value == null) {
 				value = withContext(Dispatchers.Default) {
-					runCatching { QRCode.ofSquares().withSize(8).build(ticket).renderToBytes().decodeToImageBitmap() }.getOrNull()
+					runCatching { buildTransferQrCode(ticket).renderToBytes().decodeToImageBitmap() }.getOrNull()
 				}
 				value?.let { onQrRendered(ticket, it) }
 			}
@@ -259,7 +258,12 @@ internal fun TransferSharePanel(
 			color = Color.White,
 		) {
 			if (renderedQr != null) {
-				Image(renderedQr, null, Modifier.padding(14.dp).fillMaxSize().clip(RoundedCornerShape(8.dp)))
+				Image(
+					bitmap = renderedQr,
+					contentDescription = null,
+					modifier = Modifier.padding(14.dp).fillMaxSize(),
+					filterQuality = FilterQuality.None,
+				)
 			} else {
 				Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
 			}
