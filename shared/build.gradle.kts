@@ -184,7 +184,7 @@ val hostCargoTargets = buildSet<RustTarget> {
 cargo {
 	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop")
 	publishJvmArtifacts = true
-	androidTargetsToBuild.set(setOf(RustAndroidTarget.Arm64))
+	androidTargetsToBuild.set(setOf(RustAndroidTarget.Arm64, RustAndroidTarget.X64))
 	builds.jvm {
 		variants {
 			// Desktop distributions are built per host. Do not publish disabled

@@ -63,7 +63,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,aarch64-linux-android
+          targets: aarch64-apple-darwin,aarch64-linux-android,x86_64-linux-android
 
       - name: Cache Cargo
         uses: actions/cache@v4
@@ -96,3 +96,6 @@ jobs:
 
       - name: Run shared JVM tests
         run: ./gradlew :shared:jvmTest --no-daemon --stacktrace
+
+      - name: Verify Android native libraries
+        run: ./gradlew :androidApp:verifyDebugVnidropLibraries --no-daemon --stacktrace
