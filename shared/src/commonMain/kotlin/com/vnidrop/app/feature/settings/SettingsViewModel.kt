@@ -58,6 +58,7 @@ data class SettingsState(
 	val receiveFolder: ReceiveFolder? = null,
 	val folderAccessStatus: FolderAccessStatus = FolderAccessStatus.Unavailable,
 	val isValidatingFolder: Boolean = false,
+	val supportsCustomReceiveFolders: Boolean = true,
 	val themeMode: ThemeMode = ThemeMode.System,
 	val notificationsEnabled: Boolean = false,
 	val notificationPermission: NotificationPermission = NotificationPermission.NotDetermined,
@@ -88,7 +89,12 @@ class SettingsViewModel(
 	private val bugReports: BugReportService,
 	private val diagnostics: DiagnosticsCoordinator? = null,
 ) : ViewModel() {
-	private val _state = MutableStateFlow(SettingsState(appVersion = environment.appVersion))
+	private val _state = MutableStateFlow(
+		SettingsState(
+			appVersion = environment.appVersion,
+			supportsCustomReceiveFolders = fileSystemService.supportsCustomReceiveFolders,
+		),
+	)
 	val state: StateFlow<SettingsState> = _state.asStateFlow()
 
 	private val effects = Channel<SettingsEffect>(Channel.BUFFERED)
@@ -100,20 +106,21 @@ class SettingsViewModel(
 		viewModelScope.launch {
 			preferencesRepository.preferences.collect { preferences ->
 				val previousFolder = _state.value.receiveFolder
+				val receiveFolder = fileSystemService.effectiveReceiveFolder(preferences.receiveFolder)
 				// While the user is typing, keep the in-progress value. DataStore
 				// echoes can race keystrokes and trim trailing spaces mid-edit.
 				val editingUsername = usernamePersistJob?.isActive == true
 				_state.update { current ->
 					current.copy(
 						username = if (editingUsername) current.username else preferences.username,
-						receiveFolder = preferences.receiveFolder,
+						receiveFolder = receiveFolder,
 						themeMode = preferences.themeMode,
 						notificationsEnabled = preferences.notificationsEnabled,
 						diagnosticsEnabled = preferences.diagnosticsEnabled,
 					)
 				}
-				if (preferences.receiveFolder != previousFolder) {
-					validateFolder(preferences.receiveFolder)
+				if (receiveFolder != previousFolder) {
+					validateFolder(receiveFolder)
 				}
 			}
 		}
@@ -146,6 +153,7 @@ class SettingsViewModel(
 	}
 
 	fun chooseReceiveFolder() {
+		if (!fileSystemService.supportsCustomReceiveFolders) return
 		viewModelScope.launch { effects.send(SettingsEffect.OpenReceiveFolderPicker) }
 	}
 

@@ -47,9 +47,11 @@ internal fun PreferencesSettings(
 				iconTone = SettingsIconTone.Neutral,
 			)
 		}
-		Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-			PrimaryButton(stringResource(Res.string.button_choose_folder), onClick = onChooseFolder)
-			SecondaryButton(stringResource(Res.string.button_reset_default), onClick = onResetFolder)
+		if (state.supportsCustomReceiveFolders) {
+			Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+				PrimaryButton(stringResource(Res.string.button_choose_folder), onClick = onChooseFolder)
+				SecondaryButton(stringResource(Res.string.button_reset_default), onClick = onResetFolder)
+			}
 		}
 	}
 }

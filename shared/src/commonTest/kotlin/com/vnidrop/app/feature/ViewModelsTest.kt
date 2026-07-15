@@ -3,6 +3,7 @@ package com.vnidrop.app.feature
 import com.vnidrop.app.DeviceInfo
 import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.CoreState
+import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.core.Share
@@ -35,6 +36,8 @@ import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.theme.ThemeMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -45,9 +48,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.button_show_in_files
 import vnidrop.shared.generated.resources.error_permission
+import vnidrop.shared.generated.resources.receive_open_files_failed
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewModelsTest {
@@ -190,15 +196,39 @@ class ViewModelsTest {
 	}
 
 	@Test
+	fun settingsUsesDefaultReceiveFolderWhenPlatformDoesNotSupportCustomFolders() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val appDocuments = ReceiveFolder(ReceiveFolderKind.FileSystemPath, "/app/Documents", "Documents")
+		val externalFolder = ReceiveFolder(ReceiveFolderKind.IosSecurityScopedUrl, "file:///external", "External")
+		val preferences = preferences().apply {
+			mutablePreferences.value = mutablePreferences.value.copy(receiveFolder = externalFolder)
+		}
+		val fileSystem = FakeFileSystemService(appDocuments).apply { supportsCustomFolders = false }
+		val viewModel = settingsViewModel(preferences = preferences, fileSystem = fileSystem)
+
+		advanceUntilIdle()
+
+		assertFalse(viewModel.state.value.supportsCustomReceiveFolders)
+		assertEquals(appDocuments, viewModel.state.value.receiveFolder)
+		assertEquals(com.vnidrop.app.core.FolderAccessStatus.Writable, viewModel.state.value.folderAccessStatus)
+		viewModel.chooseReceiveFolder()
+		assertEquals(null, withTimeoutOrNull(1) { viewModel.effectFlow.first() })
+	}
+
+	@Test
 	fun sendViewModelOwnsSelectedFileState() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-		val viewModel = SendViewModel(FakeCoreGateway(), FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
+		val fileSystem = FakeFileSystemService(folder)
+		val viewModel = SendViewModel(FakeCoreGateway(), fileSystem, preferences(), FakeFilePreviewRepository(), UiMessageController())
 		viewModel.openComposer()
-		viewModel.onFilesPicked(listOf(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL)))
+		val selected = PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL, isTemporaryCopy = true)
+		viewModel.onFilesPicked(listOf(selected))
 		assertEquals("photo.jpg", viewModel.state.value.transferName)
 		assertEquals(42UL, viewModel.state.value.selectedFile?.sizeBytes)
 		viewModel.clearSelectedSource()
+		advanceUntilIdle()
 		assertEquals(null, viewModel.state.value.selectedFile)
+		assertEquals(listOf(selected), fileSystem.discardedPickedFiles)
 	}
 
 	@Test
@@ -209,13 +239,15 @@ class ViewModelsTest {
 			shareResult = Result.success(Share(7UL, "ticket", "photo.jpg", "hash", 1UL, 42UL))
 		}
 		val previews = FakeFilePreviewRepository()
-		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), previews, UiMessageController())
+		val fileSystem = FakeFileSystemService(folder)
+		val viewModel = SendViewModel(core, fileSystem, preferences(), previews, UiMessageController())
 		advanceUntilIdle()
 		viewModel.openComposer()
 		val thumbnail = ByteArray(12).also {
 			it[0] = 0x89.toByte(); it[1] = 'P'.code.toByte(); it[2] = 'N'.code.toByte(); it[3] = 'G'.code.toByte()
 		}
-		viewModel.onFilesPicked(listOf(com.vnidrop.app.core.PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL, thumbnail)))
+		val selected = PickedShareFile("/tmp/photo.jpg", "photo.jpg", 42UL, thumbnail, isTemporaryCopy = true)
+		viewModel.onFilesPicked(listOf(selected))
 		viewModel.setAccessPolicy(ShareAccessPolicy.AnyoneWithTransfer)
 		viewModel.createShare()
 		advanceUntilIdle()
@@ -225,6 +257,7 @@ class ViewModelsTest {
 		assertEquals(ShareAccessPolicy.AnyoneWithTransfer, core.lastShareAccessPolicy)
 		assertEquals(7UL, core.state.value.transfers.first().transferId)
 		assertContentEquals(thumbnail, previews.previews.value.getValue(7UL))
+		assertEquals(listOf(selected), fileSystem.discardedPickedFiles)
 	}
 
 	@Test
@@ -397,7 +430,8 @@ class ViewModelsTest {
 			mutableState.value = mutableState.value.copy(isInitialized = true)
 			inspectionResult = Result.success(sampleTicketInspection())
 		}
-		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), UiMessageController())
+		val messages = UiMessageController()
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), messages)
 		advanceUntilIdle()
 		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("ticket-abc"))
 		advanceUntilIdle()
@@ -411,6 +445,74 @@ class ViewModelsTest {
 		assertFalse(viewModel.state.value.isAcquisitionOpen)
 		assertEquals("", viewModel.state.value.ticket)
 		assertFalse(viewModel.state.value.isReceiving)
+		val completed = messages.messages.first()
+		assertEquals(null, completed.actionLabel)
+		assertEquals(null, completed.onAction)
+	}
+
+	@Test
+	fun receiveViewModelOffersCompletedFolderInFilesWhenPlatformSupportsIt() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(sampleTicketInspection())
+		}
+		val fileSystem = FakeFileSystemService(folder).apply { canRevealFolder = true }
+		val messages = UiMessageController()
+		val viewModel = ReceiveViewModel(core, fileSystem, preferences(), messages)
+		advanceUntilIdle()
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("ticket"))
+		advanceUntilIdle()
+
+		viewModel.receive()
+		advanceUntilIdle()
+		val completed = messages.messages.first()
+
+		assertEquals(UiText.Resource(Res.string.button_show_in_files), completed.actionLabel)
+		assertNotNull(completed.onAction).invoke()
+		advanceUntilIdle()
+		assertEquals(listOf(folder), fileSystem.revealedFolders)
+	}
+
+	@Test
+	fun receiveViewModelUsesPlatformEffectiveFolderInsteadOfPersistedExternalFolder() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val internalFolder = ReceiveFolder(ReceiveFolderKind.FileSystemPath, "/app/Documents", "Documents")
+		val fileSystem = FakeFileSystemService(folder).apply { effectiveFolder = internalFolder }
+		val viewModel = ReceiveViewModel(FakeCoreGateway(), fileSystem, preferences(), UiMessageController())
+
+		advanceUntilIdle()
+
+		assertEquals(internalFolder, viewModel.state.value.receiveFolder)
+	}
+
+	@Test
+	fun receiveViewModelReportsWhenCompletedFolderCannotOpen() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(sampleTicketInspection())
+		}
+		val fileSystem = FakeFileSystemService(folder).apply {
+			canRevealFolder = true
+			revealFolderResult = Result.failure(IllegalStateException("Files unavailable"))
+		}
+		val messages = UiMessageController()
+		val viewModel = ReceiveViewModel(core, fileSystem, preferences(), messages)
+		advanceUntilIdle()
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.InvitationFile, Result.success("ticket"))
+		advanceUntilIdle()
+		viewModel.receive()
+		advanceUntilIdle()
+
+		val completed = messages.messages.first()
+		assertNotNull(completed.onAction).invoke()
+		advanceUntilIdle()
+
+		assertEquals(
+			UiText.Resource(Res.string.receive_open_files_failed),
+			messages.messages.first().text,
+		)
 	}
 
 	@Test
@@ -540,10 +642,11 @@ class ViewModelsTest {
 		preferences: PreferencesRepository = preferences(),
 		notifications: FakeNotificationService = FakeNotificationService(),
 		transport: DiagnosticsTransport = RecordingDiagnosticsTransport(),
+		fileSystem: FakeFileSystemService = FakeFileSystemService(folder),
 	) = SettingsViewModel(
 		environment(),
 		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
-		FakeFileSystemService(folder),
+		fileSystem,
 		preferences,
 		notifications,
 		UiMessageController(),

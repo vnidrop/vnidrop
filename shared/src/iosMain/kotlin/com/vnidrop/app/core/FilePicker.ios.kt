@@ -35,11 +35,13 @@ actual fun rememberShareFilePicker(
 				return
 			}
 
-			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeItem), asCopy = false)
+			// The composer outlives this callback, so Rust imports a sandbox copy instead of a short-lived provider URL.
+			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeItem), asCopy = true)
 			picker.allowsMultipleSelection = true
 			val delegate = DocumentPickerDelegate(
 				onFilesPicked = onFilesPicked,
 				onError = onError,
+				useFileSystemPaths = true,
 			)
 			retainedPickerDelegate = delegate
 			picker.delegate = delegate
@@ -54,7 +56,7 @@ actual fun rememberShareFilePicker(
 				onError("Could not find an iOS view controller for the folder picker")
 				return
 			}
-			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeFolder), asCopy = false)
+			val picker = UIDocumentPickerViewController(forOpeningContentTypes = listOf(UTTypeFolder), asCopy = true)
 			val delegate = DocumentPickerDelegate(
 				onFilesPicked = { folders ->
 					val folder = folders.firstOrNull() ?: return@DocumentPickerDelegate
@@ -66,6 +68,7 @@ actual fun rememberShareFilePicker(
 				},
 				onError = onError,
 				forceDirectory = true,
+				useFileSystemPaths = true,
 			)
 			retainedPickerDelegate = delegate
 			picker.delegate = delegate
@@ -115,6 +118,7 @@ private class DocumentPickerDelegate(
 	private val onFilesPicked: (List<PickedShareFile>) -> Unit,
 	private val onError: (String) -> Unit,
 	private val forceDirectory: Boolean = false,
+	private val useFileSystemPaths: Boolean = false,
 ) : NSObject(), UIDocumentPickerDelegateProtocol {
 	override fun documentPicker(controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>) {
 		val files = didPickDocumentsAtURLs.mapNotNull { raw ->
@@ -132,10 +136,11 @@ private class DocumentPickerDelegate(
 				if (didStartAccess) url.stopAccessingSecurityScopedResource()
 			}
 			PickedShareFile(
-				url.absoluteString ?: url.path.orEmpty(),
+				if (useFileSystemPaths) url.path.orEmpty() else url.absoluteString ?: url.path.orEmpty(),
 				displayName,
 				sizeBytes,
 				nativeFileIcon(url),
+				isTemporaryCopy = useFileSystemPaths,
 				isDirectory = forceDirectory,
 			)
 		}
