@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -12,6 +14,7 @@ import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.appearance_auto_description
 import vnidrop.shared.generated.resources.appearance_dark_mode
 import vnidrop.shared.generated.resources.appearance_light_mode
 import vnidrop.shared.generated.resources.appearance_system_mode
@@ -38,6 +41,13 @@ internal fun AppearanceSettings(
 			ThemeSettingsRow(SettingsIcons.Sun, stringResource(Res.string.appearance_light_mode), mode == ThemeMode.Light) {
 				onModeChanged(ThemeMode.Light)
 			}
+		}
+		if (mode == ThemeMode.System) {
+			Text(
+				stringResource(Res.string.appearance_auto_description),
+				color = LocalVniDropColors.current.foregroundLighter,
+				style = MaterialTheme.typography.bodySmall,
+			)
 		}
 	}
 }

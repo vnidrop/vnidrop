@@ -97,7 +97,7 @@ class FoundationComposeTest {
 			}
 		}
 		onNodeWithText("Notifications").performClick()
-		onNodeWithText("Let VniDrop notify you about new connection requests while the app is running in the background.").assertIsDisplayed()
+		onNodeWithText("Get notified about new receive requests while VniDrop is in the background.").assertIsDisplayed()
 	}
 
 	@Test
@@ -375,8 +375,8 @@ class FoundationComposeTest {
 			}
 		}
 
-		onNodeWithText("Receive your first file").assertIsDisplayed()
-		onNodeWithText("Receive files").performClick()
+		onNodeWithText("Nothing received yet").assertIsDisplayed()
+		onNodeWithText("Start receiving").performClick()
 		onNodeWithText("How would you like to connect?").assertIsDisplayed()
 		onNodeWithText("Open a .vnd invitation").assertIsDisplayed()
 	}

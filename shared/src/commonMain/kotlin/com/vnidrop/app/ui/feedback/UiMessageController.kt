@@ -1,5 +1,6 @@
 package com.vnidrop.app.ui.feedback
 
+import com.vnidrop.app.logging.AppLogger
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -43,12 +44,29 @@ class UiMessageController {
 		_dismissals.tryEmit(Unit)
 	}
 
-	fun error(error: Throwable, fallback: String = "Something went wrong.") {
+	/**
+	 * Surfaces a user-facing error snackbar. Logs the full technical error.
+	 * User cancellations are logged and suppressed.
+	 */
+	fun error(error: Throwable) {
+		if (error.isUserCancellation()) {
+			AppLogger.info(
+				"ui",
+				"suppressed user cancellation",
+				mapOf("detail" to error.technicalDetail().ifBlank { error::class.simpleName.orEmpty() }),
+			)
+			return
+		}
+		AppLogger.error("ui", "user-facing error", error)
 		tryShow(
 			UiMessage(
-				text = UiText.Dynamic(error.message?.takeIf(String::isNotBlank) ?: fallback),
+				text = error.toUiText(),
 				tone = UiMessageTone.Error,
 			),
 		)
+	}
+
+	fun error(text: UiText) {
+		tryShow(UiMessage(text = text, tone = UiMessageTone.Error))
 	}
 }

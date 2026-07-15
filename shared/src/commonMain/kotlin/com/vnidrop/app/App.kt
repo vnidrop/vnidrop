@@ -109,7 +109,7 @@ fun App(
 				if (ready == null) {
 					receiveViewModel.onInvitationResult(
 						ReceiveMethod.InvitationFile,
-						Result.failure(IllegalStateException("VniDrop is still starting up. Open the invitation again in a moment.")),
+						Result.failure(IllegalStateException("VniDrop is still starting up")),
 					)
 					return@collect
 				}

@@ -55,8 +55,9 @@ private class AndroidLocalNotificationService(
 	init {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			val manager = context.getSystemService(NotificationManager::class.java)
+			// Shown under system notification settings for this app.
 			manager.createNotificationChannel(
-				NotificationChannel(ChannelId, "Connection requests", NotificationManager.IMPORTANCE_HIGH),
+				NotificationChannel(ChannelId, "Transfer requests", NotificationManager.IMPORTANCE_HIGH),
 			)
 		}
 	}

@@ -20,6 +20,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.approval_connection_request
+import vnidrop.shared.generated.resources.approval_nearby_device
+import vnidrop.shared.generated.resources.approval_request_body
 
 data class PendingApproval(
 	val id: String,
@@ -137,12 +142,14 @@ class ApprovalCoordinator(
 			return
 		}
 		context.pending.filterNot { it.id in publishedNotificationIds }.forEach { request ->
-			val receiver = request.receiverName ?: request.receiverDeviceName ?: "A nearby device"
+			val receiver = request.receiverName
+				?: request.receiverDeviceName
+				?: getString(Res.string.approval_nearby_device)
 			notifications.publish(
 				LocalNotification(
 					id = notificationId(request.id),
-					title = "Connection request",
-					body = "$receiver wants to receive ${request.transferName}",
+					title = getString(Res.string.approval_connection_request),
+					body = getString(Res.string.approval_request_body, receiver, request.transferName),
 				),
 			).onSuccess {
 				publishedNotificationIds += request.id

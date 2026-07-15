@@ -30,6 +30,7 @@ import com.vnidrop.app.support.FakeFilePreviewRepository
 import com.vnidrop.app.support.FakeNotificationService
 import com.vnidrop.app.support.FakePreferencesRepository
 import com.vnidrop.app.ui.feedback.UiMessageController
+import com.vnidrop.app.ui.feedback.UiText
 import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.theme.ThemeMode
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.error_permission
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ViewModelsTest {
@@ -431,7 +434,10 @@ class ViewModelsTest {
 		assertEquals("ticket-xyz", viewModel.state.value.ticket)
 		assertFalse(viewModel.state.value.isReceiving)
 		assertTrue(viewModel.state.value.inspection != null)
-		assertEquals("sender refused", viewModel.state.value.lastReceiveError)
+		assertEquals(
+			UiText.Resource(Res.string.error_permission),
+			viewModel.state.value.lastReceiveError,
+		)
 	}
 
 	@Test

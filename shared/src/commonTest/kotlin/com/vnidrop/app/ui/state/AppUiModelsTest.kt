@@ -14,6 +14,14 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.progress_completed
+import vnidrop.shared.generated.resources.progress_interrupted
+import vnidrop.shared.generated.resources.progress_saving
+import vnidrop.shared.generated.resources.progress_sending
+import vnidrop.shared.generated.resources.progress_working
+import vnidrop.shared.generated.resources.transfer_file_count_one
+import vnidrop.shared.generated.resources.transfer_file_count_other
 
 class AppUiModelsTest {
 	@Test
@@ -102,7 +110,7 @@ class AppUiModelsTest {
 		)
 		val progress = progressForTransfer(events, 7UL)
 		assertEquals(0.75f, progress?.progress)
-		assertEquals("Saving files", progress?.label)
+		assertEquals(Res.string.progress_saving, progress?.label)
 		assertEquals("a.bin", progress?.detail)
 	}
 
@@ -150,7 +158,7 @@ class AppUiModelsTest {
 		// blob1 complete 50 + blob2 40 = 90 / total hint 100
 		val progress = progressForReceiver(events, 7UL, "peer-a", totalSizeHint = 100UL)
 		assertEquals(0.9f, progress?.progress)
-		assertEquals("Sending", progress?.label)
+		assertEquals(Res.string.progress_sending, progress?.label)
 		assertEquals(null, progressForReceiver(events, 7UL, "missing"))
 	}
 
@@ -206,7 +214,7 @@ class AppUiModelsTest {
 		)
 		val progress = activeSendProgress(events, 7UL, totalSizeHint = 100UL)
 		assertEquals(0.3f, progress?.progress)
-		assertEquals("Sending", progress?.label)
+		assertEquals(Res.string.progress_sending, progress?.label)
 	}
 
 	@Test
@@ -214,6 +222,55 @@ class AppUiModelsTest {
 		assertTrue(storedTransfer(status = TransferStatus.Sharing).canCancelTransfer())
 		assertTrue(storedTransfer(status = TransferStatus.Receiving).canCancelTransfer())
 		assertFalse(storedTransfer(status = TransferStatus.Done).canCancelTransfer())
+	}
+
+	@Test
+	fun unknownProgressEventsUseGenericWorkingLabel() {
+		// Tracked phase/kind that has no dedicated product copy must not dump tokens.
+		val progress = progressForTransfer(
+			listOf(event(id = "x", phase = "lifecycle", kind = "progress", data = "{}")),
+			7UL,
+		)
+		assertEquals(Res.string.progress_working, progress?.label)
+	}
+
+	@Test
+	fun transferFileCountPicksSingularAndPluralResources() {
+		assertEquals(Res.string.transfer_file_count_one, transferFileCountResource(1UL))
+		assertEquals(Res.string.transfer_file_count_other, transferFileCountResource(2UL))
+		assertEquals(Res.string.transfer_file_count_other, transferFileCountResource(0UL))
+	}
+
+	@Test
+	fun progressForReceiverInterruptedUsesInterruptedLabel() {
+		val events = listOf(
+			event(
+				id = "aborted",
+				phase = "transfer",
+				kind = "aborted",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a"}""",
+				direction = "send",
+			),
+		)
+		val progress = progressForReceiver(events, 7UL, "peer-a")
+		assertEquals(Res.string.progress_interrupted, progress?.label)
+		assertEquals(null, progress?.progress)
+	}
+
+	@Test
+	fun progressForReceiverCompletedWithoutProgressUsesCompletedLabel() {
+		val events = listOf(
+			event(
+				id = "done",
+				phase = "transfer",
+				kind = "completed",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a"}""",
+				direction = "send",
+			),
+		)
+		val progress = progressForReceiver(events, 7UL, "peer-a")
+		assertEquals(Res.string.progress_completed, progress?.label)
+		assertEquals(1f, progress?.progress)
 	}
 
 	private fun storedTransfer(status: TransferStatus): Transfer =

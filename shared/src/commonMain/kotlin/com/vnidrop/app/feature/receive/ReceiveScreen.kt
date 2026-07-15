@@ -53,6 +53,7 @@ import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.feedback.UiText
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
@@ -270,7 +271,7 @@ private fun InvitationReviewPanel(
 					?: events.firstOrNull { it.direction == "receive" && it.transferId != null }?.transferId
 				val progress = progressId?.let { progressForTransfer(events, it) }
 				ProgressRow(
-					label = progress?.label ?: stringResource(Res.string.progress_receiving),
+					label = progress?.label ?: Res.string.progress_receiving,
 					progress = progress?.progress,
 					detail = progress?.detail,
 				)
@@ -288,7 +289,14 @@ private fun InvitationReviewPanel(
 				)
 			}
 			state.lastReceiveError?.let { error ->
-				Text(error, color = LocalVniDropColors.current.destructiveDefault, style = MaterialTheme.typography.bodySmall)
+				Text(
+					when (error) {
+						is UiText.Dynamic -> error.value
+						is UiText.Resource -> stringResource(error.resource)
+					},
+					color = LocalVniDropColors.current.destructiveDefault,
+					style = MaterialTheme.typography.bodySmall,
+				)
 			}
 		}
 	}

@@ -16,6 +16,8 @@ import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
 import com.vnidrop.app.ui.feedback.UiMessageTone
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.feedback.isUserCancellation
+import com.vnidrop.app.ui.feedback.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_retry
+import vnidrop.shared.generated.resources.error_invitation_empty
 import vnidrop.shared.generated.resources.receive_completed
 import vnidrop.shared.generated.resources.receive_history_cleared
 import vnidrop.shared.generated.resources.transfer_deleted
@@ -43,7 +46,7 @@ data class ReceiveState(
 	val isInspecting: Boolean = false,
 	val isReceiving: Boolean = false,
 	val activeReceiveTransferId: ULong? = null,
-	val lastReceiveError: String? = null,
+	val lastReceiveError: UiText? = null,
 	val isWaitingForNfc: Boolean = false,
 	val historyDeleteTarget: ReceiveHistoryDeleteTarget? = null,
 	val isDeletingHistory: Boolean = false,
@@ -170,17 +173,27 @@ class ReceiveViewModel(
 					messages.tryShow(UiMessage(UiText.Resource(Res.string.receive_completed), UiMessageTone.Success))
 				},
 				onFailure = { error ->
-					val message = error.message?.takeIf(String::isNotBlank) ?: "Something went wrong."
+					if (error.isUserCancellation()) {
+						_state.update {
+							it.copy(
+								isReceiving = false,
+								activeReceiveTransferId = null,
+								lastReceiveError = null,
+							)
+						}
+						return@fold
+					}
+					val uiText = error.toUiText()
 					_state.update {
 						it.copy(
 							isReceiving = false,
 							activeReceiveTransferId = null,
-							lastReceiveError = message,
+							lastReceiveError = uiText,
 						)
 					}
 					messages.tryShow(
 						UiMessage(
-							text = UiText.Dynamic(message),
+							text = uiText,
 							tone = UiMessageTone.Error,
 							actionLabel = UiText.Resource(Res.string.button_retry),
 							onAction = { receive() },
@@ -215,7 +228,7 @@ class ReceiveViewModel(
 
 	private fun inspectInvitation(method: ReceiveMethod, raw: String) {
 		val ticket = raw.trim()
-		if (ticket.isBlank()) return messages.error(IllegalArgumentException("The invitation is empty"))
+		if (ticket.isBlank()) return messages.error(UiText.Resource(Res.string.error_invitation_empty))
 		viewModelScope.launch {
 			_state.update {
 				it.copy(

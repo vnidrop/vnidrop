@@ -198,7 +198,7 @@ private fun ReceiverRow(receiver: ReceiverRequestModel, sendProgress: TransferPr
 		}
 		if (showLiveSend) {
 			ProgressRow(
-				label = stringResource(Res.string.transfer_receiver_sending),
+				label = sendProgress.label,
 				progress = sendProgress.progress,
 				detail = sendProgress.detail,
 			)

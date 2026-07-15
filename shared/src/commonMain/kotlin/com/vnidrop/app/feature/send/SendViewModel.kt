@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.send_transfer_created
 import vnidrop.shared.generated.resources.transfer_deleted
+import vnidrop.shared.generated.resources.transfer_invitation_saved
 import vnidrop.shared.generated.resources.transfer_nfc_written
 
 data class SendState(
@@ -149,7 +150,7 @@ class SendViewModel(
 		}
 	}
 
-	fun onFilePickFailed(reason: String) = messages.error(IllegalStateException(reason))
+	fun onFilePickFailed(reason: String) = messages.error(IllegalStateException(reason.takeIf(String::isNotBlank) ?: "selection failed"))
 
 	fun clearSelectedSource() {
 		_state.update { it.copy(selectedFiles = emptyList(), transferName = "") }
@@ -227,8 +228,9 @@ class SendViewModel(
 		result.fold(
 			onSuccess = {
 				val message = when (action) {
-					InvitationAction.Export -> null
+					InvitationAction.Export -> Res.string.transfer_invitation_saved
 					InvitationAction.Nfc -> Res.string.transfer_nfc_written
+					// System share sheet already confirms the action on most platforms.
 					InvitationAction.Share -> null
 				}
 				message?.let { messages.tryShow(UiMessage(UiText.Resource(it), UiMessageTone.Success)) }

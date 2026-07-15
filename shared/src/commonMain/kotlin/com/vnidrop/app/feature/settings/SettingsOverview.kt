@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.ui.theme.ThemeMode
 import org.jetbrains.compose.resources.stringResource
+import com.vnidrop.app.ui.theme.LocalVniDropColors
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.about_title
 import vnidrop.shared.generated.resources.appearance_dark_mode
@@ -17,6 +18,7 @@ import vnidrop.shared.generated.resources.appearance_system_mode
 import vnidrop.shared.generated.resources.appearance_title
 import vnidrop.shared.generated.resources.notifications_title
 import vnidrop.shared.generated.resources.preferences_title
+import vnidrop.shared.generated.resources.settings_subtitle
 import vnidrop.shared.generated.resources.settings_title
 
 @Composable
@@ -26,11 +28,18 @@ internal fun SettingsOverview(
 	largeTitle: Boolean,
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-		Text(
-			stringResource(Res.string.settings_title),
-			style = if (largeTitle) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
-			fontWeight = FontWeight.Bold,
-		)
+		Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+			Text(
+				stringResource(Res.string.settings_title),
+				style = if (largeTitle) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
+				fontWeight = FontWeight.Bold,
+			)
+			Text(
+				stringResource(Res.string.settings_subtitle),
+				color = LocalVniDropColors.current.foregroundLighter,
+				style = MaterialTheme.typography.bodyMedium,
+			)
+		}
 		SettingsGroup {
 			SettingsRow(
 				icon = SettingsIcons.Device,

@@ -13,14 +13,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.ui.theme.LocalVniDropColors
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ProgressRow(
-	label: String,
+	label: StringResource,
 	progress: Float?,
 	modifier: Modifier = Modifier,
 	detail: String? = null,
 ) {
+	val labelText = stringResource(label)
 	Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(6.dp)) {
 		Row(
 			Modifier.fillMaxWidth(),
@@ -28,7 +31,7 @@ fun ProgressRow(
 			verticalAlignment = Alignment.CenterVertically,
 		) {
 			Text(
-				label,
+				labelText,
 				style = MaterialTheme.typography.bodyMedium,
 				maxLines = 1,
 				overflow = TextOverflow.Ellipsis,
@@ -53,17 +56,5 @@ fun ProgressRow(
 		}
 		if (progress == null) LinearProgressIndicator(Modifier.fillMaxWidth())
 		else LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
-	}
-}
-
-@Composable
-fun MetadataRow(label: String, value: String, modifier: Modifier = Modifier) {
-	Row(
-		modifier = modifier.fillMaxWidth(),
-		horizontalArrangement = Arrangement.spacedBy(12.dp),
-		verticalAlignment = Alignment.Top,
-	) {
-		Text(label, Modifier.weight(0.35f), color = LocalVniDropColors.current.foregroundLighter, style = MaterialTheme.typography.bodySmall)
-		Text(value, Modifier.weight(0.65f), style = MaterialTheme.typography.bodySmall)
 	}
 }

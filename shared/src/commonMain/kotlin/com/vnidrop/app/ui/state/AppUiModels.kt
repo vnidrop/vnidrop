@@ -1,9 +1,37 @@
 package com.vnidrop.app.ui.state
 
+import androidx.compose.runtime.Composable
 import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
 import kotlin.math.roundToInt
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
+import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.progress_cancelled
+import vnidrop.shared.generated.resources.progress_completed
+import vnidrop.shared.generated.resources.progress_connected
+import vnidrop.shared.generated.resources.progress_connecting
+import vnidrop.shared.generated.resources.progress_downloading
+import vnidrop.shared.generated.resources.progress_failed
+import vnidrop.shared.generated.resources.progress_getting_ready
+import vnidrop.shared.generated.resources.progress_interrupted
+import vnidrop.shared.generated.resources.progress_preparing
+import vnidrop.shared.generated.resources.progress_ready
+import vnidrop.shared.generated.resources.progress_requesting_access
+import vnidrop.shared.generated.resources.progress_saving
+import vnidrop.shared.generated.resources.progress_sending
+import vnidrop.shared.generated.resources.progress_share_ready
+import vnidrop.shared.generated.resources.progress_working
+import vnidrop.shared.generated.resources.status_available
+import vnidrop.shared.generated.resources.status_cancelled
+import vnidrop.shared.generated.resources.status_completed
+import vnidrop.shared.generated.resources.status_failed
+import vnidrop.shared.generated.resources.status_preparing
+import vnidrop.shared.generated.resources.status_receiving
+import vnidrop.shared.generated.resources.status_stopped
+import vnidrop.shared.generated.resources.transfer_file_count_one
+import vnidrop.shared.generated.resources.transfer_file_count_other
 
 enum class WindowClass {
 	Phone,
@@ -25,21 +53,25 @@ data class TransferProgress(
 	val transferId: ULong?,
 	val phase: String,
 	val kind: String,
-	val label: String,
+	val label: StringResource,
 	val progress: Float?,
 	val detail: String? = null,
 )
 
-fun displayNameForStatus(status: TransferStatus): String =
+fun statusLabelResource(status: TransferStatus): StringResource =
 	when (status) {
-		TransferStatus.Importing -> "Preparing"
-		TransferStatus.Sharing -> "Available"
-		TransferStatus.Receiving -> "Receiving"
-		TransferStatus.Done -> "Completed"
-		TransferStatus.Cancelled -> "Cancelled"
-		TransferStatus.Stopped -> "Stopped"
-		TransferStatus.Failed -> "Failed"
+		TransferStatus.Importing -> Res.string.status_preparing
+		TransferStatus.Sharing -> Res.string.status_available
+		TransferStatus.Receiving -> Res.string.status_receiving
+		TransferStatus.Done -> Res.string.status_completed
+		TransferStatus.Cancelled -> Res.string.status_cancelled
+		TransferStatus.Stopped -> Res.string.status_stopped
+		TransferStatus.Failed -> Res.string.status_failed
 	}
+
+@Composable
+fun displayNameForStatus(status: TransferStatus): String =
+	stringResource(statusLabelResource(status))
 
 fun Transfer.isActiveTransfer(): Boolean =
 	status in activeTransferStatuses
@@ -101,7 +133,7 @@ fun progressForReceiver(
 			transferId = transferId,
 			phase = "transfer",
 			kind = "aborted",
-			label = "Send interrupted",
+			label = Res.string.progress_interrupted,
 			progress = null,
 			detail = null,
 		)
@@ -111,7 +143,7 @@ fun progressForReceiver(
 			transferId = transferId,
 			phase = "transfer",
 			kind = "completed",
-			label = "Send completed",
+			label = Res.string.progress_completed,
 			progress = 1f,
 			detail = null,
 		)
@@ -122,7 +154,7 @@ fun progressForReceiver(
 		transferId = transferId,
 		phase = "transfer",
 		kind = latest.kind,
-		label = "Sending",
+		label = Res.string.progress_sending,
 		progress = progress,
 		detail = progressDetail(latest),
 	)
@@ -156,7 +188,7 @@ fun activeSendProgress(
 			transferId = transferId,
 			phase = "transfer",
 			kind = relevant.first().kind,
-			label = "Sending to receiver",
+			label = Res.string.progress_sending,
 			progress = aggregateReceiverProgress(relevant, totalSizeHint),
 			detail = progressDetail(relevant.first()),
 		)
@@ -174,14 +206,9 @@ fun summarizeProgress(events: List<CoreEventModel>): List<TransferProgress> =
 		.take(6)
 		.mapNotNull { progressForTransfer(events, it) }
 
-fun transferSubtitle(transfer: Transfer): String {
-	val pieces = listOfNotNull(
-		transfer.transferName,
-		"${transfer.fileCount} file${if (transfer.fileCount == 1UL) "" else "s"}",
-		formatBytes(transfer.totalSize),
-	)
-	return pieces.joinToString(" | ")
-}
+/** File-count string resource for transfer subtitles (resolve with [stringResource]). */
+fun transferFileCountResource(fileCount: ULong): StringResource =
+	if (fileCount == 1UL) Res.string.transfer_file_count_one else Res.string.transfer_file_count_other
 
 fun formatBytes(size: ULong): String {
 	val value = size.toDouble()
@@ -217,29 +244,26 @@ private val activeTransferStatuses = setOf(
 	TransferStatus.Receiving,
 )
 
-private fun humanProgressLabel(event: CoreEventModel): String = when {
-	event.phase == "import" && event.kind == "copy-progress" -> "Preparing files"
-	event.phase == "import" && event.kind == "outboard-progress" -> "Indexing files"
-	event.phase == "import" && event.kind == "started" -> "Preparing transfer"
-	event.phase == "import" && event.kind == "done" -> "Files ready"
-	event.phase == "ticket" && event.kind == "created" -> "Share ready"
-	event.phase == "network" && event.kind == "connecting" -> "Connecting to sender"
-	event.phase == "network" && event.kind == "connected" -> "Connected"
-	event.phase == "handshake" -> "Requesting access"
-	event.phase == "download" && event.kind == "found-collection" -> "Found files"
-	event.phase == "download" && event.kind == "progress" -> "Downloading"
-	event.phase == "export" && event.kind == "progress" -> "Saving files"
-	event.phase == "transfer" && event.kind == "progress" -> "Sending to receiver"
-	event.phase == "transfer" && event.kind == "started" -> "Receiver connected"
-	event.phase == "transfer" && event.kind == "completed" -> "Send completed"
-	event.phase == "lifecycle" && event.kind == "done" -> "Completed"
-	event.phase == "lifecycle" && event.kind == "cancelled" -> "Cancelled"
-	event.kind == "failed" -> "Failed"
-	else -> listOfNotNull(
-		event.direction?.replaceFirstChar { it.uppercase() },
-		event.phase.replaceFirstChar { it.uppercase() },
-		event.kind.replace('-', ' '),
-	).joinToString(" · ")
+private fun humanProgressLabel(event: CoreEventModel): StringResource = when {
+	event.phase == "import" && event.kind == "copy-progress" -> Res.string.progress_preparing
+	event.phase == "import" && event.kind == "outboard-progress" -> Res.string.progress_preparing
+	event.phase == "import" && event.kind == "started" -> Res.string.progress_preparing
+	event.phase == "import" && event.kind == "done" -> Res.string.progress_ready
+	event.phase == "ticket" && event.kind == "created" -> Res.string.progress_share_ready
+	event.phase == "network" && event.kind == "connecting" -> Res.string.progress_connecting
+	event.phase == "network" && event.kind == "connected" -> Res.string.progress_connected
+	event.phase == "handshake" -> Res.string.progress_requesting_access
+	event.phase == "download" && event.kind == "found-collection" -> Res.string.progress_getting_ready
+	event.phase == "download" && event.kind == "progress" -> Res.string.progress_downloading
+	event.phase == "export" && event.kind == "progress" -> Res.string.progress_saving
+	event.phase == "transfer" && event.kind == "progress" -> Res.string.progress_sending
+	event.phase == "transfer" && event.kind == "started" -> Res.string.progress_connected
+	event.phase == "transfer" && event.kind == "completed" -> Res.string.progress_completed
+	event.phase == "lifecycle" && event.kind == "done" -> Res.string.progress_completed
+	event.phase == "lifecycle" && event.kind == "cancelled" -> Res.string.progress_cancelled
+	event.kind == "failed" -> Res.string.progress_failed
+	// Never dump raw phase/kind tokens into the UI.
+	else -> Res.string.progress_working
 }
 
 private fun progressDetail(event: CoreEventModel): String? {

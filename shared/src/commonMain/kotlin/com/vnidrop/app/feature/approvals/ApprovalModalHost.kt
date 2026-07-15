@@ -32,7 +32,9 @@ import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.approval_connection_request
 import vnidrop.shared.generated.resources.approval_endpoint_id
+import vnidrop.shared.generated.resources.approval_nearby_device
 import vnidrop.shared.generated.resources.approval_pending_count
+import vnidrop.shared.generated.resources.approval_request_body
 import vnidrop.shared.generated.resources.button_approve
 import vnidrop.shared.generated.resources.button_refuse
 
@@ -44,7 +46,9 @@ fun ApprovalModalHost(
 ) {
 	val request = state.current ?: return
 	val busy = request.id in state.respondingIds
-	val receiver = request.receiverName ?: request.receiverDeviceName ?: "A nearby device"
+	val receiver = request.receiverName
+		?: request.receiverDeviceName
+		?: stringResource(Res.string.approval_nearby_device)
 	val colors = LocalVniDropColors.current
 	Dialog(
 		onDismissRequest = {},
@@ -75,7 +79,7 @@ fun ApprovalModalHost(
 					fontWeight = FontWeight.Bold,
 				)
 				Text(
-					"$receiver wants to receive ${request.transferName}.",
+					stringResource(Res.string.approval_request_body, receiver, request.transferName),
 					style = MaterialTheme.typography.bodyLarge,
 					color = colors.foregroundLight,
 				)

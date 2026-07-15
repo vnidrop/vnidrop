@@ -319,7 +319,13 @@ class SettingsViewModel(
 			} catch (error: Throwable) {
 				if (error is CancellationException) throw error
 				_state.update { it.copy(isLoadingDeviceInfo = false) }
-				messages.error(error, "Could not load device information.")
+				messages.error(
+					if (error.message.isNullOrBlank()) {
+						IllegalStateException("Could not load device information.")
+					} else {
+						error
+					},
+				)
 			}
 		}
 	}
