@@ -88,6 +88,7 @@ class SettingsViewModel(
 	private val messages: UiMessageController,
 	private val bugReports: BugReportService,
 	private val diagnostics: DiagnosticsCoordinator? = null,
+	private val diagnosticsIncluded: Boolean = DiagnosticsBuildConfig.INCLUDED,
 ) : ViewModel() {
 	private val _state = MutableStateFlow(
 		SettingsState(
@@ -200,7 +201,7 @@ class SettingsViewModel(
 	}
 
 	fun setDiagnosticsEnabled(enabled: Boolean) {
-		if (!DiagnosticsBuildConfig.INCLUDED) return
+		if (!diagnosticsIncluded) return
 		viewModelScope.launch {
 			preferencesRepository.setDiagnosticsEnabled(enabled)
 			diagnostics?.record(

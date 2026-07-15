@@ -18,13 +18,14 @@ class DiagnosticsCoordinator(
 	val crashReporter: CrashReporter,
 	val bugReports: BugReportService,
 	private val scope: CoroutineScope,
+	private val included: Boolean = DiagnosticsBuildConfig.INCLUDED,
 ) {
 	fun start() {
 		// Install id is useful for bug-report correlation even without telemetry.
 		scope.launch {
 			preferencesRepository.ensureDiagnosticsInstallId()
 		}
-		if (!DiagnosticsBuildConfig.INCLUDED) return
+		if (!included) return
 		crashReporter.startObservingPreferences()
 		crashReporter.installUnhandledExceptionHandler()
 		scope.launch {
@@ -33,7 +34,7 @@ class DiagnosticsCoordinator(
 	}
 
 	fun record(name: String, properties: Map<String, String> = emptyMap()) {
-		if (!DiagnosticsBuildConfig.INCLUDED) return
+		if (!included) return
 		telemetry.record(name, properties)
 	}
 
@@ -45,6 +46,7 @@ class DiagnosticsCoordinator(
 			preferencesRepository: PreferencesRepository,
 			scope: CoroutineScope,
 			transport: DiagnosticsTransport = NoOpDiagnosticsTransport(),
+			included: Boolean = DiagnosticsBuildConfig.INCLUDED,
 		): DiagnosticsCoordinator {
 			val breadcrumbs = BreadcrumbBuffer()
 			val crashStore = createPendingCrashStore(appDataDir)
@@ -53,6 +55,7 @@ class DiagnosticsCoordinator(
 				transport = transport,
 				breadcrumbs = breadcrumbs,
 				scope = scope,
+				included = included,
 			)
 			val crashReporter = CrashReporter(
 				store = crashStore,
@@ -78,6 +81,7 @@ class DiagnosticsCoordinator(
 				crashReporter = crashReporter,
 				bugReports = bugReports,
 				scope = scope,
+				included = included,
 			)
 		}
 	}

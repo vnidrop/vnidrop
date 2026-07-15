@@ -158,13 +158,27 @@ class ViewModelsTest {
 	fun settingsTogglesDiagnosticsPreference() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
-		val viewModel = settingsViewModel(preferences)
+		val viewModel = settingsViewModel(preferences, diagnosticsIncluded = true)
 		advanceUntilIdle()
 		assertFalse(viewModel.state.value.diagnosticsEnabled)
 		viewModel.setDiagnosticsEnabled(true)
 		advanceUntilIdle()
 		assertTrue(preferences.mutablePreferences.value.diagnosticsEnabled)
 		assertTrue(viewModel.state.value.diagnosticsEnabled)
+	}
+
+	@Test
+	fun settingsIgnoresDiagnosticsOptInWhenExcluded() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+
+		viewModel.setDiagnosticsEnabled(true)
+		advanceUntilIdle()
+
+		assertFalse(preferences.mutablePreferences.value.diagnosticsEnabled)
+		assertFalse(viewModel.state.value.diagnosticsEnabled)
 	}
 
 	@Test
@@ -647,6 +661,7 @@ class ViewModelsTest {
 		notifications: FakeNotificationService = FakeNotificationService(),
 		transport: DiagnosticsTransport = RecordingDiagnosticsTransport(),
 		fileSystem: FakeFileSystemService = FakeFileSystemService(folder),
+		diagnosticsIncluded: Boolean = false,
 	) = SettingsViewModel(
 		environment(),
 		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
@@ -662,6 +677,7 @@ class ViewModelsTest {
 			platform = "Test",
 			logReader = { "sample log line" },
 		),
+		diagnosticsIncluded = diagnosticsIncluded,
 	)
 
 	private fun receivedTransfer(id: ULong, status: TransferStatus) = Transfer(

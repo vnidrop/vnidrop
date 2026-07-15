@@ -41,12 +41,12 @@ plugins {
 // included=false: no Share-diagnostics toggle, no telemetry/crash auto-upload stack.
 // endpoint/key both empty: transport is NoOp (safe default until Cloudflare is deployed).
 val diagnosticsIncluded: Boolean =
-	(findProperty("vnidrop.diagnostics.included") as String?)?.toBooleanStrictOrNull() ?: true
+	(findProperty("vnidrop.diagnostics.included") as String?)?.toBooleanStrictOrNull() ?: false
 val diagnosticsEndpoint: String =
 	(findProperty("vnidrop.diagnostics.endpoint") as String?)?.trim().orEmpty()
 val diagnosticsIngestKey: String =
 	(findProperty("vnidrop.diagnostics.ingestKey") as String?)?.trim().orEmpty()
-check(diagnosticsEndpoint.isEmpty() == diagnosticsIngestKey.isEmpty()) {
+check(!diagnosticsIncluded || diagnosticsEndpoint.isEmpty() == diagnosticsIngestKey.isEmpty()) {
 	"vnidrop.diagnostics.endpoint and vnidrop.diagnostics.ingestKey must be configured together"
 }
 
@@ -56,8 +56,8 @@ val generateDiagnosticsBuildConfig by tasks.registering {
 	description = "Generates DiagnosticsBuildConfig from vnidrop.diagnostics.* properties"
 	val outputDir = diagnosticsBuildConfigDir
 	val included = diagnosticsIncluded
-	val endpoint = diagnosticsEndpoint
-	val ingestKey = diagnosticsIngestKey
+	val endpoint = if (included) diagnosticsEndpoint else ""
+	val ingestKey = if (included) diagnosticsIngestKey else ""
 	inputs.property("vnidrop.diagnostics.included", included)
 	inputs.property("vnidrop.diagnostics.endpoint", endpoint)
 	inputs.property("vnidrop.diagnostics.ingestKey", ingestKey)
