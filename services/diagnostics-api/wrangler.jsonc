@@ -1,0 +1,59 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "vnidrop-diagnostics",
+	"main": "src/index.ts",
+	"workers_dev": true,
+	"preview_urls": false,
+	"compatibility_date": "2026-07-14",
+	"compatibility_flags": ["nodejs_compat"],
+	"upload_source_maps": true,
+	"observability": {
+		"enabled": true,
+		"head_sampling_rate": 0.1,
+	},
+	"triggers": {
+		"crons": ["17 * * * *"],
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "vnidrop-diagnostics",
+			"database_id": "b9e18b17-d9fe-477b-8ace-2b1439d1694e",
+			"migrations_dir": "migrations",
+		},
+	],
+	"r2_buckets": [
+		{
+			"binding": "BLOBS",
+			"bucket_name": "vnidrop-diagnostics",
+			"jurisdiction": "eu",
+		},
+	],
+	"ratelimits": [
+		{
+			"name": "INSTALL_RATE_LIMITER",
+			"namespace_id": "1001",
+			"simple": {
+				"limit": 30,
+				"period": 60,
+			},
+		},
+		{
+			"name": "SOURCE_RATE_LIMITER",
+			"namespace_id": "1002",
+			"simple": {
+				"limit": 120,
+				"period": 60,
+			},
+		},
+	],
+	// Optional: bind Analytics Engine as `AE` when event volume justifies it.
+	// "analytics_engine_datasets": [
+	// 	{ "binding": "AE", "dataset": "vnidrop_events" },
+	// ],
+	"vars": {
+		"MAX_BODY_BYTES": "262144",
+		"MAX_EVENTS_PER_BATCH": "50",
+		"RETENTION_DAYS": "90",
+	},
+}

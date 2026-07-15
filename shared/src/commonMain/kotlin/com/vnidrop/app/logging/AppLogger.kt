@@ -31,6 +31,8 @@ interface PlatformLogStore {
 	val logDirectory: String
 	fun append(line: String)
 	fun listLogFiles(): List<LogFileInfo>
+	/** Newest log content, up to [maxBytes], from the active file then rotated tails if needed. */
+	fun readLatest(maxBytes: Long): String
 }
 
 expect fun createPlatformLogStore(appDataDir: String, policy: LogRotationPolicy): PlatformLogStore
@@ -72,6 +74,9 @@ object AppLogger {
 	fun listLogFiles(): List<LogFileInfo> =
 		store?.listLogFiles().orEmpty()
 
+	fun readLatestLogs(maxBytes: Long = DefaultBugReportLogBytes): String =
+		store?.readLatest(maxBytes).orEmpty()
+
 	private fun write(level: AppLogLevel, scope: String, message: String, fields: Map<String, String>) {
 		val line = buildString {
 			append(platformNowMillis())
@@ -89,6 +94,8 @@ object AppLogger {
 		}
 		store?.append(line)
 	}
+
+	const val DefaultBugReportLogBytes: Long = 256 * 1024
 }
 
 private fun String.sanitizeLogValue(): String =

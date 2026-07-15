@@ -10,8 +10,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.ui.theme.ThemeMode
+import com.vnidrop.app.util.randomUuidString
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okio.Path.Companion.toPath
 
@@ -20,6 +22,10 @@ data class AppPreferences(
 	val receiveFolder: ReceiveFolder,
 	val themeMode: ThemeMode,
 	val notificationsEnabled: Boolean,
+	/** Master opt-in for automatic telemetry + crash upload. Bug reports remain available always. */
+	val diagnosticsEnabled: Boolean = false,
+	/** Stable anonymous install id; never an account or advertising id. */
+	val diagnosticsInstallId: String = "",
 )
 
 class AppPreferencesDefaults(
@@ -27,6 +33,7 @@ class AppPreferencesDefaults(
 	val receiveFolder: ReceiveFolder,
 	val themeMode: ThemeMode,
 	val notificationsEnabled: Boolean = false,
+	val diagnosticsEnabled: Boolean = false,
 )
 
 interface PreferencesRepository {
@@ -36,6 +43,9 @@ interface PreferencesRepository {
 	suspend fun resetReceiveFolder()
 	suspend fun setThemeMode(mode: ThemeMode)
 	suspend fun setNotificationsEnabled(enabled: Boolean)
+	suspend fun setDiagnosticsEnabled(enabled: Boolean)
+	/** Ensures a durable install id exists and returns it. */
+	suspend fun ensureDiagnosticsInstallId(): String
 }
 
 class AppPreferencesRepository(
@@ -50,6 +60,8 @@ class AppPreferencesRepository(
 				receiveFolder = resolveReceiveFolder(prefs, defaults.receiveFolder),
 				themeMode = prefs[PreferenceKeys.ThemeMode]?.let { themeModeOrNull(it) } ?: defaults.themeMode,
 				notificationsEnabled = prefs[PreferenceKeys.NotificationsEnabled] ?: defaults.notificationsEnabled,
+				diagnosticsEnabled = prefs[PreferenceKeys.DiagnosticsEnabled] ?: defaults.diagnosticsEnabled,
+				diagnosticsInstallId = prefs[PreferenceKeys.DiagnosticsInstallId].orEmpty(),
 			)
 		}
 
@@ -82,6 +94,24 @@ class AppPreferencesRepository(
 			prefs[PreferenceKeys.NotificationsEnabled] = enabled
 		}
 	}
+
+	override suspend fun setDiagnosticsEnabled(enabled: Boolean) {
+		dataStore.edit { prefs ->
+			prefs[PreferenceKeys.DiagnosticsEnabled] = enabled
+		}
+	}
+
+	override suspend fun ensureDiagnosticsInstallId(): String {
+		val existing = preferences.first().diagnosticsInstallId
+		if (existing.isNotBlank()) return existing
+		val created = randomUuidString()
+		dataStore.edit { prefs ->
+			if (prefs[PreferenceKeys.DiagnosticsInstallId].isNullOrBlank()) {
+				prefs[PreferenceKeys.DiagnosticsInstallId] = created
+			}
+		}
+		return preferences.first().diagnosticsInstallId.ifBlank { created }
+	}
 }
 
 fun createAppPreferencesDataStore(appDataDir: String): DataStore<Preferences> =
@@ -96,6 +126,8 @@ private object PreferenceKeys {
 	val ReceiveFolderDisplayName = stringPreferencesKey("receive_folder_display_name")
 	val ThemeMode = stringPreferencesKey("theme_mode")
 	val NotificationsEnabled = booleanPreferencesKey("notifications_enabled")
+	val DiagnosticsEnabled = booleanPreferencesKey("diagnostics_enabled")
+	val DiagnosticsInstallId = stringPreferencesKey("diagnostics_install_id")
 }
 
 private fun resolveReceiveFolder(prefs: Preferences, defaults: ReceiveFolder): ReceiveFolder {

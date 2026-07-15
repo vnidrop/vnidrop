@@ -8,6 +8,10 @@ import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.ReceiveFolder
+import com.vnidrop.app.diagnostics.BugReportDraft
+import com.vnidrop.app.diagnostics.BugReportService
+import com.vnidrop.app.diagnostics.DiagnosticsBuildConfig
+import com.vnidrop.app.diagnostics.DiagnosticsCoordinator
 import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.PreferencesRepository
@@ -27,7 +31,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.bug_report_missing_expected
+import vnidrop.shared.generated.resources.bug_report_missing_what
+import vnidrop.shared.generated.resources.bug_report_submit_failed
+import vnidrop.shared.generated.resources.bug_report_submitted
 import vnidrop.shared.generated.resources.button_open_settings
+import vnidrop.shared.generated.resources.diagnostics_disabled_message
+import vnidrop.shared.generated.resources.diagnostics_enabled_message
 import vnidrop.shared.generated.resources.notifications_enabled_message
 import vnidrop.shared.generated.resources.notifications_permission_denied
 import vnidrop.shared.generated.resources.notifications_settings_open_failed
@@ -39,6 +49,7 @@ enum class SettingsSection {
 	Appearance,
 	Notifications,
 	About,
+	BugReport,
 }
 
 data class SettingsState(
@@ -50,9 +61,17 @@ data class SettingsState(
 	val themeMode: ThemeMode = ThemeMode.System,
 	val notificationsEnabled: Boolean = false,
 	val notificationPermission: NotificationPermission = NotificationPermission.NotDetermined,
+	val diagnosticsEnabled: Boolean = false,
 	val deviceInfo: DeviceInfo? = null,
 	val appVersion: String = "",
 	val isLoadingDeviceInfo: Boolean = false,
+	val bugWhatHappened: String = "",
+	val bugExpected: String = "",
+	val bugSteps: String = "",
+	val bugContact: String = "",
+	val bugIncludeLogs: Boolean = true,
+	val isSubmittingBugReport: Boolean = false,
+	val bugLogPreviewBytes: Int = 0,
 )
 
 sealed interface SettingsEffect {
@@ -66,6 +85,8 @@ class SettingsViewModel(
 	private val preferencesRepository: PreferencesRepository,
 	private val notifications: LocalNotificationService,
 	private val messages: UiMessageController,
+	private val bugReports: BugReportService,
+	private val diagnostics: DiagnosticsCoordinator? = null,
 ) : ViewModel() {
 	private val _state = MutableStateFlow(SettingsState(appVersion = environment.appVersion))
 	val state: StateFlow<SettingsState> = _state.asStateFlow()
@@ -88,6 +109,7 @@ class SettingsViewModel(
 						receiveFolder = preferences.receiveFolder,
 						themeMode = preferences.themeMode,
 						notificationsEnabled = preferences.notificationsEnabled,
+						diagnosticsEnabled = preferences.diagnosticsEnabled,
 					)
 				}
 				if (preferences.receiveFolder != previousFolder) {
@@ -101,7 +123,13 @@ class SettingsViewModel(
 
 	fun selectSection(section: SettingsSection) {
 		_state.update { it.copy(selectedSection = section) }
-		if (section == SettingsSection.About) loadDeviceInfo()
+		when (section) {
+			SettingsSection.About, SettingsSection.BugReport -> {
+				loadDeviceInfo()
+				if (section == SettingsSection.BugReport) refreshBugLogPreview()
+			}
+			else -> Unit
+		}
 	}
 
 	fun setUsername(value: String) {
@@ -164,6 +192,90 @@ class SettingsViewModel(
 		}
 	}
 
+	fun setDiagnosticsEnabled(enabled: Boolean) {
+		if (!DiagnosticsBuildConfig.INCLUDED) return
+		viewModelScope.launch {
+			preferencesRepository.setDiagnosticsEnabled(enabled)
+			diagnostics?.record(
+				if (enabled) "diagnostics_enabled" else "diagnostics_disabled",
+			)
+			messages.show(
+				UiMessage(
+					UiText.Resource(
+						if (enabled) Res.string.diagnostics_enabled_message
+						else Res.string.diagnostics_disabled_message,
+					),
+					UiMessageTone.Success,
+				),
+			)
+		}
+	}
+
+	fun setBugWhatHappened(value: String) = _state.update { it.copy(bugWhatHappened = value) }
+	fun setBugExpected(value: String) = _state.update { it.copy(bugExpected = value) }
+	fun setBugSteps(value: String) = _state.update { it.copy(bugSteps = value) }
+	fun setBugContact(value: String) = _state.update { it.copy(bugContact = value) }
+	fun setBugIncludeLogs(value: Boolean) = _state.update { it.copy(bugIncludeLogs = value) }
+
+	fun submitBugReport() {
+		if (_state.value.isSubmittingBugReport) return
+		viewModelScope.launch {
+			val snapshot = _state.value
+			val what = snapshot.bugWhatHappened.trim()
+			val expected = snapshot.bugExpected.trim()
+			if (what.isEmpty()) {
+				messages.show(UiMessage(UiText.Resource(Res.string.bug_report_missing_what), UiMessageTone.Warning))
+				return@launch
+			}
+			if (expected.isEmpty()) {
+				messages.show(UiMessage(UiText.Resource(Res.string.bug_report_missing_expected), UiMessageTone.Warning))
+				return@launch
+			}
+			_state.update { it.copy(isSubmittingBugReport = true) }
+			try {
+				val result = bugReports.submit(
+					BugReportDraft(
+						whatHappened = what,
+						expected = expected,
+						steps = snapshot.bugSteps,
+						contact = snapshot.bugContact,
+						includeLogs = snapshot.bugIncludeLogs,
+					),
+					deviceInfo = snapshot.deviceInfo,
+				)
+				result.fold(
+					onSuccess = {
+						diagnostics?.record("bug_report_submitted")
+						_state.update {
+							it.copy(
+								isSubmittingBugReport = false,
+								bugWhatHappened = "",
+								bugExpected = "",
+								bugSteps = "",
+								bugContact = "",
+								bugIncludeLogs = true,
+							)
+						}
+						messages.show(
+							UiMessage(UiText.Resource(Res.string.bug_report_submitted), UiMessageTone.Success),
+						)
+						selectSection(SettingsSection.About)
+					},
+					onFailure = {
+						_state.update { it.copy(isSubmittingBugReport = false) }
+						messages.show(
+							UiMessage(UiText.Resource(Res.string.bug_report_submit_failed), UiMessageTone.Error),
+						)
+					},
+				)
+			} catch (error: Throwable) {
+				if (error is CancellationException) throw error
+				_state.update { it.copy(isSubmittingBugReport = false) }
+				messages.show(UiMessage(UiText.Resource(Res.string.bug_report_submit_failed), UiMessageTone.Error))
+			}
+		}
+	}
+
 	fun openNotificationSettings() {
 		viewModelScope.launch {
 			enableNotificationsAfterSettings = true
@@ -209,6 +321,13 @@ class SettingsViewModel(
 				_state.update { it.copy(isLoadingDeviceInfo = false) }
 				messages.error(error, "Could not load device information.")
 			}
+		}
+	}
+
+	private fun refreshBugLogPreview() {
+		viewModelScope.launch {
+			val bytes = runCatching { bugReports.previewLogBytes() }.getOrDefault(0)
+			_state.update { it.copy(bugLogPreviewBytes = bytes) }
 		}
 	}
 

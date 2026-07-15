@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.diagnostics.DiagnosticsBuildConfig
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.about_bug_report
@@ -12,13 +13,21 @@ import vnidrop.shared.generated.resources.about_title
 import vnidrop.shared.generated.resources.battery_level_title
 import vnidrop.shared.generated.resources.device_model_title
 import vnidrop.shared.generated.resources.device_name_title
+import vnidrop.shared.generated.resources.diagnostics_description
+import vnidrop.shared.generated.resources.diagnostics_title
 import vnidrop.shared.generated.resources.network_title
 import vnidrop.shared.generated.resources.os_version_title
 import vnidrop.shared.generated.resources.value_unavailable
 import vnidrop.shared.generated.resources.version_title
 
 @Composable
-internal fun AboutSettings(state: SettingsState, onBack: () -> Unit, showBack: Boolean) {
+internal fun AboutSettings(
+	state: SettingsState,
+	onDiagnosticsChanged: (Boolean) -> Unit,
+	onReportBug: () -> Unit,
+	onBack: () -> Unit,
+	showBack: Boolean,
+) {
 	val unavailable = stringResource(Res.string.value_unavailable)
 	val info = state.deviceInfo
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -29,11 +38,23 @@ internal fun AboutSettings(state: SettingsState, onBack: () -> Unit, showBack: B
 				title = stringResource(Res.string.about_privacy),
 				iconTone = SettingsIconTone.Neutral,
 			)
+			if (DiagnosticsBuildConfig.INCLUDED) {
+				SettingsDivider()
+				SettingsToggleRow(
+					icon = SettingsIcons.Info,
+					title = stringResource(Res.string.diagnostics_title),
+					description = stringResource(Res.string.diagnostics_description),
+					checked = state.diagnosticsEnabled,
+					enabled = true,
+					onCheckedChange = onDiagnosticsChanged,
+				)
+			}
 			SettingsDivider()
 			SettingsRow(
 				icon = SettingsIcons.Bug,
 				title = stringResource(Res.string.about_bug_report),
 				iconTone = SettingsIconTone.Neutral,
+				onClick = onReportBug,
 			)
 		}
 		SettingsGroup {

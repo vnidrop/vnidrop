@@ -10,13 +10,20 @@ import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferDirection
 import com.vnidrop.app.core.TransferStatus
+import com.vnidrop.app.diagnostics.BreadcrumbBuffer
+import com.vnidrop.app.diagnostics.BugReportService
+import com.vnidrop.app.diagnostics.DiagnosticsTransport
+import com.vnidrop.app.diagnostics.NoOpDiagnosticsTransport
+import com.vnidrop.app.diagnostics.RecordingDiagnosticsTransport
 import com.vnidrop.app.feature.app.AppViewModel
 import com.vnidrop.app.feature.receive.ReceiveHistoryDeleteTarget
 import com.vnidrop.app.feature.receive.ReceiveViewModel
 import com.vnidrop.app.feature.send.SendViewModel
+import com.vnidrop.app.feature.settings.SettingsSection
 import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
+import com.vnidrop.app.preferences.PreferencesRepository
 import com.vnidrop.app.support.FakeCoreGateway
 import com.vnidrop.app.support.FakeFileSystemService
 import com.vnidrop.app.support.FakeFilePreviewRepository
@@ -62,14 +69,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
 		val notifications = FakeNotificationService(NotificationPermission.Granted)
-		val viewModel = SettingsViewModel(
-			environment(),
-			{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
-			FakeFileSystemService(folder),
-			preferences,
-			notifications,
-			UiMessageController(),
-		)
+		val viewModel = settingsViewModel(preferences, notifications)
 		advanceUntilIdle()
 		viewModel.setNotificationsEnabled(true)
 		advanceUntilIdle()
@@ -84,14 +84,7 @@ class ViewModelsTest {
 	fun settingsUsernameKeepsSpacesWhileTypingAndPersistsAfterDebounce() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
-		val viewModel = SettingsViewModel(
-			environment(),
-			{ DeviceInfo("Device", null, "OS", null, null) },
-			FakeFileSystemService(folder),
-			preferences,
-			FakeNotificationService(),
-			UiMessageController(),
-		)
+		val viewModel = settingsViewModel(preferences)
 		advanceUntilIdle()
 
 		viewModel.setUsername("Ada ")
@@ -109,14 +102,7 @@ class ViewModelsTest {
 	fun settingsKeepsNotificationsDisabledWhenPermissionIsDenied() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
-		val viewModel = SettingsViewModel(
-			environment(),
-			{ DeviceInfo("Device", null, "OS", null, null) },
-			FakeFileSystemService(folder),
-			preferences,
-			FakeNotificationService(NotificationPermission.Denied),
-			UiMessageController(),
-		)
+		val viewModel = settingsViewModel(preferences, FakeNotificationService(NotificationPermission.Denied))
 		advanceUntilIdle()
 		viewModel.setNotificationsEnabled(true)
 		advanceUntilIdle()
@@ -128,14 +114,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
 		val notifications = FakeNotificationService(NotificationPermission.Denied)
-		val viewModel = SettingsViewModel(
-			environment(),
-			{ DeviceInfo("Device", null, "OS", null, null) },
-			FakeFileSystemService(folder),
-			preferences,
-			notifications,
-			UiMessageController(),
-		)
+		val viewModel = settingsViewModel(preferences, notifications)
 		advanceUntilIdle()
 
 		viewModel.openNotificationSettings()
@@ -154,19 +133,57 @@ class ViewModelsTest {
 	fun settingsReportsUnsupportedNotificationPlatforms() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
-		val viewModel = SettingsViewModel(
-			environment(),
-			{ DeviceInfo("Device", null, "OS", null, null) },
-			FakeFileSystemService(folder),
-			preferences,
-			FakeNotificationService(NotificationPermission.Unsupported),
-			UiMessageController(),
-		)
+		val viewModel = settingsViewModel(preferences, FakeNotificationService(NotificationPermission.Unsupported))
 		advanceUntilIdle()
 		viewModel.setNotificationsEnabled(true)
 		advanceUntilIdle()
 		assertFalse(preferences.mutablePreferences.value.notificationsEnabled)
 		assertEquals(NotificationPermission.Unsupported, viewModel.state.value.notificationPermission)
+	}
+
+	@Test
+	fun settingsTogglesDiagnosticsPreference() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		assertFalse(viewModel.state.value.diagnosticsEnabled)
+		viewModel.setDiagnosticsEnabled(true)
+		advanceUntilIdle()
+		assertTrue(preferences.mutablePreferences.value.diagnosticsEnabled)
+		assertTrue(viewModel.state.value.diagnosticsEnabled)
+	}
+
+	@Test
+	fun settingsSubmitsBugReportAndClearsForm() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		viewModel.setBugWhatHappened("Transfer stuck")
+		viewModel.setBugExpected("It should finish")
+		viewModel.submitBugReport()
+		advanceUntilIdle()
+		assertEquals("", viewModel.state.value.bugWhatHappened)
+		assertEquals("", viewModel.state.value.bugExpected)
+	}
+
+	@Test
+	fun settingsKeepsBugReportWhenDeliveryIsUnavailable() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val viewModel = settingsViewModel(transport = NoOpDiagnosticsTransport())
+		advanceUntilIdle()
+		viewModel.selectSection(SettingsSection.BugReport)
+		viewModel.setBugWhatHappened("Transfer stuck")
+		viewModel.setBugExpected("It should finish")
+
+		viewModel.submitBugReport()
+		advanceUntilIdle()
+
+		assertEquals("Transfer stuck", viewModel.state.value.bugWhatHappened)
+		assertEquals("It should finish", viewModel.state.value.bugExpected)
+		assertEquals(SettingsSection.BugReport, viewModel.state.value.selectedSection)
+		assertFalse(viewModel.state.value.isSubmittingBugReport)
 	}
 
 	@Test
@@ -501,10 +518,38 @@ class ViewModelsTest {
 	}
 
 	private fun preferences() = FakePreferencesRepository(
-		AppPreferences("Receiver", folder, ThemeMode.System, notificationsEnabled = false),
+		AppPreferences(
+			username = "Receiver",
+			receiveFolder = folder,
+			themeMode = ThemeMode.System,
+			notificationsEnabled = false,
+			diagnosticsEnabled = false,
+			diagnosticsInstallId = "test-install",
+		),
 	)
 
 	private fun environment() = PlatformEnvironment("Test", "1.0", "/tmp/vnidrop")
+
+	private fun settingsViewModel(
+		preferences: PreferencesRepository = preferences(),
+		notifications: FakeNotificationService = FakeNotificationService(),
+		transport: DiagnosticsTransport = RecordingDiagnosticsTransport(),
+	) = SettingsViewModel(
+		environment(),
+		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
+		FakeFileSystemService(folder),
+		preferences,
+		notifications,
+		UiMessageController(),
+		BugReportService(
+			preferencesRepository = preferences,
+			transport = transport,
+			breadcrumbs = BreadcrumbBuffer(),
+			appVersion = "1.0",
+			platform = "Test",
+			logReader = { "sample log line" },
+		),
+	)
 
 	private fun receivedTransfer(id: ULong, status: TransferStatus) = Transfer(
 		localId = "receive-$id",
