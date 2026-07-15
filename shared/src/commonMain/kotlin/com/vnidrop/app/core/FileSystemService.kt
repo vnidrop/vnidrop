@@ -27,9 +27,18 @@ enum class FolderAccessStatus {
 }
 
 interface FileSystemService {
+	val supportsCustomReceiveFolders: Boolean get() = true
+
 	fun defaultReceiveFolder(): ReceiveFolder
+	fun effectiveReceiveFolder(configuredFolder: ReceiveFolder): ReceiveFolder =
+		if (supportsCustomReceiveFolders) configuredFolder else defaultReceiveFolder()
 	suspend fun validateReceiveFolder(folder: ReceiveFolder): FolderAccessStatus
 	fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink?
+	fun canRevealReceiveFolder(folder: ReceiveFolder): Boolean = false
+	suspend fun revealReceiveFolder(folder: ReceiveFolder): Result<Unit> =
+		Result.failure(UnsupportedOperationException("Revealing the receive folder is not supported"))
+	/** Releases only app-owned picker copies; implementations must never delete original user sources. */
+	suspend fun discardPickedFiles(files: List<PickedShareFile>) = Unit
 	suspend fun sharePickedFile(
 		repository: CoreGateway,
 		file: PickedShareFile,

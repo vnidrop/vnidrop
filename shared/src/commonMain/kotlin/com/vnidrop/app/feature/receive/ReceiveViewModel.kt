@@ -25,7 +25,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_retry
+import vnidrop.shared.generated.resources.button_show_in_files
 import vnidrop.shared.generated.resources.error_invitation_empty
+import vnidrop.shared.generated.resources.receive_open_files_failed
 import vnidrop.shared.generated.resources.receive_completed
 import vnidrop.shared.generated.resources.receive_history_cleared
 import vnidrop.shared.generated.resources.transfer_deleted
@@ -69,11 +71,12 @@ class ReceiveViewModel(
 	init {
 		viewModelScope.launch {
 			preferencesRepository.preferences.collect { preferences ->
-				val status = fileSystemService.validateReceiveFolder(preferences.receiveFolder)
+				val receiveFolder = fileSystemService.effectiveReceiveFolder(preferences.receiveFolder)
+				val status = fileSystemService.validateReceiveFolder(receiveFolder)
 				_state.update { current ->
 					current.copy(
 						receiverName = current.receiverName.ifBlank { preferences.username },
-						receiveFolder = preferences.receiveFolder,
+						receiveFolder = receiveFolder,
 						folderAccessStatus = status,
 					)
 				}
@@ -170,7 +173,19 @@ class ReceiveViewModel(
 			result.fold(
 				onSuccess = {
 					resetAcquisition()
-					messages.tryShow(UiMessage(UiText.Resource(Res.string.receive_completed), UiMessageTone.Success))
+					val canRevealFolder = fileSystemService.canRevealReceiveFolder(folder)
+					messages.tryShow(
+						UiMessage(
+							text = UiText.Resource(Res.string.receive_completed),
+							tone = UiMessageTone.Success,
+							actionLabel = if (canRevealFolder) UiText.Resource(Res.string.button_show_in_files) else null,
+							onAction = if (canRevealFolder) {
+								{ revealReceiveFolder(folder) }
+							} else {
+								null
+							},
+						),
+					)
 				},
 				onFailure = { error ->
 					if (error.isUserCancellation()) {
@@ -223,6 +238,16 @@ class ReceiveViewModel(
 				},
 				onFailure = messages::error,
 			)
+		}
+	}
+
+	private fun revealReceiveFolder(folder: ReceiveFolder) {
+		viewModelScope.launch {
+			fileSystemService.revealReceiveFolder(folder).onFailure {
+				messages.show(
+					UiMessage(UiText.Resource(Res.string.receive_open_files_failed), UiMessageTone.Error),
+				)
+			}
 		}
 	}
 

@@ -43,6 +43,8 @@
 	</array>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>VniDrop uses the camera to scan transfer QR codes.</string>
 	<key>NFCReaderUsageDescription</key>

@@ -7,6 +7,8 @@ data class PickedShareFile(
 	val displayName: String,
 	val sizeBytes: ULong? = null,
 	val thumbnailBytes: ByteArray? = null,
+	/** App-owned picker copy that may be deleted after import or when selection is abandoned. */
+	val isTemporaryCopy: Boolean = false,
 	/**
 	 * When true, [value] is a directory (filesystem path, iOS security-scoped
 	 * folder URL, or Android document tree URI). Platform share code expands or

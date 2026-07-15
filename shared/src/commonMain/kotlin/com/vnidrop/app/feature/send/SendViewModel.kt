@@ -114,6 +114,7 @@ class SendViewModel(
 
 	fun openComposer() {
 		if (_state.value.isSharing) return
+		val discardedFiles = _state.value.selectedFiles
 		_state.update {
 			it.copy(
 				isComposerOpen = true,
@@ -122,10 +123,12 @@ class SendViewModel(
 				accessPolicy = ShareAccessPolicy.RequireApproval,
 			)
 		}
+		discardPickedFiles(discardedFiles)
 	}
 
 	fun dismissComposer() {
 		if (_state.value.isSharing) return
+		val discardedFiles = _state.value.selectedFiles
 		_state.update {
 			it.copy(
 				isComposerOpen = false,
@@ -134,6 +137,7 @@ class SendViewModel(
 				accessPolicy = ShareAccessPolicy.RequireApproval,
 			)
 		}
+		discardPickedFiles(discardedFiles)
 	}
 
 	fun selectFile() = sendEffect(SendEffect.OpenFilePicker)
@@ -141,6 +145,8 @@ class SendViewModel(
 
 	fun onFilesPicked(files: List<PickedShareFile>) {
 		if (files.isEmpty()) return
+		val selectedValues = files.mapTo(mutableSetOf(), PickedShareFile::value)
+		val discardedFiles = _state.value.selectedFiles.filterNot { it.value in selectedValues }
 		_state.update {
 			it.copy(
 				isComposerOpen = true,
@@ -148,15 +154,19 @@ class SendViewModel(
 				transferName = defaultTransferName(files),
 			)
 		}
+		discardPickedFiles(discardedFiles)
 	}
 
 	fun onFilePickFailed(reason: String) = messages.error(IllegalStateException(reason.takeIf(String::isNotBlank) ?: "selection failed"))
 
 	fun clearSelectedSource() {
+		val discardedFiles = _state.value.selectedFiles
 		_state.update { it.copy(selectedFiles = emptyList(), transferName = "") }
+		discardPickedFiles(discardedFiles)
 	}
 
 	fun removeSelectedFile(value: String) {
+		val discardedFiles = _state.value.selectedFiles.filter { it.value == value }
 		_state.update { current ->
 			val remaining = current.selectedFiles.filterNot { it.value == value }
 			current.copy(
@@ -168,6 +178,7 @@ class SendViewModel(
 				},
 			)
 		}
+		discardPickedFiles(discardedFiles)
 	}
 
 	fun setTransferName(value: String) = _state.update { it.copy(transferName = value) }
@@ -252,6 +263,7 @@ class SendViewModel(
 				senderName = current.senderName.trim(),
 				accessPolicy = current.accessPolicy,
 			)
+			if (result.isSuccess) fileSystemService.discardPickedFiles(current.selectedFiles)
 			result.fold(
 				onSuccess = { share ->
 					current.selectedFiles.firstNotNullOfOrNull { it.thumbnailBytes }
@@ -285,6 +297,11 @@ class SendViewModel(
 
 	private fun sendEffect(effect: SendEffect) {
 		viewModelScope.launch { effects.send(effect) }
+	}
+
+	private fun discardPickedFiles(files: List<PickedShareFile>) {
+		if (files.isEmpty()) return
+		viewModelScope.launch { fileSystemService.discardPickedFiles(files) }
 	}
 
 	private fun refreshReceivers(transferId: ULong) {

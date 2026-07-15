@@ -96,6 +96,8 @@
     <string name="receive_review_title">Review transfer</string>
     <string name="receive_unknown_transfer">VniDrop transfer</string>
     <string name="receive_completed">Transfer received.</string>
+    <string name="button_show_in_files">Show in Files</string>
+    <string name="receive_open_files_failed">Couldn’t open VniDrop in Files.</string>
     <string name="field_receiver_name">Receiver name</string>
     <string name="button_receive">Receive</string>
     <string name="button_retry">Retry</string>

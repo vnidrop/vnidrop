@@ -230,9 +230,26 @@ class FakeNotificationService(
 class FakeFileSystemService(
 	private val folder: ReceiveFolder,
 ) : FileSystemService {
+	var supportsCustomFolders = true
+	var effectiveFolder: ReceiveFolder? = null
+	var canRevealFolder = false
+	var revealFolderResult: Result<Unit> = Result.success(Unit)
+	val revealedFolders = mutableListOf<ReceiveFolder>()
+	val discardedPickedFiles = mutableListOf<PickedShareFile>()
+	override val supportsCustomReceiveFolders: Boolean get() = supportsCustomFolders
 	override fun defaultReceiveFolder() = folder
+	override fun effectiveReceiveFolder(configuredFolder: ReceiveFolder) =
+		effectiveFolder ?: super.effectiveReceiveFolder(configuredFolder)
 	override suspend fun validateReceiveFolder(folder: ReceiveFolder) = FolderAccessStatus.Writable
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
+	override fun canRevealReceiveFolder(folder: ReceiveFolder) = canRevealFolder
+	override suspend fun revealReceiveFolder(folder: ReceiveFolder): Result<Unit> {
+		revealedFolders += folder
+		return revealFolderResult
+	}
+	override suspend fun discardPickedFiles(files: List<PickedShareFile>) {
+		discardedPickedFiles += files
+	}
 	override suspend fun sharePickedFiles(
 		repository: CoreGateway,
 		files: List<PickedShareFile>,
