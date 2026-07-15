@@ -1,10 +1,13 @@
 mod support;
 
-use std::sync::Arc;
-use std::time::{Duration, Instant};
+use std::sync::{Arc, Condvar, Mutex};
+use std::time::Duration;
 
 use support::{share_path, CoreGuard, RecordingSink, TestNode};
-use vnidrop::{CoreLimits, ShareMetadataInput, ShareSource, SourceKind, TransferAccessMode};
+use vnidrop::{
+    CoreEvent, CoreEventSink, CoreLimits, ShareMetadataInput, ShareSource, SourceKind,
+    TransferAccessMode,
+};
 
 #[test]
 fn share_creation_persists_selected_access_mode_atomically() {
@@ -324,55 +327,87 @@ fn source_limit_rejection_creates_no_transfer_state() {
 #[test]
 fn cancellation_during_import_is_durable() {
     let source_dir = tempfile::tempdir().unwrap();
-    let source_path = source_dir.path().join("large.bin");
-    std::fs::File::create(&source_path)
-        .unwrap()
-        .set_len(256 * 1024 * 1024)
-        .unwrap();
-    let sender = TestNode::new();
-    let core = sender.core.arc();
+    let source_path = source_dir.path().join("gated.bin");
+    std::fs::write(&source_path, vec![0u8; 256 * 1024]).unwrap();
+    let data_dir = tempfile::tempdir().unwrap();
+    let import_gate = Arc::new(ImportStartedGate::default());
+    let sender = CoreGuard::start(data_dir.path(), import_gate.clone());
+    let core = sender.arc();
     let worker = std::thread::spawn(move || {
         core.share_files(
             vec![ShareSource {
                 kind: SourceKind::Path,
                 value: source_path.to_string_lossy().to_string(),
-                display_name: Some("large.bin".to_string()),
+                display_name: Some("gated.bin".to_string()),
                 is_directory: false,
             }],
             ShareMetadataInput {
                 transfer_id: 25,
-                transfer_name: Some("large".to_string()),
+                transfer_name: Some("gated".to_string()),
                 sender_name: None,
                 access_mode: TransferAccessMode::ApprovalRequired,
             },
         )
     });
 
-    let started = Instant::now();
-    loop {
-        if sender
-            .core
-            .list_transfers()
-            .unwrap()
-            .iter()
-            .any(|transfer| transfer.transfer_id == 25 && transfer.status == "importing")
-        {
-            break;
-        }
-        assert!(started.elapsed() < Duration::from_secs(10));
-        std::thread::sleep(Duration::from_millis(10));
-    }
-    sender.core.cancel_transfer(25).unwrap();
+    // The synchronous event callback holds the worker after active-transfer
+    // registration, so cancellation cannot race a fast import to completion.
+    import_gate.wait_until_blocked();
+    let cancel_result = sender.cancel_transfer(25);
+    import_gate.release();
+    cancel_result.unwrap();
     assert!(worker.join().unwrap().is_err());
 
     let transfer = sender
-        .core
         .list_transfers()
         .unwrap()
         .into_iter()
         .find(|transfer| transfer.transfer_id == 25)
         .unwrap();
     assert_eq!(transfer.status, "cancelled");
-    assert_eq!(sender.core.status().active_transfers, 0);
-    assert_eq!(sender.core.status().active_shares, 0);
+    assert_eq!(sender.status().active_transfers, 0);
+    assert_eq!(sender.status().active_shares, 0);
+}
+
+#[derive(Default)]
+struct ImportStartedGate {
+    state: Mutex<ImportGateState>,
+    changed: Condvar,
+}
+
+#[derive(Default)]
+struct ImportGateState {
+    blocked: bool,
+    released: bool,
+}
+
+impl ImportStartedGate {
+    fn wait_until_blocked(&self) {
+        let state = self.state.lock().unwrap();
+        let (state, _) = self
+            .changed
+            .wait_timeout_while(state, Duration::from_secs(5), |state| !state.blocked)
+            .unwrap();
+        assert!(state.blocked, "import did not reach the start gate");
+    }
+
+    fn release(&self) {
+        let mut state = self.state.lock().unwrap();
+        state.released = true;
+        self.changed.notify_all();
+    }
+}
+
+impl CoreEventSink for ImportStartedGate {
+    fn on_event(&self, event: CoreEvent) {
+        if event.phase != "import" || event.kind != "started" {
+            return;
+        }
+        let mut state = self.state.lock().unwrap();
+        state.blocked = true;
+        self.changed.notify_all();
+        while !state.released {
+            state = self.changed.wait(state).unwrap();
+        }
+    }
 }
