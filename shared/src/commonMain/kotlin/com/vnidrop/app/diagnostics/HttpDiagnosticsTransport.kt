@@ -118,29 +118,34 @@ fun createDiagnosticsTransport(
 	appVersion: String,
 	platform: String,
 	installIdProvider: suspend () -> String,
+): DiagnosticsTransport = buildDiagnosticsTransport(
+	endpoint = DiagnosticsBuildConfig.ENDPOINT,
+	ingestKey = DiagnosticsBuildConfig.INGEST_KEY,
+	appVersion = appVersion,
+	platform = platform,
+	installIdProvider = installIdProvider,
+)
+
+internal fun buildDiagnosticsTransport(
+	endpoint: String,
+	ingestKey: String,
+	appVersion: String,
+	platform: String,
+	installIdProvider: suspend () -> String,
 ): DiagnosticsTransport {
-	val endpoint = DiagnosticsBuildConfig.ENDPOINT.trim()
-	val ingestKey = DiagnosticsBuildConfig.INGEST_KEY.trim()
-	if (endpoint.isEmpty() && ingestKey.isEmpty()) return NoOpDiagnosticsTransport()
-	check(endpoint.isNotEmpty() && ingestKey.isNotEmpty()) {
+	val normalizedEndpoint = endpoint.trim()
+	val normalizedIngestKey = ingestKey.trim()
+	if (normalizedEndpoint.isEmpty() && normalizedIngestKey.isEmpty()) return NoOpDiagnosticsTransport()
+	check(normalizedEndpoint.isNotEmpty() && normalizedIngestKey.isNotEmpty()) {
 		"diagnostics endpoint and ingest key must be configured together"
 	}
 	return HttpDiagnosticsTransport(
-		baseUrl = endpoint,
-		ingestKey = ingestKey,
+		baseUrl = normalizedEndpoint,
+		ingestKey = normalizedIngestKey,
 		appVersion = appVersion,
 		platform = platform,
 		installIdProvider = installIdProvider,
 	)
-}
-
-private fun String.isSuccessfulDiagnosticsAcknowledgement(expectedId: String): Boolean {
-	val json = trim()
-	if (!SuccessfulAcknowledgement.matches(json)) return false
-	if (AcknowledgementOk.findAll(json).count() != 1) return false
-	val ids = AcknowledgementId.findAll(json).toList()
-	return ids.size == 1 &&
-		ids.single().groupValues[1] == "\"${DiagnosticsJson.escape(expectedId.lowercase())}\""
 }
 
 private fun String.isAllowedDiagnosticsEndpoint(): Boolean {
@@ -180,13 +185,3 @@ private fun String.isLoopbackHost(): Boolean {
 		octets.first() == "127" &&
 		octets.all { it.toIntOrNull() in 0..255 }
 }
-
-private const val JsonStringPattern =
-	""""(?:[^"\\\u0000-\u001f]|\\(?:["\\/bfnrt]|u[0-9a-fA-F]{4}))*""""
-private const val JsonNumberPattern =
-	"""-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?"""
-private val SuccessfulAcknowledgement = Regex(
-	"""^\s*\{\s*"ok"\s*:\s*true(?:\s*,\s*$JsonStringPattern\s*:\s*(?:$JsonStringPattern|$JsonNumberPattern|true|false|null))*\s*}\s*$""",
-)
-private val AcknowledgementOk = Regex(""""ok"\s*:""")
-private val AcknowledgementId = Regex(""""id"\s*:\s*($JsonStringPattern)""")

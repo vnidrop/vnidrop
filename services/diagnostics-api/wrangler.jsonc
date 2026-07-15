@@ -2,6 +2,8 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "vnidrop-diagnostics",
 	"main": "src/index.ts",
+	"workers_dev": true,
+	"preview_urls": false,
 	"compatibility_date": "2026-07-14",
 	"compatibility_flags": ["nodejs_compat"],
 	"upload_source_maps": true,
@@ -16,8 +18,7 @@
 		{
 			"binding": "DB",
 			"database_name": "vnidrop-diagnostics",
-			// Replace this placeholder with the ID returned by `wrangler d1 create`.
-			"database_id": "00000000-0000-0000-0000-000000000000",
+			"database_id": "b9e18b17-d9fe-477b-8ace-2b1439d1694e",
 			"migrations_dir": "migrations",
 		},
 	],
@@ -25,6 +26,7 @@
 		{
 			"binding": "BLOBS",
 			"bucket_name": "vnidrop-diagnostics",
+			"jurisdiction": "eu",
 		},
 	],
 	"ratelimits": [

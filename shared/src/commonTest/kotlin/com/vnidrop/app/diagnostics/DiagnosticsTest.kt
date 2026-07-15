@@ -32,14 +32,6 @@ import kotlin.test.assertTrue
 @OptIn(ExperimentalCoroutinesApi::class)
 class DiagnosticsTest {
 	@Test
-	fun diagnosticsBuildConfigDefaultsToIncludedWithEmptyEndpoint() {
-		// Production default is true; builds can override with -Pvnidrop.diagnostics.included=false.
-		assertTrue(DiagnosticsBuildConfig.INCLUDED)
-		// Empty endpoint keeps shipping safe (NoOp transport) until Cloudflare is configured.
-		assertEquals("", DiagnosticsBuildConfig.ENDPOINT)
-	}
-
-	@Test
 	fun diagnosticsJsonEscapesAndShapesPayloads() {
 		val eventsJson = DiagnosticsJson.eventsBody(
 			batchId = "batch-1",
@@ -163,6 +155,22 @@ class DiagnosticsTest {
 	}
 
 	@Test
+	fun httpTransportParsesEscapedAcknowledgementWithNestedUnknownFields() = runTest {
+		val transport = HttpDiagnosticsTransport(
+			baseUrl = "https://diag.example",
+			ingestKey = "secret",
+			post = { _, _, _ ->
+				PlatformHttpResponse(
+					202,
+					"""{"\u006f\u006b":true,"id":"batch-\u0031","metadata":{"stored":1,"flags":[true,null]}}""",
+				)
+			},
+		)
+
+		assertTrue(transport.sendEvents(TelemetryBatch("batch-1", listOf(TelemetryEvent("x", 1L)))).isSuccess)
+	}
+
+	@Test
 	fun httpTransportFailsOnHttpError() = runTest {
 		val transport = HttpDiagnosticsTransport(
 			baseUrl = "https://diag.example",
@@ -213,6 +221,31 @@ class DiagnosticsTest {
 	}
 
 	@Test
+	fun httpTransportRejectsAmbiguousOrMalformedJsonAcknowledgement() = runTest {
+		val responses = ArrayDeque(
+			listOf(
+				PlatformHttpResponse(202, """{"ok":true,"\u006f\u006b":true,"id":"batch-0"}"""),
+				PlatformHttpResponse(202, """{"ok":true,"id":true}"""),
+				PlatformHttpResponse(202, """{"ok":true,"id":"batch-2","stored":01}"""),
+				PlatformHttpResponse(202, """{"ok":true,"id":"batch-3",}"""),
+				PlatformHttpResponse(202, """{"ok":true,"id":"batch-4"} trailing"""),
+			),
+		)
+		val transport = HttpDiagnosticsTransport(
+			baseUrl = "https://diag.example",
+			ingestKey = "secret",
+			post = { _, _, _ -> responses.removeFirst() },
+		)
+
+		repeat(5) { index ->
+			val result = transport.sendEvents(
+				TelemetryBatch("batch-$index", listOf(TelemetryEvent("x", 1L))),
+			)
+			assertIs<DiagnosticsProtocolException>(result.exceptionOrNull())
+		}
+	}
+
+	@Test
 	fun httpTransportRequiresHttpsExceptForLoopbackDevelopment() {
 		assertFailsWith<IllegalArgumentException> {
 			HttpDiagnosticsTransport("http://diag.example", "secret")
@@ -229,9 +262,10 @@ class DiagnosticsTest {
 	}
 
 	@Test
-	fun createTransportIsNoOpWhenEndpointBlank() {
-		// With default generated config endpoint is empty.
-		val transport = createDiagnosticsTransport(
+	fun createTransportIsNoOpForExplicitEmptyConfiguration() {
+		val transport = buildDiagnosticsTransport(
+			endpoint = "",
+			ingestKey = "",
 			appVersion = "1.0",
 			platform = "Test",
 			installIdProvider = { "id" },
