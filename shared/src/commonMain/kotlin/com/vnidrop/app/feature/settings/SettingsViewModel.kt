@@ -101,18 +101,16 @@ class SettingsViewModel(
 	val effectFlow = effects.receiveAsFlow()
 	private var enableNotificationsAfterSettings = false
 	private var usernamePersistJob: Job? = null
+	private var hasLocalUsernameDraft = false
 
 	init {
 		viewModelScope.launch {
 			preferencesRepository.preferences.collect { preferences ->
 				val previousFolder = _state.value.receiveFolder
 				val receiveFolder = fileSystemService.effectiveReceiveFolder(preferences.receiveFolder)
-				// While the user is typing, keep the in-progress value. DataStore
-				// echoes can race keystrokes and trim trailing spaces mid-edit.
-				val editingUsername = usernamePersistJob?.isActive == true
 				_state.update { current ->
 					current.copy(
-						username = if (editingUsername) current.username else preferences.username,
+						username = if (hasLocalUsernameDraft) current.username else preferences.username,
 						receiveFolder = receiveFolder,
 						themeMode = preferences.themeMode,
 						notificationsEnabled = preferences.notificationsEnabled,
@@ -140,6 +138,7 @@ class SettingsViewModel(
 	}
 
 	fun setUsername(value: String) {
+		hasLocalUsernameDraft = true
 		_state.update { it.copy(username = value) }
 		usernamePersistJob?.cancel()
 		usernamePersistJob = viewModelScope.launch {

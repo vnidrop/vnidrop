@@ -90,7 +90,7 @@ class ViewModelsTest {
 	}
 
 	@Test
-	fun settingsUsernameKeepsSpacesWhileTypingAndPersistsAfterDebounce() = runTest {
+	fun settingsUsernameDraftIsNotOverwrittenByPersistedEcho() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
 		val viewModel = settingsViewModel(preferences)
@@ -104,7 +104,11 @@ class ViewModelsTest {
 		testScheduler.advanceTimeBy(400)
 		advanceUntilIdle()
 		assertEquals("Ada", preferences.mutablePreferences.value.username)
-		assertEquals("Ada", viewModel.state.value.username)
+		assertEquals("Ada ", viewModel.state.value.username)
+
+		preferences.setThemeMode(ThemeMode.Dark)
+		advanceUntilIdle()
+		assertEquals("Ada ", viewModel.state.value.username)
 	}
 
 	@Test
