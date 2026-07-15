@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
+import com.vnidrop.app.ui.components.EmptyStateAnimation
 import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
@@ -145,15 +146,13 @@ private fun SendEmptyState(onOpenComposer: () -> Unit) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		Box(
-			modifier = Modifier.size(68.dp).clip(RoundedCornerShape(22.dp)).background(colors.brandLink.copy(alpha = 0.12f)),
-			contentAlignment = Alignment.Center,
-		) {
-			Icon(SendIcons.File, contentDescription = null, tint = colors.brandLink, modifier = Modifier.size(30.dp))
-		}
+		EmptyStateAnimation(
+			assetPath = "files/animations/send_empty_state.json",
+			modifier = Modifier.size(168.dp),
+		)
 		Text(
 			stringResource(Res.string.send_empty_title),
-			modifier = Modifier.padding(top = 22.dp),
+			modifier = Modifier.padding(top = 12.dp),
 			style = MaterialTheme.typography.headlineSmall,
 			fontWeight = FontWeight.Bold,
 			textAlign = TextAlign.Center,

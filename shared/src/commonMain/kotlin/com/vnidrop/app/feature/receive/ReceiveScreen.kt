@@ -49,6 +49,7 @@ import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.ui.components.AdaptiveDrawer
 import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.DestructiveQuietButton
+import com.vnidrop.app.ui.components.EmptyStateAnimation
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
@@ -176,10 +177,11 @@ private fun ReceiveEmptyState(onOpen: () -> Unit) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		Box(Modifier.size(68.dp).background(colors.brandLink.copy(alpha = 0.12f), RoundedCornerShape(20.dp)), contentAlignment = Alignment.Center) {
-			Icon(ReceiveIcons.Download, null, tint = colors.brandLink, modifier = Modifier.size(30.dp))
-		}
-		Text(stringResource(Res.string.receive_empty_title), modifier = Modifier.padding(top = 22.dp), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+		EmptyStateAnimation(
+			assetPath = "files/animations/receive_empty_state.json",
+			modifier = Modifier.size(168.dp),
+		)
+		Text(stringResource(Res.string.receive_empty_title), modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 		Text(
 			stringResource(Res.string.receive_empty_body),
 			modifier = Modifier.padding(top = 8.dp).widthIn(max = 480.dp),
