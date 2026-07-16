@@ -130,11 +130,11 @@ jobs:
       - name: Create and validate Store package
         shell: pwsh
         run: |
-          $arguments = @(
-            "-Version", "${{ steps.version.outputs.app }}"
-            "-AppImage", ".\desktopApp\build\compose\binaries\main-release\app\VniDrop"
-            "-OutputDirectory", ".\build\release\windows"
-          )
+          $arguments = @{
+            Version = "${{ steps.version.outputs.app }}"
+            AppImage = ".\desktopApp\build\compose\binaries\main-release\app\VniDrop"
+            OutputDirectory = ".\build\release\windows"
+          }
           & .\packaging\windows\build-msix.ps1 @arguments
 
       - name: Upload Store artifacts
