@@ -8,11 +8,13 @@ import gobley.gradle.GobleyHost
 import gobley.gradle.rust.targets.RustAndroidTarget
 import gobley.gradle.rust.targets.RustAppleMobileTarget
 import gobley.gradle.rust.targets.RustTarget
+import gobley.gradle.Variant
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.jvm.tasks.Jar
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 abstract class VerifyHostCargoTaskSelection : DefaultTask() {
@@ -36,6 +38,17 @@ plugins {
 	alias(libs.plugins.gobleyUniffi)
 	alias(libs.plugins.kotlinAtomicfu)
 }
+
+val appVersion = providers.gradleProperty("vnidrop.version").get()
+val desktopRustVariant = providers.gradleProperty("vnidrop.desktop.rustVariant")
+	.map { value ->
+		when (value.trim().lowercase()) {
+			"debug" -> Variant.Debug
+			"release" -> Variant.Release
+			else -> error("vnidrop.desktop.rustVariant must be either debug or release")
+		}
+	}
+	.orElse(Variant.Debug)
 
 // Compile-time switches (gradle.properties or -P…).
 // included=false: no Share-diagnostics toggle, no telemetry/crash auto-upload stack.
@@ -185,6 +198,7 @@ val hostCargoTargets = buildSet<RustTarget> {
 cargo {
 	packageDirectory = layout.projectDirectory.dir("../crates/vnidrop")
 	publishJvmArtifacts = true
+	jvmVariant.set(desktopRustVariant)
 	androidTargetsToBuild.set(setOf(RustAndroidTarget.Arm64, RustAndroidTarget.X64))
 	builds.jvm {
 		variants {
@@ -219,7 +233,13 @@ cargo {
 uniffi {
 	generateFromLibrary {
 		namespace = "vnidrop"
+		build.set(GobleyHost.current.rustTarget)
+		variant.set(desktopRustVariant)
 	}
+}
+
+tasks.named<Jar>("jvmJar") {
+	manifest.attributes["Implementation-Version"] = appVersion
 }
 
 val verifyHostCargoTaskSelection = tasks.register<VerifyHostCargoTaskSelection>(
