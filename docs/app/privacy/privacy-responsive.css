@@ -1,0 +1,156 @@
+@keyframes privacy-orbit {
+  from { transform: translate(-50%, -50%) rotate(0); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes privacy-glow {
+  0%, 100% { opacity: 0.5; transform: scale(0.84); }
+  50% { opacity: 1; transform: scale(1.14); }
+}
+
+@keyframes privacy-pill {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: -8px; }
+}
+
+@media (max-width: 1050px) {
+  .privacy-hero-layout {
+    grid-template-columns: minmax(0, 1fr) 390px;
+    gap: 45px;
+  }
+
+  .privacy-hero-copy h1 {
+    font-size: clamp(3.6rem, 6.8vw, 5.5rem);
+  }
+
+  .privacy-document-layout {
+    grid-template-columns: 180px minmax(0, 720px);
+    gap: 60px;
+  }
+}
+
+@media (max-width: 820px) {
+  .privacy-hero {
+    padding-top: 135px;
+  }
+
+  .privacy-hero-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .privacy-hero-copy {
+    max-width: 690px;
+  }
+
+  .privacy-hero-art {
+    width: min(100%, 520px);
+    margin: 0 auto;
+  }
+
+  .privacy-summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .privacy-summary-card:nth-child(3) {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .privacy-summary-card:nth-child(4) {
+    border-top: 1px solid var(--line);
+  }
+
+  .privacy-document-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .privacy-toc {
+    position: relative;
+    top: auto;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .privacy-toc nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .privacy-hero {
+    padding: 120px 0 90px;
+  }
+
+  .privacy-back {
+    margin-bottom: 32px;
+  }
+
+  .privacy-hero-copy h1 {
+    font-size: clamp(3rem, 15vw, 4.5rem);
+  }
+
+  .privacy-hero-copy > p {
+    font-size: 15px;
+  }
+
+  .privacy-hero-art {
+    min-height: 360px;
+    transform: scale(0.86);
+  }
+
+  .privacy-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .privacy-summary-card {
+    min-height: 120px;
+  }
+
+  .privacy-summary-card + .privacy-summary-card {
+    border-top: 1px solid var(--line);
+    border-left: 0;
+  }
+
+  .privacy-document-section {
+    padding: 95px 0 105px;
+  }
+
+  .privacy-toc nav {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .privacy-callout {
+    padding: 20px;
+  }
+
+  .policy-section h2 {
+    font-size: 2.25rem;
+  }
+
+  .policy-section p,
+  .policy-section li {
+    font-size: 13px;
+  }
+
+  .permission-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .retention-row {
+    grid-template-columns: 1fr;
+  }
+
+  .retention-row span + span {
+    padding-top: 0;
+    border-left: 0;
+  }
+
+  .retention-head {
+    display: none;
+  }
+
+  .policy-contact {
+    padding: 35px 24px !important;
+  }
+}

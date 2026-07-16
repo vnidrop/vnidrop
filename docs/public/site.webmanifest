@@ -1,0 +1,16 @@
+{
+  "name": "VniDrop",
+  "short_name": "VniDrop",
+  "description": "Direct, private file transfer across your devices.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbfafc",
+  "theme_color": "#a855f7",
+  "icons": [
+    {
+      "src": "/brand-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
