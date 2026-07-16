@@ -6,6 +6,20 @@ plugins {
 	alias(libs.plugins.composeCompiler)
 }
 
+val appVersion = providers.gradleProperty("vnidrop.version").get()
+val appVersionParts = appVersion.split(".")
+require(
+	appVersionParts.size == 3 &&
+		appVersionParts.mapIndexed { index, part ->
+			val number = part.toIntOrNull()
+			number != null &&
+				number.toString() == part &&
+				number in (if (index == 0) 1 else 0)..65535
+		}.all { it },
+) {
+	"vnidrop.version must be MAJOR.MINOR.PATCH with numeric components from 0 to 65535 and a non-zero major"
+}
+
 dependencies {
 	implementation(projects.shared)
 
@@ -20,18 +34,23 @@ dependencies {
 compose.desktop {
 	application {
 		mainClass = "com.vnidrop.app.MainKt"
+		buildTypes.release.proguard.isEnabled.set(false)
 
 		nativeDistributions {
-			targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-			packageName = "com.vnidrop.app"
-			packageVersion = "1.0.0"
+			targetFormats(TargetFormat.Dmg, TargetFormat.Deb)
+			packageName = "VniDrop"
+			packageVersion = appVersion
+			description = "Send files directly across your devices"
+			vendor = "Sudosy Labs"
 			macOS {
+				bundleID = "com.vnidrop.app"
 				iconFile.set(project.file("../assets/macos/app-icon.icns"))
 			}
 			windows {
 				iconFile.set(project.file("../assets/windows/app-icon.ico"))
 			}
 			linux {
+				packageName = "vnidrop"
 				iconFile.set(project.file("../assets/linux/app-icon.png"))
 			}
 			fileAssociation(
