@@ -10,7 +10,18 @@ import "./privacy/privacy-document.css";
 import "./responsive.css";
 import "./privacy/privacy-responsive.css";
 
+const configuredSiteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.VERCEL_PROJECT_PRODUCTION_URL ??
+  process.env.VERCEL_URL ??
+  "http://localhost:3000";
+
+const metadataBase = new URL(
+  configuredSiteUrl.startsWith("http") ? configuredSiteUrl : `https://${configuredSiteUrl}`,
+);
+
 export const metadata: Metadata = {
+  metadataBase,
   title: {
     default: "VniDrop — Direct file transfer, on your terms",
     template: "%s · VniDrop",
@@ -31,12 +42,26 @@ export const metadata: Metadata = {
     title: "VniDrop — Direct file transfer, on your terms",
     description:
       "Move files from your device to theirs, with no account and no hosted transfer copy.",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "VniDrop — Your files, a straight line between devices.",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "VniDrop — Direct file transfer, on your terms",
     description:
       "Move files from your device to theirs, with no account and no hosted transfer copy.",
+    images: [
+      {
+        url: "/og.png",
+        alt: "VniDrop — Your files, a straight line between devices.",
+      },
+    ],
   },
 };
 

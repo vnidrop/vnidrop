@@ -2,24 +2,13 @@ import type { SVGProps } from "react";
 
 export type IconName =
   | "arrow"
-  | "check"
-  | "chevron"
-  | "close"
-  | "code"
   | "devices"
-  | "file"
   | "folder"
   | "github"
-  | "globe"
   | "lock"
-  | "menu"
-  | "nfc"
   | "qr"
   | "shield"
-  | "spark"
-  | "stop"
-  | "verified"
-  | "x";
+  | "verified";
 
 type IconProps = SVGProps<SVGSVGElement> & {
   name: IconName;
@@ -33,32 +22,11 @@ export function Icon({ name, ...props }: IconProps) {
         <path d="m14 7 5 5-5 5" />
       </>
     ),
-    check: <path d="m5 12 4 4L19 6" />,
-    chevron: <path d="m9 18 6-6-6-6" />,
-    close: (
-      <>
-        <path d="M6 6l12 12" />
-        <path d="M18 6 6 18" />
-      </>
-    ),
-    code: (
-      <>
-        <path d="m8 9-4 3 4 3" />
-        <path d="m16 9 4 3-4 3" />
-        <path d="m14 5-4 14" />
-      </>
-    ),
     devices: (
       <>
         <rect x="3" y="5" width="13" height="10" rx="2" />
         <path d="M7 19h5M9.5 15v4" />
         <rect x="17" y="8" width="4" height="10" rx="1" />
-      </>
-    ),
-    file: (
-      <>
-        <path d="M6 3h8l4 4v14H6z" />
-        <path d="M14 3v5h4M9 13h6M9 17h4" />
       </>
     ),
     folder: (
@@ -72,28 +40,10 @@ export function Icon({ name, ...props }: IconProps) {
         fill="currentColor"
       />
     ),
-    globe: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
-      </>
-    ),
     lock: (
       <>
         <rect x="5" y="10" width="14" height="11" rx="3" />
         <path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3" />
-      </>
-    ),
-    menu: (
-      <>
-        <path d="M4 7h16M4 12h16M4 17h16" />
-      </>
-    ),
-    nfc: (
-      <>
-        <path d="M8 7a7 7 0 0 1 0 10M5 4a11 11 0 0 1 0 16" />
-        <path d="M16 7a7 7 0 0 0 0 10M19 4a11 11 0 0 0 0 16" />
-        <circle cx="12" cy="12" r="1" />
       </>
     ),
     qr: (
@@ -110,20 +60,10 @@ export function Icon({ name, ...props }: IconProps) {
         <path d="m8.5 12 2.2 2.2 4.8-5" />
       </>
     ),
-    spark: (
-      <path d="m12 2 1.6 6.4L20 10l-6.4 1.6L12 18l-1.6-6.4L4 10l6.4-1.6z" />
-    ),
-    stop: <rect x="5" y="5" width="14" height="14" rx="3" />,
     verified: (
       <>
         <path d="m12 3 2 2.1 2.9-.1.1 2.9 2 2.1-2 2.1-.1 2.9-2.9-.1-2 2.1-2-2.1-2.9.1-.1-2.9-2-2.1 2-2.1.1-2.9 2.9.1z" />
         <path d="m9 10 2 2 4-4" />
-      </>
-    ),
-    x: (
-      <>
-        <path d="M6 6l12 12" />
-        <path d="M18 6 6 18" />
       </>
     ),
   };

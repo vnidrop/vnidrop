@@ -20,28 +20,14 @@ export function BrandMark({ className, title }: BrandAssetProps) {
   );
 }
 
-export function AppIcon({ className, title }: BrandAssetProps) {
-  return (
-    <Image
-      className={className}
-      src="/icon.svg"
-      width={1024}
-      height={1024}
-      alt={title ?? ""}
-      aria-hidden={title ? undefined : true}
-      unoptimized
-    />
-  );
-}
-
-export function Brand({ compact = false }: { compact?: boolean }) {
+export function Brand() {
   return (
     <Link className="brand" href="/" aria-label="VniDrop home">
       <span className="brand-primary">
         <BrandMark className="brand-mark-image" />
-        {!compact && <span className="brand-name">VniDrop</span>}
+        <span className="brand-name">VniDrop</span>
       </span>
-      {!compact && <span className="brand-tagline">Send files directly. Stay in control.</span>}
+      <span className="brand-tagline">Send files directly. Stay in control.</span>
     </Link>
   );
 }
