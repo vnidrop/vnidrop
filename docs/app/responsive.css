@@ -37,51 +37,6 @@
 }
 
 @media (max-width: 920px) {
-  .desktop-nav,
-  .header-github {
-    display: none;
-  }
-
-  .header-inner {
-    grid-template-columns: 1fr auto;
-  }
-
-  .menu-button {
-    display: grid;
-  }
-
-  .mobile-nav {
-    display: grid;
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 12px;
-    opacity: 0;
-    visibility: hidden;
-    transition: max-height 250ms ease, padding 250ms ease, opacity 180ms ease, visibility 250ms;
-  }
-
-  .mobile-nav.is-open {
-    max-height: 280px;
-    padding: 4px 12px 12px;
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .mobile-nav a {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 10px;
-    border-top: 1px solid var(--line);
-    color: var(--ink-soft);
-    font-size: 13px;
-    font-weight: 650;
-  }
-
-  .mobile-nav svg {
-    width: 17px;
-  }
-
   .hero-section {
     padding-top: 128px;
   }
@@ -153,26 +108,6 @@
 @media (max-width: 680px) {
   .page-shell {
     width: min(calc(100% - 32px), var(--shell));
-  }
-
-  .site-header {
-    top: 10px;
-    width: calc(100% - 20px);
-    border-radius: 15px;
-  }
-
-  .header-inner {
-    height: 58px;
-    padding-left: 11px;
-  }
-
-  .brand-name {
-    font-size: 17px;
-  }
-
-  .brand-mark-shell {
-    width: 36px;
-    height: 36px;
   }
 
   .hero-section {

@@ -175,7 +175,7 @@
   backdrop-filter: blur(14px);
 }
 
-.privacy-mark-card > svg {
+.privacy-mark-card > img {
   position: relative;
   z-index: 2;
   width: 112px;
@@ -657,4 +657,3 @@
   color: white;
   text-decoration: none;
 }
-

@@ -140,7 +140,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section invitation-section">
+      <section id="invitations" className="section invitation-section">
         <div className="page-shell">
           <Reveal className="section-heading section-heading-split">
             <div>

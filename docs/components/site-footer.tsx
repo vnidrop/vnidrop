@@ -25,7 +25,7 @@ export function SiteFooter() {
           <div>
             <p className="footer-label">Project</p>
             <a href="https://github.com/vnidrop/vnidrop" target="_blank" rel="noreferrer">
-              GitHub <Icon name="arrow" />
+              GitHub <Icon name="github" />
             </a>
             <a
               href="https://github.com/vnidrop/vnidrop/blob/master/LICENSE"
