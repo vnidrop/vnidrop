@@ -31,7 +31,7 @@ export default function PrivacyPage() {
             This policy explains what moves between devices, what stays local, and what is sent
             only when you choose to share diagnostics or a bug report.
           </p>
-          <p className="privacy-meta">Effective July 16, 2026 · Version 1.0</p>
+          <p className="privacy-meta">Effective July 16, 2026 · Version 1.1</p>
         </div>
       </section>
 
@@ -65,8 +65,10 @@ export default function PrivacyPage() {
               <p>
                 This policy covers the official VniDrop website, the VniDrop applications for
                 Android, iOS, macOS, Windows, and Linux, and the diagnostics service configured by
-                the official project. In this policy, “VniDrop,” “we,” and “us” refer to the
-                maintainers of the official VniDrop project and the official builds they distribute.
+                the official project. For an official release, VniDrop’s data controller is the
+                individual publisher named in the applicable app-store listing. In this policy,
+                “VniDrop,” “we,” and “us” also include the maintainers acting on that publisher’s
+                behalf. The publisher can be reached at support@sudosy.fr.
               </p>
               <p>
                 VniDrop is open-source software. A build distributed or operated by someone else
@@ -131,12 +133,13 @@ export default function PrivacyPage() {
               <h2>Optional diagnostics and bug reports</h2>
               <h3>Automatic product diagnostics</h3>
               <p>
-                When an official build includes diagnostics, automatic usage events and crash
-                reports are disabled until you enable “Share diagnostics.” If enabled, VniDrop may
-                send an anonymous installation ID, app version, platform, sparse event names and
-                properties, crash type and message, a redacted stack trace, timestamps, and recent
-                in-app breadcrumbs. You can turn this off at any time; doing so also removes pending
-                local crash reports.
+                Official releases indicate in the app settings whether automatic product
+                diagnostics are included. When included, automatic usage events and crash reports
+                are disabled until you enable “Share diagnostics.” If enabled, VniDrop may send an
+                anonymous installation ID, app version, platform, sparse event names and properties,
+                crash type and message, a redacted stack trace, timestamps, and recent in-app
+                breadcrumbs. You can turn this off at any time; doing so also removes pending local
+                crash reports.
               </p>
               <h3>User-submitted bug reports</h3>
               <p>
@@ -165,11 +168,10 @@ export default function PrivacyPage() {
                 nearby devices.
               </p>
               <p>
-                The hosting and security infrastructure may process routine request information—such
+                Vercel hosts the static site, while Cloudflare proxies requests and provides DNS and
+                security services for the domain. They may process routine request information—such
                 as IP address, time, requested page, referrer, and browser user agent—to deliver the
-                site, maintain reliability, and prevent abuse. The live hosting provider must be
-                identified in this policy before public deployment if it differs from the providers
-                described below.
+                site, maintain reliability, and prevent abuse.
               </p>
             </section>
 
@@ -211,10 +213,18 @@ export default function PrivacyPage() {
                   </dd>
                 </div>
                 <div>
+                  <dt>Vercel</dt>
+                  <dd>
+                    Hosts and serves the static VniDrop website and processes routine request and
+                    delivery metadata.
+                  </dd>
+                </div>
+                <div>
                   <dt>Cloudflare</dt>
                   <dd>
-                    The project’s diagnostics design uses Cloudflare Workers, D1, and R2.
-                    Cloudflare also processes source IPs for request delivery and abuse controls.
+                    Proxies website requests and provides DNS, security, and abuse controls. When
+                    the optional diagnostics service is configured, it uses Cloudflare Workers, D1,
+                    and R2.
                   </dd>
                 </div>
                 <div>
@@ -248,6 +258,14 @@ export default function PrivacyPage() {
                   rel="noreferrer"
                 >
                   Cloudflare
+                </a>
+                ,{" "}
+                <a
+                  href="https://vercel.com/legal/privacy-notice"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Vercel
                 </a>
                 ,{" "}
                 <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
@@ -366,18 +384,12 @@ export default function PrivacyPage() {
             <section id="contact" className="policy-section policy-contact">
               <h2>Contact</h2>
               <p>
-                VniDrop is currently maintained as an open-source project and does not yet publish a
-                dedicated privacy email or postal address. For a privacy question or request, open a
-                request in the project issue tracker. Do not put an invitation, file content,
-                credentials, or other sensitive information in a public issue.
+                For a privacy question, rights request, or support request, email
+                support@sudosy.fr. Do not put an invitation, file content, credentials, or other
+                sensitive information in a public issue.
               </p>
-              <a
-                className="privacy-contact-link"
-                href="https://github.com/vnidrop/vnidrop/issues/new"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Contact the maintainers
+              <a className="privacy-contact-link" href="mailto:support@sudosy.fr">
+                Email support@sudosy.fr
               </a>
             </section>
           </article>
