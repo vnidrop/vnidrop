@@ -37,8 +37,11 @@ export function AppIcon({ className, title }: BrandAssetProps) {
 export function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link className="brand" href="/" aria-label="VniDrop home">
-      <BrandMark className="brand-mark-image" />
-      {!compact && <span className="brand-name">VniDrop</span>}
+      <span className="brand-primary">
+        <BrandMark className="brand-mark-image" />
+        {!compact && <span className="brand-name">VniDrop</span>}
+      </span>
+      {!compact && <span className="brand-tagline">Send files directly. Stay in control.</span>}
     </Link>
   );
 }

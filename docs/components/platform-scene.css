@@ -75,24 +75,20 @@
   z-index: 4;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
   border: 1px solid #e2d9e6;
-  border-radius: 999px;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.93);
   box-shadow: 0 12px 35px rgba(53, 34, 61, 0.1);
   color: #4b4350;
-  font-size: 11px;
-  font-weight: 700;
   animation: platform-chip-float 5s ease-in-out infinite;
 }
 
-.platform-chip i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--brand-500);
-  box-shadow: 0 0 0 4px var(--brand-100);
+.platform-chip .platform-glyph {
+  width: 30px;
+  height: 30px;
 }
 
 .platform-chip-1 { top: 8%; left: 17%; animation-delay: -1s; }
@@ -100,3 +96,8 @@
 .platform-chip-3 { right: 1%; bottom: 22%; animation-delay: -4s; }
 .platform-chip-4 { bottom: 7%; left: 24%; animation-delay: -0.5s; }
 .platform-chip-5 { top: 45%; left: 0; animation-delay: -3.2s; }
+
+.platform-glyph[data-platform="android"] { color: #2fbf71; }
+.platform-glyph[data-platform="ios"] { color: #201c23; }
+.platform-glyph[data-platform="macos"] { color: #1687f8; }
+.platform-glyph[data-platform="windows"] { color: #008de5; }

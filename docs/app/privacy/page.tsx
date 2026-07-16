@@ -1,21 +1,10 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { BrandMark } from "@/components/brand";
-import { Icon, type IconName } from "@/components/icons";
-import { Reveal } from "@/components/reveal";
 
 export const metadata: Metadata = {
   title: "Privacy policy",
   description:
     "How VniDrop handles transfers, local app data, optional diagnostics, bug reports, and website visits.",
 };
-
-const summaries: Array<{ icon: IconName; label: string; value: string }> = [
-  { icon: "devices", label: "Transfers", value: "Device to device" },
-  { icon: "globe", label: "Accounts", value: "None" },
-  { icon: "shield", label: "Diagnostics", value: "Optional" },
-  { icon: "folder", label: "Hosted file copy", value: "None" },
-];
 
 const sections = [
   ["scope", "Scope"],
@@ -36,55 +25,13 @@ export default function PrivacyPage() {
   return (
     <main id="main-content" className="privacy-page">
       <section className="privacy-hero">
-        <div className="privacy-hero-grid" aria-hidden="true" />
-        <div className="page-shell privacy-hero-layout">
-          <Reveal className="privacy-hero-copy">
-            <Link className="privacy-back" href="/">
-              <Icon name="arrow" />
-              Back to VniDrop
-            </Link>
-            <span className="kicker">PRIVACY POLICY</span>
-            <h1>Clear by design.<br />Specific by default.</h1>
-            <p>
-              This policy explains what moves between devices, what stays local, and what is sent
-              only when you choose to share diagnostics or a bug report.
-            </p>
-            <div className="privacy-meta">
-              <span>Effective July 16, 2026</span>
-              <i />
-              <span>Version 1.0</span>
-            </div>
-          </Reveal>
-          <Reveal className="privacy-hero-art" delay={100}>
-            <div className="privacy-art-orbit privacy-art-orbit-one" aria-hidden="true" />
-            <div className="privacy-art-orbit privacy-art-orbit-two" aria-hidden="true" />
-            <div className="privacy-mark-card" aria-hidden="true">
-              <span className="privacy-mark-glow" />
-              <BrandMark />
-              <span className="privacy-mark-lock"><Icon name="lock" /></span>
-            </div>
-            <div className="privacy-data-pill privacy-data-pill-one" aria-hidden="true">
-              <Icon name="file" /> CONTENT
-            </div>
-            <div className="privacy-data-pill privacy-data-pill-two" aria-hidden="true">
-              <Icon name="shield" /> APPROVAL
-            </div>
-            <div className="privacy-data-pill privacy-data-pill-three" aria-hidden="true">
-              <Icon name="verified" /> VERIFIED
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="privacy-summary" aria-label="Privacy summary">
-        <div className="page-shell privacy-summary-grid">
-          {summaries.map((summary, index) => (
-            <Reveal key={summary.label} className="privacy-summary-card" delay={index * 60}>
-              <span><Icon name={summary.icon} /></span>
-              <small>{summary.label}</small>
-              <strong>{summary.value}</strong>
-            </Reveal>
-          ))}
+        <div className="page-shell privacy-hero-inner">
+          <h1>Privacy Policy</h1>
+          <p>
+            This policy explains what moves between devices, what stays local, and what is sent
+            only when you choose to share diagnostics or a bug report.
+          </p>
+          <p className="privacy-meta">Effective July 16, 2026 · Version 1.0</p>
         </div>
       </section>
 
@@ -93,30 +40,27 @@ export default function PrivacyPage() {
           <aside className="privacy-toc">
             <p>On this page</p>
             <nav aria-label="Privacy policy sections">
-              {sections.map(([id, label], index) => (
-                <a key={id} href={`#${id}`}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  {label}
-                </a>
-              ))}
+              <ol>
+                {sections.map(([id, label]) => (
+                  <li key={id}>
+                    <a href={`#${id}`}>{label}</a>
+                  </li>
+                ))}
+              </ol>
             </nav>
           </aside>
 
           <article className="privacy-document">
             <div className="privacy-callout">
-              <Icon name="spark" />
-              <div>
-                <strong>The short version</strong>
-                <p>
-                  VniDrop has no user accounts and does not upload your transfer to a VniDrop file
-                  store. Files travel over an authenticated, end-to-end encrypted connection.
-                  Product diagnostics are opt-in; a bug report is sent only when you submit one.
-                </p>
-              </div>
+              <strong>The short version</strong>
+              <p>
+                VniDrop has no user accounts and does not upload your transfer to a VniDrop file
+                store. Files travel over an authenticated, end-to-end encrypted connection.
+                Product diagnostics are opt-in; a bug report is sent only when you submit one.
+              </p>
             </div>
 
             <section id="scope" className="policy-section">
-              <span className="policy-number">01</span>
               <h2>Scope and who “VniDrop” means</h2>
               <p>
                 This policy covers the official VniDrop website, the VniDrop applications for
@@ -132,7 +76,6 @@ export default function PrivacyPage() {
             </section>
 
             <section id="transfers" className="policy-section">
-              <span className="policy-number">02</span>
               <h2>What happens during a transfer</h2>
               <h3>File contents</h3>
               <p>
@@ -159,7 +102,6 @@ export default function PrivacyPage() {
                 encrypted transfer contents.
               </p>
               <div className="policy-note">
-                <Icon name="shield" />
                 <p>
                   Approval is required by default. If the sender selects “Anyone with this transfer,”
                   anyone holding the invitation may receive the files until sharing stops.
@@ -168,7 +110,6 @@ export default function PrivacyPage() {
             </section>
 
             <section id="local-data" className="policy-section">
-              <span className="policy-number">03</span>
               <h2>Information kept on your device</h2>
               <p>VniDrop stores the information needed to operate the app locally, including:</p>
               <ul>
@@ -187,7 +128,6 @@ export default function PrivacyPage() {
             </section>
 
             <section id="diagnostics" className="policy-section">
-              <span className="policy-number">04</span>
               <h2>Optional diagnostics and bug reports</h2>
               <h3>Automatic product diagnostics</h3>
               <p>
@@ -217,7 +157,6 @@ export default function PrivacyPage() {
             </section>
 
             <section id="website" className="policy-section">
-              <span className="policy-number">05</span>
               <h2>The VniDrop website</h2>
               <p>
                 This website is a static product site. It does not provide an account, contact form,
@@ -235,14 +174,25 @@ export default function PrivacyPage() {
             </section>
 
             <section id="permissions" className="policy-section">
-              <span className="policy-number">06</span>
               <h2>Device permissions</h2>
-              <div className="permission-grid">
-                <div><Icon name="folder" /><strong>Files & folders</strong><p>Choose what to send and where received files are saved.</p></div>
-                <div><Icon name="qr" /><strong>Camera / scanner</strong><p>Scan a QR invitation when you choose that receive method.</p></div>
-                <div><Icon name="nfc" /><strong>NFC</strong><p>Read or write an invitation through a compatible NFC tag.</p></div>
-                <div><Icon name="devices" /><strong>Network & notifications</strong><p>Connect peers and alert you to background receiver requests.</p></div>
-              </div>
+              <dl className="permission-list">
+                <div>
+                  <dt>Files &amp; folders</dt>
+                  <dd>Choose what to send and where received files are saved.</dd>
+                </div>
+                <div>
+                  <dt>Camera / scanner</dt>
+                  <dd>Scan a QR invitation when you choose that receive method.</dd>
+                </div>
+                <div>
+                  <dt>NFC</dt>
+                  <dd>Read or write an invitation through a compatible NFC tag.</dd>
+                </div>
+                <div>
+                  <dt>Network &amp; notifications</dt>
+                  <dd>Connect peers and alert you to background receiver requests.</dd>
+                </div>
+              </dl>
               <p>
                 VniDrop requests a platform permission only for the related feature. On Android, QR
                 scanning may be provided through Google Play services Code Scanner. Platform-level
@@ -251,54 +201,100 @@ export default function PrivacyPage() {
             </section>
 
             <section id="providers" className="policy-section">
-              <span className="policy-number">07</span>
               <h2>Infrastructure and external services</h2>
-              <div className="provider-list">
+              <dl className="provider-list">
                 <div>
-                  <span>I</span>
-                  <div><strong>Iroh / public relay operators</strong><p>Device discovery, connection establishment, and encrypted relay fallback. Relays process connection metadata but cannot decrypt transfer contents.</p></div>
+                  <dt>Iroh / public relay operators</dt>
+                  <dd>
+                    Device discovery, connection establishment, and encrypted relay fallback.
+                    Relays process connection metadata but cannot decrypt transfer contents.
+                  </dd>
                 </div>
                 <div>
-                  <span>C</span>
-                  <div><strong>Cloudflare</strong><p>The project’s diagnostics design uses Cloudflare Workers, D1, and R2. Cloudflare also processes source IPs for request delivery and abuse controls.</p></div>
+                  <dt>Cloudflare</dt>
+                  <dd>
+                    The project’s diagnostics design uses Cloudflare Workers, D1, and R2.
+                    Cloudflare also processes source IPs for request delivery and abuse controls.
+                  </dd>
                 </div>
                 <div>
-                  <span>G</span>
-                  <div><strong>Google Play services</strong><p>May provide the QR code scanner on supported Android devices when you choose to scan an invitation.</p></div>
+                  <dt>Google Play services</dt>
+                  <dd>
+                    May provide the QR code scanner on supported Android devices when you choose to
+                    scan an invitation.
+                  </dd>
                 </div>
                 <div>
-                  <span>GH</span>
-                  <div><strong>GitHub</strong><p>Hosts the source repository, issue tracker, and external pages linked from this site. GitHub’s own privacy terms apply after you follow those links.</p></div>
+                  <dt>GitHub</dt>
+                  <dd>
+                    Hosts the source repository, issue tracker, and external pages linked from this
+                    site. GitHub’s own privacy terms apply after you follow those links.
+                  </dd>
                 </div>
-              </div>
+              </dl>
               <p className="provider-links">
-                Provider policies: {" "}
-                <a href="https://services.iroh.computer/legal/privacy" target="_blank" rel="noreferrer">Iroh</a>, {" "}
-                <a href="https://www.cloudflare.com/policies/privacy/" target="_blank" rel="noreferrer">Cloudflare</a>, {" "}
-                <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">Google</a>, and {" "}
-                <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noreferrer">GitHub</a>.
+                Provider policies:{" "}
+                <a
+                  href="https://services.iroh.computer/legal/privacy"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Iroh
+                </a>
+                ,{" "}
+                <a
+                  href="https://www.cloudflare.com/policies/privacy/"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Cloudflare
+                </a>
+                ,{" "}
+                <a href="https://policies.google.com/privacy" target="_blank" rel="noreferrer">
+                  Google
+                </a>
+                , and{" "}
+                <a
+                  href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  GitHub
+                </a>
+                .
               </p>
             </section>
 
             <section id="retention" className="policy-section">
-              <span className="policy-number">08</span>
               <h2>Retention and deletion</h2>
-              <div className="retention-table" role="table" aria-label="Data retention periods">
-                <div className="retention-row retention-head" role="row">
-                  <span role="columnheader">Data</span><span role="columnheader">Typical retention</span>
-                </div>
-                <div className="retention-row" role="row">
-                  <span role="cell">Transfer history and settings</span><span role="cell">Until you delete them, clear app data, or uninstall</span>
-                </div>
-                <div className="retention-row" role="row">
-                  <span role="cell">Pending local crash reports</span><span role="cell">Up to 30 days and 20 reports; deleted when diagnostics is disabled</span>
-                </div>
-                <div className="retention-row" role="row">
-                  <span role="cell">Server diagnostics and bug reports</span><span role="cell">The current project configuration is 90 days, with scheduled deletion</span>
-                </div>
-                <div className="retention-row" role="row">
-                  <span role="cell">Downloaded files</span><span role="cell">Until you delete them through your operating system</span>
-                </div>
+              <div className="retention-table-wrap">
+                <table className="retention-table">
+                  <caption className="sr-only">Data retention periods</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Data</th>
+                      <th scope="col">Typical retention</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th scope="row">Transfer history and settings</th>
+                      <td>Until you delete them, clear app data, or uninstall</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Pending local crash reports</th>
+                      <td>Up to 30 days and 20 reports; deleted when diagnostics is disabled</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Server diagnostics and bug reports</th>
+                      <td>The current project configuration is 90 days, with scheduled deletion</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Downloaded files</th>
+                      <td>Until you delete them through your operating system</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
               <p>
                 Operational backups, provider logs, and deletion backlogs may persist briefly beyond
@@ -309,14 +305,22 @@ export default function PrivacyPage() {
             </section>
 
             <section id="choices" className="policy-section">
-              <span className="policy-number">09</span>
               <h2>Your choices and rights</h2>
               <ul>
                 <li>Enable or disable “Share diagnostics” in VniDrop settings.</li>
-                <li>Submit a bug report only when you choose, omit contact information, and exclude logs.</li>
+                <li>
+                  Submit a bug report only when you choose, omit contact information, and exclude
+                  logs.
+                </li>
                 <li>Approve or refuse each receiver, cancel a transfer, or stop sharing.</li>
-                <li>Delete individual transfer history or clear completed, failed, and cancelled receive history.</li>
-                <li>Delete downloaded files using your operating system, or clear all app data by uninstalling or resetting the app.</li>
+                <li>
+                  Delete individual transfer history or clear completed, failed, and cancelled
+                  receive history.
+                </li>
+                <li>
+                  Delete downloaded files using your operating system, or clear all app data by
+                  uninstalling or resetting the app.
+                </li>
               </ul>
               <p>
                 Depending on where you live, privacy law may provide rights to access, correct,
@@ -328,7 +332,6 @@ export default function PrivacyPage() {
             </section>
 
             <section id="security" className="policy-section">
-              <span className="policy-number">10</span>
               <h2>Security</h2>
               <p>
                 VniDrop uses authenticated end-to-end encrypted connections, content verification,
@@ -338,13 +341,19 @@ export default function PrivacyPage() {
                 updated, and stop sharing when a transfer is finished.
               </p>
               <p>
-                Please report a suspected vulnerability through the private process in the {" "}
-                <a href="https://github.com/vnidrop/vnidrop/blob/master/SECURITY.md" target="_blank" rel="noreferrer">VniDrop security policy</a>, not in a public issue.
+                Please report a suspected vulnerability through the private process in the{" "}
+                <a
+                  href="https://github.com/vnidrop/vnidrop/blob/master/SECURITY.md"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  VniDrop security policy
+                </a>
+                , not in a public issue.
               </p>
             </section>
 
             <section id="changes" className="policy-section">
-              <span className="policy-number">11</span>
               <h2>Changes to this policy</h2>
               <p>
                 VniDrop is in early development. Features and data practices may change. When this
@@ -355,7 +364,6 @@ export default function PrivacyPage() {
             </section>
 
             <section id="contact" className="policy-section policy-contact">
-              <span className="policy-number">12</span>
               <h2>Contact</h2>
               <p>
                 VniDrop is currently maintained as an open-source project and does not yet publish a
@@ -364,13 +372,12 @@ export default function PrivacyPage() {
                 credentials, or other sensitive information in a public issue.
               </p>
               <a
-                className="button button-primary"
+                className="privacy-contact-link"
                 href="https://github.com/vnidrop/vnidrop/issues/new"
                 target="_blank"
                 rel="noreferrer"
               >
                 Contact the maintainers
-                <Icon name="arrow" />
               </a>
             </section>
           </article>

@@ -267,8 +267,9 @@
 
   .platform-orbit { width: 112%; margin-left: -6%; }
   .platform-center { width: 112px; height: 112px; border-radius: 30px; }
-  .platform-center svg { width: 68px; height: 68px; }
-  .platform-chip { padding: 8px 10px; font-size: 9px; }
+  .platform-center img { width: 68px; height: 68px; }
+  .platform-chip { width: 48px; height: 48px; padding: 0; }
+  .platform-chip .platform-glyph { width: 25px; height: 25px; }
   .platform-chip-1 { left: 10%; }
   .platform-chip-2 { right: 0; }
   .platform-chip-3 { right: -2%; }

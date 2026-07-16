@@ -7,16 +7,8 @@ import "../components/header.css";
 import "./home.css";
 import "./footer.css";
 import "./privacy/privacy-document.css";
-import "../components/hero-scene.css";
-import "../components/hero-device.css";
-import "../components/transfer-flow.css";
-import "../components/invitation-scene.css";
-import "../components/approval-scene.css";
-import "../components/network-scene.css";
-import "../components/platform-scene.css";
 import "./responsive.css";
 import "./privacy/privacy-responsive.css";
-import "../components/illustration-motion.css";
 
 export const metadata: Metadata = {
   title: {

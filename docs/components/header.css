@@ -21,9 +21,16 @@
 
 .brand {
   display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: max-content;
+}
+
+.brand-primary {
+  display: inline-flex;
   align-items: center;
   gap: 3px;
-  width: max-content;
+  height: 47px;
 }
 
 .brand-mark-image {
@@ -42,6 +49,17 @@
   letter-spacing: -0.045em;
 }
 
+.brand-tagline {
+  margin-top: -4px;
+  margin-left: 4px;
+  color: #756c79;
+  font-size: 9px;
+  font-weight: 580;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
 .header-github-button {
   display: inline-flex;
   min-height: 40px;
@@ -57,15 +75,19 @@
   font-size: 12px;
   font-weight: 680;
   line-height: 1;
-  transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease,
-    transform 160ms ease;
+  animation: none;
+  transform: none;
 }
 
 .header-github-button:hover {
-  border-color: #403944;
-  background: #29242d;
-  box-shadow: 0 10px 26px rgba(23, 20, 25, 0.17), inset 0 1px rgba(255, 255, 255, 0.12);
-  transform: translateY(-1px);
+  border-color: #6f6475;
+  background: #302a34;
+  box-shadow: 0 11px 28px rgba(23, 20, 25, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.header-github-button:focus-visible {
+  outline: 3px solid rgba(168, 85, 247, 0.28);
+  outline-offset: 3px;
 }
 
 .header-github-button svg {
@@ -85,8 +107,18 @@
     height: 44px;
   }
 
+  .brand-primary {
+    height: 43px;
+  }
+
   .brand-name {
     font-size: 17px;
+  }
+
+  .brand-tagline {
+    margin-top: -3px;
+    margin-left: 3px;
+    font-size: 8px;
   }
 
   .header-github-button {
@@ -105,6 +137,10 @@
 
   .brand-name {
     font-size: 16px;
+  }
+
+  .brand-tagline {
+    font-size: 7.5px;
   }
 
   .header-github-button {
