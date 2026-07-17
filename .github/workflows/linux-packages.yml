@@ -144,9 +144,14 @@ jobs:
   build-rpm:
     name: Build RPM package (x64)
     runs-on: ubuntu-24.04
-    container: registry.fedoraproject.org/fedora:43
+    container:
+      image: registry.fedoraproject.org/fedora:43
+      volumes:
+        - /usr/local/lib/android/sdk:/usr/local/lib/android/sdk
     timeout-minutes: 90
     env:
+      ANDROID_HOME: /usr/local/lib/android/sdk
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
       CARGO_TERM_COLOR: always
 
     steps:
