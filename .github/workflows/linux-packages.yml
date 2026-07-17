@@ -1,0 +1,339 @@
+name: Linux packages
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/linux-packages.yml"
+      - "packaging/linux/**"
+      - "assets/linux/**"
+      - "desktopApp/**"
+      - "shared/**"
+      - "crates/vnidrop/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "LICENSE"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "gradle/**"
+      - "gradlew"
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version in MAJOR.MINOR.PATCH form
+        required: true
+        default: "1.0.0"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-packages-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-deb:
+    name: Build Debian package (x64)
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes fakeroot unzip
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: temurin
+          java-version: "21.0.11+10.0.LTS"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Set up Rust 1.91
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # v1
+        with:
+          toolchain: "1.91.0"
+
+      - name: Cache Cargo
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: linux-deb-x64-cargo-1.91.0-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            linux-deb-x64-cargo-1.91.0-
+
+      - name: Resolve version
+        id: version
+        env:
+          REQUESTED_VERSION: ${{ inputs.version || '1.0.0' }}
+        run: |
+          version=$(packaging/linux/resolve-version.sh "$REQUESTED_VERSION")
+          echo "app=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Test and build Debian package
+        run: |
+          ./gradlew \
+            :shared:jvmTest \
+            :desktopApp:packageReleaseDeb \
+            -Pvnidrop.version=${{ steps.version.outputs.app }} \
+            -Pvnidrop.desktop.rustVariant=release \
+            -Pvnidrop.diagnostics.included=false \
+            --no-daemon \
+            --no-configuration-cache \
+            --stacktrace
+
+      - name: Validate Debian package
+        id: package
+        env:
+          VERSION: ${{ steps.version.outputs.app }}
+        run: |
+          mapfile -t packages < <(find desktopApp/build/compose/binaries/main-release/deb -maxdepth 1 -type f -name '*.deb')
+          if (( ${#packages[@]} != 1 )); then
+            echo "Expected exactly one Debian package, found ${#packages[@]}" >&2
+            exit 1
+          fi
+
+          output_directory=build/release/linux/deb
+          output_name="vnidrop_${VERSION}-1_amd64.deb"
+          mkdir -p "$output_directory"
+          cp "${packages[0]}" "$output_directory/$output_name"
+          packaging/linux/verify-package.sh deb "$VERSION" "$output_directory/$output_name"
+          (
+            cd "$output_directory"
+            sha256sum "$output_name" > "$output_name.sha256"
+          )
+
+      - name: Upload Debian artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vnidrop-${{ steps.version.outputs.app }}-linux-deb-x64
+          path: build/release/linux/deb/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Summarize Debian package
+        run: |
+          echo "### Debian package" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Version: ${{ steps.version.outputs.app }}-1" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Architecture: amd64" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Build baseline: Ubuntu 22.04" >> "$GITHUB_STEP_SUMMARY"
+
+  build-rpm:
+    name: Build RPM package (x64)
+    runs-on: ubuntu-24.04
+    container: registry.fedoraproject.org/fedora:43
+    timeout-minutes: 90
+    env:
+      CARGO_TERM_COLOR: always
+
+    steps:
+      - name: Install build and packaging tools
+        run: |
+          dnf install --assumeyes \
+            alsa-lib \
+            cpio \
+            curl \
+            cups-libs \
+            desktop-file-utils \
+            findutils \
+            fontconfig \
+            freetype \
+            gcc \
+            gcc-c++ \
+            git \
+            gzip \
+            gtk3 \
+            libX11 \
+            libXext \
+            libXi \
+            libXrandr \
+            libXrender \
+            libXtst \
+            make \
+            mesa-libGL \
+            rpm-build \
+            tar \
+            unzip \
+            which \
+            xz \
+            zstd
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
+        with:
+          distribution: temurin
+          java-version: "21.0.11+10.0.LTS"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+
+      - name: Set up Rust 1.91
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # v1
+        with:
+          toolchain: "1.91.0"
+
+      - name: Cache Cargo
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: linux-rpm-x64-cargo-1.91.0-${{ hashFiles('Cargo.lock') }}
+          restore-keys: |
+            linux-rpm-x64-cargo-1.91.0-
+
+      - name: Resolve version
+        id: version
+        env:
+          REQUESTED_VERSION: ${{ inputs.version || '1.0.0' }}
+        run: |
+          version=$(packaging/linux/resolve-version.sh "$REQUESTED_VERSION")
+          echo "app=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build RPM package
+        run: |
+          ./gradlew \
+            :desktopApp:packageReleaseRpm \
+            -Pvnidrop.version=${{ steps.version.outputs.app }} \
+            -Pvnidrop.desktop.rustVariant=release \
+            -Pvnidrop.diagnostics.included=false \
+            --no-daemon \
+            --no-configuration-cache \
+            --stacktrace
+
+      - name: Validate RPM package
+        env:
+          VERSION: ${{ steps.version.outputs.app }}
+        run: |
+          mapfile -t packages < <(find desktopApp/build/compose/binaries/main-release/rpm -maxdepth 1 -type f -name '*.rpm')
+          if (( ${#packages[@]} != 1 )); then
+            echo "Expected exactly one RPM package, found ${#packages[@]}" >&2
+            exit 1
+          fi
+
+          output_directory=build/release/linux/rpm
+          output_name="vnidrop-${VERSION}-1.x86_64.rpm"
+          mkdir -p "$output_directory"
+          cp "${packages[0]}" "$output_directory/$output_name"
+          packaging/linux/verify-package.sh rpm "$VERSION" "$output_directory/$output_name"
+          (
+            cd "$output_directory"
+            sha256sum "$output_name" > "$output_name.sha256"
+          )
+
+      - name: Upload RPM artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: vnidrop-${{ steps.version.outputs.app }}-linux-rpm-x64
+          path: build/release/linux/rpm/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Summarize RPM package
+        run: |
+          echo "### RPM package" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Version: ${{ steps.version.outputs.app }}-1" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Architecture: x86_64" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Build environment: Fedora 43" >> "$GITHUB_STEP_SUMMARY"
+
+  publish-release:
+    name: Publish GitHub Release assets
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+    needs:
+      - build-deb
+      - build-rpm
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout release history
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag is on master
+        run: |
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "Release tags must point to a commit on master" >&2
+            exit 1
+          fi
+
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        with:
+          pattern: vnidrop-*-linux-*-x64
+          path: build/release/linux
+          merge-multiple: true
+
+      - name: Verify artifacts and checksums
+        run: |
+          cd build/release/linux
+          shopt -s nullglob
+          deb_packages=(*.deb)
+          rpm_packages=(*.rpm)
+          checksum_files=(*.sha256)
+          if (( ${#deb_packages[@]} != 1 || ${#rpm_packages[@]} != 1 || ${#checksum_files[@]} != 2 )); then
+            echo "Expected one DEB, one RPM, and two checksum sidecars" >&2
+            exit 1
+          fi
+          version=${GITHUB_REF_NAME#v}
+          if [[ ${deb_packages[0]} != "vnidrop_${version}-1_amd64.deb" || ${rpm_packages[0]} != "vnidrop-${version}-1.x86_64.rpm" ]]; then
+            echo "Downloaded package names do not match tag $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+          sha256sum --check "${checksum_files[@]}"
+          sha256sum "${deb_packages[@]}" "${rpm_packages[@]}" > SHA256SUMS
+          rm -- "${checksum_files[@]}"
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag=${GITHUB_REF_NAME}
+          version=${tag#v}
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "GitHub Release $tag already exists; refusing to replace its assets" >&2
+            exit 1
+          fi
+          gh release create "$tag" \
+            build/release/linux/*.deb \
+            build/release/linux/*.rpm \
+            build/release/linux/SHA256SUMS \
+            --verify-tag \
+            --title "VniDrop $version" \
+            --generate-notes

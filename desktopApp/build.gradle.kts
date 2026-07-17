@@ -37,11 +37,12 @@ compose.desktop {
 		buildTypes.release.proguard.isEnabled.set(false)
 
 		nativeDistributions {
-			targetFormats(TargetFormat.Dmg, TargetFormat.Deb)
+			targetFormats(TargetFormat.Dmg, TargetFormat.Deb, TargetFormat.Rpm)
 			packageName = "VniDrop"
 			packageVersion = appVersion
 			description = "Send files directly across your devices"
 			vendor = "Sudosy Labs"
+			licenseFile.set(project.file("../LICENSE"))
 			macOS {
 				bundleID = "com.vnidrop.app"
 				iconFile.set(project.file("../assets/macos/app-icon.icns"))
@@ -52,6 +53,9 @@ compose.desktop {
 			linux {
 				packageName = "vnidrop"
 				iconFile.set(project.file("../assets/linux/app-icon.png"))
+				debMaintainer = "support@sudosy.fr"
+				appRelease = "1"
+				rpmLicenseType = "Apache-2.0"
 			}
 			fileAssociation(
 				mimeType = "application/vnd.vnidrop.transfer",
