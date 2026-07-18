@@ -1,0 +1,285 @@
+import Foundation
+import Combine
+
+enum TransferDetailPanel: Equatable {
+	case activity
+	case receivers
+	case share
+}
+
+/// Which invitation delivery action produced a result (for success copy).
+enum InvitationAction {
+	case export
+	case share
+	case nfc
+}
+
+/// Send feature state, ported from `feature/send/SendViewModel.kt` (`SendState`).
+struct SendState: Equatable {
+	var isComposerOpen = false
+	var selectedFiles: [PickedShareFile] = []
+	var transferName = ""
+	var senderName = ""
+	var accessPolicy: ShareAccessPolicy = .requireApproval
+	var isSharing = false
+	var selectedTransferId: UInt64?
+	var transferThumbnails: [UInt64: Data] = [:]
+	var detailPanel: TransferDetailPanel?
+	var receiverHistory: [ReceiverRequestModel] = []
+	var isLoadingReceivers = false
+	var isDeleteConfirmationOpen = false
+	var isDeleting = false
+
+	func canCreateShare(coreInitialized: Bool) -> Bool {
+		coreInitialized && !selectedFiles.isEmpty && !transferName.isEmpty && !isSharing
+	}
+}
+
+@MainActor
+final class SendModel: ObservableObject {
+	@Published private(set) var state = SendState()
+	@Published private(set) var coreState = CoreState()
+
+	/// Requests a file/folder pick or clipboard copy, consumed by the view layer.
+	@Published var pendingFilePick = false
+	@Published var pendingFolderPick = false
+
+	private let repository: CoreRepository
+	private let fileSystemService: FileSystemService
+	private let filePreviewRepository: FilePreviewRepository
+	private let messages: UiMessageController
+	private var cancellables = Set<AnyCancellable>()
+
+	init(
+		repository: CoreRepository,
+		fileSystemService: FileSystemService,
+		preferences: AppPreferencesRepository,
+		filePreviewRepository: FilePreviewRepository,
+		messages: UiMessageController
+	) {
+		self.repository = repository
+		self.fileSystemService = fileSystemService
+		self.filePreviewRepository = filePreviewRepository
+		self.messages = messages
+
+		repository.$state.sink { [weak self] in self?.coreState = $0 }.store(in: &cancellables)
+
+		repository.signals
+			.sink { [weak self] signal in
+				guard let self else { return }
+				switch signal {
+				case .transfersChanged:
+					Task { _ = await self.repository.refresh() }
+				case .receiverHistoryChanged(let id), .approvalChanged(let id):
+					if id == self.state.selectedTransferId { self.refreshReceivers(id) }
+				}
+			}
+			.store(in: &cancellables)
+
+		filePreviewRepository.$previews
+			.sink { [weak self] previews in self?.state.transferThumbnails = previews }
+			.store(in: &cancellables)
+
+		repository.$state
+			.map { core -> Set<UInt64>? in
+				core.isInitialized ? Set(core.transfers.map(\.transferId)) : nil
+			}
+			.removeDuplicates()
+			.sink { [weak self] ids in
+				if let ids { self?.filePreviewRepository.restore(activeTransferIds: ids) }
+			}
+			.store(in: &cancellables)
+
+		preferences.$preferences
+			.sink { [weak self] prefs in
+				guard let self else { return }
+				if self.state.senderName.isEmpty { self.state.senderName = prefs.username }
+			}
+			.store(in: &cancellables)
+	}
+
+	// MARK: - Composer
+
+	func openComposer() {
+		if state.isSharing { return }
+		let discarded = state.selectedFiles
+		state.isComposerOpen = true
+		state.selectedFiles = []
+		state.transferName = ""
+		state.accessPolicy = .requireApproval
+		discardPickedFiles(discarded)
+	}
+
+	func dismissComposer() {
+		if state.isSharing { return }
+		let discarded = state.selectedFiles
+		state.isComposerOpen = false
+		state.selectedFiles = []
+		state.transferName = ""
+		state.accessPolicy = .requireApproval
+		discardPickedFiles(discarded)
+	}
+
+	func selectFile() { pendingFilePick = true }
+	func selectFolder() { pendingFolderPick = true }
+
+	func onFilesPicked(_ files: [PickedShareFile]) {
+		if files.isEmpty { return }
+		let selectedValues = Set(files.map(\.value))
+		let discarded = state.selectedFiles.filter { !selectedValues.contains($0.value) }
+		state.isComposerOpen = true
+		state.selectedFiles = files
+		state.transferName = defaultTransferName(files)
+		discardPickedFiles(discarded)
+	}
+
+	func onFilePickFailed(_ reason: String) {
+		messages.error(InvitationError.message(reason.isEmpty ? "selection failed" : reason))
+	}
+
+	func clearSelectedSource() {
+		let discarded = state.selectedFiles
+		state.selectedFiles = []
+		state.transferName = ""
+		discardPickedFiles(discarded)
+	}
+
+	func removeSelectedFile(_ value: String) {
+		let discarded = state.selectedFiles.filter { $0.value == value }
+		let remaining = state.selectedFiles.filter { $0.value != value }
+		let wasDefault = state.transferName == defaultTransferName(state.selectedFiles)
+		state.selectedFiles = remaining
+		state.transferName = remaining.isEmpty ? "" : (wasDefault ? defaultTransferName(remaining) : state.transferName)
+		discardPickedFiles(discarded)
+	}
+
+	func setTransferName(_ value: String) { state.transferName = value }
+	func setSenderName(_ value: String) { state.senderName = value }
+	func setAccessPolicy(_ value: ShareAccessPolicy) { state.accessPolicy = value }
+
+	// MARK: - Transfer detail
+
+	func openTransfer(_ transferId: UInt64) {
+		state.selectedTransferId = transferId
+		state.detailPanel = nil
+		refreshReceivers(transferId)
+	}
+
+	func closeTransferDetails() {
+		state.selectedTransferId = nil
+		state.detailPanel = nil
+		state.receiverHistory = []
+		state.isDeleteConfirmationOpen = false
+	}
+
+	func openActivity() { state.detailPanel = .activity }
+	func openShare() { state.detailPanel = .share }
+	func openReceivers() {
+		guard let id = state.selectedTransferId else { return }
+		state.detailPanel = .receivers
+		refreshReceivers(id)
+	}
+	func closeDetailPanel() { state.detailPanel = nil }
+
+	func requestDeleteTransfer() { state.isDeleteConfirmationOpen = true }
+	func dismissDeleteTransfer() { if !state.isDeleting { state.isDeleteConfirmationOpen = false } }
+
+	func confirmDeleteTransfer() {
+		guard let transferId = state.selectedTransferId, !state.isDeleting else { return }
+		state.isDeleting = true
+		Task {
+			let result = await repository.delete(transferId: transferId)
+			switch result {
+			case .success:
+				filePreviewRepository.remove(transferId: transferId)
+				state.selectedTransferId = nil
+				state.detailPanel = nil
+				state.receiverHistory = []
+				state.isDeleteConfirmationOpen = false
+				state.isDeleting = false
+				messages.tryShow(UiMessage(text: .resource("transfer_deleted"), tone: .success))
+			case .failure(let error):
+				state.isDeleting = false
+				messages.error(error)
+			}
+		}
+	}
+
+	// MARK: - Invitation results / share
+
+	func onInvitationResult(_ action: InvitationAction, _ result: Result<Void, Error>) {
+		switch result {
+		case .success:
+			let key: String?
+			switch action {
+			case .export: key = "transfer_invitation_saved"
+			case .nfc: key = "transfer_nfc_written"
+			case .share: key = nil  // system share sheet already confirms
+			}
+			if let key { messages.tryShow(UiMessage(text: .resource(key), tone: .success)) }
+		case .failure(let error):
+			messages.error(error)
+		}
+	}
+
+	func createShare() {
+		let current = state
+		if current.selectedFiles.isEmpty { return }
+		if !current.canCreateShare(coreInitialized: coreState.isInitialized) { return }
+		state.isSharing = true
+		Task {
+			let result = await fileSystemService.sharePickedFiles(
+				repository: repository,
+				files: current.selectedFiles,
+				transferName: current.transferName.trimmingCharacters(in: .whitespacesAndNewlines),
+				senderName: current.senderName.trimmingCharacters(in: .whitespacesAndNewlines),
+				accessPolicy: current.accessPolicy
+			)
+			switch result {
+			case .success(let share):
+				await fileSystemService.discardPickedFiles(current.selectedFiles)
+				if let thumb = current.selectedFiles.compactMap(\.thumbnailData).first {
+					filePreviewRepository.save(transferId: share.transferId, bytes: thumb)
+				}
+				state.isComposerOpen = false
+				state.selectedFiles = []
+				state.transferName = ""
+				state.accessPolicy = .requireApproval
+				state.isSharing = false
+				messages.show(UiMessage(text: .resource("send_transfer_created"), tone: .success))
+			case .failure(let error):
+				state.isSharing = false
+				messages.error(error)
+			}
+		}
+	}
+
+	// MARK: - Internals
+
+	private func defaultTransferName(_ files: [PickedShareFile]) -> String {
+		if files.isEmpty { return "" }
+		if files.count == 1 { return files[0].displayName }
+		if files.allSatisfy(\.isDirectory) { return "\(files.count) folders" }
+		return "\(files.count) files"
+	}
+
+	private func discardPickedFiles(_ files: [PickedShareFile]) {
+		if files.isEmpty { return }
+		Task { await fileSystemService.discardPickedFiles(files) }
+	}
+
+	private func refreshReceivers(_ transferId: UInt64) {
+		state.isLoadingReceivers = true
+		Task {
+			let result = await repository.receiverRequests(transferId: transferId)
+			switch result {
+			case .success(let requests):
+				state.receiverHistory = requests
+				state.isLoadingReceivers = false
+			case .failure(let error):
+				state.isLoadingReceivers = false
+				messages.error(error)
+			}
+		}
+	}
+}
