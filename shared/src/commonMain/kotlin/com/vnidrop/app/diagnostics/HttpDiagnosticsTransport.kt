@@ -119,6 +119,7 @@ fun createDiagnosticsTransport(
 	platform: String,
 	installIdProvider: suspend () -> String,
 ): DiagnosticsTransport = buildDiagnosticsTransport(
+	included = DiagnosticsBuildConfig.INCLUDED,
 	endpoint = DiagnosticsBuildConfig.ENDPOINT,
 	ingestKey = DiagnosticsBuildConfig.INGEST_KEY,
 	appVersion = appVersion,
@@ -127,12 +128,14 @@ fun createDiagnosticsTransport(
 )
 
 internal fun buildDiagnosticsTransport(
+	included: Boolean = true,
 	endpoint: String,
 	ingestKey: String,
 	appVersion: String,
 	platform: String,
 	installIdProvider: suspend () -> String,
 ): DiagnosticsTransport {
+	if (!included) return NoOpDiagnosticsTransport()
 	val normalizedEndpoint = endpoint.trim()
 	val normalizedIngestKey = ingestKey.trim()
 	if (normalizedEndpoint.isEmpty() && normalizedIngestKey.isEmpty()) return NoOpDiagnosticsTransport()

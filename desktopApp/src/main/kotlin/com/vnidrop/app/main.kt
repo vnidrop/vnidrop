@@ -77,7 +77,7 @@ fun main(args: Array<String>) {
 		Window(
 			onCloseRequest = ::exitApplication,
 			state = windowState,
-			title = "vnidrop",
+			title = "VniDrop",
 			// Compose keeps edge resizers active for this client-decorated Linux window.
 			undecorated = linux,
 		) {
@@ -166,7 +166,7 @@ private fun WindowScope.MacOsTitleBar() {
 		) {
 			Box(modifier = Modifier.fillMaxSize().padding(end = MacOsTrafficLightsWidth)) {
 				BasicText(
-					text = "vnidrop",
+					text = "VniDrop",
 					modifier = Modifier.align(Alignment.Center),
 					style = TextStyle(
 						color = colors.foregroundDefault,
@@ -195,7 +195,7 @@ private fun WindowScope.LinuxTitleBar(
 			.background(colors.backgroundSurface200),
 	) {
 		BasicText(
-			text = "vnidrop",
+			text = "VniDrop",
 			modifier = Modifier.align(Alignment.Center),
 			style = TextStyle(
 				color = colors.foregroundDefault,

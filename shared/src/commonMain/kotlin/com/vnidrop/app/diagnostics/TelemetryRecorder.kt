@@ -31,6 +31,7 @@ class TelemetryRecorder(
 	private val flushIntervalMillis: Long = DefaultFlushIntervalMillis,
 	private val retryBackoffMillis: Long = DefaultRetryBackoffMillis,
 	private val automaticRetryCount: Int = DefaultAutomaticRetryCount,
+	private val included: Boolean = true,
 ) {
 	private val bufferMutex = Mutex()
 	private val state = AtomicReference(TelemetryState())
@@ -42,22 +43,24 @@ class TelemetryRecorder(
 		require(flushIntervalMillis > 0) { "flushIntervalMillis must be positive" }
 		require(retryBackoffMillis > 0) { "retryBackoffMillis must be positive" }
 		require(automaticRetryCount >= 0) { "automaticRetryCount must not be negative" }
-		scope.launch {
-			preferencesRepository.preferences
-				.map { it.diagnosticsEnabled }
-				.distinctUntilChanged()
-				.collect { isEnabled ->
-					updateState { current ->
-						if (isEnabled) current.copy(enabled = true) else TelemetryState(enabled = false)
+		if (included) {
+			scope.launch {
+				preferencesRepository.preferences
+					.map { it.diagnosticsEnabled }
+					.distinctUntilChanged()
+					.collect { isEnabled ->
+						updateState { current ->
+							if (isEnabled) current.copy(enabled = true) else TelemetryState(enabled = false)
+						}
+						flushSignals.trySend(Unit)
 					}
-					flushSignals.trySend(Unit)
-				}
+			}
+			scope.launch { runAutomaticFlushes() }
 		}
-		scope.launch { runAutomaticFlushes() }
 	}
 
 	fun record(name: String, properties: Map<String, String> = emptyMap()) {
-		if (!DiagnosticsBuildConfig.INCLUDED) return
+		if (!included) return
 		val sanitizedName = sanitizeDiagnosticName(name)
 		if (sanitizedName.isBlank()) return
 		val sanitizedProperties = sanitizeDiagnosticProperties(properties)

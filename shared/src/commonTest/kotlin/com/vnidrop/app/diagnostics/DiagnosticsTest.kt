@@ -274,6 +274,19 @@ class DiagnosticsTest {
 	}
 
 	@Test
+	fun excludedTransportIgnoresIncompleteConfiguration() {
+		val transport = buildDiagnosticsTransport(
+			included = false,
+			endpoint = "https://diag.example",
+			ingestKey = "",
+			appVersion = "1.0",
+			platform = "Test",
+			installIdProvider = { "id" },
+		)
+		assertIs<NoOpDiagnosticsTransport>(transport)
+	}
+
+	@Test
 	fun noOpTransportReportsUnavailableDelivery() = runTest {
 		val result = NoOpDiagnosticsTransport().sendEvents(
 			TelemetryBatch("batch-1", listOf(TelemetryEvent("x", 1L))),
@@ -327,6 +340,27 @@ class DiagnosticsTest {
 		advanceUntilIdle()
 		assertEquals(0, transport.events.size)
 		assertEquals(1, breadcrumbs.snapshot().size)
+	}
+
+	@Test
+	fun excludedTelemetryDoesNotStartOrRecordEvents() = runTest {
+		val transport = RecordingDiagnosticsTransport()
+		val breadcrumbs = BreadcrumbBuffer()
+		val recorder = TelemetryRecorder(
+			preferencesRepository = fakePrefs(diagnosticsEnabled = true),
+			transport = transport,
+			breadcrumbs = breadcrumbs,
+			scope = TestScope(UnconfinedTestDispatcher(testScheduler)),
+			flushThreshold = 1,
+			included = false,
+		)
+
+		recorder.record("app_open")
+		advanceUntilIdle()
+
+		assertEquals(0, recorder.pendingCount())
+		assertTrue(transport.events.isEmpty())
+		assertTrue(breadcrumbs.snapshot().isEmpty())
 	}
 
 	@Test
