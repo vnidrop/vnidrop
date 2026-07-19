@@ -26,7 +26,7 @@ struct ApprovalState: Equatable {
 final class ApprovalCoordinator: ObservableObject {
 	@Published private(set) var state = ApprovalState()
 
-	private let repository: CoreRepository
+	private let repository: CoreGateway
 	private let preferences: AppPreferencesRepository
 	private let notifications: LocalNotificationService
 	private let visibility: AppVisibility
@@ -36,7 +36,7 @@ final class ApprovalCoordinator: ObservableObject {
 	private var cancellables = Set<AnyCancellable>()
 
 	init(
-		repository: CoreRepository,
+		repository: CoreGateway,
 		preferences: AppPreferencesRepository,
 		notifications: LocalNotificationService,
 		visibility: AppVisibility,
@@ -57,7 +57,7 @@ final class ApprovalCoordinator: ObservableObject {
 			}
 			.store(in: &cancellables)
 
-		repository.$state
+		repository.statePublisher
 			.sink { [weak self] core in
 				guard let self, core.isInitialized else { return }
 				let sharing = core.transfers.filter { $0.direction == .send && $0.status == .sharing }

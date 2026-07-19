@@ -85,7 +85,7 @@ final class SettingsModel: ObservableObject {
 	private let environment: PlatformEnvironment
 	private let deviceInfoProvider: DeviceInfoProvider
 	private let fileSystemService: FileSystemService
-	private let repository: CoreRepository
+	private let repository: CoreGateway
 	private let preferences: AppPreferencesRepository
 	private let notifications: LocalNotificationService
 	private let messages: UiMessageController
@@ -101,7 +101,7 @@ final class SettingsModel: ObservableObject {
 		environment: PlatformEnvironment,
 		deviceInfoProvider: DeviceInfoProvider,
 		fileSystemService: FileSystemService,
-		repository: CoreRepository,
+		repository: CoreGateway,
 		preferences: AppPreferencesRepository,
 		notifications: LocalNotificationService,
 		messages: UiMessageController,

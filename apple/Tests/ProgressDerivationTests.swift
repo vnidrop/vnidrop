@@ -1,5 +1,5 @@
 import XCTest
-@testable import VniDropApp
+@testable import VniDrop
 
 /// Ports selected `shared/src/commonTest/.../ui/state` assertions to verify the
 /// progress-derivation logic matches the Kotlin implementation.

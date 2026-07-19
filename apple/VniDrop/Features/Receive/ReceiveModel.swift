@@ -51,13 +51,13 @@ final class ReceiveModel: ObservableObject {
 	@Published private(set) var state = ReceiveState()
 	@Published private(set) var coreState = CoreState()
 
-	private let repository: CoreRepository
+	private let repository: CoreGateway
 	private let fileSystemService: FileSystemService
 	private let messages: UiMessageController
 	private var cancellables = Set<AnyCancellable>()
 
 	init(
-		repository: CoreRepository,
+		repository: CoreGateway,
 		fileSystemService: FileSystemService,
 		preferences: AppPreferencesRepository,
 		messages: UiMessageController
@@ -66,7 +66,7 @@ final class ReceiveModel: ObservableObject {
 		self.fileSystemService = fileSystemService
 		self.messages = messages
 
-		repository.$state.sink { [weak self] in self?.coreState = $0 }.store(in: &cancellables)
+		repository.statePublisher.sink { [weak self] in self?.coreState = $0 }.store(in: &cancellables)
 
 		preferences.$preferences
 			.sink { [weak self] prefs in

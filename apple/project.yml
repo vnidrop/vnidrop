@@ -52,3 +52,29 @@ targets:
       - sdk: SystemConfiguration.framework
       - sdk: Security.framework
       - sdk: libresolv.tbd
+
+  VniDropTests:
+    type: bundle.unit-test
+    supportedDestinations: [iOS, macOS]
+    sources:
+      - path: Tests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+        CODE_SIGN_STYLE: Automatic
+    dependencies:
+      - target: VniDrop
+
+schemes:
+  VniDrop:
+    build:
+      targets:
+        VniDrop: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - VniDropTests

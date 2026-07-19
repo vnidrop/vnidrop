@@ -35,7 +35,7 @@ struct MacFileSystemService: FileSystemService {
 	}
 
 	func sharePickedFiles(
-		repository: CoreRepository,
+		repository: CoreGateway,
 		files: [PickedShareFile],
 		transferName: String,
 		senderName: String,

@@ -9,13 +9,13 @@ final class AppModel: ObservableObject {
 	@Published private(set) var themeMode: ThemeMode = .system
 
 	private let environment: PlatformEnvironment
-	private let repository: CoreRepository
+	private let repository: CoreGateway
 	private let messages: UiMessageController
 	private var cancellables = Set<AnyCancellable>()
 
 	init(
 		environment: PlatformEnvironment,
-		repository: CoreRepository,
+		repository: CoreGateway,
 		preferences: AppPreferencesRepository,
 		messages: UiMessageController
 	) {

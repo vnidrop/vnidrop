@@ -50,14 +50,14 @@ final class SendModel: ObservableObject {
 	/// small transfer complete.
 	@Published private(set) var receiversByTransfer: [UInt64: [ReceiverRequestModel]] = [:]
 
-	private let repository: CoreRepository
+	private let repository: CoreGateway
 	private let fileSystemService: FileSystemService
 	private let filePreviewRepository: FilePreviewRepository
 	private let messages: UiMessageController
 	private var cancellables = Set<AnyCancellable>()
 
 	init(
-		repository: CoreRepository,
+		repository: CoreGateway,
 		fileSystemService: FileSystemService,
 		preferences: AppPreferencesRepository,
 		filePreviewRepository: FilePreviewRepository,
@@ -68,7 +68,7 @@ final class SendModel: ObservableObject {
 		self.filePreviewRepository = filePreviewRepository
 		self.messages = messages
 
-		repository.$state.sink { [weak self] in self?.coreState = $0 }.store(in: &cancellables)
+		repository.statePublisher.sink { [weak self] in self?.coreState = $0 }.store(in: &cancellables)
 
 		repository.signals
 			.sink { [weak self] signal in
@@ -86,7 +86,7 @@ final class SendModel: ObservableObject {
 		// Keep receiver delivery records current for every sharing/importing
 		// outgoing transfer (new shares appear here; status transitions arrive via
 		// the receiverHistoryChanged signal above).
-		repository.$state
+		repository.statePublisher
 			.map { core -> Set<UInt64> in
 				Set(core.transfers
 					.filter { $0.direction == .send && ($0.status == .sharing || $0.status == .importing) }
@@ -100,7 +100,7 @@ final class SendModel: ObservableObject {
 			.sink { [weak self] previews in self?.state.transferThumbnails = previews }
 			.store(in: &cancellables)
 
-		repository.$state
+		repository.statePublisher
 			.map { core -> Set<UInt64>? in
 				core.isInitialized ? Set(core.transfers.map(\.transferId)) : nil
 			}

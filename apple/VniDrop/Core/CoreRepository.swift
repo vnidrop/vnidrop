@@ -9,8 +9,9 @@ import Combine
 /// UniFFI calls block (the core drives its own runtime via `block_on`), so they
 /// run on a background queue and results are hopped back to the main actor.
 @MainActor
-final class CoreRepository: ObservableObject {
+final class CoreRepository: ObservableObject, CoreGateway {
 	@Published private(set) var state = CoreState()
+	var statePublisher: AnyPublisher<CoreState, Never> { $state.eraseToAnyPublisher() }
 
 	private let signalsSubject = PassthroughSubject<CoreSignal, Never>()
 	/// Coalesced change hints; subscribe to react to approval/history/transfer changes.
