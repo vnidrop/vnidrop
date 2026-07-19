@@ -116,7 +116,7 @@ struct SendScreen: View {
 	private func progress(for transfer: Transfer) -> TransferProgress? {
 		switch transfer.status {
 		case .importing: return progressForTransfer(events: model.coreState.events, transferId: transfer.transferId)
-		case .sharing: return activeSendProgress(events: model.coreState.events, transferId: transfer.transferId, totalSizeHint: transfer.totalSize)
+		case .sharing: return sendProgressSummary(events: model.coreState.events, transferId: transfer.transferId, totalSizeHint: transfer.totalSize)
 		default: return nil
 		}
 	}
@@ -142,7 +142,7 @@ private struct TransferListItem: View {
 				Text("\(formatBytes(transfer.totalSize)) · \(accessPolicyLabel(transfer.accessPolicy))")
 					.font(.caption).foregroundStyle(.secondary).lineLimit(1)
 				if let progress, transfer.status == .importing || transfer.status == .sharing {
-					ProgressRow(labelKey: progress.labelKey, progress: progress.progress, detail: progress.detail)
+					ProgressRow(labelKey: progress.labelKey, progress: progress.progress, detail: progress.detail, labelText: progress.label)
 						.padding(.top, 2)
 				}
 			}

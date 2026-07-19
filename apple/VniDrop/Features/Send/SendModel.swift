@@ -205,6 +205,37 @@ final class SendModel: ObservableObject {
 		}
 	}
 
+	/// Cancels/refuses a single receiver by responding to its request negatively.
+	/// Uses the core's `respondReceiverRequest` (no backend change); applies to
+	/// receivers that are still pending or accepted.
+	func cancelReceiver(requestId: String) {
+		Task {
+			let result = await repository.respondReceiverRequest(requestId: requestId, accepted: false, reason: nil)
+			switch result {
+			case .success:
+				if let transferId = state.selectedTransferId { refreshReceivers(transferId) }
+				_ = await repository.refresh()
+			case .failure(let error):
+				messages.error(error)
+			}
+		}
+	}
+
+	/// Stops an active outgoing share (interrupts any in-flight receivers). The
+	/// transfer stays in history as "Stopped". Uses the core's `cancelTransfer`.
+	func stopSharing(transferId: UInt64) {
+		Task {
+			let result = await repository.cancel(transferId: transferId)
+			switch result {
+			case .success:
+				_ = await repository.refresh()
+				messages.tryShow(UiMessage(text: .resource("transfer_event_stopped"), tone: .info))
+			case .failure(let error):
+				messages.error(error)
+			}
+		}
+	}
+
 	// MARK: - Invitation results / share
 
 	func onInvitationResult(_ action: InvitationAction, _ result: Result<Void, Error>) {

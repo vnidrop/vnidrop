@@ -82,6 +82,25 @@ struct RootView: View {
 				break
 			}
 		}
+		// A pending approval is a blocking modal; close the sender's detail panel
+		// (e.g. the Share/QR sheet) so the approval sheet isn't presented under it
+		// on macOS.
+		.onChange(of: approvals.state.current?.id) { id in
+			if id != nil { sendModel.closeDetailPanel() }
+		}
+		#if os(macOS)
+		// macOS keeps `scenePhase == .active` even when the app loses focus, so
+		// drive foreground/background off NSApplication's active state instead —
+		// otherwise notifications (only posted when unfocused) never fire.
+		.onReceive(NotificationCenter.default.publisher(for: NSApplication.didResignActiveNotification)) { _ in
+			graph.visibility.setForeground(false)
+		}
+		.onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+			graph.visibility.setForeground(true)
+			settingsModel.refreshNotificationPermission()
+			Task { _ = await graph.coreRepository.refresh() }
+		}
+		#endif
 	}
 
 	/// iOS uses a bottom tab bar; macOS uses a native source-list sidebar so each

@@ -23,6 +23,9 @@ struct TransferProgress: Equatable {
 	let labelKey: String
 	let progress: Double?
 	var detail: String? = nil
+	/// Pre-resolved label that overrides `labelKey` when set (e.g. "Sending to 2",
+	/// which needs a runtime count).
+	var label: String? = nil
 }
 
 func statusLabelKey(_ status: TransferStatus) -> String {
@@ -107,8 +110,11 @@ func progressForReceiver(
 	)
 }
 
-/// Best send-side progress for a transfer (any receiver).
-func activeSendProgress(
+/// Send-side progress summary for a transfer's list row. Aggregates only the
+/// receivers that are *currently downloading* (in-flight), so the bar disappears
+/// once every receiver has completed/aborted, and its value is deterministic
+/// (order-independent) rather than "whichever receiver's event arrived last".
+func sendProgressSummary(
 	events: [CoreEventModel],
 	transferId: UInt64,
 	totalSizeHint: UInt64? = nil
@@ -118,23 +124,53 @@ func activeSendProgress(
 		.compactMap { findString($0.dataJson, key: "endpoint_id") }
 		.reduce(into: [String]()) { acc, id in if !acc.contains(id) { acc.append(id) } }
 
+	// No per-endpoint attribution: fall back to the single connection-scoped
+	// stream, hidden once it completes/aborts.
 	if endpointIds.isEmpty {
 		let relevant = events.filter {
 			$0.transferId == transferId && $0.direction == "send" && $0.phase == "transfer"
-				&& ["started", "progress"].contains($0.kind)
+				&& ["started", "progress", "completed", "aborted"].contains($0.kind)
 		}
-		guard let first = relevant.first else { return nil }
+		guard let latest = relevant.first else { return nil }
+		if latest.kind == "completed" || latest.kind == "aborted" { return nil }
+		let live = relevant.filter { ["started", "progress"].contains($0.kind) }
 		return TransferProgress(
-			transferId: transferId, phase: "transfer", kind: first.kind,
+			transferId: transferId, phase: "transfer", kind: latest.kind,
 			labelKey: "progress_sending",
-			progress: aggregateReceiverProgress(events: relevant, totalSizeHint: totalSizeHint),
-			detail: progressDetail(first)
+			progress: aggregateReceiverProgress(events: live, totalSizeHint: totalSizeHint),
+			detail: progressDetail(latest)
 		)
 	}
-	let all = endpointIds.compactMap {
-		progressForReceiver(events: events, transferId: transferId, remoteEndpointId: $0, totalSizeHint: totalSizeHint)
+
+	// Keep only receivers still in flight (latest state started/progress).
+	var activeCount = 0
+	var fractions: [Double] = []
+	var lastActive: TransferProgress?
+	for id in endpointIds {
+		guard let p = progressForReceiver(
+			events: events, transferId: transferId, remoteEndpointId: id, totalSizeHint: totalSizeHint
+		) else { continue }
+		guard p.kind == "progress" || p.kind == "started" else { continue }
+		activeCount += 1
+		lastActive = p
+		if let fraction = p.progress { fractions.append(fraction) }
 	}
-	return all.first { $0.kind == "progress" || $0.kind == "started" } ?? all.first
+	if activeCount == 0 { return nil }
+
+	// Same total per receiver, so the byte-summed progress is the mean of the
+	// per-receiver fractions.
+	let combined = fractions.isEmpty ? nil : fractions.reduce(0, +) / Double(fractions.count)
+	if activeCount == 1 {
+		return TransferProgress(
+			transferId: transferId, phase: "transfer", kind: "progress",
+			labelKey: "progress_sending", progress: combined, detail: lastActive?.detail
+		)
+	}
+	return TransferProgress(
+		transferId: transferId, phase: "transfer", kind: "progress",
+		labelKey: "progress_sending", progress: combined,
+		label: String(format: String(localized: "progress_sending_to_count"), activeCount)
+	)
 }
 
 func formatBytes(_ size: UInt64) -> String {

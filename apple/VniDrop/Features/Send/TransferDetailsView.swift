@@ -7,6 +7,11 @@ struct TransferDetailsView: View {
 	@ObservedObject var model: SendModel
 	let transfer: Transfer
 	let events: [CoreEventModel]
+	@State private var showStopConfirmation = false
+
+	private var isActiveShare: Bool {
+		transfer.status == .sharing || transfer.status == .importing
+	}
 
 	private var pendingReceivers: Int {
 		model.state.receiverHistory.filter { $0.status == .requested || $0.status == .accepted }.count
@@ -45,6 +50,16 @@ struct TransferDetailsView: View {
 					onTap: model.openShare
 				)
 			}
+
+			if isActiveShare {
+				Section {
+					Button(role: .destructive) {
+						showStopConfirmation = true
+					} label: {
+						Label(String(localized: "send_stop_sharing"), systemImage: "stop.circle")
+					}
+				}
+			}
 		}
 		.formStyle(.grouped)
 		.navigationTitle(Text(LocalizedStringKey("send_transfer_details_title")))
@@ -57,6 +72,18 @@ struct TransferDetailsView: View {
 					Image(systemName: "trash")
 				}
 			}
+		}
+		.confirmationDialog(
+			Text(LocalizedStringKey("send_stop_sharing")),
+			isPresented: $showStopConfirmation,
+			titleVisibility: .visible
+		) {
+			Button(String(localized: "send_stop_sharing"), role: .destructive) {
+				model.stopSharing(transferId: transfer.transferId)
+			}
+			Button(String(localized: "button_cancel"), role: .cancel) {}
+		} message: {
+			Text(LocalizedStringKey("send_stop_sharing_description"))
 		}
 	}
 }
@@ -113,7 +140,8 @@ struct DetailPanelContent: View {
 				receivers: model.state.receiverHistory,
 				loading: model.state.isLoadingReceivers,
 				events: model.coreState.events,
-				transferTotalSize: transfer.totalSize
+				transferTotalSize: transfer.totalSize,
+				onCancel: model.cancelReceiver
 			)
 		case .share:
 			TransferSharePanel(model: model, transfer: transfer)
@@ -163,6 +191,7 @@ struct ReceiverHistoryPanel: View {
 	let loading: Bool
 	let events: [CoreEventModel]
 	let transferTotalSize: UInt64
+	let onCancel: (String) -> Void
 
 	var body: some View {
 		PanelContainer(title: String(localized: "transfer_receivers_title")) {
@@ -173,7 +202,7 @@ struct ReceiverHistoryPanel: View {
 			} else {
 				ForEach(Array(receivers.enumerated()), id: \.element.id) { index, receiver in
 					if index > 0 { Divider().overlay(colors.borderDefault) }
-					ReceiverRow(receiver: receiver, sendProgress: sendProgress(for: receiver))
+					ReceiverRow(receiver: receiver, sendProgress: sendProgress(for: receiver), onCancel: onCancel)
 				}
 			}
 		}
@@ -193,25 +222,46 @@ private struct ReceiverRow: View {
 	@Environment(\.vniColors) private var colors
 	let receiver: ReceiverRequestModel
 	let sendProgress: TransferProgress?
+	let onCancel: (String) -> Void
+
+	/// Only pending requests can be cancelled per-receiver: the core rejects a
+	/// negative response to an already-accepted request ("...not approved, or it
+	/// was refused"). Interrupting an in-flight receiver needs Stop sharing.
+	private var isCancelable: Bool {
+		receiver.status == .requested
+	}
 
 	var body: some View {
 		let name = receiver.receiverName ?? receiver.receiverDeviceName ?? String(localized: "transfer_nearby_device")
 		let showLive = sendProgress != nil && receiver.status != .completed
 			&& receiver.status != .refused && receiver.status != .expired
-		VStack(alignment: .leading, spacing: 6) {
-			Text(name).font(VniType.bodyLarge).lineLimit(1)
-			if let deviceName = receiver.receiverDeviceName, deviceName != name {
-				Text(deviceName).font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
+		HStack(alignment: .top, spacing: 12) {
+			VStack(alignment: .leading, spacing: 6) {
+				Text(name).font(VniType.bodyLarge).lineLimit(1)
+				if let deviceName = receiver.receiverDeviceName, deviceName != name {
+					Text(deviceName).font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
+				}
+				if showLive, let sendProgress {
+					ProgressRow(labelKey: sendProgress.labelKey, progress: sendProgress.progress, detail: sendProgress.detail, labelText: sendProgress.label)
+				} else {
+					Text(LocalizedStringKey(receiver.status.statusTextKey))
+						.font(VniType.bodySmall).fontWeight(.medium)
+						.foregroundStyle(receiver.status.statusColor(colors))
+				}
+				if let reason = receiver.reason, !reason.isEmpty {
+					Text(reason).font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
+				}
 			}
-			if showLive, let sendProgress {
-				ProgressRow(labelKey: sendProgress.labelKey, progress: sendProgress.progress, detail: sendProgress.detail)
-			} else {
-				Text(LocalizedStringKey(receiver.status.statusTextKey))
-					.font(VniType.bodySmall).fontWeight(.medium)
-					.foregroundStyle(receiver.status.statusColor(colors))
-			}
-			if let reason = receiver.reason, !reason.isEmpty {
-				Text(reason).font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
+			.frame(maxWidth: .infinity, alignment: .leading)
+			if isCancelable {
+				Button(role: .destructive) {
+					onCancel(receiver.id)
+				} label: {
+					Text(LocalizedStringKey("button_refuse"))
+						.font(VniType.bodySmall)
+				}
+				.buttonStyle(.borderless)
+				.tint(.red)
 			}
 		}
 		.frame(maxWidth: .infinity, alignment: .leading)

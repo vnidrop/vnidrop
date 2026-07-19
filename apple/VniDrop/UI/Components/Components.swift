@@ -33,11 +33,13 @@ struct ProgressRow: View {
 	let labelKey: String
 	let progress: Double?
 	var detail: String? = nil
+	/// Pre-resolved label; when set it overrides `labelKey`.
+	var labelText: String? = nil
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 4) {
 			HStack {
-				Text(LocalizedStringKey(labelKey)).font(.subheadline).lineLimit(1)
+				label.font(.subheadline).lineLimit(1)
 				Spacer()
 				if let progress {
 					Text("\(Int(progress * 100))%").font(.caption).foregroundStyle(.secondary)
@@ -53,6 +55,15 @@ struct ProgressRow: View {
 			}
 		}
 		.frame(maxWidth: .infinity)
+	}
+
+	@ViewBuilder
+	private var label: some View {
+		if let labelText {
+			Text(labelText)
+		} else {
+			Text(LocalizedStringKey(labelKey))
+		}
 	}
 }
 

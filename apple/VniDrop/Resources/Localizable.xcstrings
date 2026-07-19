@@ -1185,6 +1185,16 @@
         }
       }
     },
+    "progress_sending_to_count" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending to %lld"
+          }
+        }
+      }
+    },
     "progress_share_ready" : {
       "localizations" : {
         "en" : {
@@ -1623,6 +1633,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transfers you’re sharing from this device."
+          }
+        }
+      }
+    },
+    "send_stop_sharing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop sharing"
+          }
+        }
+      }
+    },
+    "send_stop_sharing_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This stops the transfer and interrupts anyone currently downloading it. It stays in your history as Stopped."
           }
         }
       }
