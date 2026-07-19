@@ -23,3 +23,6 @@ target/
 # Local design export scratch
 output/
 .screenshots
+
+# IDE-generated desktop source copies
+desktopApp/bin/
