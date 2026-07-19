@@ -1,6 +1,6 @@
 import Foundation
 import Combine
-import VnidropCore
+@preconcurrency import VnidropCore
 
 /// Swift port of `core/CoreRepository.kt`. Owns the `VnidropCore` handle, maps the
 /// generated UniFFI records into app domain models, publishes an observable
@@ -16,13 +16,16 @@ final class CoreRepository: ObservableObject {
 	/// Coalesced change hints; subscribe to react to approval/history/transfer changes.
 	var signals: AnyPublisher<CoreSignal, Never> { signalsSubject.eraseToAnyPublisher() }
 
-	private var core: VnidropCore?
+	// Set on the main actor (initialize/shutdown) but read from `queue` inside
+	// `runCore`; the underlying core is internally synchronized, so this crossing
+	// is safe. `nonisolated(unsafe)` documents that contract for Swift 6.
+	private nonisolated(unsafe) var core: VnidropCore?
 	private let queue = DispatchQueue(label: "com.vnidrop.core", qos: .userInitiated)
 	private lazy var sink = RepositoryEventSink { [weak self] event in
 		Task { @MainActor in self?.handle(event: event) }
 	}
 
-	private static let maxEvents = 200
+	private nonisolated static let maxEvents = 200
 
 	// MARK: - Lifecycle
 
@@ -186,7 +189,7 @@ final class CoreRepository: ObservableObject {
 	// MARK: - Internals
 
 	/// Snapshot of the values read from the core in one pass.
-	private struct CoreSnapshot {
+	private struct CoreSnapshot: Sendable {
 		let status: CoreStatus
 		let transfers: [Transfer]
 		let events: [CoreEventModel]
@@ -194,11 +197,11 @@ final class CoreRepository: ObservableObject {
 
 	/// Reads the current core state. Safe to call off the main actor (pure core
 	/// FFI reads); does not touch `@Published` state.
-	private func readSnapshot() -> CoreSnapshot? {
+	private nonisolated func readSnapshot() -> CoreSnapshot? {
 		guard let core = self.core else { return nil }
 		let status = core.status()
-		let transfers = (try? core.listTransfers())?.map { $0.toModel() } ?? state.transfers
-		let events = (try? core.listEvents(transferId: nil))?.prefix(Self.maxEvents).map { $0.toModel() } ?? state.events
+		let transfers = (try? core.listTransfers())?.map { $0.toModel() } ?? []
+		let events = (try? core.listEvents(transferId: nil))?.prefix(Self.maxEvents).map { $0.toModel() } ?? []
 		return CoreSnapshot(
 			status: CoreStatus(
 				endpointId: status.endpointId,
@@ -221,7 +224,7 @@ final class CoreRepository: ObservableObject {
 		if let snapshot = readSnapshot() { applySnapshot(snapshot) }
 	}
 
-	private func requireCore() throws -> VnidropCore {
+	private nonisolated func requireCore() throws -> VnidropCore {
 		guard let core = self.core else {
 			throw InvitationError.message("Initialize the core first.")
 		}
@@ -229,7 +232,7 @@ final class CoreRepository: ObservableObject {
 	}
 
 	/// Runs a blocking core call off the main actor and hops the result back.
-	private func runCore<T>(_ block: @escaping () throws -> T) async -> Result<T, Error> {
+	private nonisolated func runCore<T: Sendable>(_ block: @escaping @Sendable () throws -> T) async -> Result<T, Error> {
 		await withCheckedContinuation { continuation in
 			queue.async {
 				let result: Result<T, Error>
@@ -243,7 +246,7 @@ final class CoreRepository: ObservableObject {
 		}
 	}
 
-	private static func nextTransferId() -> UInt64 {
+	private nonisolated static func nextTransferId() -> UInt64 {
 		UInt64.random(in: 1...UInt64(Int64.max))
 	}
 }

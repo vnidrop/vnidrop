@@ -3,7 +3,7 @@ import VnidropCore
 
 /// A file/folder selected for sharing, ported from `PickedShareFile` in
 /// `core/FilePicker.kt`.
-struct PickedShareFile: Equatable, Identifiable {
+struct PickedShareFile: Equatable, Identifiable, Sendable {
 	let value: String
 	let displayName: String
 	var sizeBytes: UInt64? = nil
@@ -18,6 +18,7 @@ struct PickedShareFile: Equatable, Identifiable {
 
 /// Receive-destination and share-source platform bridge, ported from
 /// `core/FileSystemService.kt` and its iOS/desktop actuals.
+@MainActor
 protocol FileSystemService {
 	var supportsCustomReceiveFolders: Bool { get }
 

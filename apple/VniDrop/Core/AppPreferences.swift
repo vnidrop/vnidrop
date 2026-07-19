@@ -2,12 +2,12 @@ import Foundation
 import Combine
 
 /// Receive-destination descriptor, ported from `core/FileSystemService.kt`.
-enum ReceiveFolderKind: String, Codable {
+enum ReceiveFolderKind: String, Codable, Sendable {
 	case fileSystemPath
 	case iosSecurityScopedUrl
 }
 
-struct ReceiveFolder: Equatable, Codable {
+struct ReceiveFolder: Equatable, Codable, Sendable {
 	let kind: ReceiveFolderKind
 	let value: String
 	let displayName: String

@@ -9,7 +9,7 @@ struct PreferencesSettings: View {
 	var body: some View {
 		Section(String(localized: "field_username")) {
 			TextField(String(localized: "field_username"),
-					  text: Binding(get: { model.state.username }, set: model.setUsername))
+					  text: Binding(get: { model.state.username }, set: { model.setUsername($0) }))
 		}
 		if model.state.supportsCustomReceiveFolders {
 			Section(String(localized: "preferences_receive_folder_title")) {
@@ -228,25 +228,25 @@ struct BugReportSettings: View {
 
 	var body: some View {
 		Section(String(localized: "bug_report_what_label")) {
-			TextField("", text: Binding(get: { model.state.bugWhatHappened }, set: model.setBugWhatHappened),
+			TextField("", text: Binding(get: { model.state.bugWhatHappened }, set: { model.setBugWhatHappened($0) }),
 					  prompt: Text(LocalizedStringKey("bug_report_what_hint")), axis: .vertical)
 				.lineLimit(3, reservesSpace: true)
 				.labelsHidden()
 		}
 		Section(String(localized: "bug_report_expected_label")) {
-			TextField("", text: Binding(get: { model.state.bugExpected }, set: model.setBugExpected),
+			TextField("", text: Binding(get: { model.state.bugExpected }, set: { model.setBugExpected($0) }),
 					  prompt: Text(LocalizedStringKey("bug_report_expected_hint")), axis: .vertical)
 				.lineLimit(3, reservesSpace: true)
 				.labelsHidden()
 		}
 		Section(String(localized: "bug_report_steps_label")) {
-			TextField("", text: Binding(get: { model.state.bugSteps }, set: model.setBugSteps),
+			TextField("", text: Binding(get: { model.state.bugSteps }, set: { model.setBugSteps($0) }),
 					  prompt: Text(LocalizedStringKey("bug_report_steps_hint")), axis: .vertical)
 				.lineLimit(3, reservesSpace: true)
 				.labelsHidden()
 		}
 		Section(String(localized: "bug_report_contact_label")) {
-			TextField("", text: Binding(get: { model.state.bugContact }, set: model.setBugContact),
+			TextField("", text: Binding(get: { model.state.bugContact }, set: { model.setBugContact($0) }),
 					  prompt: Text(LocalizedStringKey("bug_report_contact_hint")))
 				.labelsHidden()
 		}

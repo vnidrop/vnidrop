@@ -1,7 +1,7 @@
 #if os(iOS)
 import UIKit
-import AVFoundation
-import CoreNFC
+@preconcurrency import AVFoundation
+@preconcurrency import CoreNFC
 import UniformTypeIdentifiers
 
 @MainActor
@@ -98,6 +98,8 @@ final class IosReceiveInvitationActions: NSObject, ReceiveInvitationActions, UID
 		case .authorized:
 			completion(true)
 		case .notDetermined:
+			// The permission callback is delivered back on the main queue.
+			nonisolated(unsafe) let completion = completion
 			AVCaptureDevice.requestAccess(for: .video) { granted in
 				DispatchQueue.main.async { completion(granted) }
 			}
@@ -183,11 +185,14 @@ final class QrScannerViewController: UIViewController, AVCaptureMetadataOutputOb
 		DispatchQueue.global(qos: .userInitiated).async { [session] in session.startRunning() }
 	}
 
-	func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
+	// The metadata output delegate queue is `.main`, so hop back onto the main
+	// actor to touch view-controller state.
+	nonisolated func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
 		let value = metadataObjects
 			.compactMap { $0 as? AVMetadataMachineReadableCodeObject }
 			.first { $0.type == .qr }?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-		if !value.isEmpty { finish(.success(value)) }
+		guard !value.isEmpty else { return }
+		MainActor.assumeIsolated { finish(.success(value)) }
 	}
 
 	private func finish(_ result: Result<String, Error>) {
@@ -203,7 +208,8 @@ final class QrScannerViewController: UIViewController, AVCaptureMetadataOutputOb
 }
 
 /// NFC invitation reader, ported from `InvitationNfcReader`.
-final class InvitationNfcReader: NSObject, NFCNDEFReaderSessionDelegate {
+// Runs entirely on the NFC session's `.main` delegate queue.
+final class InvitationNfcReader: NSObject, NFCNDEFReaderSessionDelegate, @unchecked Sendable {
 	private let onResult: (Result<String, Error>) -> Void
 	private var session: NFCNDEFReaderSession?
 	private var finished = false

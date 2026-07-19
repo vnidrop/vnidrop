@@ -17,6 +17,7 @@ struct DeviceInfo {
 	let batteryLevel: String?
 }
 
+@MainActor
 protocol DeviceInfoProvider {
 	func load() async -> DeviceInfo
 }

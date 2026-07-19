@@ -1,6 +1,6 @@
 #if os(iOS)
 import UIKit
-import CoreNFC
+@preconcurrency import CoreNFC
 
 @MainActor
 func makePlatformShareActions() -> TransferShareActions { IosTransferShareActions() }
@@ -63,7 +63,8 @@ final class IosTransferShareActions: NSObject, TransferShareActions {
 
 /// Writes a VniDrop invitation to a writable NDEF tag, ported from
 /// `InvitationNfcWriter` in `TransferShareActions.ios.kt`.
-final class InvitationNfcWriter: NSObject, NFCNDEFReaderSessionDelegate {
+// Runs entirely on the NFC session's `.main` delegate queue.
+final class InvitationNfcWriter: NSObject, NFCNDEFReaderSessionDelegate, @unchecked Sendable {
 	private let ticket: String
 	private let onResult: (Result<Void, Error>) -> Void
 	private var session: NFCNDEFReaderSession?
@@ -95,9 +96,13 @@ final class InvitationNfcWriter: NSObject, NFCNDEFReaderSessionDelegate {
 	func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {}
 
 	func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
-		guard let tag = tags.first else {
+		guard let firstTag = tags.first else {
 			return finish(.failure(InvitationError.message("No NFC tag was detected")))
 		}
+		// CoreNFC completion handlers run on the session's `.main` queue; these
+		// framework values are safe to use there.
+		nonisolated(unsafe) let session = session
+		nonisolated(unsafe) let tag = firstTag
 		session.connect(to: tag) { [weak self] connectError in
 			guard let self else { return }
 			if let connectError { return self.finish(.failure(connectError)) }

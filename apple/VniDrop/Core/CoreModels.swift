@@ -4,13 +4,13 @@ import Foundation
 /// the generated UniFFI records/enums into these so the UI never depends on the
 /// binding surface directly.
 
-struct CoreStatus: Equatable {
+struct CoreStatus: Equatable, Sendable {
 	let endpointId: String
 	let activeTransfers: UInt64
 	let activeShares: UInt64
 }
 
-struct CoreEventModel: Equatable, Identifiable {
+struct CoreEventModel: Equatable, Identifiable, Sendable {
 	let id: String
 	let timestamp: Int64
 	let scope: String
@@ -21,17 +21,17 @@ struct CoreEventModel: Equatable, Identifiable {
 	let dataJson: String
 }
 
-enum ShareAccessPolicy: Equatable {
+enum ShareAccessPolicy: Equatable, Sendable {
 	case requireApproval
 	case anyoneWithTransfer
 }
 
-enum TransferDirection: Equatable {
+enum TransferDirection: Equatable, Sendable {
 	case send
 	case receive
 }
 
-enum TransferStatus: Equatable {
+enum TransferStatus: Equatable, Sendable {
 	case importing
 	case sharing
 	case receiving
@@ -41,7 +41,7 @@ enum TransferStatus: Equatable {
 	case stopped
 }
 
-struct Transfer: Equatable, Identifiable {
+struct Transfer: Equatable, Identifiable, Sendable {
 	let localId: String
 	let transferId: UInt64
 	let direction: TransferDirection
@@ -59,7 +59,7 @@ struct Transfer: Equatable, Identifiable {
 	var id: String { localId }
 }
 
-struct Share: Equatable {
+struct Share: Equatable, Sendable {
 	let transferId: UInt64
 	let ticket: String
 	let transferName: String
@@ -68,7 +68,7 @@ struct Share: Equatable {
 	let totalSize: UInt64
 }
 
-struct TransferMetadataModel: Equatable {
+struct TransferMetadataModel: Equatable, Sendable {
 	let transferId: UInt64
 	let transferName: String
 	let senderName: String?
@@ -77,12 +77,12 @@ struct TransferMetadataModel: Equatable {
 	let totalSize: UInt64
 }
 
-struct TicketInspectionModel: Equatable {
+struct TicketInspectionModel: Equatable, Sendable {
 	let kind: String
 	let metadata: TransferMetadataModel
 }
 
-enum ReceiverDeliveryStatus: Equatable {
+enum ReceiverDeliveryStatus: Equatable, Sendable {
 	case requested
 	case accepted
 	case refused
@@ -91,7 +91,7 @@ enum ReceiverDeliveryStatus: Equatable {
 	case unknown
 }
 
-struct ReceiverRequestModel: Equatable, Identifiable {
+struct ReceiverRequestModel: Equatable, Identifiable, Sendable {
 	let id: String
 	let transferId: UInt64
 	let remoteEndpointId: String
@@ -106,7 +106,7 @@ struct ReceiverRequestModel: Equatable, Identifiable {
 	let completedAt: Int64?
 }
 
-struct CoreState: Equatable {
+struct CoreState: Equatable, Sendable {
 	var isInitialized: Bool = false
 	var status: CoreStatus?
 	var events: [CoreEventModel] = []
@@ -116,7 +116,7 @@ struct CoreState: Equatable {
 }
 
 /// Coalesced change hints emitted from the event sink, ported from `CoreSignal`.
-enum CoreSignal: Equatable {
+enum CoreSignal: Equatable, Sendable {
 	case approvalChanged(transferId: UInt64)
 	case receiverHistoryChanged(transferId: UInt64)
 	/// Transfer status/history changed enough to re-read the durable snapshot.

@@ -52,9 +52,9 @@ struct TransferComposer: View {
 				)
 			}
 			Field(label: String(localized: "field_transfer_name"),
-				  value: Binding(get: { state.transferName }, set: model.setTransferName))
+				  value: Binding(get: { state.transferName }, set: { model.setTransferName($0) }))
 			Field(label: String(localized: "field_sender_name"),
-				  value: Binding(get: { state.senderName }, set: model.setSenderName))
+				  value: Binding(get: { state.senderName }, set: { model.setSenderName($0) }))
 			Text(LocalizedStringKey("send_access_title")).font(.headline)
 			PolicyOption(
 				icon: "checkmark.shield", titleKey: "send_access_approval", descKey: "send_access_approval_description",

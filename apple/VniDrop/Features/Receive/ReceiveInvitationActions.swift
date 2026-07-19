@@ -118,7 +118,7 @@ struct InvitationReviewPanel: View {
 				.background(colors.backgroundSurface200, in: RoundedRectangle(cornerRadius: 14))
 
 				Field(label: String(localized: "field_receiver_name"),
-					  value: Binding(get: { state.receiverName }, set: model.setReceiverName))
+					  value: Binding(get: { state.receiverName }, set: { model.setReceiverName($0) }))
 				Text(state.receiveFolder?.displayName ?? String(localized: "value_unavailable"))
 					.font(VniType.bodySmall)
 					.foregroundStyle(state.folderAccessStatus == .writable ? colors.foregroundLight : colors.destructiveDefault)

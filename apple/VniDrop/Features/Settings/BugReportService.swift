@@ -11,6 +11,7 @@ struct BugReportDraft {
 
 /// Bug-report submission. The full diagnostics transport (URLSession + build
 /// config) lands in the diagnostics phase; this protocol is the stable seam.
+@MainActor
 protocol BugReportService {
 	func submit(_ draft: BugReportDraft, deviceInfo: DeviceInfo?) async -> Result<Void, Error>
 	func previewLogBytes() async -> Int

@@ -37,7 +37,8 @@ targets:
         # (the editor reads these build settings, not the manual plist).
         INFOPLIST_KEY_CFBundleDisplayName: VniDrop
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
-        SWIFT_VERSION: "5.9"
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_STYLE: Automatic
