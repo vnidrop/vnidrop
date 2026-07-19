@@ -116,7 +116,7 @@ struct StorageSettings: View {
 struct AboutSettings: View {
 	@ObservedObject var model: SettingsModel
 
-	private static let sourceURL = URL(string: "https://github.com/vnidrop/vnidrop")!
+	private static let privacyPolicyURL = URL(string: "https://github.com/vnidrop/vnidrop")!
 
 	var body: some View {
 		Section {
@@ -152,8 +152,8 @@ struct AboutSettings: View {
 				LabeledContent(String(localized: "os_version_title"), value: device.operatingSystem)
 			}
 			LabeledContent(String(localized: "about_license_label"), value: "Apache 2.0")
-			Link(destination: Self.sourceURL) {
-				Label(String(localized: "about_source_label"), systemImage: "link")
+			Link(destination: Self.privacyPolicyURL) {
+				Label(String(localized: "about_privacy_policy_label"), systemImage: "hand.raised")
 			}
 		}
 

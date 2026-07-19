@@ -207,12 +207,12 @@
         }
       }
     },
-    "about_source_label" : {
+    "about_privacy_policy_label" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Source code"
+            "value" : "Privacy policy"
           }
         }
       }
