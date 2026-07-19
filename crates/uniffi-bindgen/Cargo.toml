@@ -1,0 +1,16 @@
+[package]
+name = "uniffi-bindgen"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+
+# Standalone UniFFI bindings generator used to produce the Swift bindings for the
+# Apple app. It intentionally pins the same UniFFI version as `crates/vnidrop` so
+# generated bindings never drift from the scaffolding compiled into the library.
+[[bin]]
+name = "uniffi-bindgen"
+path = "src/main.rs"
+
+[dependencies]
+uniffi = { version = "=0.29.4", features = ["cli"] }

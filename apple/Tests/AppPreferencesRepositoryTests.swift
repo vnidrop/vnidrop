@@ -1,0 +1,51 @@
+import XCTest
+@testable import VniDrop
+
+/// Ports `preferences/AppPreferencesRepositoryTest.kt` — values persist to the
+/// backing store and reload identically.
+@MainActor
+final class AppPreferencesRepositoryTests: XCTestCase {
+
+	private func defaults() -> UserDefaults { UserDefaults(suiteName: "vnidrop.prefs.\(UUID().uuidString)")! }
+	private func fallback() -> AppPreferencesDefaults {
+		AppPreferencesDefaults(
+			username: "Default",
+			receiveFolder: ReceiveFolder(kind: .fileSystemPath, value: "/tmp", displayName: "Downloads"),
+			themeMode: .system
+		)
+	}
+
+	func testFallbacksWhenEmpty() {
+		let repo = AppPreferencesRepository(defaults: defaults(), fallback: fallback())
+		XCTAssertEqual(repo.preferences.username, "Default")
+		XCTAssertEqual(repo.preferences.themeMode, .system)
+		XCTAssertFalse(repo.preferences.notificationsEnabled)
+	}
+
+	func testValuesPersistAndReload() {
+		let store = defaults()
+		let fb = fallback()
+		let repo = AppPreferencesRepository(defaults: store, fallback: fb)
+		repo.setUsername("Bob")
+		repo.setThemeMode(.dark)
+		repo.setNotificationsEnabled(true)
+		repo.setReceiveFolder(ReceiveFolder(kind: .iosSecurityScopedUrl, value: "file:///x", displayName: "Custom"))
+
+		// A fresh repository over the same store reflects the persisted values.
+		let reloaded = AppPreferencesRepository(defaults: store, fallback: fb)
+		XCTAssertEqual(reloaded.preferences.username, "Bob")
+		XCTAssertEqual(reloaded.preferences.themeMode, .dark)
+		XCTAssertTrue(reloaded.preferences.notificationsEnabled)
+		XCTAssertEqual(reloaded.preferences.receiveFolder.displayName, "Custom")
+		XCTAssertEqual(reloaded.preferences.receiveFolder.kind, .iosSecurityScopedUrl)
+	}
+
+	func testResetReceiveFolderRestoresFallback() {
+		let store = defaults()
+		let fb = fallback()
+		let repo = AppPreferencesRepository(defaults: store, fallback: fb)
+		repo.setReceiveFolder(ReceiveFolder(kind: .fileSystemPath, value: "/custom", displayName: "Custom"))
+		repo.resetReceiveFolder()
+		XCTAssertEqual(repo.preferences.receiveFolder.value, "/tmp")
+	}
+}

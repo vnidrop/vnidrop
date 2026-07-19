@@ -1,0 +1,79 @@
+name: Apple
+
+on:
+  pull_request:
+    paths:
+      - "apple/**"
+      - "crates/vnidrop/**"
+      - "crates/uniffi-bindgen/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/apple.yml"
+  push:
+    branches:
+      - master
+    paths:
+      - "apple/**"
+      - "crates/vnidrop/**"
+      - "crates/uniffi-bindgen/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/apple.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: apple-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: macos-latest
+    timeout-minutes: 75
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        # Pin so the simulator device name below stays predictable.
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios,aarch64-apple-ios-sim,x86_64-apple-ios,aarch64-apple-darwin
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: apple-cargo-${{ hashFiles('Cargo.lock') }}
+          restore-keys: apple-cargo-
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build Rust core (xcframework + Swift bindings)
+        working-directory: apple
+        run: ./scripts/build-core.sh debug
+
+      - name: Generate Xcode project
+        working-directory: apple
+        run: xcodegen generate
+
+      - name: Run unit tests (iOS Simulator)
+        working-directory: apple
+        run: |
+          set -euo pipefail
+          DEVICE=$(xcrun simctl list devices available \
+            | grep -oE 'iPhone [0-9]+( Pro)?' | head -1)
+          echo "Testing on: ${DEVICE:-iPhone 16}"
+          xcodebuild test \
+            -project VniDrop.xcodeproj \
+            -scheme VniDrop \
+            -destination "platform=iOS Simulator,name=${DEVICE:-iPhone 16}" \
+            CODE_SIGNING_ALLOWED=NO

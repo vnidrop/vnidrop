@@ -62,6 +62,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anstyle"
+version = "1.0.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "940b3a0ca603d1eade50a4846a2afffd5ef57a9feac2c0e2ec2e14f9ead76000"
+
+[[package]]
 name = "anyhow"
 version = "1.0.103"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -495,6 +501,45 @@ dependencies = [
  "crypto-common 0.1.7",
  "inout",
 ]
+
+[[package]]
+name = "clap"
+version = "4.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd059f9da4f5c36b3787f65d38ccaab1cc315f07b01f89abc8359ee6a8205011"
+dependencies = [
+ "clap_builder",
+ "clap_derive",
+]
+
+[[package]]
+name = "clap_builder"
+version = "4.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f09628afdcc538b57f3c6341e9c8e9970f18e4a481690a64974d7023bd33548b"
+dependencies = [
+ "anstyle",
+ "clap_lex",
+ "strsim",
+]
+
+[[package]]
+name = "clap_derive"
+version = "4.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f2ce8604710f6733aa641a2b3731eaa1e8b3d9973d5e3565da11800813f997a9"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.118",
+]
+
+[[package]]
+name = "clap_lex"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9"
 
 [[package]]
 name = "cmov"
@@ -4835,11 +4880,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c6d968cb62160c11f2573e6be724ef8b1b18a277aededd17033f8a912d73e2b4"
 dependencies = [
  "anyhow",
+ "camino",
  "cargo_metadata",
+ "clap",
  "uniffi_bindgen",
  "uniffi_core",
  "uniffi_macros",
  "uniffi_pipeline",
+]
+
+[[package]]
+name = "uniffi-bindgen"
+version = "0.1.0"
+dependencies = [
+ "uniffi",
 ]
 
 [[package]]

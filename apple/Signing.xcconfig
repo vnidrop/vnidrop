@@ -1,0 +1,9 @@
+// Committed signing config. Contains no secrets.
+//
+// Per-developer signing (e.g. DEVELOPMENT_TEAM) goes in Local.xcconfig, which is
+// gitignored. The optional include below means the build still works for anyone
+// who doesn't have a Local.xcconfig — Xcode automatic signing fills in their team.
+//
+// To persist your team across `xcodegen generate`, create apple/Local.xcconfig:
+//   DEVELOPMENT_TEAM = XXXXXXXXXX
+#include? "Local.xcconfig"

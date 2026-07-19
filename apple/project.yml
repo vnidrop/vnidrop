@@ -1,0 +1,80 @@
+# XcodeGen spec for the native SwiftUI VniDrop app (iOS/iPadOS/macOS).
+# Regenerate the project with:  xcodegen generate  (run from apple/)
+# Requires the Rust core first:  apple/scripts/build-core.sh debug
+name: VniDrop
+options:
+  bundleIdPrefix: com.vnidrop
+  deploymentTarget:
+    iOS: "18.2"
+    macOS: "15.0"
+  createIntermediateGroups: true
+
+packages:
+  VnidropCore:
+    path: VnidropCore
+
+targets:
+  VniDrop:
+    type: application
+    supportedDestinations: [iOS, macOS]
+    configFiles:
+      Debug: Signing.xcconfig
+      Release: Signing.xcconfig
+    sources:
+      - path: VniDrop
+        excludes:
+          - "Resources/Info.plist"
+          - "Resources/VniDrop.entitlements"
+          - "Resources/**/.DS_Store"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.vnidrop.app
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: VniDrop/Resources/Info.plist
+        # Mirror the Info.plist identity so Xcode's Identity editor shows it too
+        # (the editor reads these build settings, not the manual plist).
+        INFOPLIST_KEY_CFBundleDisplayName: VniDrop
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.utilities
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+      configs:
+        debug:
+          CODE_SIGN_ENTITLEMENTS: VniDrop/Resources/VniDrop.entitlements
+        release:
+          CODE_SIGN_ENTITLEMENTS: VniDrop/Resources/VniDrop.entitlements
+    dependencies:
+      - package: VnidropCore
+      - sdk: SystemConfiguration.framework
+      - sdk: Security.framework
+      - sdk: libresolv.tbd
+
+  VniDropTests:
+    type: bundle.unit-test
+    supportedDestinations: [iOS, macOS]
+    sources:
+      - path: Tests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        SWIFT_VERSION: "6.0"
+        SWIFT_STRICT_CONCURRENCY: complete
+        CODE_SIGN_STYLE: Automatic
+    dependencies:
+      - target: VniDrop
+
+schemes:
+  VniDrop:
+    build:
+      targets:
+        VniDrop: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - VniDropTests

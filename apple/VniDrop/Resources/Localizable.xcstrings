@@ -1,0 +1,2578 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@" : {
+
+    },
+    "%@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ · %2$@"
+          }
+        }
+      }
+    },
+    "%@ %@ · %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$@ · %3$@"
+          }
+        }
+      }
+    },
+    "%@%%" : {
+
+    },
+    "about_bug_report" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Report a bug"
+          }
+        }
+      }
+    },
+    "about_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop moves files and folders straight from one device to another over the network, without uploading them to any file-hosting service. There’s no account to create, and no copy of your transfer is left in the cloud once you’re done."
+          }
+        }
+      }
+    },
+    "about_is_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What VniDrop is"
+          }
+        }
+      }
+    },
+    "about_is_direct" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A direct device-to-device transfer — your files go straight to the receiver."
+          }
+        }
+      }
+    },
+    "about_is_no_account" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Account-free — there’s nothing to sign up for."
+          }
+        }
+      }
+    },
+    "about_is_in_control" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You decide who receives: approve each request, or open a transfer to anyone holding the invitation."
+          }
+        }
+      }
+    },
+    "about_is_encrypted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connections are authenticated and end-to-end encrypted (via Iroh), and incoming files are verified by their content hash."
+          }
+        }
+      }
+    },
+    "about_is_open" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open source, released under the Apache 2.0 license."
+          }
+        }
+      }
+    },
+    "about_isnt_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What VniDrop isn’t"
+          }
+        }
+      }
+    },
+    "about_isnt_cloud" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not cloud storage — no server holds your files, and nothing waits in the cloud after a transfer."
+          }
+        }
+      }
+    },
+    "about_isnt_sync" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not a sync or backup service."
+          }
+        }
+      }
+    },
+    "about_isnt_public" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not public broadcasting — an invitation is a private access link, not an announcement to everyone nearby."
+          }
+        }
+      }
+    },
+    "about_privacy_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy & security"
+          }
+        }
+      }
+    },
+    "about_privacy_capability" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitations are capabilities. Treat a QR code, NFC tag, or .vnd file like a private access link and share it only with the people you intend — especially with “Anyone with this transfer.”"
+          }
+        }
+      }
+    },
+    "about_privacy_deny" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deny by default — VniDrop serves only the content of an active share and rejects unknown requests."
+          }
+        }
+      }
+    },
+    "about_privacy_relay" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If two devices can’t connect directly, the encrypted connection may be relayed. Relays forward encrypted packets only; they never store your files."
+          }
+        }
+      }
+    },
+    "about_privacy_local" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Received files are saved on your device and never silently overwrite an existing file."
+          }
+        }
+      }
+    },
+    "about_license_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "License"
+          }
+        }
+      }
+    },
+    "about_privacy_policy_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy policy"
+          }
+        }
+      }
+    },
+    "about_tagline" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send files directly. Stay in control of who receives them."
+          }
+        }
+      }
+    },
+    "about_privacy" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy policy"
+          }
+        }
+      }
+    },
+    "about_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        }
+      }
+    },
+    "appearance_auto_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Match this device’s light or dark appearance."
+          }
+        }
+      }
+    },
+    "appearance_dark_mode" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark mode"
+          }
+        }
+      }
+    },
+    "appearance_light_mode" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Light mode"
+          }
+        }
+      }
+    },
+    "appearance_system_mode" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "System"
+          }
+        }
+      }
+    },
+    "appearance_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Appearance"
+          }
+        }
+      }
+    },
+    "approval_connection_request" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive request"
+          }
+        }
+      }
+    },
+    "approval_endpoint_id" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device ID: %1$@"
+          }
+        }
+      }
+    },
+    "approval_nearby_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A nearby device"
+          }
+        }
+      }
+    },
+    "approval_pending_count" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$d requests waiting"
+          }
+        }
+      }
+    },
+    "approval_request_body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ wants to receive “%2$@”."
+          }
+        }
+      }
+    },
+    "battery_level_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Battery level"
+          }
+        }
+      }
+    },
+    "bug_report_contact_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "name@example.com"
+          }
+        }
+      }
+    },
+    "bug_report_contact_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contact email (optional)"
+          }
+        }
+      }
+    },
+    "bug_report_expected_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe what you expected to happen"
+          }
+        }
+      }
+    },
+    "bug_report_steps_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "List the steps to reproduce the issue"
+          }
+        }
+      }
+    },
+    "bug_report_what_hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Describe what happened"
+          }
+        }
+      }
+    },
+    "bug_report_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tell us what went wrong. We attach device info and optional recent logs (with sensitive values redacted)."
+          }
+        }
+      }
+    },
+    "bug_report_device_section" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device information"
+          }
+        }
+      }
+    },
+    "bug_report_expected_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What did you expect?"
+          }
+        }
+      }
+    },
+    "bug_report_include_logs" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Include recent logs"
+          }
+        }
+      }
+    },
+    "bug_report_include_logs_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helps us diagnose the issue. Sensitive values are redacted before sending."
+          }
+        }
+      }
+    },
+    "bug_report_logs_size" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Log attachment size"
+          }
+        }
+      }
+    },
+    "bug_report_missing_expected" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please describe what you expected."
+          }
+        }
+      }
+    },
+    "bug_report_missing_what" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please describe what happened."
+          }
+        }
+      }
+    },
+    "bug_report_steps_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Steps to reproduce (optional)"
+          }
+        }
+      }
+    },
+    "bug_report_submit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submit report"
+          }
+        }
+      }
+    },
+    "bug_report_submit_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not submit the bug report. Try again later."
+          }
+        }
+      }
+    },
+    "bug_report_submitted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thanks — your bug report was recorded."
+          }
+        }
+      }
+    },
+    "bug_report_submitting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submitting…"
+          }
+        }
+      }
+    },
+    "bug_report_what_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What happened?"
+          }
+        }
+      }
+    },
+    "button_approve" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approve"
+          }
+        }
+      }
+    },
+    "button_back" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        }
+      }
+    },
+    "button_cancel" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "button_cancel_receive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "button_change_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Change files"
+          }
+        }
+      }
+    },
+    "button_choose_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose files"
+          }
+        }
+      }
+    },
+    "button_choose_folder" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose folder"
+          }
+        }
+      }
+    },
+    "button_clear" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear"
+          }
+        }
+      }
+    },
+    "button_close" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "button_create_new_transfer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New transfer"
+          }
+        }
+      }
+    },
+    "button_delete_transfer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete transfer"
+          }
+        }
+      }
+    },
+    "button_download_invitation" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save .vnd file"
+          }
+        }
+      }
+    },
+    "button_native_share" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share invitation"
+          }
+        }
+      }
+    },
+    "button_open_settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "button_receive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive"
+          }
+        }
+      }
+    },
+    "button_receive_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start receiving"
+          }
+        }
+      }
+    },
+    "button_refuse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Refuse"
+          }
+        }
+      }
+    },
+    "button_remove_file" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove file"
+          }
+        }
+      }
+    },
+    "button_reset_default" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use default"
+          }
+        }
+      }
+    },
+    "button_retry" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "button_share_file" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start sharing"
+          }
+        }
+      }
+    },
+    "button_sharing_file" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing transfer…"
+          }
+        }
+      }
+    },
+    "button_show_in_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show in Files"
+          }
+        }
+      }
+    },
+    "button_write_nfc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Write to NFC tag"
+          }
+        }
+      }
+    },
+    "device_model_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device model"
+          }
+        }
+      }
+    },
+    "device_name_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Device name"
+          }
+        }
+      }
+    },
+    "diagnostics_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send anonymous crash reports and usage events so we can improve VniDrop. You can turn this off anytime. Invitations, file paths, and transfer contents are never included."
+          }
+        }
+      }
+    },
+    "diagnostics_disabled_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnostics sharing is off."
+          }
+        }
+      }
+    },
+    "diagnostics_enabled_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diagnostics sharing is on."
+          }
+        }
+      }
+    },
+    "diagnostics_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share diagnostics"
+          }
+        }
+      }
+    },
+    "error_camera" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera access is required to scan a QR code."
+          }
+        }
+      }
+    },
+    "error_device_info" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not load device information."
+          }
+        }
+      }
+    },
+    "error_filesystem" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop could not access the selected files or folder. Check permissions and try again."
+          }
+        }
+      }
+    },
+    "error_generic" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something went wrong. Try again."
+          }
+        }
+      }
+    },
+    "error_initialization" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop could not finish starting up. Close the app and try again."
+          }
+        }
+      }
+    },
+    "error_invalid_ticket" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This invitation could not be read. Ask the sender for a new one."
+          }
+        }
+      }
+    },
+    "error_invitation_empty" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "That invitation is empty. Try opening it again."
+          }
+        }
+      }
+    },
+    "error_missing_native_library" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The native VniDrop library is missing from this build."
+          }
+        }
+      }
+    },
+    "error_nfc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This NFC tag could not be used. Try another tag."
+          }
+        }
+      }
+    },
+    "error_permission" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sender has not approved this transfer, or it was refused."
+          }
+        }
+      }
+    },
+    "error_repository" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop could not save transfer data on this device."
+          }
+        }
+      }
+    },
+    "error_selection_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not open the selected item. Try choosing it again."
+          }
+        }
+      }
+    },
+    "error_share_empty" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select at least one item to share."
+          }
+        }
+      }
+    },
+    "error_socket_bind" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop could not open its network sockets on this device."
+          }
+        }
+      }
+    },
+    "error_starting_up" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop is still starting. Open the invitation again in a moment."
+          }
+        }
+      }
+    },
+    "error_transfer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The transfer could not be completed. Check your connection and try again."
+          }
+        }
+      }
+    },
+    "field_receiver_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiver name"
+          }
+        }
+      }
+    },
+    "field_sender_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sender name"
+          }
+        }
+      }
+    },
+    "field_transfer_name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer name"
+          }
+        }
+      }
+    },
+    "field_username" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Display name"
+          }
+        }
+      }
+    },
+    "folder_status_permission_required" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Permission needed"
+          }
+        }
+      }
+    },
+    "folder_status_unavailable" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unavailable"
+          }
+        }
+      }
+    },
+    "folder_status_validating" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking folder…"
+          }
+        }
+      }
+    },
+    "folder_status_writable" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
+          }
+        }
+      }
+    },
+    "metadata_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Files"
+          }
+        }
+      }
+    },
+    "metadata_size" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Size"
+          }
+        }
+      }
+    },
+    "metadata_status" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
+          }
+        }
+      }
+    },
+    "nav_receive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive"
+          }
+        }
+      }
+    },
+    "nav_send" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send"
+          }
+        }
+      }
+    },
+    "nav_settings" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "network_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Network"
+          }
+        }
+      }
+    },
+    "notifications_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get notified about new receive requests while VniDrop is in the background."
+          }
+        }
+      }
+    },
+    "notifications_enabled_message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications enabled."
+          }
+        }
+      }
+    },
+    "notifications_local_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allow notifications"
+          }
+        }
+      }
+    },
+    "notifications_permission_denied" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are turned off for VniDrop. You can enable them in Settings."
+          }
+        }
+      }
+    },
+    "notifications_settings_open_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not open notification settings."
+          }
+        }
+      }
+    },
+    "notifications_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications"
+          }
+        }
+      }
+    },
+    "notifications_unsupported" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Notifications are not available on this device."
+          }
+        }
+      }
+    },
+    "os_version_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Operating system"
+          }
+        }
+      }
+    },
+    "preferences_receive_folder_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save received transfers to"
+          }
+        }
+      }
+    },
+    "preferences_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preferences"
+          }
+        }
+      }
+    },
+    "progress_cancelled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelled"
+          }
+        }
+      }
+    },
+    "progress_completed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed"
+          }
+        }
+      }
+    },
+    "progress_connected" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connected"
+          }
+        }
+      }
+    },
+    "progress_connecting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting"
+          }
+        }
+      }
+    },
+    "progress_downloading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading"
+          }
+        }
+      }
+    },
+    "progress_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed"
+          }
+        }
+      }
+    },
+    "progress_getting_ready" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Getting ready"
+          }
+        }
+      }
+    },
+    "progress_interrupted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer interrupted"
+          }
+        }
+      }
+    },
+    "progress_preparing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing"
+          }
+        }
+      }
+    },
+    "progress_ready" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
+          }
+        }
+      }
+    },
+    "progress_receiving" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiving"
+          }
+        }
+      }
+    },
+    "progress_requesting_access" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requesting access"
+          }
+        }
+      }
+    },
+    "progress_saving" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saving"
+          }
+        }
+      }
+    },
+    "progress_sending" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending"
+          }
+        }
+      }
+    },
+    "progress_sending_to_count" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sending to %lld"
+          }
+        }
+      }
+    },
+    "progress_share_ready" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to share"
+          }
+        }
+      }
+    },
+    "progress_working" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Working…"
+          }
+        }
+      }
+    },
+    "receive_choose_method_body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose the invitation method available to you."
+          }
+        }
+      }
+    },
+    "receive_choose_method_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "How would you like to connect?"
+          }
+        }
+      }
+    },
+    "receive_clear_history" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear history"
+          }
+        }
+      }
+    },
+    "receive_clear_history_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All completed, failed, and cancelled receives will be removed from VniDrop’s history. Downloaded files will remain on this device."
+          }
+        }
+      }
+    },
+    "receive_clear_history_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear receive history?"
+          }
+        }
+      }
+    },
+    "receive_completed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer received."
+          }
+        }
+      }
+    },
+    "receive_delete_history_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@” will be removed from VniDrop’s history. The downloaded file will remain on this device."
+          }
+        }
+      }
+    },
+    "receive_delete_history_item" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete from receive history"
+          }
+        }
+      }
+    },
+    "receive_delete_history_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from history?"
+          }
+        }
+      }
+    },
+    "receive_empty_body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open a VniDrop invitation, scan a QR code, or hold near an NFC tag."
+          }
+        }
+      }
+    },
+    "receive_empty_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing received yet"
+          }
+        }
+      }
+    },
+    "receive_history_cleared" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive history cleared."
+          }
+        }
+      }
+    },
+    "receive_history_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        }
+      }
+    },
+    "receive_method_file" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open a .vnd invitation"
+          }
+        }
+      }
+    },
+    "receive_method_file_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose an invitation saved or shared to this device."
+          }
+        }
+      }
+    },
+    "receive_method_nfc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Read NFC tag"
+          }
+        }
+      }
+    },
+    "receive_method_nfc_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold this device near the sender’s invitation tag."
+          }
+        }
+      }
+    },
+    "receive_method_scan" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan QR code"
+          }
+        }
+      }
+    },
+    "receive_method_scan_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use the camera to scan the sender’s VniDrop code."
+          }
+        }
+      }
+    },
+    "receive_new_subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfers you’ve received on this device."
+          }
+        }
+      }
+    },
+    "receive_nfc_waiting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold near the NFC tag…"
+          }
+        }
+      }
+    },
+    "receive_open_files_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t open VniDrop in Files."
+          }
+        }
+      }
+    },
+    "receive_review_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review transfer"
+          }
+        }
+      }
+    },
+    "receive_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receive"
+          }
+        }
+      }
+    },
+    "receive_unknown_transfer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "VniDrop transfer"
+          }
+        }
+      }
+    },
+    "send_access_anyone" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anyone with this transfer"
+          }
+        }
+      }
+    },
+    "send_access_anyone_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No approval is required. Only use this for items you are comfortable sharing."
+          }
+        }
+      }
+    },
+    "send_access_anyone_warning" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anyone with the invitation can download until you stop sharing. Do not use this for private or sensitive items."
+          }
+        }
+      }
+    },
+    "send_access_approval" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask before each download"
+          }
+        }
+      }
+    },
+    "send_access_approval_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You approve or refuse every new receiver."
+          }
+        }
+      }
+    },
+    "send_access_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Who can receive it?"
+          }
+        }
+      }
+    },
+    "send_choose_file_body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select files or a folder from this device. You can review the selection before creating the transfer."
+          }
+        }
+      }
+    },
+    "send_choose_file_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose what to share"
+          }
+        }
+      }
+    },
+    "send_empty_body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a transfer, decide who can receive it, then invite them with a QR code, NFC tag, or invitation file."
+          }
+        }
+      }
+    },
+    "send_empty_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nothing shared yet"
+          }
+        }
+      }
+    },
+    "send_file_size_unknown" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Size unavailable"
+          }
+        }
+      }
+    },
+    "send_folder_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Folder"
+          }
+        }
+      }
+    },
+    "send_new_transfer_description" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Create a new transfer"
+          }
+        }
+      }
+    },
+    "send_new_transfer_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New transfer"
+          }
+        }
+      }
+    },
+    "send_review_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review transfer"
+          }
+        }
+      }
+    },
+    "send_selected_files_count" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$d files selected"
+          }
+        }
+      }
+    },
+    "send_subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfers you’re sharing from this device."
+          }
+        }
+      }
+    },
+    "send_stop_sharing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop sharing"
+          }
+        }
+      }
+    },
+    "send_stop_sharing_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This stops the transfer and interrupts anyone currently downloading it. It stays in your history as Stopped."
+          }
+        }
+      }
+    },
+    "send_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Send"
+          }
+        }
+      }
+    },
+    "send_transfer_created" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer created."
+          }
+        }
+      }
+    },
+    "send_transfer_details_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer details"
+          }
+        }
+      }
+    },
+    "send_transfers_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your transfers"
+          }
+        }
+      }
+    },
+    "settings_subtitle" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your name, where transfers are saved, appearance, and notifications."
+          }
+        }
+      }
+    },
+    "settings_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        }
+      }
+    },
+    "snackbar_dismiss" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dismiss"
+          }
+        }
+      }
+    },
+    "storage_calculating" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calculating…"
+          }
+        }
+      }
+    },
+    "storage_delete_transfers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete all transfers"
+          }
+        }
+      }
+    },
+    "storage_delete_transfers_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This clears all sent and received transfer records from your history. Your received files are not deleted. Note: the transfer engine keeps its stored content, so Transfer data may not decrease. This can’t be undone."
+          }
+        }
+      }
+    },
+    "storage_deleting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deleting…"
+          }
+        }
+      }
+    },
+    "storage_footer" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer data is managed by the transfer engine — your history plus the content of files you’ve shared. The button below clears your transfer records; the engine keeps its stored content, so this value may not drop. Received files are your downloaded files and are never deleted here."
+          }
+        }
+      }
+    },
+    "storage_received_files" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Received files"
+          }
+        }
+      }
+    },
+    "storage_temporary" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Temporary files"
+          }
+        }
+      }
+    },
+    "storage_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Storage"
+          }
+        }
+      }
+    },
+    "storage_total" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Total"
+          }
+        }
+      }
+    },
+    "storage_transfer_data" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer data"
+          }
+        }
+      }
+    },
+    "storage_transfers_deleted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All transfers deleted"
+          }
+        }
+      }
+    },
+    "status_available" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Available"
+          }
+        }
+      }
+    },
+    "status_cancelled" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancelled"
+          }
+        }
+      }
+    },
+    "status_completed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Completed"
+          }
+        }
+      }
+    },
+    "status_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed"
+          }
+        }
+      }
+    },
+    "status_preparing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing"
+          }
+        }
+      }
+    },
+    "status_receiving" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiving"
+          }
+        }
+      }
+    },
+    "status_stopped" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopped"
+          }
+        }
+      }
+    },
+    "transfer_activity_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See important updates for this transfer"
+          }
+        }
+      }
+    },
+    "transfer_activity_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Activity"
+          }
+        }
+      }
+    },
+    "transfer_delete_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%1$@” will stop being shared and its transfer history will be removed from this device."
+          }
+        }
+      }
+    },
+    "transfer_delete_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Delete transfer?"
+          }
+        }
+      }
+    },
+    "transfer_deleted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer deleted."
+          }
+        }
+      }
+    },
+    "transfer_deleting" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deleting…"
+          }
+        }
+      }
+    },
+    "transfer_details_title" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer details"
+          }
+        }
+      }
+    },
+    "transfer_event_approved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiver access approved"
+          }
+        }
+      }
+    },
+    "transfer_event_completed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A receiver completed the transfer"
+          }
+        }
+      }
+    },
+    "transfer_event_connecting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Connecting to sender"
+          }
+        }
+      }
+    },
+    "transfer_event_downloading" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Downloading"
+          }
+        }
+      }
+    },
+    "transfer_event_failed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The transfer encountered a problem"
+          }
+        }
+      }
+    },
+    "transfer_event_preparing" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing your transfer"
+          }
+        }
+      }
+    },
+    "transfer_event_ready" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready to share"
+          }
+        }
+      }
+    },
+    "transfer_event_refused" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receiver access refused"
+          }
+        }
+      }
+    },
+    "transfer_event_requested" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A receiver requested access"
+          }
+        }
+      }
+    },
+    "transfer_event_saving" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saving"
+          }
+        }
+      }
+    },
+    "transfer_event_stopped" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sharing stopped"
+          }
+        }
+      }
+    },
+    "transfer_event_updated" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfer updated"
+          }
+        }
+      }
+    },
+    "transfer_file_count_one" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$d file"
+          }
+        }
+      }
+    },
+    "transfer_file_count_other" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$d files"
+          }
+        }
+      }
+    },
+    "transfer_invitation_saved" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitation saved."
+          }
+        }
+      }
+    },
+    "transfer_nearby_device" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nearby device"
+          }
+        }
+      }
+    },
+    "transfer_nfc_unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NFC tag writing is not available on this device."
+          }
+        }
+      }
+    },
+    "transfer_nfc_waiting" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hold your device near a writable NFC tag."
+          }
+        }
+      }
+    },
+    "transfer_nfc_written" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invitation written to the NFC tag."
+          }
+        }
+      }
+    },
+    "transfer_no_activity" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There is no activity to show yet."
+          }
+        }
+      }
+    },
+    "transfer_no_receivers" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nobody has requested this transfer yet."
+          }
+        }
+      }
+    },
+    "transfer_receiver_accepted" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approved — waiting for completion"
+          }
+        }
+      }
+    },
+    "transfer_receiver_completed" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Received successfully"
+          }
+        }
+      }
+    },
+    "transfer_receiver_expired" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request expired"
+          }
+        }
+      }
+    },
+    "transfer_receiver_refused" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request refused"
+          }
+        }
+      }
+    },
+    "transfer_receiver_requested" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Waiting for your approval"
+          }
+        }
+      }
+    },
+    "transfer_receiver_unknown" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status unavailable"
+          }
+        }
+      }
+    },
+    "transfer_receivers_completed_count" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$d completed"
+          }
+        }
+      }
+    },
+    "transfer_receivers_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Requests, approvals, and completed deliveries"
+          }
+        }
+      }
+    },
+    "transfer_receivers_pending" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$d waiting"
+          }
+        }
+      }
+    },
+    "transfer_receivers_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Receivers"
+          }
+        }
+      }
+    },
+    "transfer_scan_qr" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Scan with VniDrop to receive this transfer"
+          }
+        }
+      }
+    },
+    "transfer_share_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "QR code, invitation file, and nearby options"
+          }
+        }
+      }
+    },
+    "transfer_share_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share"
+          }
+        }
+      }
+    },
+    "value_unavailable" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not available"
+          }
+        }
+      }
+    },
+    "version_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App version"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

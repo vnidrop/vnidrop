@@ -19,6 +19,14 @@
 			</array>
 		</dict>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<true/>
 	<key>UTExportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -51,5 +59,11 @@
 	<string>VniDrop uses NFC to read transfer invitation tags.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>VniDrop needs local network access to send to other local devices if needed.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string></string>
+	</array>
 </dict>
 </plist>
