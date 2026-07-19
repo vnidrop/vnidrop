@@ -33,9 +33,10 @@ GEN_DIR="$PKG_DIR/Sources/VnidropCore"
 TARGET_DIR="$REPO_ROOT/target"
 BUILD_DIR="$APPLE_DIR/.build-core"
 
-# Match the iOS deployment target used by the Gobley config in shared/build.gradle.kts.
-export IPHONEOS_DEPLOYMENT_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-16.0}"
-export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-13.0}"
+# Match the SwiftUI app's deployment targets (apple/project.yml) so the static
+# libs are never built for a newer OS than the app links against.
+export IPHONEOS_DEPLOYMENT_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-18.2}"
+export MACOSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET:-15.0}"
 
 # The workspace `[profile.dev] strip = "debuginfo"` corrupts host proc-macro
 # dylibs on the current Apple toolchain ("mis-aligned LINKEDIT string pool"),

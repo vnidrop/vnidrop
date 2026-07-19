@@ -39,6 +39,7 @@ struct RootView: View {
 			environment: dependencies.environment,
 			deviceInfoProvider: dependencies.deviceInfoProvider,
 			fileSystemService: dependencies.fileSystemService,
+			repository: graph.coreRepository,
 			preferences: graph.preferencesRepository,
 			notifications: dependencies.notificationService,
 			messages: graph.messages,
@@ -67,7 +68,7 @@ struct RootView: View {
 		}
 		.platformPickers(settingsModel: settingsModel)
 		.task { await consumeExternalInvitations() }
-		.onChange(of: scenePhase) { phase in
+		.onChange(of: scenePhase) { _, phase in
 			switch phase {
 			case .active:
 				graph.visibility.setForeground(true)
@@ -85,7 +86,7 @@ struct RootView: View {
 		// A pending approval is a blocking modal; close the sender's detail panel
 		// (e.g. the Share/QR sheet) so the approval sheet isn't presented under it
 		// on macOS.
-		.onChange(of: approvals.state.current?.id) { id in
+		.onChange(of: approvals.state.current?.id) { _, id in
 			if id != nil { sendModel.closeDetailPanel() }
 		}
 		#if os(macOS)

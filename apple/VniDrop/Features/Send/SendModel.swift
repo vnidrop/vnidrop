@@ -44,6 +44,12 @@ final class SendModel: ObservableObject {
 	@Published var pendingFilePick = false
 	@Published var pendingFolderPick = false
 
+	/// Receiver delivery records per active (sharing) transfer, used to decide
+	/// which transfers still have an in-flight receiver. Delivery status is the
+	/// authoritative signal; byte-transfer events alone don't reliably mark a
+	/// small transfer complete.
+	@Published private(set) var receiversByTransfer: [UInt64: [ReceiverRequestModel]] = [:]
+
 	private let repository: CoreRepository
 	private let fileSystemService: FileSystemService
 	private let filePreviewRepository: FilePreviewRepository
@@ -72,8 +78,22 @@ final class SendModel: ObservableObject {
 					Task { _ = await self.repository.refresh() }
 				case .receiverHistoryChanged(let id), .approvalChanged(let id):
 					if id == self.state.selectedTransferId { self.refreshReceivers(id) }
+					self.refreshReceiverStatuses(for: id)
 				}
 			}
+			.store(in: &cancellables)
+
+		// Keep receiver delivery records current for every sharing/importing
+		// outgoing transfer (new shares appear here; status transitions arrive via
+		// the receiverHistoryChanged signal above).
+		repository.$state
+			.map { core -> Set<UInt64> in
+				Set(core.transfers
+					.filter { $0.direction == .send && ($0.status == .sharing || $0.status == .importing) }
+					.map(\.transferId))
+			}
+			.removeDuplicates()
+			.sink { [weak self] ids in self?.syncSharingReceivers(ids) }
 			.store(in: &cancellables)
 
 		filePreviewRepository.$previews
@@ -297,6 +317,21 @@ final class SendModel: ObservableObject {
 	private func discardPickedFiles(_ files: [PickedShareFile]) {
 		if files.isEmpty { return }
 		Task { await fileSystemService.discardPickedFiles(files) }
+	}
+
+	/// Refresh the receiver records for the sharing set, pruning transfers that are
+	/// no longer active.
+	private func syncSharingReceivers(_ ids: Set<UInt64>) {
+		receiversByTransfer = receiversByTransfer.filter { ids.contains($0.key) }
+		for id in ids { refreshReceiverStatuses(for: id) }
+	}
+
+	private func refreshReceiverStatuses(for transferId: UInt64) {
+		Task {
+			if case .success(let requests) = await repository.receiverRequests(transferId: transferId) {
+				receiversByTransfer[transferId] = requests
+			}
+		}
 	}
 
 	private func refreshReceivers(_ transferId: UInt64) {

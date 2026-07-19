@@ -110,69 +110,6 @@ func progressForReceiver(
 	)
 }
 
-/// Send-side progress summary for a transfer's list row. Aggregates only the
-/// receivers that are *currently downloading* (in-flight), so the bar disappears
-/// once every receiver has completed/aborted, and its value is deterministic
-/// (order-independent) rather than "whichever receiver's event arrived last".
-func sendProgressSummary(
-	events: [CoreEventModel],
-	transferId: UInt64,
-	totalSizeHint: UInt64? = nil
-) -> TransferProgress? {
-	let endpointIds = events
-		.filter { $0.transferId == transferId && $0.direction == "send" && $0.phase == "transfer" }
-		.compactMap { findString($0.dataJson, key: "endpoint_id") }
-		.reduce(into: [String]()) { acc, id in if !acc.contains(id) { acc.append(id) } }
-
-	// No per-endpoint attribution: fall back to the single connection-scoped
-	// stream, hidden once it completes/aborts.
-	if endpointIds.isEmpty {
-		let relevant = events.filter {
-			$0.transferId == transferId && $0.direction == "send" && $0.phase == "transfer"
-				&& ["started", "progress", "completed", "aborted"].contains($0.kind)
-		}
-		guard let latest = relevant.first else { return nil }
-		if latest.kind == "completed" || latest.kind == "aborted" { return nil }
-		let live = relevant.filter { ["started", "progress"].contains($0.kind) }
-		return TransferProgress(
-			transferId: transferId, phase: "transfer", kind: latest.kind,
-			labelKey: "progress_sending",
-			progress: aggregateReceiverProgress(events: live, totalSizeHint: totalSizeHint),
-			detail: progressDetail(latest)
-		)
-	}
-
-	// Keep only receivers still in flight (latest state started/progress).
-	var activeCount = 0
-	var fractions: [Double] = []
-	var lastActive: TransferProgress?
-	for id in endpointIds {
-		guard let p = progressForReceiver(
-			events: events, transferId: transferId, remoteEndpointId: id, totalSizeHint: totalSizeHint
-		) else { continue }
-		guard p.kind == "progress" || p.kind == "started" else { continue }
-		activeCount += 1
-		lastActive = p
-		if let fraction = p.progress { fractions.append(fraction) }
-	}
-	if activeCount == 0 { return nil }
-
-	// Same total per receiver, so the byte-summed progress is the mean of the
-	// per-receiver fractions.
-	let combined = fractions.isEmpty ? nil : fractions.reduce(0, +) / Double(fractions.count)
-	if activeCount == 1 {
-		return TransferProgress(
-			transferId: transferId, phase: "transfer", kind: "progress",
-			labelKey: "progress_sending", progress: combined, detail: lastActive?.detail
-		)
-	}
-	return TransferProgress(
-		transferId: transferId, phase: "transfer", kind: "progress",
-		labelKey: "progress_sending", progress: combined,
-		label: String(format: String(localized: "progress_sending_to_count"), activeCount)
-	)
-}
-
 func formatBytes(_ size: UInt64) -> String {
 	var scaled = Double(size)
 	let units = ["B", "KB", "MB", "GB", "TB"]

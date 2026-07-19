@@ -94,30 +94,3 @@ struct Field: View {
 	}
 }
 
-// MARK: - EmptyStateView
-
-/// Native-styled empty state (iOS 16 compatible; avoids iOS 17
-/// `ContentUnavailableView`).
-struct EmptyStateView<Actions: View>: View {
-	let systemImage: String
-	let title: String
-	let message: String
-	@ViewBuilder var actions: () -> Actions
-
-	var body: some View {
-		VStack(spacing: 12) {
-			Image(systemName: systemImage)
-				.font(.system(size: 52))
-				.foregroundStyle(.secondary)
-			Text(title).font(.title2).fontWeight(.semibold).multilineTextAlignment(.center)
-			Text(message)
-				.font(.body).foregroundStyle(.secondary)
-				.multilineTextAlignment(.center)
-				.frame(maxWidth: 420)
-			actions().padding(.top, 4)
-		}
-		.frame(maxWidth: .infinity)
-		.padding(.horizontal, 24)
-		.padding(.vertical, 48)
-	}
-}

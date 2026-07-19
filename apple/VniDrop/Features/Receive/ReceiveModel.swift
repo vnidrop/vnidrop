@@ -176,7 +176,7 @@ final class ReceiveModel: ObservableObject {
 					text: .resource("receive_completed"),
 					tone: .success,
 					actionLabel: canReveal ? .resource("button_show_in_files") : nil,
-					onAction: canReveal ? { [weak self] in self?.revealReceiveFolder(folder) } : nil
+					onAction: canReveal ? { self.revealReceiveFolder(folder) } : nil
 				))
 			case .failure(let error):
 				if error.isUserCancellation {
@@ -193,7 +193,7 @@ final class ReceiveModel: ObservableObject {
 					text: uiText,
 					tone: .error,
 					actionLabel: .resource("button_retry"),
-					onAction: { [weak self] in self?.receive() }
+					onAction: { self.receive() }
 				))
 			}
 		}

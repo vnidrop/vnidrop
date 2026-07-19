@@ -22,7 +22,7 @@ struct SendScreen: View {
 		NavigationStack {
 			Group {
 				if outgoing.isEmpty {
-					ScrollView { emptyState }
+					emptyState
 				} else {
 					catalog
 				}
@@ -100,11 +100,11 @@ struct SendScreen: View {
 	}
 
 	private var emptyState: some View {
-		EmptyStateView(
-			systemImage: "paperplane",
-			title: String(localized: "send_empty_title"),
-			message: String(localized: "send_empty_body")
-		) {
+		ContentUnavailableView {
+			Label(String(localized: "send_empty_title"), systemImage: "paperplane")
+		} description: {
+			Text(LocalizedStringKey("send_empty_body"))
+		} actions: {
 			Button(action: model.openComposer) {
 				Label(String(localized: "button_create_new_transfer"), systemImage: "plus")
 			}
@@ -116,9 +116,29 @@ struct SendScreen: View {
 	private func progress(for transfer: Transfer) -> TransferProgress? {
 		switch transfer.status {
 		case .importing: return progressForTransfer(events: model.coreState.events, transferId: transfer.transferId)
-		case .sharing: return sendProgressSummary(events: model.coreState.events, transferId: transfer.transferId, totalSizeHint: transfer.totalSize)
+		case .sharing: return sharingProgress(for: transfer)
 		default: return nil
 		}
+	}
+
+	/// Progress for an active share, driven by receivers whose delivery is still
+	/// in flight (`.accepted`). Returns nil when none are downloading, so the bar
+	/// clears once every receiver has completed even if byte events lag.
+	private func sharingProgress(for transfer: Transfer) -> TransferProgress? {
+		let active = (model.receiversByTransfer[transfer.transferId] ?? []).filter { $0.status == .accepted }
+		if active.isEmpty { return nil }
+		let fractions = active.compactMap {
+			progressForReceiver(events: model.coreState.events, transferId: transfer.transferId,
+								 remoteEndpointId: $0.remoteEndpointId, totalSizeHint: transfer.totalSize)?.progress
+		}
+		let combined = fractions.isEmpty ? nil : fractions.reduce(0, +) / Double(fractions.count)
+		if active.count == 1 {
+			return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
+									labelKey: "progress_sending", progress: combined)
+		}
+		return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
+								labelKey: "progress_sending", progress: combined,
+								label: String(format: String(localized: "progress_sending_to_count"), active.count))
 	}
 }
 

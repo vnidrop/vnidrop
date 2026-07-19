@@ -5,6 +5,7 @@ import SwiftUI
 struct SettingsScreen: View {
 	@ObservedObject var model: SettingsModel
 	let windowClass: WindowClass
+	@State private var showBugReport = false
 
 	private var path: Binding<[SettingsSection]> {
 		Binding(
@@ -34,6 +35,9 @@ struct SettingsScreen: View {
 					NavigationLink(value: SettingsSection.notifications) {
 						SettingsRow(icon: "bell", title: String(localized: "notifications_title"), value: nil)
 					}
+					NavigationLink(value: SettingsSection.storage) {
+						SettingsRow(icon: "internaldrive", title: String(localized: "storage_title"), value: nil)
+					}
 					NavigationLink(value: SettingsSection.about) {
 						SettingsRow(icon: "info.circle", title: String(localized: "about_title"), value: nil)
 					}
@@ -42,15 +46,41 @@ struct SettingsScreen: View {
 			.formStyle(.grouped)
 			.navigationTitle(Text(LocalizedStringKey("settings_title")))
 			.navigationDestination(for: SettingsSection.self) { section in
-				Form {
-					SettingsSectionContent(model: model, section: section)
-				}
-				.formStyle(.grouped)
-				.navigationTitle(Text(LocalizedStringKey(section.titleKey)))
+				sectionForm(section)
+			}
+		}
+	}
+
+	@ViewBuilder
+	private func sectionForm(_ section: SettingsSection) -> some View {
+		let content = Form {
+			SettingsSectionContent(model: model, section: section)
+		}
+		.formStyle(.grouped)
+		.navigationTitle(Text(LocalizedStringKey(section.titleKey)))
+
+		if section == .about {
+			content
 				#if os(iOS)
 				.navigationBarTitleDisplayMode(.inline)
 				#endif
-			}
+				.toolbar {
+					ToolbarItem(placement: .primaryAction) {
+						Button {
+							showBugReport = true
+						} label: {
+							Label(String(localized: "about_bug_report"), systemImage: "ladybug")
+						}
+					}
+				}
+				.sheet(isPresented: $showBugReport) {
+					BugReportSheet(model: model)
+				}
+		} else {
+			content
+				#if os(iOS)
+				.navigationBarTitleDisplayMode(.inline)
+				#endif
 		}
 	}
 }
@@ -69,6 +99,8 @@ private struct SettingsSectionContent: View {
 			AppearanceSettings(model: model)
 		case .notifications:
 			NotificationSettings(model: model)
+		case .storage:
+			StorageSettings(model: model)
 		case .about:
 			AboutSettings(model: model)
 		case .bugReport:

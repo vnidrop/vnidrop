@@ -17,7 +17,7 @@ struct ReceiveScreen: View {
 		NavigationStack {
 			Group {
 				if transfers.isEmpty {
-					ScrollView { emptyState }
+					emptyState
 				} else {
 					history
 				}
@@ -88,11 +88,11 @@ struct ReceiveScreen: View {
 	}
 
 	private var emptyState: some View {
-		EmptyStateView(
-			systemImage: "tray.and.arrow.down",
-			title: String(localized: "receive_empty_title"),
-			message: String(localized: "receive_empty_body")
-		) {
+		ContentUnavailableView {
+			Label(String(localized: "receive_empty_title"), systemImage: "tray.and.arrow.down")
+		} description: {
+			Text(LocalizedStringKey("receive_empty_body"))
+		} actions: {
 			Button(action: model.openAcquisition) {
 				Label(String(localized: "button_receive_files"), systemImage: "plus")
 			}

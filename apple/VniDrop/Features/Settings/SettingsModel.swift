@@ -7,6 +7,7 @@ enum SettingsSection: Hashable {
 	case preferences
 	case appearance
 	case notifications
+	case storage
 	case about
 	case bugReport
 
@@ -16,10 +17,19 @@ enum SettingsSection: Hashable {
 		case .preferences: return "preferences_title"
 		case .appearance: return "appearance_title"
 		case .notifications: return "notifications_title"
+		case .storage: return "storage_title"
 		case .about: return "about_title"
 		case .bugReport: return "about_bug_report"
 		}
 	}
+}
+
+/// On-disk usage breakdown for the Storage screen.
+struct StorageBreakdown: Equatable {
+	var receivedFiles: UInt64 = 0
+	var transferData: UInt64 = 0
+	var temporary: UInt64 = 0
+	var total: UInt64 { receivedFiles + transferData + temporary }
 }
 
 struct SettingsState: Equatable {
@@ -43,6 +53,9 @@ struct SettingsState: Equatable {
 	var bugIncludeLogs = true
 	var isSubmittingBugReport = false
 	var bugLogPreviewBytes = 0
+	var storage: StorageBreakdown?
+	var isCalculatingStorage = false
+	var isDeletingTransfers = false
 
 	static func == (lhs: SettingsState, rhs: SettingsState) -> Bool {
 		lhs.selectedSection == rhs.selectedSection && lhs.username == rhs.username
@@ -57,6 +70,8 @@ struct SettingsState: Equatable {
 			&& lhs.bugSteps == rhs.bugSteps && lhs.bugContact == rhs.bugContact
 			&& lhs.bugIncludeLogs == rhs.bugIncludeLogs && lhs.isSubmittingBugReport == rhs.isSubmittingBugReport
 			&& lhs.bugLogPreviewBytes == rhs.bugLogPreviewBytes
+			&& lhs.storage == rhs.storage && lhs.isCalculatingStorage == rhs.isCalculatingStorage
+			&& lhs.isDeletingTransfers == rhs.isDeletingTransfers
 			&& lhs.deviceInfo?.operatingSystem == rhs.deviceInfo?.operatingSystem
 	}
 }
@@ -70,6 +85,7 @@ final class SettingsModel: ObservableObject {
 	private let environment: PlatformEnvironment
 	private let deviceInfoProvider: DeviceInfoProvider
 	private let fileSystemService: FileSystemService
+	private let repository: CoreRepository
 	private let preferences: AppPreferencesRepository
 	private let notifications: LocalNotificationService
 	private let messages: UiMessageController
@@ -85,6 +101,7 @@ final class SettingsModel: ObservableObject {
 		environment: PlatformEnvironment,
 		deviceInfoProvider: DeviceInfoProvider,
 		fileSystemService: FileSystemService,
+		repository: CoreRepository,
 		preferences: AppPreferencesRepository,
 		notifications: LocalNotificationService,
 		messages: UiMessageController,
@@ -94,6 +111,7 @@ final class SettingsModel: ObservableObject {
 		self.environment = environment
 		self.deviceInfoProvider = deviceInfoProvider
 		self.fileSystemService = fileSystemService
+		self.repository = repository
 		self.preferences = preferences
 		self.notifications = notifications
 		self.messages = messages
@@ -170,7 +188,7 @@ final class SettingsModel: ObservableObject {
 					text: .resource(key),
 					tone: .warning,
 					actionLabel: permission == .denied ? .resource("button_open_settings") : nil,
-					onAction: permission == .denied ? { [weak self] in self?.openNotificationSettings() } : nil
+					onAction: permission == .denied ? { self.openNotificationSettings() } : nil
 				))
 			}
 		}
@@ -193,7 +211,7 @@ final class SettingsModel: ObservableObject {
 	func setBugContact(_ value: String) { state.bugContact = value }
 	func setBugIncludeLogs(_ value: Bool) { state.bugIncludeLogs = value }
 
-	func submitBugReport() {
+	func submitBugReport(onSuccess: @escaping () -> Void = {}) {
 		if state.isSubmittingBugReport { return }
 		Task {
 			let snapshot = state
@@ -224,7 +242,7 @@ final class SettingsModel: ObservableObject {
 				state.bugContact = ""
 				state.bugIncludeLogs = true
 				messages.show(UiMessage(text: .resource("bug_report_submitted"), tone: .success))
-				selectSection(.about)
+				onSuccess()
 			case .failure:
 				state.isSubmittingBugReport = false
 				messages.show(UiMessage(text: .resource("bug_report_submit_failed"), tone: .error))
@@ -260,6 +278,60 @@ final class SettingsModel: ObservableObject {
 	private func enableNotifications() async {
 		preferences.setNotificationsEnabled(true)
 		messages.show(UiMessage(text: .resource("notifications_enabled_message"), tone: .success))
+	}
+
+	// MARK: - Storage
+
+	/// Recomputes the on-disk usage breakdown off the main actor.
+	func loadStorageUsage() {
+		if state.isCalculatingStorage { return }
+		state.isCalculatingStorage = true
+		let coreDir = environment.defaultCoreDataDir
+		let receiveDir = state.receiveFolder?.isFileSystemPath == true ? state.receiveFolder?.value : nil
+		let tempDir = NSTemporaryDirectory()
+		Task.detached {
+			let breakdown = StorageBreakdown(
+				receivedFiles: receiveDir.map { SettingsModel.directorySize($0) } ?? 0,
+				transferData: SettingsModel.directorySize(coreDir),
+				temporary: SettingsModel.directorySize(tempDir)
+			)
+			await MainActor.run { [weak self] in
+				self?.state.storage = breakdown
+				self?.state.isCalculatingStorage = false
+			}
+		}
+	}
+
+	/// Deletes every send/receive transfer via the core, freeing the imported
+	/// shared-file content and clearing history. Node identity and received files
+	/// are left untouched.
+	func deleteAllTransfers() {
+		if state.isDeletingTransfers { return }
+		state.isDeletingTransfers = true
+		Task {
+			for id in repository.state.transfers.map(\.transferId) {
+				_ = await repository.delete(transferId: id)
+			}
+			_ = await repository.refresh()
+			state.isDeletingTransfers = false
+			loadStorageUsage()
+			messages.show(UiMessage(text: .resource("storage_transfers_deleted"), tone: .success))
+		}
+	}
+
+	/// Recursive size of every regular file under `path` (0 if missing).
+	nonisolated static func directorySize(_ path: String) -> UInt64 {
+		let url = URL(fileURLWithPath: path)
+		guard let enumerator = FileManager.default.enumerator(
+			at: url, includingPropertiesForKeys: [.isRegularFileKey, .totalFileAllocatedSizeKey, .fileSizeKey]
+		) else { return 0 }
+		var total: UInt64 = 0
+		for case let fileURL as URL in enumerator {
+			let values = try? fileURL.resourceValues(forKeys: [.isRegularFileKey, .totalFileAllocatedSizeKey, .fileSizeKey])
+			guard values?.isRegularFile == true else { continue }
+			total += UInt64(values?.totalFileAllocatedSize ?? values?.fileSize ?? 0)
+		}
+		return total
 	}
 
 	private func loadDeviceInfo() {
