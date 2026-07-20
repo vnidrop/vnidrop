@@ -2,7 +2,8 @@
   "$schema": "./schema.json",
   "sourceLanguage": "en",
   "supportedLanguages": [
-    "en"
+    "en",
+    "fr"
   ],
   "strings": {
     "%@": {
@@ -31,7 +32,8 @@
         }
       ],
       "translations": {
-        "en": "{arg1} {arg2} · {arg3}"
+        "en": "{arg1} {arg2} · {arg3}",
+        "fr": "{arg1} {arg2} · {arg3}"
       }
     },
     "%@ · %@": {
@@ -50,7 +52,8 @@
         }
       ],
       "translations": {
-        "en": "{arg1} · {arg2}"
+        "en": "{arg1} · {arg2}",
+        "fr": "{arg1} · {arg2}"
       }
     },
     "%@%%": {
@@ -62,169 +65,197 @@
     "about_bug_report": {
       "context": "About screen: button/link that opens the bug report form.",
       "translations": {
-        "en": "Report a bug"
+        "en": "Report a bug",
+        "fr": "Signaler un bug"
       }
     },
     "about_description": {
       "context": "About screen: intro paragraph describing what VniDrop does.",
       "translations": {
-        "en": "VniDrop moves files and folders straight from one device to another over the network, without uploading them to any file-hosting service. There’s no account to create, and no copy of your transfer is left in the cloud once you’re done."
+        "en": "VniDrop moves files and folders straight from one device to another over the network, without uploading them to any file-hosting service. There’s no account to create, and no copy of your transfer is left in the cloud once you’re done.",
+        "fr": "VniDrop transfère fichiers et dossiers directement d’un appareil à un autre sur le réseau, sans les téléverser vers un service d’hébergement. Aucun compte à créer, et aucune copie de votre transfert ne reste dans le cloud une fois terminé."
       }
     },
     "about_is_direct": {
       "context": "About screen, 'What VniDrop is' list: point about direct device-to-device transfer.",
       "translations": {
-        "en": "A direct device-to-device transfer — your files go straight to the receiver."
+        "en": "A direct device-to-device transfer — your files go straight to the receiver.",
+        "fr": "Un transfert direct d’appareil à appareil — vos fichiers vont droit au destinataire."
       }
     },
     "about_is_encrypted": {
       "context": "About screen, 'What VniDrop is' list: point about encrypted, verified connections.",
       "translations": {
-        "en": "Connections are authenticated and end-to-end encrypted (via Iroh), and incoming files are verified by their content hash."
+        "en": "Connections are authenticated and end-to-end encrypted (via Iroh), and incoming files are verified by their content hash.",
+        "fr": "Les connexions sont authentifiées et chiffrées de bout en bout (via Iroh), et les fichiers entrants sont vérifiés par leur empreinte de contenu."
       }
     },
     "about_is_in_control": {
       "context": "About screen, 'What VniDrop is' list: point about controlling who receives.",
       "translations": {
-        "en": "You decide who receives: approve each request, or open a transfer to anyone holding the invitation."
+        "en": "You decide who receives: approve each request, or open a transfer to anyone holding the invitation.",
+        "fr": "Vous décidez qui reçoit : approuvez chaque demande, ou ouvrez un transfert à toute personne disposant de l’invitation."
       }
     },
     "about_is_no_account": {
       "context": "About screen, 'What VniDrop is' list: point about being account-free.",
       "translations": {
-        "en": "Account-free — there’s nothing to sign up for."
+        "en": "Account-free — there’s nothing to sign up for.",
+        "fr": "Sans compte — il n’y a rien à créer."
       }
     },
     "about_is_open": {
       "context": "About screen, 'What VniDrop is' list: point about being open source.",
       "translations": {
-        "en": "Open source, released under the Apache 2.0 license."
+        "en": "Open source, released under the Apache 2.0 license.",
+        "fr": "Open source, publié sous licence Apache 2.0."
       }
     },
     "about_is_title": {
       "context": "About screen: section heading for the 'What VniDrop is' list.",
       "translations": {
-        "en": "What VniDrop is"
+        "en": "What VniDrop is",
+        "fr": "Ce qu’est VniDrop"
       }
     },
     "about_isnt_cloud": {
       "context": "About screen, 'What VniDrop isn't' list: point about not being cloud storage.",
       "translations": {
-        "en": "Not cloud storage — no server holds your files, and nothing waits in the cloud after a transfer."
+        "en": "Not cloud storage — no server holds your files, and nothing waits in the cloud after a transfer.",
+        "fr": "Pas un stockage cloud — aucun serveur ne détient vos fichiers, et rien n’attend dans le cloud après un transfert."
       }
     },
     "about_isnt_public": {
       "context": "About screen, 'What VniDrop isn't' list: point about invitations not being public broadcasts.",
       "translations": {
-        "en": "Not public broadcasting — an invitation is a private access link, not an announcement to everyone nearby."
+        "en": "Not public broadcasting — an invitation is a private access link, not an announcement to everyone nearby.",
+        "fr": "Pas une diffusion publique — une invitation est un lien d’accès privé, pas une annonce à tout le voisinage."
       }
     },
     "about_isnt_sync": {
       "context": "About screen, 'What VniDrop isn't' list: point about not being sync/backup.",
       "translations": {
-        "en": "Not a sync or backup service."
+        "en": "Not a sync or backup service.",
+        "fr": "Pas un service de synchronisation ou de sauvegarde."
       }
     },
     "about_isnt_title": {
       "context": "About screen: section heading for the 'What VniDrop isn't' list.",
       "translations": {
-        "en": "What VniDrop isn’t"
+        "en": "What VniDrop isn’t",
+        "fr": "Ce que VniDrop n’est pas"
       }
     },
     "about_license_label": {
       "context": "About screen: label for the license row.",
       "translations": {
-        "en": "License"
+        "en": "License",
+        "fr": "Licence"
       }
     },
     "about_privacy": {
       "context": "About screen: link to the privacy policy.",
       "translations": {
-        "en": "Privacy policy"
+        "en": "Privacy policy",
+        "fr": "Politique de confidentialité"
       }
     },
     "about_privacy_capability": {
       "context": "About screen, Privacy & security list: point that invitations are capabilities to share carefully.",
       "translations": {
-        "en": "Invitations are capabilities. Treat a QR code, NFC tag, or .vnd file like a private access link and share it only with the people you intend — especially with “Anyone with this transfer.”"
+        "en": "Invitations are capabilities. Treat a QR code, NFC tag, or .vnd file like a private access link and share it only with the people you intend — especially with “Anyone with this transfer.”",
+        "fr": "Les invitations sont des clés d’accès. Traitez un QR code, un tag NFC ou un fichier .vnd comme un lien d’accès privé et ne le partagez qu’avec les personnes visées — en particulier avec « Toute personne disposant de ce transfert »."
       }
     },
     "about_privacy_deny": {
       "context": "About screen, Privacy & security list: point about denying unknown requests by default.",
       "translations": {
-        "en": "Deny by default — VniDrop serves only the content of an active share and rejects unknown requests."
+        "en": "Deny by default — VniDrop serves only the content of an active share and rejects unknown requests.",
+        "fr": "Refus par défaut — VniDrop ne sert que le contenu d’un partage actif et rejette les demandes inconnues."
       }
     },
     "about_privacy_local": {
       "context": "About screen, Privacy & security list: point about received files staying local and never overwriting.",
       "translations": {
-        "en": "Received files are saved on your device and never silently overwrite an existing file."
+        "en": "Received files are saved on your device and never silently overwrite an existing file.",
+        "fr": "Les fichiers reçus sont enregistrés sur votre appareil et n’écrasent jamais un fichier existant."
       }
     },
     "about_privacy_policy_label": {
       "context": "About screen: label for the privacy policy row.",
       "translations": {
-        "en": "Privacy policy"
+        "en": "Privacy policy",
+        "fr": "Politique de confidentialité"
       }
     },
     "about_privacy_relay": {
       "context": "About screen, Privacy & security list: point explaining encrypted relays.",
       "translations": {
-        "en": "If two devices can’t connect directly, the encrypted connection may be relayed. Relays forward encrypted packets only; they never store your files."
+        "en": "If two devices can’t connect directly, the encrypted connection may be relayed. Relays forward encrypted packets only; they never store your files.",
+        "fr": "Si deux appareils ne peuvent pas se connecter directement, la connexion chiffrée peut être relayée. Les relais ne transmettent que des paquets chiffrés ; ils ne stockent jamais vos fichiers."
       }
     },
     "about_privacy_title": {
       "context": "About screen: section heading for the Privacy & security list.",
       "translations": {
-        "en": "Privacy & security"
+        "en": "Privacy & security",
+        "fr": "Confidentialité et sécurité"
       }
     },
     "about_tagline": {
       "context": "About screen: short tagline under the app name.",
       "translations": {
-        "en": "Send files directly. Stay in control of who receives them."
+        "en": "Send files directly. Stay in control of who receives them.",
+        "fr": "Envoyez des fichiers directement. Gardez le contrôle de qui les reçoit."
       }
     },
     "about_title": {
       "context": "About screen: navigation/screen title.",
       "translations": {
-        "en": "About"
+        "en": "About",
+        "fr": "À propos"
       }
     },
     "appearance_auto_description": {
       "context": "Settings > Appearance: description for the System/auto option.",
       "translations": {
-        "en": "Match this device’s light or dark appearance."
+        "en": "Match this device’s light or dark appearance.",
+        "fr": "Suivre l’apparence claire ou sombre de cet appareil."
       }
     },
     "appearance_dark_mode": {
       "context": "Settings > Appearance: label for the dark theme option.",
       "translations": {
-        "en": "Dark mode"
+        "en": "Dark mode",
+        "fr": "Mode sombre"
       }
     },
     "appearance_light_mode": {
       "context": "Settings > Appearance: label for the light theme option.",
       "translations": {
-        "en": "Light mode"
+        "en": "Light mode",
+        "fr": "Mode clair"
       }
     },
     "appearance_system_mode": {
       "context": "Settings > Appearance: label for the follow-system option.",
       "translations": {
-        "en": "System"
+        "en": "System",
+        "fr": "Système"
       }
     },
     "appearance_title": {
       "context": "Settings > Appearance: section title.",
       "translations": {
-        "en": "Appearance"
+        "en": "Appearance",
+        "fr": "Apparence"
       }
     },
     "approval_connection_request": {
       "context": "Approval prompt: title when a receiver requests to download a transfer.",
       "translations": {
-        "en": "Receive request"
+        "en": "Receive request",
+        "fr": "Demande de réception"
       }
     },
     "approval_endpoint_id": {
@@ -236,13 +267,15 @@
         }
       ],
       "translations": {
-        "en": "Device ID: {arg1}"
+        "en": "Device ID: {arg1}",
+        "fr": "Identifiant de l’appareil : {arg1}"
       }
     },
     "approval_nearby_device": {
       "context": "Approval prompt: fallback label for a requester with no display name.",
       "translations": {
-        "en": "A nearby device"
+        "en": "A nearby device",
+        "fr": "Un appareil à proximité"
       }
     },
     "approval_pending_count": {
@@ -254,7 +287,8 @@
         }
       ],
       "translations": {
-        "en": "{count} requests waiting"
+        "en": "{count} requests waiting",
+        "fr": "{count} demandes en attente"
       }
     },
     "approval_request_body": {
@@ -270,643 +304,750 @@
         }
       ],
       "translations": {
-        "en": "{arg1} wants to receive “{arg2}”."
+        "en": "{arg1} wants to receive “{arg2}”.",
+        "fr": "{arg1} souhaite recevoir « {arg2} »."
       }
     },
     "battery_level_title": {
       "context": "Device information row: battery level label.",
       "translations": {
-        "en": "Battery level"
+        "en": "Battery level",
+        "fr": "Niveau de batterie"
       }
     },
     "bug_report_contact_hint": {
       "context": "Bug report form: placeholder text in the contact email field.",
       "translations": {
-        "en": "name@example.com"
+        "en": "name@example.com",
+        "fr": "nom@exemple.com"
       }
     },
     "bug_report_contact_label": {
       "context": "Bug report form: label for the optional contact email field.",
       "translations": {
-        "en": "Contact email (optional)"
+        "en": "Contact email (optional)",
+        "fr": "E-mail de contact (facultatif)"
       }
     },
     "bug_report_description": {
       "context": "Bug report form: intro text explaining what gets attached.",
       "translations": {
-        "en": "Tell us what went wrong. We attach device info and optional recent logs (with sensitive values redacted)."
+        "en": "Tell us what went wrong. We attach device info and optional recent logs (with sensitive values redacted).",
+        "fr": "Dites-nous ce qui s’est passé. Nous joignons les infos de l’appareil et, en option, les journaux récents (valeurs sensibles masquées)."
       }
     },
     "bug_report_device_section": {
       "context": "Bug report form: heading for the attached device information section.",
       "translations": {
-        "en": "Device information"
+        "en": "Device information",
+        "fr": "Informations sur l’appareil"
       }
     },
     "bug_report_expected_hint": {
       "context": "Bug report form: placeholder in the 'what did you expect' field.",
       "translations": {
-        "en": "Describe what you expected to happen"
+        "en": "Describe what you expected to happen",
+        "fr": "Décrivez ce à quoi vous vous attendiez"
       }
     },
     "bug_report_expected_label": {
       "context": "Bug report form: label for the expected-behavior field.",
       "translations": {
-        "en": "What did you expect?"
+        "en": "What did you expect?",
+        "fr": "À quoi vous attendiez-vous ?"
       }
     },
     "bug_report_include_logs": {
       "context": "Bug report form: toggle label to attach recent logs.",
       "translations": {
-        "en": "Include recent logs"
+        "en": "Include recent logs",
+        "fr": "Inclure les journaux récents"
       }
     },
     "bug_report_include_logs_description": {
       "context": "Bug report form: explanation under the include-logs toggle.",
       "translations": {
-        "en": "Helps us diagnose the issue. Sensitive values are redacted before sending."
+        "en": "Helps us diagnose the issue. Sensitive values are redacted before sending.",
+        "fr": "Nous aide à diagnostiquer le problème. Les valeurs sensibles sont masquées avant l’envoi."
       }
     },
     "bug_report_logs_size": {
       "context": "Bug report form: label showing the size of the log attachment.",
       "translations": {
-        "en": "Log attachment size"
+        "en": "Log attachment size",
+        "fr": "Taille de la pièce jointe des journaux"
       }
     },
     "bug_report_missing_expected": {
       "context": "Bug report form: validation error when the expected-behavior field is empty.",
       "translations": {
-        "en": "Please describe what you expected."
+        "en": "Please describe what you expected.",
+        "fr": "Veuillez décrire ce à quoi vous vous attendiez."
       }
     },
     "bug_report_missing_what": {
       "context": "Bug report form: validation error when the what-happened field is empty.",
       "translations": {
-        "en": "Please describe what happened."
+        "en": "Please describe what happened.",
+        "fr": "Veuillez décrire ce qui s’est passé."
       }
     },
     "bug_report_steps_hint": {
       "context": "Bug report form: placeholder in the steps-to-reproduce field.",
       "translations": {
-        "en": "List the steps to reproduce the issue"
+        "en": "List the steps to reproduce the issue",
+        "fr": "Listez les étapes pour reproduire le problème"
       }
     },
     "bug_report_steps_label": {
       "context": "Bug report form: label for the optional steps-to-reproduce field.",
       "translations": {
-        "en": "Steps to reproduce (optional)"
+        "en": "Steps to reproduce (optional)",
+        "fr": "Étapes pour reproduire (facultatif)"
       }
     },
     "bug_report_submit": {
       "context": "Bug report form: submit button.",
       "translations": {
-        "en": "Submit report"
+        "en": "Submit report",
+        "fr": "Envoyer le rapport"
       }
     },
     "bug_report_submit_failed": {
       "context": "Bug report form: error message when submission fails.",
       "translations": {
-        "en": "Could not submit the bug report. Try again later."
+        "en": "Could not submit the bug report. Try again later.",
+        "fr": "Impossible d’envoyer le rapport de bug. Réessayez plus tard."
       }
     },
     "bug_report_submitted": {
       "context": "Bug report form: confirmation message after a successful submission.",
       "translations": {
-        "en": "Thanks — your bug report was recorded."
+        "en": "Thanks — your bug report was recorded.",
+        "fr": "Merci — votre rapport de bug a été enregistré."
       }
     },
     "bug_report_submitting": {
       "context": "Bug report form: progress label while the report is being sent.",
       "translations": {
-        "en": "Submitting…"
+        "en": "Submitting…",
+        "fr": "Envoi…"
       }
     },
     "bug_report_what_hint": {
       "context": "Bug report form: placeholder in the what-happened field.",
       "translations": {
-        "en": "Describe what happened"
+        "en": "Describe what happened",
+        "fr": "Décrivez ce qui s’est passé"
       }
     },
     "bug_report_what_label": {
       "context": "Bug report form: label for the what-happened field.",
       "translations": {
-        "en": "What happened?"
+        "en": "What happened?",
+        "fr": "Que s’est-il passé ?"
       }
     },
     "button_approve": {
       "context": "Button: approve a receiver's request.",
       "translations": {
-        "en": "Approve"
+        "en": "Approve",
+        "fr": "Approuver"
       }
     },
     "button_back": {
       "context": "Button: go back to the previous step/screen.",
       "translations": {
-        "en": "Back"
+        "en": "Back",
+        "fr": "Retour"
       }
     },
     "button_cancel": {
       "context": "Button: cancel the current action or dialog.",
       "translations": {
-        "en": "Cancel"
+        "en": "Cancel",
+        "fr": "Annuler"
       }
     },
     "button_cancel_receive": {
       "context": "Button: cancel an in-progress receive.",
       "translations": {
-        "en": "Cancel"
+        "en": "Cancel",
+        "fr": "Annuler"
       }
     },
     "button_change_files": {
       "context": "Button: change the selected files in the send flow.",
       "translations": {
-        "en": "Change files"
+        "en": "Change files",
+        "fr": "Modifier les fichiers"
       }
     },
     "button_choose_files": {
       "context": "Button: open the file picker to choose files to send.",
       "translations": {
-        "en": "Choose files"
+        "en": "Choose files",
+        "fr": "Choisir des fichiers"
       }
     },
     "button_choose_folder": {
       "context": "Button: open the folder picker (send selection or receive folder).",
       "translations": {
-        "en": "Choose folder"
+        "en": "Choose folder",
+        "fr": "Choisir un dossier"
       }
     },
     "button_clear": {
       "context": "Button: clear the current input or selection.",
       "translations": {
-        "en": "Clear"
+        "en": "Clear",
+        "fr": "Effacer"
       }
     },
     "button_close": {
       "context": "Button: close the current sheet/dialog.",
       "translations": {
-        "en": "Close"
+        "en": "Close",
+        "fr": "Fermer"
       }
     },
     "button_create_new_transfer": {
       "context": "Button: start creating a new transfer (Send tab).",
       "translations": {
-        "en": "New transfer"
+        "en": "New transfer",
+        "fr": "Nouveau transfert"
       }
     },
     "button_delete_transfer": {
       "context": "Button: delete a transfer.",
       "translations": {
-        "en": "Delete transfer"
+        "en": "Delete transfer",
+        "fr": "Supprimer le transfert"
       }
     },
     "button_download_invitation": {
       "context": "Button: save the invitation as a .vnd file.",
       "translations": {
-        "en": "Save .vnd file"
+        "en": "Save .vnd file",
+        "fr": "Enregistrer le fichier .vnd"
       }
     },
     "button_native_share": {
       "context": "Button: open the OS share sheet to share the invitation.",
       "translations": {
-        "en": "Share invitation"
+        "en": "Share invitation",
+        "fr": "Partager l’invitation"
       }
     },
     "button_open_settings": {
       "context": "Button: open the OS Settings app (e.g. for permissions).",
       "translations": {
-        "en": "Open Settings"
+        "en": "Open Settings",
+        "fr": "Ouvrir les Réglages"
       }
     },
     "button_receive": {
       "context": "Button: receive label (Receive action).",
       "translations": {
-        "en": "Receive"
+        "en": "Receive",
+        "fr": "Recevoir"
       }
     },
     "button_receive_files": {
       "context": "Button: start receiving a transfer.",
       "translations": {
-        "en": "Start receiving"
+        "en": "Start receiving",
+        "fr": "Commencer à recevoir"
       }
     },
     "button_refuse": {
       "context": "Button: refuse a receiver's request.",
       "translations": {
-        "en": "Refuse"
+        "en": "Refuse",
+        "fr": "Refuser"
       }
     },
     "button_remove_file": {
       "context": "Button: remove a single file from the send selection.",
       "translations": {
-        "en": "Remove file"
+        "en": "Remove file",
+        "fr": "Retirer le fichier"
       }
     },
     "button_reset_default": {
       "context": "Button: reset a setting to its default value.",
       "translations": {
-        "en": "Use default"
+        "en": "Use default",
+        "fr": "Valeur par défaut"
       }
     },
     "button_retry": {
       "context": "Button: retry after a failed operation.",
       "translations": {
-        "en": "Retry"
+        "en": "Retry",
+        "fr": "Réessayer"
       }
     },
     "button_share_file": {
       "context": "Button: start sharing the transfer (make it available).",
       "translations": {
-        "en": "Start sharing"
+        "en": "Start sharing",
+        "fr": "Commencer le partage"
       }
     },
     "button_sharing_file": {
       "context": "Button: disabled/loading state while the transfer is being prepared.",
       "translations": {
-        "en": "Preparing transfer…"
+        "en": "Preparing transfer…",
+        "fr": "Préparation du transfert…"
       }
     },
     "button_show_in_files": {
       "context": "Button: reveal a received file in the Files app.",
       "translations": {
-        "en": "Show in Files"
+        "en": "Show in Files",
+        "fr": "Afficher dans Fichiers"
       }
     },
     "button_write_nfc": {
       "context": "Button: write the invitation to an NFC tag.",
       "translations": {
-        "en": "Write to NFC tag"
+        "en": "Write to NFC tag",
+        "fr": "Écrire sur un tag NFC"
       }
     },
     "device_model_title": {
       "context": "Device information row: device model label.",
       "translations": {
-        "en": "Device model"
+        "en": "Device model",
+        "fr": "Modèle de l’appareil"
       }
     },
     "device_name_title": {
       "context": "Device information row: device name label.",
       "translations": {
-        "en": "Device name"
+        "en": "Device name",
+        "fr": "Nom de l’appareil"
       }
     },
     "diagnostics_description": {
       "context": "Settings > Diagnostics: explanation of what anonymous diagnostics collect.",
       "translations": {
-        "en": "Send anonymous crash reports and usage events so we can improve VniDrop. You can turn this off anytime. Invitations, file paths, and transfer contents are never included."
+        "en": "Send anonymous crash reports and usage events so we can improve VniDrop. You can turn this off anytime. Invitations, file paths, and transfer contents are never included.",
+        "fr": "Envoyer des rapports de plantage et des événements d’utilisation anonymes pour nous aider à améliorer VniDrop. Vous pouvez désactiver cela à tout moment. Les invitations, chemins de fichiers et contenus de transfert ne sont jamais inclus."
       }
     },
     "diagnostics_disabled_message": {
       "context": "Settings > Diagnostics: confirmation shown when diagnostics are turned off.",
       "translations": {
-        "en": "Diagnostics sharing is off."
+        "en": "Diagnostics sharing is off.",
+        "fr": "Le partage des diagnostics est désactivé."
       }
     },
     "diagnostics_enabled_message": {
       "context": "Settings > Diagnostics: confirmation shown when diagnostics are turned on.",
       "translations": {
-        "en": "Diagnostics sharing is on."
+        "en": "Diagnostics sharing is on.",
+        "fr": "Le partage des diagnostics est activé."
       }
     },
     "diagnostics_title": {
       "context": "Settings > Diagnostics: toggle title.",
       "translations": {
-        "en": "Share diagnostics"
+        "en": "Share diagnostics",
+        "fr": "Partager les diagnostics"
       }
     },
     "error_camera": {
       "context": "Error: camera permission is needed to scan a QR code.",
       "translations": {
-        "en": "Camera access is required to scan a QR code."
+        "en": "Camera access is required to scan a QR code.",
+        "fr": "L’accès à la caméra est nécessaire pour scanner un QR code."
       }
     },
     "error_device_info": {
       "context": "Error: device information could not be loaded.",
       "translations": {
-        "en": "Could not load device information."
+        "en": "Could not load device information.",
+        "fr": "Impossible de charger les informations de l’appareil."
       }
     },
     "error_filesystem": {
       "context": "Error: the selected files/folder could not be accessed.",
       "translations": {
-        "en": "VniDrop could not access the selected files or folder. Check permissions and try again."
+        "en": "VniDrop could not access the selected files or folder. Check permissions and try again.",
+        "fr": "VniDrop n’a pas pu accéder aux fichiers ou au dossier sélectionnés. Vérifiez les autorisations et réessayez."
       }
     },
     "error_generic": {
       "context": "Error: generic fallback message.",
       "translations": {
-        "en": "Something went wrong. Try again."
+        "en": "Something went wrong. Try again.",
+        "fr": "Une erreur est survenue. Réessayez."
       }
     },
     "error_initialization": {
       "context": "Error: the app failed to finish starting up.",
       "translations": {
-        "en": "VniDrop could not finish starting up. Close the app and try again."
+        "en": "VniDrop could not finish starting up. Close the app and try again.",
+        "fr": "VniDrop n’a pas pu terminer son démarrage. Fermez l’app et réessayez."
       }
     },
     "error_invalid_ticket": {
       "context": "Error: the invitation/ticket could not be parsed.",
       "translations": {
-        "en": "This invitation could not be read. Ask the sender for a new one."
+        "en": "This invitation could not be read. Ask the sender for a new one.",
+        "fr": "Cette invitation n’a pas pu être lue. Demandez-en une nouvelle à l’expéditeur."
       }
     },
     "error_invitation_empty": {
       "context": "Error: the opened invitation contained no data.",
       "translations": {
-        "en": "That invitation is empty. Try opening it again."
+        "en": "That invitation is empty. Try opening it again.",
+        "fr": "Cette invitation est vide. Essayez de l’ouvrir à nouveau."
       }
     },
     "error_missing_native_library": {
       "context": "Error: the native library is missing from the build.",
       "translations": {
-        "en": "The native VniDrop library is missing from this build."
+        "en": "The native VniDrop library is missing from this build.",
+        "fr": "La bibliothèque native de VniDrop est absente de cette version."
       }
     },
     "error_nfc": {
       "context": "Error: the NFC tag could not be read/used.",
       "translations": {
-        "en": "This NFC tag could not be used. Try another tag."
+        "en": "This NFC tag could not be used. Try another tag.",
+        "fr": "Ce tag NFC n’a pas pu être utilisé. Essayez-en un autre."
       }
     },
     "error_permission": {
       "context": "Error: the transfer was not approved or was refused by the sender.",
       "translations": {
-        "en": "The sender has not approved this transfer, or it was refused."
+        "en": "The sender has not approved this transfer, or it was refused.",
+        "fr": "L’expéditeur n’a pas approuvé ce transfert, ou il a été refusé."
       }
     },
     "error_repository": {
       "context": "Error: transfer data could not be saved locally.",
       "translations": {
-        "en": "VniDrop could not save transfer data on this device."
+        "en": "VniDrop could not save transfer data on this device.",
+        "fr": "VniDrop n’a pas pu enregistrer les données de transfert sur cet appareil."
       }
     },
     "error_selection_failed": {
       "context": "Error: the selected item could not be opened.",
       "translations": {
-        "en": "Could not open the selected item. Try choosing it again."
+        "en": "Could not open the selected item. Try choosing it again.",
+        "fr": "Impossible d’ouvrir l’élément sélectionné. Essayez de le choisir à nouveau."
       }
     },
     "error_share_empty": {
       "context": "Error: attempted to share with nothing selected.",
       "translations": {
-        "en": "Select at least one item to share."
+        "en": "Select at least one item to share.",
+        "fr": "Sélectionnez au moins un élément à partager."
       }
     },
     "error_socket_bind": {
       "context": "Error: the app could not open its network sockets.",
       "translations": {
-        "en": "VniDrop could not open its network sockets on this device."
+        "en": "VniDrop could not open its network sockets on this device.",
+        "fr": "VniDrop n’a pas pu ouvrir ses sockets réseau sur cet appareil."
       }
     },
     "error_starting_up": {
       "context": "Error: an invitation was opened before startup finished.",
       "translations": {
-        "en": "VniDrop is still starting. Open the invitation again in a moment."
+        "en": "VniDrop is still starting. Open the invitation again in a moment.",
+        "fr": "VniDrop démarre encore. Rouvrez l’invitation dans un instant."
       }
     },
     "error_transfer": {
       "context": "Error: the transfer could not be completed.",
       "translations": {
-        "en": "The transfer could not be completed. Check your connection and try again."
+        "en": "The transfer could not be completed. Check your connection and try again.",
+        "fr": "Le transfert n’a pas pu être terminé. Vérifiez votre connexion et réessayez."
       }
     },
     "field_receiver_name": {
       "context": "Text field label: the receiver's display name.",
       "translations": {
-        "en": "Receiver name"
+        "en": "Receiver name",
+        "fr": "Nom du destinataire"
       }
     },
     "field_sender_name": {
       "context": "Text field label: the sender's display name.",
       "translations": {
-        "en": "Sender name"
+        "en": "Sender name",
+        "fr": "Nom de l’expéditeur"
       }
     },
     "field_transfer_name": {
       "context": "Text field label: the name given to a transfer.",
       "translations": {
-        "en": "Transfer name"
+        "en": "Transfer name",
+        "fr": "Nom du transfert"
       }
     },
     "field_username": {
       "context": "Settings text field label: this device's display name.",
       "translations": {
-        "en": "Display name"
+        "en": "Display name",
+        "fr": "Nom d’affichage"
       }
     },
     "folder_status_permission_required": {
       "context": "Receive-folder status: permission is required to write to the chosen folder.",
       "translations": {
-        "en": "Permission needed"
+        "en": "Permission needed",
+        "fr": "Autorisation requise"
       }
     },
     "folder_status_unavailable": {
       "context": "Receive-folder status: the chosen folder is unavailable.",
       "translations": {
-        "en": "Unavailable"
+        "en": "Unavailable",
+        "fr": "Indisponible"
       }
     },
     "folder_status_validating": {
       "context": "Receive-folder status: the folder is being checked.",
       "translations": {
-        "en": "Checking folder…"
+        "en": "Checking folder…",
+        "fr": "Vérification du dossier…"
       }
     },
     "folder_status_writable": {
       "context": "Receive-folder status: the folder is valid and writable.",
       "translations": {
-        "en": "Ready"
+        "en": "Ready",
+        "fr": "Prêt"
       }
     },
     "metadata_files": {
       "context": "Transfer metadata label: number of files.",
       "translations": {
-        "en": "Files"
+        "en": "Files",
+        "fr": "Fichiers"
       }
     },
     "metadata_size": {
       "context": "Transfer metadata label: total size.",
       "translations": {
-        "en": "Size"
+        "en": "Size",
+        "fr": "Taille"
       }
     },
     "metadata_status": {
       "context": "Transfer metadata label: current status.",
       "translations": {
-        "en": "Status"
+        "en": "Status",
+        "fr": "Statut"
       }
     },
     "nav_receive": {
       "context": "Bottom navigation: Receive tab label.",
       "translations": {
-        "en": "Receive"
+        "en": "Receive",
+        "fr": "Recevoir"
       }
     },
     "nav_send": {
       "context": "Bottom navigation: Send tab label.",
       "translations": {
-        "en": "Send"
+        "en": "Send",
+        "fr": "Envoyer"
       }
     },
     "nav_settings": {
       "context": "Bottom navigation: Settings tab label.",
       "translations": {
-        "en": "Settings"
+        "en": "Settings",
+        "fr": "Réglages"
       }
     },
     "network_title": {
       "context": "Device information row: network label.",
       "translations": {
-        "en": "Network"
+        "en": "Network",
+        "fr": "Réseau"
       }
     },
     "notifications_description": {
       "context": "Settings > Notifications: explanation of what notifications are used for.",
       "translations": {
-        "en": "Get notified about new receive requests while VniDrop is in the background."
+        "en": "Get notified about new receive requests while VniDrop is in the background.",
+        "fr": "Soyez averti des nouvelles demandes de réception lorsque VniDrop est en arrière-plan."
       }
     },
     "notifications_enabled_message": {
       "context": "Settings > Notifications: confirmation when notifications are enabled.",
       "translations": {
-        "en": "Notifications enabled."
+        "en": "Notifications enabled.",
+        "fr": "Notifications activées."
       }
     },
     "notifications_local_title": {
       "context": "Settings > Notifications: label for the allow-notifications action.",
       "translations": {
-        "en": "Allow notifications"
+        "en": "Allow notifications",
+        "fr": "Autoriser les notifications"
       }
     },
     "notifications_permission_denied": {
       "context": "Settings > Notifications: message when the OS permission is denied.",
       "translations": {
-        "en": "Notifications are turned off for VniDrop. You can enable them in Settings."
+        "en": "Notifications are turned off for VniDrop. You can enable them in Settings.",
+        "fr": "Les notifications sont désactivées pour VniDrop. Vous pouvez les activer dans les Réglages."
       }
     },
     "notifications_settings_open_failed": {
       "context": "Settings > Notifications: error when the OS notification settings can't be opened.",
       "translations": {
-        "en": "Could not open notification settings."
+        "en": "Could not open notification settings.",
+        "fr": "Impossible d’ouvrir les réglages de notifications."
       }
     },
     "notifications_title": {
       "context": "Settings > Notifications: section title.",
       "translations": {
-        "en": "Notifications"
+        "en": "Notifications",
+        "fr": "Notifications"
       }
     },
     "notifications_unsupported": {
       "context": "Settings > Notifications: message when notifications aren't supported on the device.",
       "translations": {
-        "en": "Notifications are not available on this device."
+        "en": "Notifications are not available on this device.",
+        "fr": "Les notifications ne sont pas disponibles sur cet appareil."
       }
     },
     "os_version_title": {
       "context": "Device information row: operating system version label.",
       "translations": {
-        "en": "Operating system"
+        "en": "Operating system",
+        "fr": "Système d’exploitation"
       }
     },
     "preferences_receive_folder_title": {
       "context": "Settings > Preferences: label for the received-files destination folder.",
       "translations": {
-        "en": "Save received transfers to"
+        "en": "Save received transfers to",
+        "fr": "Enregistrer les transferts reçus dans"
       }
     },
     "preferences_title": {
       "context": "Settings > Preferences: section title.",
       "translations": {
-        "en": "Preferences"
+        "en": "Preferences",
+        "fr": "Préférences"
       }
     },
     "progress_cancelled": {
       "context": "Transfer progress label: cancelled.",
       "translations": {
-        "en": "Cancelled"
+        "en": "Cancelled",
+        "fr": "Annulé"
       }
     },
     "progress_completed": {
       "context": "Transfer progress label: completed.",
       "translations": {
-        "en": "Completed"
+        "en": "Completed",
+        "fr": "Terminé"
       }
     },
     "progress_connected": {
       "context": "Transfer progress label: connected.",
       "translations": {
-        "en": "Connected"
+        "en": "Connected",
+        "fr": "Connecté"
       }
     },
     "progress_connecting": {
       "context": "Transfer progress label: connecting.",
       "translations": {
-        "en": "Connecting"
+        "en": "Connecting",
+        "fr": "Connexion"
       }
     },
     "progress_downloading": {
       "context": "Transfer progress label: downloading.",
       "translations": {
-        "en": "Downloading"
+        "en": "Downloading",
+        "fr": "Téléchargement"
       }
     },
     "progress_failed": {
       "context": "Transfer progress label: failed.",
       "translations": {
-        "en": "Failed"
+        "en": "Failed",
+        "fr": "Échec"
       }
     },
     "progress_getting_ready": {
       "context": "Transfer progress label: getting ready.",
       "translations": {
-        "en": "Getting ready"
+        "en": "Getting ready",
+        "fr": "Préparation"
       }
     },
     "progress_interrupted": {
       "context": "Transfer progress label: the transfer was interrupted.",
       "translations": {
-        "en": "Transfer interrupted"
+        "en": "Transfer interrupted",
+        "fr": "Transfert interrompu"
       }
     },
     "progress_preparing": {
       "context": "Transfer progress label: preparing.",
       "translations": {
-        "en": "Preparing"
+        "en": "Preparing",
+        "fr": "Préparation"
       }
     },
     "progress_ready": {
       "context": "Transfer progress label: ready.",
       "translations": {
-        "en": "Ready"
+        "en": "Ready",
+        "fr": "Prêt"
       }
     },
     "progress_receiving": {
       "context": "Transfer progress label: receiving.",
       "translations": {
-        "en": "Receiving"
+        "en": "Receiving",
+        "fr": "Réception"
       }
     },
     "progress_requesting_access": {
       "context": "Transfer progress label: requesting access from the sender.",
       "translations": {
-        "en": "Requesting access"
+        "en": "Requesting access",
+        "fr": "Demande d’accès"
       }
     },
     "progress_saving": {
       "context": "Transfer progress label: saving received files.",
       "translations": {
-        "en": "Saving"
+        "en": "Saving",
+        "fr": "Enregistrement"
       }
     },
     "progress_sending": {
       "context": "Transfer progress label: sending.",
       "translations": {
-        "en": "Sending"
+        "en": "Sending",
+        "fr": "Envoi"
       }
     },
     "progress_sending_to_count": {
       "context": "Transfer progress label: sending to N receivers. %lld = receiver count.",
       "translations": {
-        "en": "Sending to {count}"
+        "en": "Sending to {count}",
+        "fr": "Envoi à {count}"
       },
       "args": [
         {
@@ -918,49 +1059,57 @@
     "progress_share_ready": {
       "context": "Transfer progress label: the share is ready.",
       "translations": {
-        "en": "Ready to share"
+        "en": "Ready to share",
+        "fr": "Prêt à partager"
       }
     },
     "progress_working": {
       "context": "Transfer progress label: generic working/in-progress state.",
       "translations": {
-        "en": "Working…"
+        "en": "Working…",
+        "fr": "En cours…"
       }
     },
     "receive_choose_method_body": {
       "context": "Receive flow: body text prompting the user to pick an invitation method.",
       "translations": {
-        "en": "Choose the invitation method available to you."
+        "en": "Choose the invitation method available to you.",
+        "fr": "Choisissez la méthode d’invitation à votre disposition."
       }
     },
     "receive_choose_method_title": {
       "context": "Receive flow: title of the connect-method chooser.",
       "translations": {
-        "en": "How would you like to connect?"
+        "en": "How would you like to connect?",
+        "fr": "Comment souhaitez-vous vous connecter ?"
       }
     },
     "receive_clear_history": {
       "context": "Receive history: action to clear all history.",
       "translations": {
-        "en": "Clear history"
+        "en": "Clear history",
+        "fr": "Effacer l’historique"
       }
     },
     "receive_clear_history_description": {
       "context": "Receive history: confirmation dialog body for clearing all history.",
       "translations": {
-        "en": "All completed, failed, and cancelled receives will be removed from VniDrop’s history. Downloaded files will remain on this device."
+        "en": "All completed, failed, and cancelled receives will be removed from VniDrop’s history. Downloaded files will remain on this device.",
+        "fr": "Toutes les réceptions terminées, échouées et annulées seront retirées de l’historique de VniDrop. Les fichiers téléchargés resteront sur cet appareil."
       }
     },
     "receive_clear_history_title": {
       "context": "Receive history: confirmation dialog title for clearing all history.",
       "translations": {
-        "en": "Clear receive history?"
+        "en": "Clear receive history?",
+        "fr": "Effacer l’historique de réception ?"
       }
     },
     "receive_completed": {
       "context": "Receive flow: toast/message when a transfer finishes downloading.",
       "translations": {
-        "en": "Transfer received."
+        "en": "Transfer received.",
+        "fr": "Transfert reçu."
       }
     },
     "receive_delete_history_description": {
@@ -972,205 +1121,239 @@
         }
       ],
       "translations": {
-        "en": "“{arg1}” will be removed from VniDrop’s history. The downloaded file will remain on this device."
+        "en": "“{arg1}” will be removed from VniDrop’s history. The downloaded file will remain on this device.",
+        "fr": "« {arg1} » sera retiré de l’historique de VniDrop. Le fichier téléchargé restera sur cet appareil."
       }
     },
     "receive_delete_history_item": {
       "context": "Receive history: swipe/menu action to delete a single history item.",
       "translations": {
-        "en": "Delete from receive history"
+        "en": "Delete from receive history",
+        "fr": "Supprimer de l’historique de réception"
       }
     },
     "receive_delete_history_title": {
       "context": "Receive history: confirmation title for removing one item.",
       "translations": {
-        "en": "Remove from history?"
+        "en": "Remove from history?",
+        "fr": "Retirer de l’historique ?"
       }
     },
     "receive_empty_body": {
       "context": "Receive tab empty state: instructions on how to receive.",
       "translations": {
-        "en": "Open a VniDrop invitation, scan a QR code, or hold near an NFC tag."
+        "en": "Open a VniDrop invitation, scan a QR code, or hold near an NFC tag.",
+        "fr": "Ouvrez une invitation VniDrop, scannez un QR code ou approchez un tag NFC."
       }
     },
     "receive_empty_title": {
       "context": "Receive tab empty state: title when nothing has been received.",
       "translations": {
-        "en": "Nothing received yet"
+        "en": "Nothing received yet",
+        "fr": "Rien reçu pour l’instant"
       }
     },
     "receive_history_cleared": {
       "context": "Receive history: toast confirming history was cleared.",
       "translations": {
-        "en": "Receive history cleared."
+        "en": "Receive history cleared.",
+        "fr": "Historique de réception effacé."
       }
     },
     "receive_history_title": {
       "context": "Receive tab: History section title.",
       "translations": {
-        "en": "History"
+        "en": "History",
+        "fr": "Historique"
       }
     },
     "receive_method_file": {
       "context": "Receive method: open a .vnd invitation file.",
       "translations": {
-        "en": "Open a .vnd invitation"
+        "en": "Open a .vnd invitation",
+        "fr": "Ouvrir une invitation .vnd"
       }
     },
     "receive_method_file_description": {
       "context": "Receive method description: open a saved/shared invitation file.",
       "translations": {
-        "en": "Choose an invitation saved or shared to this device."
+        "en": "Choose an invitation saved or shared to this device.",
+        "fr": "Choisissez une invitation enregistrée ou partagée sur cet appareil."
       }
     },
     "receive_method_nfc": {
       "context": "Receive method: read an NFC tag.",
       "translations": {
-        "en": "Read NFC tag"
+        "en": "Read NFC tag",
+        "fr": "Lire un tag NFC"
       }
     },
     "receive_method_nfc_description": {
       "context": "Receive method description: hold near the sender's NFC tag.",
       "translations": {
-        "en": "Hold this device near the sender’s invitation tag."
+        "en": "Hold this device near the sender’s invitation tag.",
+        "fr": "Approchez cet appareil du tag d’invitation de l’expéditeur."
       }
     },
     "receive_method_scan": {
       "context": "Receive method: scan a QR code.",
       "translations": {
-        "en": "Scan QR code"
+        "en": "Scan QR code",
+        "fr": "Scanner un QR code"
       }
     },
     "receive_method_scan_description": {
       "context": "Receive method description: use the camera to scan the sender's code.",
       "translations": {
-        "en": "Use the camera to scan the sender’s VniDrop code."
+        "en": "Use the camera to scan the sender’s VniDrop code.",
+        "fr": "Utilisez la caméra pour scanner le code VniDrop de l’expéditeur."
       }
     },
     "receive_new_subtitle": {
       "context": "Receive tab: subtitle under the title.",
       "translations": {
-        "en": "Transfers you’ve received on this device."
+        "en": "Transfers you’ve received on this device.",
+        "fr": "Transferts que vous avez reçus sur cet appareil."
       }
     },
     "receive_nfc_waiting": {
       "context": "Receive flow: prompt while waiting to read an NFC tag.",
       "translations": {
-        "en": "Hold near the NFC tag…"
+        "en": "Hold near the NFC tag…",
+        "fr": "Approchez du tag NFC…"
       }
     },
     "receive_open_files_failed": {
       "context": "Receive flow: error when opening VniDrop's folder in Files fails.",
       "translations": {
-        "en": "Couldn’t open VniDrop in Files."
+        "en": "Couldn’t open VniDrop in Files.",
+        "fr": "Impossible d’ouvrir VniDrop dans Fichiers."
       }
     },
     "receive_review_title": {
       "context": "Receive flow: title of the review screen before accepting a transfer.",
       "translations": {
-        "en": "Review transfer"
+        "en": "Review transfer",
+        "fr": "Vérifier le transfert"
       }
     },
     "receive_title": {
       "context": "Receive tab: screen title.",
       "translations": {
-        "en": "Receive"
+        "en": "Receive",
+        "fr": "Recevoir"
       }
     },
     "receive_unknown_transfer": {
       "context": "Receive flow: fallback name for a transfer with no title.",
       "translations": {
-        "en": "VniDrop transfer"
+        "en": "VniDrop transfer",
+        "fr": "Transfert VniDrop"
       }
     },
     "send_access_anyone": {
       "context": "Send access option: anyone with the invitation can receive.",
       "translations": {
-        "en": "Anyone with this transfer"
+        "en": "Anyone with this transfer",
+        "fr": "Toute personne disposant de ce transfert"
       }
     },
     "send_access_anyone_description": {
       "context": "Send access option description: no approval required.",
       "translations": {
-        "en": "No approval is required. Only use this for items you are comfortable sharing."
+        "en": "No approval is required. Only use this for items you are comfortable sharing.",
+        "fr": "Aucune approbation requise. À n’utiliser que pour des éléments que vous êtes à l’aise de partager."
       }
     },
     "send_access_anyone_warning": {
       "context": "Send access option warning: caution about open access.",
       "translations": {
-        "en": "Anyone with the invitation can download until you stop sharing. Do not use this for private or sensitive items."
+        "en": "Anyone with the invitation can download until you stop sharing. Do not use this for private or sensitive items.",
+        "fr": "Toute personne disposant de l’invitation peut télécharger jusqu’à ce que vous arrêtiez le partage. Ne l’utilisez pas pour des éléments privés ou sensibles."
       }
     },
     "send_access_approval": {
       "context": "Send access option: approve each receiver.",
       "translations": {
-        "en": "Ask before each download"
+        "en": "Ask before each download",
+        "fr": "Demander avant chaque téléchargement"
       }
     },
     "send_access_approval_description": {
       "context": "Send access option description: you approve/refuse each receiver.",
       "translations": {
-        "en": "You approve or refuse every new receiver."
+        "en": "You approve or refuse every new receiver.",
+        "fr": "Vous approuvez ou refusez chaque nouveau destinataire."
       }
     },
     "send_access_title": {
       "context": "Send flow: heading for the who-can-receive access chooser.",
       "translations": {
-        "en": "Who can receive it?"
+        "en": "Who can receive it?",
+        "fr": "Qui peut le recevoir ?"
       }
     },
     "send_choose_file_body": {
       "context": "Send flow: body text for the choose-what-to-share step.",
       "translations": {
-        "en": "Select files or a folder from this device. You can review the selection before creating the transfer."
+        "en": "Select files or a folder from this device. You can review the selection before creating the transfer.",
+        "fr": "Sélectionnez des fichiers ou un dossier sur cet appareil. Vous pourrez vérifier la sélection avant de créer le transfert."
       }
     },
     "send_choose_file_title": {
       "context": "Send flow: title of the choose-what-to-share step.",
       "translations": {
-        "en": "Choose what to share"
+        "en": "Choose what to share",
+        "fr": "Choisissez quoi partager"
       }
     },
     "send_empty_body": {
       "context": "Send tab empty state: instructions on how to create a transfer.",
       "translations": {
-        "en": "Create a transfer, decide who can receive it, then invite them with a QR code, NFC tag, or invitation file."
+        "en": "Create a transfer, decide who can receive it, then invite them with a QR code, NFC tag, or invitation file.",
+        "fr": "Créez un transfert, décidez qui peut le recevoir, puis invitez-les avec un QR code, un tag NFC ou un fichier d’invitation."
       }
     },
     "send_empty_title": {
       "context": "Send tab empty state: title when nothing has been shared.",
       "translations": {
-        "en": "Nothing shared yet"
+        "en": "Nothing shared yet",
+        "fr": "Rien partagé pour l’instant"
       }
     },
     "send_file_size_unknown": {
       "context": "Send flow: shown when a selected file's size can't be determined.",
       "translations": {
-        "en": "Size unavailable"
+        "en": "Size unavailable",
+        "fr": "Taille indisponible"
       }
     },
     "send_folder_label": {
       "context": "Send flow: label indicating a selected item is a folder.",
       "translations": {
-        "en": "Folder"
+        "en": "Folder",
+        "fr": "Dossier"
       }
     },
     "send_new_transfer_description": {
       "context": "Send flow: description for the create-new-transfer entry.",
       "translations": {
-        "en": "Create a new transfer"
+        "en": "Create a new transfer",
+        "fr": "Créer un nouveau transfert"
       }
     },
     "send_new_transfer_title": {
       "context": "Send flow: title for the new-transfer step.",
       "translations": {
-        "en": "New transfer"
+        "en": "New transfer",
+        "fr": "Nouveau transfert"
       }
     },
     "send_review_title": {
       "context": "Send flow: title of the review-transfer step before creating it.",
       "translations": {
-        "en": "Review transfer"
+        "en": "Review transfer",
+        "fr": "Vérifier le transfert"
       }
     },
     "send_selected_files_count": {
@@ -1182,187 +1365,218 @@
         }
       ],
       "translations": {
-        "en": "{count} files selected"
+        "en": "{count} files selected",
+        "fr": "{count} fichiers sélectionnés"
       }
     },
     "send_stop_sharing": {
       "context": "Transfer details: action to stop sharing a transfer.",
       "translations": {
-        "en": "Stop sharing"
+        "en": "Stop sharing",
+        "fr": "Arrêter le partage"
       }
     },
     "send_stop_sharing_description": {
       "context": "Transfer details: confirmation body for stopping sharing.",
       "translations": {
-        "en": "This stops the transfer and interrupts anyone currently downloading it. It stays in your history as Stopped."
+        "en": "This stops the transfer and interrupts anyone currently downloading it. It stays in your history as Stopped.",
+        "fr": "Cela arrête le transfert et interrompt toute personne en train de le télécharger. Il reste dans votre historique en tant qu’Arrêté."
       }
     },
     "send_subtitle": {
       "context": "Send tab: subtitle under the title.",
       "translations": {
-        "en": "Transfers you’re sharing from this device."
+        "en": "Transfers you’re sharing from this device.",
+        "fr": "Transferts que vous partagez depuis cet appareil."
       }
     },
     "send_title": {
       "context": "Send tab: screen title.",
       "translations": {
-        "en": "Send"
+        "en": "Send",
+        "fr": "Envoyer"
       }
     },
     "send_transfer_created": {
       "context": "Send flow: toast confirming a transfer was created.",
       "translations": {
-        "en": "Transfer created."
+        "en": "Transfer created.",
+        "fr": "Transfert créé."
       }
     },
     "send_transfer_details_title": {
       "context": "Send flow: title of the transfer details screen.",
       "translations": {
-        "en": "Transfer details"
+        "en": "Transfer details",
+        "fr": "Détails du transfert"
       }
     },
     "send_transfers_title": {
       "context": "Send tab: 'Your transfers' list heading.",
       "translations": {
-        "en": "Your transfers"
+        "en": "Your transfers",
+        "fr": "Vos transferts"
       }
     },
     "settings_subtitle": {
       "context": "Settings screen: subtitle summarizing what's configurable.",
       "translations": {
-        "en": "Your name, where transfers are saved, appearance, and notifications."
+        "en": "Your name, where transfers are saved, appearance, and notifications.",
+        "fr": "Votre nom, l’emplacement d’enregistrement des transferts, l’apparence et les notifications."
       }
     },
     "settings_title": {
       "context": "Settings screen: title.",
       "translations": {
-        "en": "Settings"
+        "en": "Settings",
+        "fr": "Réglages"
       }
     },
     "snackbar_dismiss": {
       "context": "Snackbar: accessibility label / action to dismiss the snackbar.",
       "translations": {
-        "en": "Dismiss"
+        "en": "Dismiss",
+        "fr": "Ignorer"
       }
     },
     "status_available": {
       "context": "Transfer status: available (actively shared).",
       "translations": {
-        "en": "Available"
+        "en": "Available",
+        "fr": "Disponible"
       }
     },
     "status_cancelled": {
       "context": "Transfer status: cancelled.",
       "translations": {
-        "en": "Cancelled"
+        "en": "Cancelled",
+        "fr": "Annulé"
       }
     },
     "status_completed": {
       "context": "Transfer status: completed.",
       "translations": {
-        "en": "Completed"
+        "en": "Completed",
+        "fr": "Terminé"
       }
     },
     "status_failed": {
       "context": "Transfer status: failed.",
       "translations": {
-        "en": "Failed"
+        "en": "Failed",
+        "fr": "Échec"
       }
     },
     "status_preparing": {
       "context": "Transfer status: preparing.",
       "translations": {
-        "en": "Preparing"
+        "en": "Preparing",
+        "fr": "Préparation"
       }
     },
     "status_receiving": {
       "context": "Transfer status: receiving.",
       "translations": {
-        "en": "Receiving"
+        "en": "Receiving",
+        "fr": "Réception"
       }
     },
     "status_stopped": {
       "context": "Transfer status: stopped.",
       "translations": {
-        "en": "Stopped"
+        "en": "Stopped",
+        "fr": "Arrêté"
       }
     },
     "storage_calculating": {
       "context": "Settings > Storage: placeholder while a size is being calculated.",
       "translations": {
-        "en": "Calculating…"
+        "en": "Calculating…",
+        "fr": "Calcul…"
       }
     },
     "storage_delete_transfers": {
       "context": "Settings > Storage: button to delete all transfer records.",
       "translations": {
-        "en": "Delete all transfers"
+        "en": "Delete all transfers",
+        "fr": "Supprimer tous les transferts"
       }
     },
     "storage_delete_transfers_description": {
       "context": "Settings > Storage: confirmation body for deleting all transfer records.",
       "translations": {
-        "en": "This clears all sent and received transfer records from your history. Your received files are not deleted. Note: the transfer engine keeps its stored content, so Transfer data may not decrease. This can’t be undone."
+        "en": "This clears all sent and received transfer records from your history. Your received files are not deleted. Note: the transfer engine keeps its stored content, so Transfer data may not decrease. This can’t be undone.",
+        "fr": "Cela efface tous les enregistrements de transferts envoyés et reçus de votre historique. Vos fichiers reçus ne sont pas supprimés. Remarque : le moteur de transfert conserve son contenu stocké, donc les données de transfert peuvent ne pas diminuer. Cette action est irréversible."
       }
     },
     "storage_deleting": {
       "context": "Settings > Storage: progress label while transfers are being deleted.",
       "translations": {
-        "en": "Deleting…"
+        "en": "Deleting…",
+        "fr": "Suppression…"
       }
     },
     "storage_footer": {
       "context": "Settings > Storage: footer explaining how storage is managed.",
       "translations": {
-        "en": "Transfer data is managed by the transfer engine — your history plus the content of files you’ve shared. The button below clears your transfer records; the engine keeps its stored content, so this value may not drop. Received files are your downloaded files and are never deleted here."
+        "en": "Transfer data is managed by the transfer engine — your history plus the content of files you’ve shared. The button below clears your transfer records; the engine keeps its stored content, so this value may not drop. Received files are your downloaded files and are never deleted here.",
+        "fr": "Les données de transfert sont gérées par le moteur de transfert — votre historique ainsi que le contenu des fichiers que vous avez partagés. Le bouton ci-dessous efface vos enregistrements de transferts ; le moteur conserve son contenu stocké, donc cette valeur peut ne pas baisser. Les fichiers reçus sont vos fichiers téléchargés et ne sont jamais supprimés ici."
       }
     },
     "storage_received_files": {
       "context": "Settings > Storage: label for the received-files size row.",
       "translations": {
-        "en": "Received files"
+        "en": "Received files",
+        "fr": "Fichiers reçus"
       }
     },
     "storage_temporary": {
       "context": "Settings > Storage: label for the temporary-files size row.",
       "translations": {
-        "en": "Temporary files"
+        "en": "Temporary files",
+        "fr": "Fichiers temporaires"
       }
     },
     "storage_title": {
       "context": "Settings > Storage: section title.",
       "translations": {
-        "en": "Storage"
+        "en": "Storage",
+        "fr": "Stockage"
       }
     },
     "storage_total": {
       "context": "Settings > Storage: label for the total-size row.",
       "translations": {
-        "en": "Total"
+        "en": "Total",
+        "fr": "Total"
       }
     },
     "storage_transfer_data": {
       "context": "Settings > Storage: label for the transfer-engine data size row.",
       "translations": {
-        "en": "Transfer data"
+        "en": "Transfer data",
+        "fr": "Données de transfert"
       }
     },
     "storage_transfers_deleted": {
       "context": "Settings > Storage: toast confirming all transfers were deleted.",
       "translations": {
-        "en": "All transfers deleted"
+        "en": "All transfers deleted",
+        "fr": "Tous les transferts supprimés"
       }
     },
     "transfer_activity_description": {
       "context": "Transfer details: description under the Activity section.",
       "translations": {
-        "en": "See important updates for this transfer"
+        "en": "See important updates for this transfer",
+        "fr": "Consultez les mises à jour importantes de ce transfert"
       }
     },
     "transfer_activity_title": {
       "context": "Transfer details: Activity section title.",
       "translations": {
-        "en": "Activity"
+        "en": "Activity",
+        "fr": "Activité"
       }
     },
     "transfer_delete_description": {
@@ -1374,103 +1588,120 @@
         }
       ],
       "translations": {
-        "en": "“{arg1}” will stop being shared and its transfer history will be removed from this device."
+        "en": "“{arg1}” will stop being shared and its transfer history will be removed from this device.",
+        "fr": "« {arg1} » cessera d’être partagé et son historique de transfert sera retiré de cet appareil."
       }
     },
     "transfer_delete_title": {
       "context": "Transfer details: confirmation title for deleting a transfer.",
       "translations": {
-        "en": "Delete transfer?"
+        "en": "Delete transfer?",
+        "fr": "Supprimer le transfert ?"
       }
     },
     "transfer_deleted": {
       "context": "Transfer details: toast confirming a transfer was deleted.",
       "translations": {
-        "en": "Transfer deleted."
+        "en": "Transfer deleted.",
+        "fr": "Transfert supprimé."
       }
     },
     "transfer_deleting": {
       "context": "Transfer details: progress label while a transfer is being deleted.",
       "translations": {
-        "en": "Deleting…"
+        "en": "Deleting…",
+        "fr": "Suppression…"
       }
     },
     "transfer_details_title": {
       "context": "Transfer details: screen title.",
       "translations": {
-        "en": "Transfer details"
+        "en": "Transfer details",
+        "fr": "Détails du transfert"
       }
     },
     "transfer_event_approved": {
       "context": "Transfer activity event: a receiver's access was approved.",
       "translations": {
-        "en": "Receiver access approved"
+        "en": "Receiver access approved",
+        "fr": "Accès du destinataire approuvé"
       }
     },
     "transfer_event_completed": {
       "context": "Transfer activity event: a receiver completed the transfer.",
       "translations": {
-        "en": "A receiver completed the transfer"
+        "en": "A receiver completed the transfer",
+        "fr": "Un destinataire a terminé le transfert"
       }
     },
     "transfer_event_connecting": {
       "context": "Transfer activity event: connecting to the sender.",
       "translations": {
-        "en": "Connecting to sender"
+        "en": "Connecting to sender",
+        "fr": "Connexion à l’expéditeur"
       }
     },
     "transfer_event_downloading": {
       "context": "Transfer activity event: downloading.",
       "translations": {
-        "en": "Downloading"
+        "en": "Downloading",
+        "fr": "Téléchargement"
       }
     },
     "transfer_event_failed": {
       "context": "Transfer activity event: the transfer hit a problem.",
       "translations": {
-        "en": "The transfer encountered a problem"
+        "en": "The transfer encountered a problem",
+        "fr": "Le transfert a rencontré un problème"
       }
     },
     "transfer_event_preparing": {
       "context": "Transfer activity event: preparing the transfer.",
       "translations": {
-        "en": "Preparing your transfer"
+        "en": "Preparing your transfer",
+        "fr": "Préparation de votre transfert"
       }
     },
     "transfer_event_ready": {
       "context": "Transfer activity event: ready to share.",
       "translations": {
-        "en": "Ready to share"
+        "en": "Ready to share",
+        "fr": "Prêt à partager"
       }
     },
     "transfer_event_refused": {
       "context": "Transfer activity event: a receiver's access was refused.",
       "translations": {
-        "en": "Receiver access refused"
+        "en": "Receiver access refused",
+        "fr": "Accès du destinataire refusé"
       }
     },
     "transfer_event_requested": {
       "context": "Transfer activity event: a receiver requested access.",
       "translations": {
-        "en": "A receiver requested access"
+        "en": "A receiver requested access",
+        "fr": "Un destinataire a demandé l’accès"
       }
     },
     "transfer_event_saving": {
       "context": "Transfer activity event: saving received files.",
       "translations": {
-        "en": "Saving"
+        "en": "Saving",
+        "fr": "Enregistrement"
       }
     },
     "transfer_event_stopped": {
       "context": "Transfer activity event: sharing was stopped.",
       "translations": {
-        "en": "Sharing stopped"
+        "en": "Sharing stopped",
+        "fr": "Partage arrêté"
       }
     },
     "transfer_event_updated": {
       "context": "Transfer activity event: the transfer was updated.",
       "translations": {
-        "en": "Transfer updated"
+        "en": "Transfer updated",
+        "fr": "Transfert mis à jour"
       }
     },
     "transfer_file_count": {
@@ -1485,85 +1716,102 @@
         "en": {
           "other": "{count} files",
           "one": "{count} file"
+        },
+        "fr": {
+          "one": "{count} fichier",
+          "other": "{count} fichiers"
         }
       }
     },
     "transfer_invitation_saved": {
       "context": "Transfer share: toast confirming the invitation file was saved.",
       "translations": {
-        "en": "Invitation saved."
+        "en": "Invitation saved.",
+        "fr": "Invitation enregistrée."
       }
     },
     "transfer_nearby_device": {
       "context": "Transfer share/receivers: label for a nearby device.",
       "translations": {
-        "en": "Nearby device"
+        "en": "Nearby device",
+        "fr": "Appareil à proximité"
       }
     },
     "transfer_nfc_unavailable": {
       "context": "Transfer share: message when NFC writing isn't available on the device.",
       "translations": {
-        "en": "NFC tag writing is not available on this device."
+        "en": "NFC tag writing is not available on this device.",
+        "fr": "L’écriture de tag NFC n’est pas disponible sur cet appareil."
       }
     },
     "transfer_nfc_waiting": {
       "context": "Transfer share: prompt while waiting to write an NFC tag.",
       "translations": {
-        "en": "Hold your device near a writable NFC tag."
+        "en": "Hold your device near a writable NFC tag.",
+        "fr": "Approchez votre appareil d’un tag NFC inscriptible."
       }
     },
     "transfer_nfc_written": {
       "context": "Transfer share: confirmation the invitation was written to the NFC tag.",
       "translations": {
-        "en": "Invitation written to the NFC tag."
+        "en": "Invitation written to the NFC tag.",
+        "fr": "Invitation écrite sur le tag NFC."
       }
     },
     "transfer_no_activity": {
       "context": "Transfer details: empty state for the Activity section.",
       "translations": {
-        "en": "There is no activity to show yet."
+        "en": "There is no activity to show yet.",
+        "fr": "Aucune activité à afficher pour l’instant."
       }
     },
     "transfer_no_receivers": {
       "context": "Transfer details: empty state for the Receivers section.",
       "translations": {
-        "en": "Nobody has requested this transfer yet."
+        "en": "Nobody has requested this transfer yet.",
+        "fr": "Personne n’a encore demandé ce transfert."
       }
     },
     "transfer_receiver_accepted": {
       "context": "Receiver status: approved, waiting for the download to complete.",
       "translations": {
-        "en": "Approved — waiting for completion"
+        "en": "Approved — waiting for completion",
+        "fr": "Approuvé — en attente de la fin"
       }
     },
     "transfer_receiver_completed": {
       "context": "Receiver status: received successfully.",
       "translations": {
-        "en": "Received successfully"
+        "en": "Received successfully",
+        "fr": "Reçu avec succès"
       }
     },
     "transfer_receiver_expired": {
       "context": "Receiver status: the request expired.",
       "translations": {
-        "en": "Request expired"
+        "en": "Request expired",
+        "fr": "Demande expirée"
       }
     },
     "transfer_receiver_refused": {
       "context": "Receiver status: the request was refused.",
       "translations": {
-        "en": "Request refused"
+        "en": "Request refused",
+        "fr": "Demande refusée"
       }
     },
     "transfer_receiver_requested": {
       "context": "Receiver status: waiting for the sender's approval.",
       "translations": {
-        "en": "Waiting for your approval"
+        "en": "Waiting for your approval",
+        "fr": "En attente de votre approbation"
       }
     },
     "transfer_receiver_unknown": {
       "context": "Receiver status: status unavailable/unknown.",
       "translations": {
-        "en": "Status unavailable"
+        "en": "Status unavailable",
+        "fr": "Statut indisponible"
       }
     },
     "transfer_receivers_completed_count": {
@@ -1575,13 +1823,15 @@
         }
       ],
       "translations": {
-        "en": "{count} completed"
+        "en": "{count} completed",
+        "fr": "{count} terminés"
       }
     },
     "transfer_receivers_description": {
       "context": "Transfer details: description under the Receivers section.",
       "translations": {
-        "en": "Requests, approvals, and completed deliveries"
+        "en": "Requests, approvals, and completed deliveries",
+        "fr": "Demandes, approbations et livraisons terminées"
       }
     },
     "transfer_receivers_pending": {
@@ -1593,43 +1843,50 @@
         }
       ],
       "translations": {
-        "en": "{count} waiting"
+        "en": "{count} waiting",
+        "fr": "{count} en attente"
       }
     },
     "transfer_receivers_title": {
       "context": "Transfer details: Receivers section title.",
       "translations": {
-        "en": "Receivers"
+        "en": "Receivers",
+        "fr": "Destinataires"
       }
     },
     "transfer_scan_qr": {
       "context": "Transfer share: caption under the QR code.",
       "translations": {
-        "en": "Scan with VniDrop to receive this transfer"
+        "en": "Scan with VniDrop to receive this transfer",
+        "fr": "Scannez avec VniDrop pour recevoir ce transfert"
       }
     },
     "transfer_share_description": {
       "context": "Transfer details: description under the Share section.",
       "translations": {
-        "en": "QR code, invitation file, and nearby options"
+        "en": "QR code, invitation file, and nearby options",
+        "fr": "QR code, fichier d’invitation et options à proximité"
       }
     },
     "transfer_share_title": {
       "context": "Transfer details: Share section title.",
       "translations": {
-        "en": "Share"
+        "en": "Share",
+        "fr": "Partager"
       }
     },
     "value_unavailable": {
       "context": "Placeholder shown when a device-info or metadata value can't be read.",
       "translations": {
-        "en": "Not available"
+        "en": "Not available",
+        "fr": "Non disponible"
       }
     },
     "version_title": {
       "context": "Device information / Settings row: app version label.",
       "translations": {
-        "en": "App version"
+        "en": "App version",
+        "fr": "Version de l’app"
       }
     }
   }
