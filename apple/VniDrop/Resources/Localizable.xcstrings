@@ -39,6 +39,12 @@
             "value": "%1$@ %2$@ · %3$@"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ %2$@ · %3$@"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -82,6 +88,12 @@
           }
         },
         "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@"
+          }
+        },
+        "nl": {
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ · %2$@"
@@ -139,6 +151,12 @@
             "value": "Segnala un bug"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een fout melden"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -185,6 +203,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "VniDrop trasferisce file e cartelle direttamente da un dispositivo a un altro sulla rete, senza caricarli su alcun servizio di hosting. Non c’è alcun account da creare e nessuna copia del suo trasferimento rimane nel cloud una volta terminato."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop verplaatst bestanden en mappen rechtstreeks van het ene apparaat naar het andere via het netwerk, zonder ze naar een hostingdienst te uploaden. U hoeft geen account aan te maken en er blijft geen kopie van uw overdracht in de cloud achter zodra u klaar bent."
           }
         },
         "pl": {
@@ -235,6 +259,12 @@
             "value": "Un trasferimento diretto da dispositivo a dispositivo: i suoi file vanno direttamente al destinatario."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een directe overdracht van apparaat naar apparaat — uw bestanden gaan rechtstreeks naar de ontvanger."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -281,6 +311,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Le connessioni sono autenticate e cifrate end-to-end (tramite Iroh) e i file in arrivo vengono verificati tramite l’impronta del loro contenuto."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbindingen zijn geverifieerd en end-to-end versleuteld (via Iroh), en binnenkomende bestanden worden gecontroleerd aan de hand van hun inhouds-hash."
           }
         },
         "pl": {
@@ -331,6 +367,12 @@
             "value": "Lei decide chi riceve: approvi ogni richiesta oppure apra un trasferimento a chiunque disponga dell’invito."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "U bepaalt wie ontvangt: keur elk verzoek goed, of stel een overdracht open voor iedereen met de uitnodiging."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -377,6 +419,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Senza account: non c’è nulla da registrare."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zonder account — er is niets om aan te melden."
           }
         },
         "pl": {
@@ -427,6 +475,12 @@
             "value": "Open source, rilasciato con licenza Apache 2.0."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Opensource, uitgebracht onder de Apache 2.0-licentie."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -473,6 +527,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cos’è VniDrop"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wat VniDrop is"
           }
         },
         "pl": {
@@ -523,6 +583,12 @@
             "value": "Non è un’archiviazione cloud: nessun server conserva i suoi file e nulla resta nel cloud dopo un trasferimento."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geen cloudopslag — geen enkele server bewaart uw bestanden en er wacht niets in de cloud na een overdracht."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -569,6 +635,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non è una diffusione pubblica: un invito è un link di accesso privato, non un annuncio a tutti nelle vicinanze."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geen openbare uitzending — een uitnodiging is een privétoegangslink, geen aankondiging aan iedereen in de buurt."
           }
         },
         "pl": {
@@ -619,6 +691,12 @@
             "value": "Non è un servizio di sincronizzazione o di backup."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geen synchronisatie- of back-updienst."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -665,6 +743,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cosa non è VniDrop"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wat VniDrop niet is"
           }
         },
         "pl": {
@@ -715,6 +799,12 @@
             "value": "Licenza"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Licentie"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -761,6 +851,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Informativa sulla privacy"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Privacybeleid"
           }
         },
         "pl": {
@@ -811,6 +907,12 @@
             "value": "Gli inviti sono chiavi di accesso. Tratti un codice QR, un tag NFC o un file .vnd come un link di accesso privato e lo condivida solo con le persone previste, soprattutto con «Chiunque abbia questo trasferimento»."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uitnodigingen zijn toegangssleutels. Behandel een QR-code, NFC-tag of .vnd-bestand als een privétoegangslink en deel deze alleen met de bedoelde personen — vooral bij ‘Iedereen met deze overdracht’."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -857,6 +959,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rifiuto predefinito: VniDrop serve solo il contenuto di una condivisione attiva e rifiuta le richieste sconosciute."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Standaard weigeren — VniDrop levert alleen de inhoud van een actieve deling en wijst onbekende verzoeken af."
           }
         },
         "pl": {
@@ -907,6 +1015,12 @@
             "value": "I file ricevuti vengono salvati sul suo dispositivo e non sovrascrivono mai un file esistente."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen bestanden worden op uw apparaat bewaard en overschrijven nooit een bestaand bestand."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -953,6 +1067,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Informativa sulla privacy"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Privacybeleid"
           }
         },
         "pl": {
@@ -1003,6 +1123,12 @@
             "value": "Se due dispositivi non riescono a connettersi direttamente, la connessione cifrata può essere instradata tramite relay. I relay inoltrano solo pacchetti cifrati; non memorizzano mai i suoi file."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Als twee apparaten niet rechtstreeks verbinding kunnen maken, kan de versleutelde verbinding via een relay worden doorgestuurd. Relays sturen alleen versleutelde pakketten door; ze slaan uw bestanden nooit op."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1049,6 +1175,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Privacy e sicurezza"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Privacy en beveiliging"
           }
         },
         "pl": {
@@ -1099,6 +1231,12 @@
             "value": "Invii file direttamente. Mantenga il controllo su chi li riceve."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verstuur bestanden rechtstreeks. Houd controle over wie ze ontvangt."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1145,6 +1283,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Informazioni"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Over"
           }
         },
         "pl": {
@@ -1195,6 +1339,12 @@
             "value": "Segue l’aspetto chiaro o scuro di questo dispositivo."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De lichte of donkere weergave van dit apparaat volgen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1241,6 +1391,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Modalità scura"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Donkere modus"
           }
         },
         "pl": {
@@ -1291,6 +1447,12 @@
             "value": "Modalità chiara"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lichte modus"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1337,6 +1499,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Sistema"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Systeem"
           }
         },
         "pl": {
@@ -1387,6 +1555,12 @@
             "value": "Aspetto"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Weergave"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1433,6 +1607,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Richiesta di ricezione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangstverzoek"
           }
         },
         "pl": {
@@ -1483,6 +1663,12 @@
             "value": "ID dispositivo: %1$@"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apparaat-ID: %1$@"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1529,6 +1715,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Un dispositivo nelle vicinanze"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een apparaat in de buurt"
           }
         },
         "pl": {
@@ -1579,6 +1771,12 @@
             "value": "%1$d richieste in attesa"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d verzoeken in behandeling"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1625,6 +1823,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ vuole ricevere «%2$@»."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ wil ‘%2$@’ ontvangen."
           }
         },
         "pl": {
@@ -1675,6 +1879,12 @@
             "value": "Livello batteria"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Batterijniveau"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1721,6 +1931,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "nome@esempio.com"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "naam@voorbeeld.com"
           }
         },
         "pl": {
@@ -1771,6 +1987,12 @@
             "value": "Email di contatto (facoltativa)"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Contact-e-mail (optioneel)"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1817,6 +2039,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ci dica cosa è andato storto. Alleghiamo le informazioni sul dispositivo e, facoltativamente, i log recenti (con i valori sensibili oscurati)."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vertel ons wat er misging. We voegen apparaatgegevens toe en optioneel recente logbestanden (met gevoelige waarden onleesbaar gemaakt)."
           }
         },
         "pl": {
@@ -1867,6 +2095,12 @@
             "value": "Informazioni sul dispositivo"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apparaatgegevens"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -1913,6 +2147,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Descriva cosa si aspettava che accadesse"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschrijf wat u verwachtte"
           }
         },
         "pl": {
@@ -1963,6 +2203,12 @@
             "value": "Cosa si aspettava?"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wat verwachtte u?"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2009,6 +2255,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Includi i log recenti"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recente logbestanden meesturen"
           }
         },
         "pl": {
@@ -2059,6 +2311,12 @@
             "value": "Ci aiuta a diagnosticare il problema. I valori sensibili vengono oscurati prima dell’invio."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Helpt ons het probleem te diagnosticeren. Gevoelige waarden worden vóór verzending onleesbaar gemaakt."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2105,6 +2363,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dimensione dell’allegato dei log"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Grootte van logbijlage"
           }
         },
         "pl": {
@@ -2155,6 +2419,12 @@
             "value": "Descriva cosa si aspettava."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschrijf wat u verwachtte."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2201,6 +2471,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Descriva cosa è accaduto."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschrijf wat er gebeurde."
           }
         },
         "pl": {
@@ -2251,6 +2527,12 @@
             "value": "Elenchi i passaggi per riprodurre il problema"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noem de stappen om het probleem te reproduceren"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2297,6 +2579,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Passaggi per riprodurre (facoltativi)"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Stappen om te reproduceren (optioneel)"
           }
         },
         "pl": {
@@ -2347,6 +2635,12 @@
             "value": "Invia segnalazione"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rapport versturen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2393,6 +2687,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile inviare la segnalazione. Riprovi più tardi."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Het foutrapport kon niet worden verstuurd. Probeer het later opnieuw."
           }
         },
         "pl": {
@@ -2443,6 +2743,12 @@
             "value": "Grazie: la sua segnalazione è stata registrata."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bedankt — uw foutrapport is vastgelegd."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2489,6 +2795,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invio in corso…"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bezig met versturen…"
           }
         },
         "pl": {
@@ -2539,6 +2851,12 @@
             "value": "Descriva cosa è accaduto"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschrijf wat er gebeurde"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2585,6 +2903,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cosa è accaduto?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wat is er gebeurd?"
           }
         },
         "pl": {
@@ -2635,6 +2959,12 @@
             "value": "Approva"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Goedkeuren"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2681,6 +3011,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Indietro"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Terug"
           }
         },
         "pl": {
@@ -2731,6 +3067,12 @@
             "value": "Annulla"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Annuleren"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2777,6 +3119,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Annulla"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Annuleren"
           }
         },
         "pl": {
@@ -2827,6 +3175,12 @@
             "value": "Cambia file"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bestanden wijzigen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2873,6 +3227,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scegli file"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bestanden kiezen"
           }
         },
         "pl": {
@@ -2923,6 +3283,12 @@
             "value": "Scegli cartella"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Map kiezen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -2969,6 +3335,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cancella"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wissen"
           }
         },
         "pl": {
@@ -3019,6 +3391,12 @@
             "value": "Chiudi"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sluiten"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3065,6 +3443,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nuovo trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nieuwe overdracht"
           }
         },
         "pl": {
@@ -3115,6 +3499,12 @@
             "value": "Elimina trasferimento"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht verwijderen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3161,6 +3551,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Salva file .vnd"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": ".vnd-bestand bewaren"
           }
         },
         "pl": {
@@ -3211,6 +3607,12 @@
             "value": "Condividi invito"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uitnodiging delen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3257,6 +3659,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Apri Impostazioni"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Instellingen openen"
           }
         },
         "pl": {
@@ -3307,6 +3715,12 @@
             "value": "Ricevi"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3353,6 +3767,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Inizia a ricevere"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen starten"
           }
         },
         "pl": {
@@ -3403,6 +3823,12 @@
             "value": "Rifiuta"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Weigeren"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3449,6 +3875,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rimuovi file"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bestand verwijderen"
           }
         },
         "pl": {
@@ -3499,6 +3931,12 @@
             "value": "Usa predefinito"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Standaard gebruiken"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3545,6 +3983,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Riprova"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Opnieuw proberen"
           }
         },
         "pl": {
@@ -3595,6 +4039,12 @@
             "value": "Inizia a condividere"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Delen starten"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3641,6 +4091,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preparazione del trasferimento…"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht voorbereiden…"
           }
         },
         "pl": {
@@ -3691,6 +4147,12 @@
             "value": "Mostra in File"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toon in Bestanden"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3737,6 +4199,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scrivi su tag NFC"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Naar NFC-tag schrijven"
           }
         },
         "pl": {
@@ -3787,6 +4255,12 @@
             "value": "Modello del dispositivo"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apparaatmodel"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3833,6 +4307,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nome del dispositivo"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apparaatnaam"
           }
         },
         "pl": {
@@ -3883,6 +4363,12 @@
             "value": "Invia report di arresto anomalo ed eventi d’uso anonimi per aiutarci a migliorare VniDrop. Può disattivarlo in qualsiasi momento. Inviti, percorsi dei file e contenuti dei trasferimenti non vengono mai inclusi."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verstuur anonieme crashrapporten en gebruiksgebeurtenissen zodat we VniDrop kunnen verbeteren. U kunt dit op elk moment uitschakelen. Uitnodigingen, bestandspaden en overdrachtsinhoud worden nooit meegestuurd."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -3929,6 +4415,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "La condivisione dei dati diagnostici è disattivata."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Het delen van diagnostische gegevens is uitgeschakeld."
           }
         },
         "pl": {
@@ -3979,6 +4471,12 @@
             "value": "La condivisione dei dati diagnostici è attivata."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Het delen van diagnostische gegevens is ingeschakeld."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4025,6 +4523,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Condividi dati diagnostici"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diagnostische gegevens delen"
           }
         },
         "pl": {
@@ -4075,6 +4579,12 @@
             "value": "Per scansionare un codice QR è necessario l’accesso alla fotocamera."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voor het scannen van een QR-code is toegang tot de camera vereist."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4121,6 +4631,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile caricare le informazioni sul dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apparaatgegevens konden niet worden geladen."
           }
         },
         "pl": {
@@ -4171,6 +4687,12 @@
             "value": "VniDrop non ha potuto accedere ai file o alla cartella selezionati. Controlli le autorizzazioni e riprovi."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop kon geen toegang krijgen tot de geselecteerde bestanden of map. Controleer de machtigingen en probeer het opnieuw."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4217,6 +4739,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Qualcosa è andato storto. Riprovi."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Er is iets misgegaan. Probeer het opnieuw."
           }
         },
         "pl": {
@@ -4267,6 +4795,12 @@
             "value": "VniDrop non ha potuto completare l’avvio. Chiuda l’app e riprovi."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop kon het opstarten niet voltooien. Sluit de app en probeer het opnieuw."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4313,6 +4847,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile leggere questo invito. Ne chieda uno nuovo al mittente."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Deze uitnodiging kon niet worden gelezen. Vraag de afzender om een nieuwe."
           }
         },
         "pl": {
@@ -4363,6 +4903,12 @@
             "value": "Questo invito è vuoto. Provi ad aprirlo di nuovo."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die uitnodiging is leeg. Probeer deze opnieuw te openen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4409,6 +4955,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "La libreria nativa di VniDrop non è presente in questa build."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De native VniDrop-bibliotheek ontbreekt in deze build."
           }
         },
         "pl": {
@@ -4459,6 +5011,12 @@
             "value": "Impossibile usare questo tag NFC. Ne provi un altro."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Deze NFC-tag kon niet worden gebruikt. Probeer een andere."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4505,6 +5063,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Il mittente non ha approvato questo trasferimento, oppure è stato rifiutato."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De afzender heeft deze overdracht niet goedgekeurd, of deze is geweigerd."
           }
         },
         "pl": {
@@ -4555,6 +5119,12 @@
             "value": "VniDrop non ha potuto salvare i dati del trasferimento su questo dispositivo."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop kon de overdrachtsgegevens niet op dit apparaat bewaren."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4601,6 +5171,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile aprire l’elemento selezionato. Provi a sceglierlo di nuovo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Het geselecteerde item kon niet worden geopend. Probeer het opnieuw te kiezen."
           }
         },
         "pl": {
@@ -4651,6 +5227,12 @@
             "value": "Selezioni almeno un elemento da condividere."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selecteer minstens één item om te delen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4697,6 +5279,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "VniDrop non ha potuto aprire i suoi socket di rete su questo dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop kon zijn netwerksockets niet openen op dit apparaat."
           }
         },
         "pl": {
@@ -4747,6 +5335,12 @@
             "value": "VniDrop è ancora in fase di avvio. Riapra l’invito tra un momento."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop is nog aan het opstarten. Open de uitnodiging zo meteen opnieuw."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4793,6 +5387,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile completare il trasferimento. Controlli la connessione e riprovi."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De overdracht kon niet worden voltooid. Controleer uw verbinding en probeer het opnieuw."
           }
         },
         "pl": {
@@ -4843,6 +5443,12 @@
             "value": "Nome del destinatario"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Naam van ontvanger"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4889,6 +5495,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nome del mittente"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Naam van afzender"
           }
         },
         "pl": {
@@ -4939,6 +5551,12 @@
             "value": "Nome del trasferimento"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Naam van overdracht"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -4985,6 +5603,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nome visualizzato"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Weergavenaam"
           }
         },
         "pl": {
@@ -5035,6 +5659,12 @@
             "value": "Autorizzazione necessaria"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Machtiging vereist"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5081,6 +5711,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non disponibile"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Niet beschikbaar"
           }
         },
         "pl": {
@@ -5131,6 +5767,12 @@
             "value": "Controllo della cartella…"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Map controleren…"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5177,6 +5819,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Pronta"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gereed"
           }
         },
         "pl": {
@@ -5227,6 +5875,12 @@
             "value": "File"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bestanden"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5273,6 +5927,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dimensione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Grootte"
           }
         },
         "pl": {
@@ -5323,6 +5983,12 @@
             "value": "Stato"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Status"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5369,6 +6035,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricevi"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen"
           }
         },
         "pl": {
@@ -5419,6 +6091,12 @@
             "value": "Invia"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Versturen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5465,6 +6143,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impostazioni"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Instellingen"
           }
         },
         "pl": {
@@ -5515,6 +6199,12 @@
             "value": "Rete"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netwerk"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5561,6 +6251,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricevi avvisi sulle nuove richieste di ricezione quando VniDrop è in background."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvang meldingen over nieuwe ontvangstverzoeken terwijl VniDrop op de achtergrond draait."
           }
         },
         "pl": {
@@ -5611,6 +6307,12 @@
             "value": "Notifiche attivate."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Meldingen ingeschakeld."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5657,6 +6359,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Consenti le notifiche"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Meldingen toestaan"
           }
         },
         "pl": {
@@ -5707,6 +6415,12 @@
             "value": "Le notifiche sono disattivate per VniDrop. Può attivarle in Impostazioni."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Meldingen zijn uitgeschakeld voor VniDrop. U kunt ze inschakelen in Instellingen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5753,6 +6467,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile aprire le impostazioni delle notifiche."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De meldingsinstellingen konden niet worden geopend."
           }
         },
         "pl": {
@@ -5803,6 +6523,12 @@
             "value": "Notifiche"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Meldingen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5849,6 +6575,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Le notifiche non sono disponibili su questo dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Meldingen zijn niet beschikbaar op dit apparaat."
           }
         },
         "pl": {
@@ -5899,6 +6631,12 @@
             "value": "Sistema operativo"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Besturingssysteem"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -5945,6 +6683,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Salva i trasferimenti ricevuti in"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen overdrachten bewaren in"
           }
         },
         "pl": {
@@ -5995,6 +6739,12 @@
             "value": "Preferenze"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voorkeuren"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6041,6 +6791,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Annullato"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geannuleerd"
           }
         },
         "pl": {
@@ -6091,6 +6847,12 @@
             "value": "Completato"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voltooid"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6137,6 +6899,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Connesso"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbonden"
           }
         },
         "pl": {
@@ -6187,6 +6955,12 @@
             "value": "Connessione"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbinden"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6233,6 +7007,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Download"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Downloaden"
           }
         },
         "pl": {
@@ -6283,6 +7063,12 @@
             "value": "Non riuscito"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mislukt"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6329,6 +7115,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preparazione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Klaarmaken"
           }
         },
         "pl": {
@@ -6379,6 +7171,12 @@
             "value": "Trasferimento interrotto"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht onderbroken"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6425,6 +7223,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preparazione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voorbereiden"
           }
         },
         "pl": {
@@ -6475,6 +7279,12 @@
             "value": "Pronto"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gereed"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6521,6 +7331,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricezione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen"
           }
         },
         "pl": {
@@ -6571,6 +7387,12 @@
             "value": "Richiesta di accesso"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toegang aanvragen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6617,6 +7439,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Salvataggio"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bewaren"
           }
         },
         "pl": {
@@ -6667,6 +7495,12 @@
             "value": "Invio"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Versturen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6713,6 +7547,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invio a %1$d"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Versturen naar %1$d"
           }
         },
         "pl": {
@@ -6763,6 +7603,12 @@
             "value": "Pronto per la condivisione"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Klaar om te delen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6809,6 +7655,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Elaborazione…"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bezig…"
           }
         },
         "pl": {
@@ -6859,6 +7711,12 @@
             "value": "Scelga il metodo di invito a sua disposizione."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kies de uitnodigingsmethode die u ter beschikking staat."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -6905,6 +7763,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Come vuole connettersi?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hoe wilt u verbinding maken?"
           }
         },
         "pl": {
@@ -6955,6 +7819,12 @@
             "value": "Cancella cronologia"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geschiedenis wissen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7001,6 +7871,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Tutte le ricezioni completate, non riuscite e annullate verranno rimosse dalla cronologia di VniDrop. I file scaricati rimarranno su questo dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alle voltooide, mislukte en geannuleerde ontvangsten worden uit de geschiedenis van VniDrop verwijderd. Gedownloade bestanden blijven op dit apparaat."
           }
         },
         "pl": {
@@ -7051,6 +7927,12 @@
             "value": "Cancellare la cronologia di ricezione?"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangstgeschiedenis wissen?"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7097,6 +7979,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento ricevuto."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht ontvangen."
           }
         },
         "pl": {
@@ -7147,6 +8035,12 @@
             "value": "«%1$@» verrà rimosso dalla cronologia di VniDrop. Il file scaricato rimarrà su questo dispositivo."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "‘%1$@’ wordt uit de geschiedenis van VniDrop verwijderd. Het gedownloade bestand blijft op dit apparaat."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7193,6 +8087,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Elimina dalla cronologia di ricezione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uit ontvangstgeschiedenis verwijderen"
           }
         },
         "pl": {
@@ -7243,6 +8143,12 @@
             "value": "Rimuovere dalla cronologia?"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uit geschiedenis verwijderen?"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7289,6 +8195,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Apra un invito VniDrop, scansioni un codice QR o avvicini un tag NFC."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Open een VniDrop-uitnodiging, scan een QR-code of houd het apparaat bij een NFC-tag."
           }
         },
         "pl": {
@@ -7339,6 +8251,12 @@
             "value": "Ancora nulla di ricevuto"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nog niets ontvangen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7385,6 +8303,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cronologia di ricezione cancellata."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangstgeschiedenis gewist."
           }
         },
         "pl": {
@@ -7435,6 +8359,12 @@
             "value": "Cronologia"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geschiedenis"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7481,6 +8411,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Apri un invito .vnd"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een .vnd-uitnodiging openen"
           }
         },
         "pl": {
@@ -7531,6 +8467,12 @@
             "value": "Scelga un invito salvato o condiviso su questo dispositivo."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kies een uitnodiging die op dit apparaat is bewaard of gedeeld."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7577,6 +8519,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Leggi tag NFC"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "NFC-tag lezen"
           }
         },
         "pl": {
@@ -7627,6 +8575,12 @@
             "value": "Avvicini questo dispositivo al tag di invito del mittente."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Houd dit apparaat bij de uitnodigingstag van de afzender."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7673,6 +8627,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scansiona codice QR"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "QR-code scannen"
           }
         },
         "pl": {
@@ -7723,6 +8683,12 @@
             "value": "Usi la fotocamera per scansionare il codice VniDrop del mittente."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gebruik de camera om de VniDrop-code van de afzender te scannen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7769,6 +8735,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimenti che ha ricevuto su questo dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdrachten die u op dit apparaat hebt ontvangen."
           }
         },
         "pl": {
@@ -7819,6 +8791,12 @@
             "value": "Avvicini al tag NFC…"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Houd bij de NFC-tag…"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7865,6 +8843,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile aprire VniDrop in File."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop kon niet worden geopend in Bestanden."
           }
         },
         "pl": {
@@ -7915,6 +8899,12 @@
             "value": "Rivedi trasferimento"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht controleren"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -7961,6 +8951,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricevi"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen"
           }
         },
         "pl": {
@@ -8011,6 +9007,12 @@
             "value": "Trasferimento VniDrop"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop-overdracht"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8057,6 +9059,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Chiunque abbia questo trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Iedereen met deze overdracht"
           }
         },
         "pl": {
@@ -8107,6 +9115,12 @@
             "value": "Nessuna approvazione richiesta. Da usare solo per elementi che non ha problemi a condividere."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geen goedkeuring vereist. Gebruik dit alleen voor items die u gerust kunt delen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8153,6 +9167,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Chiunque abbia l’invito può scaricare finché non interrompe la condivisione. Non lo usi per elementi privati o sensibili."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Iedereen met de uitnodiging kan downloaden totdat u stopt met delen. Gebruik dit niet voor privé- of gevoelige items."
           }
         },
         "pl": {
@@ -8203,6 +9223,12 @@
             "value": "Chiedi prima di ogni download"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vragen vóór elke download"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8249,6 +9275,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Approva o rifiuta ogni nuovo destinatario."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "U keurt elke nieuwe ontvanger goed of weigert deze."
           }
         },
         "pl": {
@@ -8299,6 +9331,12 @@
             "value": "Chi può riceverlo?"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wie kan het ontvangen?"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8345,6 +9383,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Selezioni file o una cartella da questo dispositivo. Potrà rivedere la selezione prima di creare il trasferimento."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selecteer bestanden of een map op dit apparaat. U kunt de selectie controleren voordat u de overdracht aanmaakt."
           }
         },
         "pl": {
@@ -8395,6 +9439,12 @@
             "value": "Scelga cosa condividere"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kies wat u wilt delen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8441,6 +9491,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Crei un trasferimento, decida chi può riceverlo, poi inviti queste persone con un codice QR, un tag NFC o un file di invito."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Maak een overdracht aan, bepaal wie deze kan ontvangen en nodig die personen vervolgens uit met een QR-code, NFC-tag of uitnodigingsbestand."
           }
         },
         "pl": {
@@ -8491,6 +9547,12 @@
             "value": "Ancora nulla di condiviso"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nog niets gedeeld"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8537,6 +9599,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dimensione non disponibile"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Grootte niet beschikbaar"
           }
         },
         "pl": {
@@ -8587,6 +9655,12 @@
             "value": "Cartella"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Map"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8633,6 +9707,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Crea un nuovo trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een nieuwe overdracht aanmaken"
           }
         },
         "pl": {
@@ -8683,6 +9763,12 @@
             "value": "Nuovo trasferimento"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nieuwe overdracht"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8729,6 +9815,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rivedi trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht controleren"
           }
         },
         "pl": {
@@ -8779,6 +9871,12 @@
             "value": "%1$d file selezionati"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d bestanden geselecteerd"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8825,6 +9923,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Interrompi condivisione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Stoppen met delen"
           }
         },
         "pl": {
@@ -8875,6 +9979,12 @@
             "value": "Questo interrompe il trasferimento e blocca chiunque lo stia scaricando. Rimane nella sua cronologia come Interrotto."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hiermee stopt de overdracht en wordt iedereen die deze op dit moment downloadt onderbroken. De overdracht blijft in uw geschiedenis staan als Gestopt."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -8921,6 +10031,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimenti che sta condividendo da questo dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdrachten die u vanaf dit apparaat deelt."
           }
         },
         "pl": {
@@ -8971,6 +10087,12 @@
             "value": "Invia"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Versturen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9017,6 +10139,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento creato."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht aangemaakt."
           }
         },
         "pl": {
@@ -9067,6 +10195,12 @@
             "value": "Dettagli del trasferimento"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdrachtsdetails"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9113,6 +10247,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "I suoi trasferimenti"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uw overdrachten"
           }
         },
         "pl": {
@@ -9163,6 +10303,12 @@
             "value": "Il suo nome, dove vengono salvati i trasferimenti, l’aspetto e le notifiche."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uw naam, waar overdrachten worden bewaard, weergave en meldingen."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9209,6 +10355,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impostazioni"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Instellingen"
           }
         },
         "pl": {
@@ -9259,6 +10411,12 @@
             "value": "Ignora"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sluiten"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9305,6 +10463,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Disponibile"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschikbaar"
           }
         },
         "pl": {
@@ -9355,6 +10519,12 @@
             "value": "Annullato"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geannuleerd"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9401,6 +10571,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Completato"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voltooid"
           }
         },
         "pl": {
@@ -9451,6 +10627,12 @@
             "value": "Non riuscito"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mislukt"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9497,6 +10679,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preparazione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voorbereiden"
           }
         },
         "pl": {
@@ -9547,6 +10735,12 @@
             "value": "Ricezione"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9593,6 +10787,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Interrotto"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gestopt"
           }
         },
         "pl": {
@@ -9643,6 +10843,12 @@
             "value": "Calcolo…"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Berekenen…"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9689,6 +10895,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Elimina tutti i trasferimenti"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alle overdrachten verwijderen"
           }
         },
         "pl": {
@@ -9739,6 +10951,12 @@
             "value": "Questo cancella dalla cronologia tutti i record dei trasferimenti inviati e ricevuti. I suoi file ricevuti non vengono eliminati. Nota: il motore di trasferimento conserva il contenuto memorizzato, quindi i dati di trasferimento potrebbero non diminuire. Questa operazione non può essere annullata."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hiermee worden alle records van verzonden en ontvangen overdrachten uit uw geschiedenis gewist. Uw ontvangen bestanden worden niet verwijderd. Let op: de overdrachtsengine bewaart de opgeslagen inhoud, dus de overdrachtsgegevens nemen mogelijk niet af. Dit kan niet ongedaan worden gemaakt."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9785,6 +11003,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Eliminazione…"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verwijderen…"
           }
         },
         "pl": {
@@ -9835,6 +11059,12 @@
             "value": "I dati di trasferimento sono gestiti dal motore di trasferimento: la sua cronologia più il contenuto dei file che ha condiviso. Il pulsante qui sotto cancella i record dei trasferimenti; il motore conserva il contenuto memorizzato, quindi questo valore potrebbe non diminuire. I file ricevuti sono i file che ha scaricato e non vengono mai eliminati qui."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdrachtsgegevens worden beheerd door de overdrachtsengine — uw geschiedenis plus de inhoud van de bestanden die u hebt gedeeld. De knop hieronder wist uw overdrachtsrecords; de engine bewaart de opgeslagen inhoud, dus deze waarde daalt mogelijk niet. Ontvangen bestanden zijn uw gedownloade bestanden en worden hier nooit verwijderd."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9881,6 +11111,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "File ricevuti"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangen bestanden"
           }
         },
         "pl": {
@@ -9931,6 +11167,12 @@
             "value": "File temporanei"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tijdelijke bestanden"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -9977,6 +11219,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Archiviazione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Opslag"
           }
         },
         "pl": {
@@ -10027,6 +11275,12 @@
             "value": "Totale"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Totaal"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10073,6 +11327,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dati di trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdrachtsgegevens"
           }
         },
         "pl": {
@@ -10123,6 +11383,12 @@
             "value": "Tutti i trasferimenti eliminati"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alle overdrachten verwijderd"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10169,6 +11435,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Veda gli aggiornamenti importanti di questo trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bekijk belangrijke updates voor deze overdracht"
           }
         },
         "pl": {
@@ -10219,6 +11491,12 @@
             "value": "Attività"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Activiteit"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10265,6 +11543,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "«%1$@» non verrà più condiviso e la sua cronologia di trasferimento verrà rimossa da questo dispositivo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "‘%1$@’ wordt niet meer gedeeld en de overdrachtsgeschiedenis wordt van dit apparaat verwijderd."
           }
         },
         "pl": {
@@ -10315,6 +11599,12 @@
             "value": "Eliminare il trasferimento?"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht verwijderen?"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10361,6 +11651,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento eliminato."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht verwijderd."
           }
         },
         "pl": {
@@ -10411,6 +11707,12 @@
             "value": "Eliminazione…"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verwijderen…"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10457,6 +11759,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dettagli del trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdrachtsdetails"
           }
         },
         "pl": {
@@ -10507,6 +11815,12 @@
             "value": "Accesso del destinatario approvato"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toegang ontvanger goedgekeurd"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10553,6 +11867,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Un destinatario ha completato il trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een ontvanger heeft de overdracht voltooid"
           }
         },
         "pl": {
@@ -10603,6 +11923,12 @@
             "value": "Connessione al mittente"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbinden met afzender"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10649,6 +11975,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Download"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Downloaden"
           }
         },
         "pl": {
@@ -10699,6 +12031,12 @@
             "value": "Il trasferimento ha riscontrato un problema"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Er is een probleem opgetreden bij de overdracht"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10745,6 +12083,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preparazione del trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uw overdracht voorbereiden"
           }
         },
         "pl": {
@@ -10795,6 +12139,12 @@
             "value": "Pronto per la condivisione"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Klaar om te delen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10841,6 +12191,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Accesso del destinatario rifiutato"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toegang ontvanger geweigerd"
           }
         },
         "pl": {
@@ -10891,6 +12247,12 @@
             "value": "Un destinatario ha richiesto l’accesso"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Een ontvanger heeft toegang aangevraagd"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -10937,6 +12299,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Salvataggio"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bewaren"
           }
         },
         "pl": {
@@ -10987,6 +12355,12 @@
             "value": "Condivisione interrotta"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Delen gestopt"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11033,6 +12407,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento aggiornato"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht bijgewerkt"
           }
         },
         "pl": {
@@ -11143,6 +12523,24 @@
             }
           }
         },
+        "nl": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%1$d bestand"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%1$d bestanden"
+                }
+              }
+            }
+          }
+        },
         "pl": {
           "variations": {
             "plural": {
@@ -11227,6 +12625,12 @@
             "value": "Invito salvato."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uitnodiging bewaard."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11273,6 +12677,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dispositivo nelle vicinanze"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Apparaat in de buurt"
           }
         },
         "pl": {
@@ -11323,6 +12733,12 @@
             "value": "La scrittura dei tag NFC non è disponibile su questo dispositivo."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Het schrijven van NFC-tags is niet beschikbaar op dit apparaat."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11369,6 +12785,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Avvicini il dispositivo a un tag NFC scrivibile."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Houd uw apparaat bij een beschrijfbare NFC-tag."
           }
         },
         "pl": {
@@ -11419,6 +12841,12 @@
             "value": "Invito scritto sul tag NFC."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uitnodiging naar de NFC-tag geschreven."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11465,6 +12893,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non c’è ancora alcuna attività da mostrare."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Er is nog geen activiteit om weer te geven."
           }
         },
         "pl": {
@@ -11515,6 +12949,12 @@
             "value": "Nessuno ha ancora richiesto questo trasferimento."
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nog niemand heeft deze overdracht aangevraagd."
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11561,6 +13001,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Approvato: in attesa del completamento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Goedgekeurd — wachten op voltooiing"
           }
         },
         "pl": {
@@ -11611,6 +13057,12 @@
             "value": "Ricevuto correttamente"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Succesvol ontvangen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11657,6 +13109,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Richiesta scaduta"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verzoek verlopen"
           }
         },
         "pl": {
@@ -11707,6 +13165,12 @@
             "value": "Richiesta rifiutata"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verzoek geweigerd"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11753,6 +13217,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "In attesa della sua approvazione"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wachten op uw goedkeuring"
           }
         },
         "pl": {
@@ -11803,6 +13273,12 @@
             "value": "Stato non disponibile"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Status niet beschikbaar"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11849,6 +13325,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$d completati"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d voltooid"
           }
         },
         "pl": {
@@ -11899,6 +13381,12 @@
             "value": "Richieste, approvazioni e consegne completate"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verzoeken, goedkeuringen en voltooide leveringen"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -11945,6 +13433,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$d in attesa"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d in behandeling"
           }
         },
         "pl": {
@@ -11995,6 +13489,12 @@
             "value": "Destinatari"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ontvangers"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -12041,6 +13541,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scansioni con VniDrop per ricevere questo trasferimento"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Scan met VniDrop om deze overdracht te ontvangen"
           }
         },
         "pl": {
@@ -12091,6 +13597,12 @@
             "value": "Codice QR, file di invito e opzioni nelle vicinanze"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "QR-code, uitnodigingsbestand en opties in de buurt"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -12137,6 +13649,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Condividi"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Delen"
           }
         },
         "pl": {
@@ -12187,6 +13705,12 @@
             "value": "Non disponibile"
           }
         },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Niet beschikbaar"
+          }
+        },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
@@ -12233,6 +13757,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Versione dell’app"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "App-versie"
           }
         },
         "pl": {

@@ -8,7 +8,8 @@
     "it",
     "de",
     "pt",
-    "pl"
+    "pl",
+    "nl"
   ],
   "strings": {
     "%@": {
@@ -43,7 +44,8 @@
         "it": "{arg1} {arg2} · {arg3}",
         "de": "{arg1} {arg2} · {arg3}",
         "pt": "{arg1} {arg2} · {arg3}",
-        "pl": "{arg1} {arg2} · {arg3}"
+        "pl": "{arg1} {arg2} · {arg3}",
+        "nl": "{arg1} {arg2} · {arg3}"
       }
     },
     "%@ · %@": {
@@ -68,7 +70,8 @@
         "it": "{arg1} · {arg2}",
         "de": "{arg1} · {arg2}",
         "pt": "{arg1} · {arg2}",
-        "pl": "{arg1} · {arg2}"
+        "pl": "{arg1} · {arg2}",
+        "nl": "{arg1} · {arg2}"
       }
     },
     "%@%%": {
@@ -86,7 +89,8 @@
         "it": "Segnala un bug",
         "de": "Fehler melden",
         "pt": "Comunicar um erro",
-        "pl": "Zgłoś błąd"
+        "pl": "Zgłoś błąd",
+        "nl": "Een fout melden"
       }
     },
     "about_description": {
@@ -98,7 +102,8 @@
         "it": "VniDrop trasferisce file e cartelle direttamente da un dispositivo a un altro sulla rete, senza caricarli su alcun servizio di hosting. Non c’è alcun account da creare e nessuna copia del suo trasferimento rimane nel cloud una volta terminato.",
         "de": "VniDrop überträgt Dateien und Ordner direkt von einem Gerät auf ein anderes über das Netzwerk, ohne sie auf einen Hosting-Dienst hochzuladen. Es muss kein Konto erstellt werden, und nach Abschluss verbleibt keine Kopie Ihrer Übertragung in der Cloud.",
         "pt": "O VniDrop transfere ficheiros e pastas diretamente de um dispositivo para outro através da rede, sem os carregar para qualquer serviço de alojamento. Não é necessário criar qualquer conta e não fica nenhuma cópia da sua transferência na nuvem depois de terminar.",
-        "pl": "VniDrop przesyła pliki i foldery bezpośrednio z jednego urządzenia na drugie przez sieć, bez przesyłania ich do jakiejkolwiek usługi hostingowej. Nie trzeba zakładać konta, a po zakończeniu żadna kopia transferu nie pozostaje w chmurze."
+        "pl": "VniDrop przesyła pliki i foldery bezpośrednio z jednego urządzenia na drugie przez sieć, bez przesyłania ich do jakiejkolwiek usługi hostingowej. Nie trzeba zakładać konta, a po zakończeniu żadna kopia transferu nie pozostaje w chmurze.",
+        "nl": "VniDrop verplaatst bestanden en mappen rechtstreeks van het ene apparaat naar het andere via het netwerk, zonder ze naar een hostingdienst te uploaden. U hoeft geen account aan te maken en er blijft geen kopie van uw overdracht in de cloud achter zodra u klaar bent."
       }
     },
     "about_is_direct": {
@@ -110,7 +115,8 @@
         "it": "Un trasferimento diretto da dispositivo a dispositivo: i suoi file vanno direttamente al destinatario.",
         "de": "Eine direkte Gerät-zu-Gerät-Übertragung – Ihre Dateien gehen direkt an den Empfänger.",
         "pt": "Uma transferência direta entre dispositivos — os seus ficheiros vão diretamente para o destinatário.",
-        "pl": "Bezpośredni transfer między urządzeniami — pliki trafiają prosto do odbiorcy."
+        "pl": "Bezpośredni transfer między urządzeniami — pliki trafiają prosto do odbiorcy.",
+        "nl": "Een directe overdracht van apparaat naar apparaat — uw bestanden gaan rechtstreeks naar de ontvanger."
       }
     },
     "about_is_encrypted": {
@@ -122,7 +128,8 @@
         "it": "Le connessioni sono autenticate e cifrate end-to-end (tramite Iroh) e i file in arrivo vengono verificati tramite l’impronta del loro contenuto.",
         "de": "Verbindungen sind authentifiziert und Ende-zu-Ende-verschlüsselt (über Iroh), und eingehende Dateien werden anhand ihres Inhalts-Hashs überprüft.",
         "pt": "As ligações são autenticadas e cifradas ponto a ponto (através do Iroh), e os ficheiros recebidos são verificados pela impressão digital do seu conteúdo.",
-        "pl": "Połączenia są uwierzytelniane i szyfrowane od końca do końca (przez Iroh), a przychodzące pliki są weryfikowane na podstawie skrótu ich zawartości."
+        "pl": "Połączenia są uwierzytelniane i szyfrowane od końca do końca (przez Iroh), a przychodzące pliki są weryfikowane na podstawie skrótu ich zawartości.",
+        "nl": "Verbindingen zijn geverifieerd en end-to-end versleuteld (via Iroh), en binnenkomende bestanden worden gecontroleerd aan de hand van hun inhouds-hash."
       }
     },
     "about_is_in_control": {
@@ -134,7 +141,8 @@
         "it": "Lei decide chi riceve: approvi ogni richiesta oppure apra un trasferimento a chiunque disponga dell’invito.",
         "de": "Sie entscheiden, wer empfängt: Genehmigen Sie jede Anfrage oder öffnen Sie eine Übertragung für alle, die die Einladung besitzen.",
         "pt": "É você quem decide quem recebe: aprove cada pedido ou abra uma transferência a qualquer pessoa que tenha o convite.",
-        "pl": "To Ty decydujesz, kto otrzymuje: zatwierdź każde żądanie lub udostępnij transfer każdemu, kto ma zaproszenie."
+        "pl": "To Ty decydujesz, kto otrzymuje: zatwierdź każde żądanie lub udostępnij transfer każdemu, kto ma zaproszenie.",
+        "nl": "U bepaalt wie ontvangt: keur elk verzoek goed, of stel een overdracht open voor iedereen met de uitnodiging."
       }
     },
     "about_is_no_account": {
@@ -146,7 +154,8 @@
         "it": "Senza account: non c’è nulla da registrare.",
         "de": "Ohne Konto – es gibt nichts zu registrieren.",
         "pt": "Sem conta — não há nada para registar.",
-        "pl": "Bez konta — nie trzeba się rejestrować."
+        "pl": "Bez konta — nie trzeba się rejestrować.",
+        "nl": "Zonder account — er is niets om aan te melden."
       }
     },
     "about_is_open": {
@@ -158,7 +167,8 @@
         "it": "Open source, rilasciato con licenza Apache 2.0.",
         "de": "Open Source, veröffentlicht unter der Apache-2.0-Lizenz.",
         "pt": "Código aberto, publicado sob a licença Apache 2.0.",
-        "pl": "Otwarte oprogramowanie, wydane na licencji Apache 2.0."
+        "pl": "Otwarte oprogramowanie, wydane na licencji Apache 2.0.",
+        "nl": "Opensource, uitgebracht onder de Apache 2.0-licentie."
       }
     },
     "about_is_title": {
@@ -170,7 +180,8 @@
         "it": "Cos’è VniDrop",
         "de": "Was VniDrop ist",
         "pt": "O que o VniDrop é",
-        "pl": "Czym jest VniDrop"
+        "pl": "Czym jest VniDrop",
+        "nl": "Wat VniDrop is"
       }
     },
     "about_isnt_cloud": {
@@ -182,7 +193,8 @@
         "it": "Non è un’archiviazione cloud: nessun server conserva i suoi file e nulla resta nel cloud dopo un trasferimento.",
         "de": "Kein Cloud-Speicher – kein Server hält Ihre Dateien, und nach einer Übertragung wartet nichts in der Cloud.",
         "pt": "Não é armazenamento na nuvem — nenhum servidor guarda os seus ficheiros e nada fica na nuvem após uma transferência.",
-        "pl": "To nie magazyn w chmurze — żaden serwer nie przechowuje Twoich plików i nic nie pozostaje w chmurze po transferze."
+        "pl": "To nie magazyn w chmurze — żaden serwer nie przechowuje Twoich plików i nic nie pozostaje w chmurze po transferze.",
+        "nl": "Geen cloudopslag — geen enkele server bewaart uw bestanden en er wacht niets in de cloud na een overdracht."
       }
     },
     "about_isnt_public": {
@@ -194,7 +206,8 @@
         "it": "Non è una diffusione pubblica: un invito è un link di accesso privato, non un annuncio a tutti nelle vicinanze.",
         "de": "Keine öffentliche Übertragung – eine Einladung ist ein privater Zugangslink, keine Ankündigung an alle in der Nähe.",
         "pt": "Não é difusão pública — um convite é uma ligação de acesso privado, não um anúncio a toda a gente por perto.",
-        "pl": "To nie publiczne rozgłaszanie — zaproszenie to prywatny link dostępu, a nie ogłoszenie dla wszystkich w pobliżu."
+        "pl": "To nie publiczne rozgłaszanie — zaproszenie to prywatny link dostępu, a nie ogłoszenie dla wszystkich w pobliżu.",
+        "nl": "Geen openbare uitzending — een uitnodiging is een privétoegangslink, geen aankondiging aan iedereen in de buurt."
       }
     },
     "about_isnt_sync": {
@@ -206,7 +219,8 @@
         "it": "Non è un servizio di sincronizzazione o di backup.",
         "de": "Kein Synchronisierungs- oder Backup-Dienst.",
         "pt": "Não é um serviço de sincronização ou de cópia de segurança.",
-        "pl": "To nie usługa synchronizacji ani kopii zapasowej."
+        "pl": "To nie usługa synchronizacji ani kopii zapasowej.",
+        "nl": "Geen synchronisatie- of back-updienst."
       }
     },
     "about_isnt_title": {
@@ -218,7 +232,8 @@
         "it": "Cosa non è VniDrop",
         "de": "Was VniDrop nicht ist",
         "pt": "O que o VniDrop não é",
-        "pl": "Czym VniDrop nie jest"
+        "pl": "Czym VniDrop nie jest",
+        "nl": "Wat VniDrop niet is"
       }
     },
     "about_license_label": {
@@ -230,7 +245,8 @@
         "it": "Licenza",
         "de": "Lizenz",
         "pt": "Licença",
-        "pl": "Licencja"
+        "pl": "Licencja",
+        "nl": "Licentie"
       }
     },
     "about_privacy": {
@@ -242,7 +258,8 @@
         "it": "Informativa sulla privacy",
         "de": "Datenschutzrichtlinie",
         "pt": "Política de privacidade",
-        "pl": "Polityka prywatności"
+        "pl": "Polityka prywatności",
+        "nl": "Privacybeleid"
       }
     },
     "about_privacy_capability": {
@@ -254,7 +271,8 @@
         "it": "Gli inviti sono chiavi di accesso. Tratti un codice QR, un tag NFC o un file .vnd come un link di accesso privato e lo condivida solo con le persone previste, soprattutto con «Chiunque abbia questo trasferimento».",
         "de": "Einladungen sind Zugangsschlüssel. Behandeln Sie einen QR-Code, ein NFC-Tag oder eine .vnd-Datei wie einen privaten Zugangslink und teilen Sie ihn nur mit den vorgesehenen Personen – insbesondere bei „Jeder mit dieser Übertragung“.",
         "pt": "Os convites são chaves de acesso. Trate um código QR, uma etiqueta NFC ou um ficheiro .vnd como uma ligação de acesso privado e partilhe-o apenas com as pessoas pretendidas — sobretudo com «Qualquer pessoa com esta transferência».",
-        "pl": "Zaproszenia są kluczami dostępu. Traktuj kod QR, tag NFC lub plik .vnd jak prywatny link dostępu i udostępniaj go tylko zamierzonym osobom — zwłaszcza przy opcji „Każdy, kto ma ten transfer”."
+        "pl": "Zaproszenia są kluczami dostępu. Traktuj kod QR, tag NFC lub plik .vnd jak prywatny link dostępu i udostępniaj go tylko zamierzonym osobom — zwłaszcza przy opcji „Każdy, kto ma ten transfer”.",
+        "nl": "Uitnodigingen zijn toegangssleutels. Behandel een QR-code, NFC-tag of .vnd-bestand als een privétoegangslink en deel deze alleen met de bedoelde personen — vooral bij ‘Iedereen met deze overdracht’."
       }
     },
     "about_privacy_deny": {
@@ -266,7 +284,8 @@
         "it": "Rifiuto predefinito: VniDrop serve solo il contenuto di una condivisione attiva e rifiuta le richieste sconosciute.",
         "de": "Standardmäßig ablehnen – VniDrop stellt nur den Inhalt einer aktiven Freigabe bereit und weist unbekannte Anfragen ab.",
         "pt": "Recusa por predefinição — o VniDrop apenas fornece o conteúdo de uma partilha ativa e rejeita pedidos desconhecidos.",
-        "pl": "Domyślnie odmowa — VniDrop udostępnia tylko zawartość aktywnego udostępnienia i odrzuca nieznane żądania."
+        "pl": "Domyślnie odmowa — VniDrop udostępnia tylko zawartość aktywnego udostępnienia i odrzuca nieznane żądania.",
+        "nl": "Standaard weigeren — VniDrop levert alleen de inhoud van een actieve deling en wijst onbekende verzoeken af."
       }
     },
     "about_privacy_local": {
@@ -278,7 +297,8 @@
         "it": "I file ricevuti vengono salvati sul suo dispositivo e non sovrascrivono mai un file esistente.",
         "de": "Empfangene Dateien werden auf Ihrem Gerät gespeichert und überschreiben niemals eine vorhandene Datei.",
         "pt": "Os ficheiros recebidos são guardados no seu dispositivo e nunca substituem um ficheiro existente.",
-        "pl": "Odebrane pliki są zapisywane na Twoim urządzeniu i nigdy nie nadpisują istniejącego pliku."
+        "pl": "Odebrane pliki są zapisywane na Twoim urządzeniu i nigdy nie nadpisują istniejącego pliku.",
+        "nl": "Ontvangen bestanden worden op uw apparaat bewaard en overschrijven nooit een bestaand bestand."
       }
     },
     "about_privacy_policy_label": {
@@ -290,7 +310,8 @@
         "it": "Informativa sulla privacy",
         "de": "Datenschutzrichtlinie",
         "pt": "Política de privacidade",
-        "pl": "Polityka prywatności"
+        "pl": "Polityka prywatności",
+        "nl": "Privacybeleid"
       }
     },
     "about_privacy_relay": {
@@ -302,7 +323,8 @@
         "it": "Se due dispositivi non riescono a connettersi direttamente, la connessione cifrata può essere instradata tramite relay. I relay inoltrano solo pacchetti cifrati; non memorizzano mai i suoi file.",
         "de": "Wenn zwei Geräte sich nicht direkt verbinden können, kann die verschlüsselte Verbindung weitergeleitet werden. Relays leiten nur verschlüsselte Pakete weiter; sie speichern niemals Ihre Dateien.",
         "pt": "Se dois dispositivos não conseguirem ligar-se diretamente, a ligação cifrada pode ser retransmitida. Os retransmissores apenas encaminham pacotes cifrados; nunca guardam os seus ficheiros.",
-        "pl": "Jeśli dwa urządzenia nie mogą połączyć się bezpośrednio, szyfrowane połączenie może być przekazywane przez przekaźnik. Przekaźniki przekazują tylko zaszyfrowane pakiety; nigdy nie przechowują Twoich plików."
+        "pl": "Jeśli dwa urządzenia nie mogą połączyć się bezpośrednio, szyfrowane połączenie może być przekazywane przez przekaźnik. Przekaźniki przekazują tylko zaszyfrowane pakiety; nigdy nie przechowują Twoich plików.",
+        "nl": "Als twee apparaten niet rechtstreeks verbinding kunnen maken, kan de versleutelde verbinding via een relay worden doorgestuurd. Relays sturen alleen versleutelde pakketten door; ze slaan uw bestanden nooit op."
       }
     },
     "about_privacy_title": {
@@ -314,7 +336,8 @@
         "it": "Privacy e sicurezza",
         "de": "Datenschutz & Sicherheit",
         "pt": "Privacidade e segurança",
-        "pl": "Prywatność i bezpieczeństwo"
+        "pl": "Prywatność i bezpieczeństwo",
+        "nl": "Privacy en beveiliging"
       }
     },
     "about_tagline": {
@@ -326,7 +349,8 @@
         "it": "Invii file direttamente. Mantenga il controllo su chi li riceve.",
         "de": "Senden Sie Dateien direkt. Behalten Sie die Kontrolle darüber, wer sie empfängt.",
         "pt": "Envie ficheiros diretamente. Mantenha o controlo sobre quem os recebe.",
-        "pl": "Wysyłaj pliki bezpośrednio. Zachowaj kontrolę nad tym, kto je otrzymuje."
+        "pl": "Wysyłaj pliki bezpośrednio. Zachowaj kontrolę nad tym, kto je otrzymuje.",
+        "nl": "Verstuur bestanden rechtstreeks. Houd controle over wie ze ontvangt."
       }
     },
     "about_title": {
@@ -338,7 +362,8 @@
         "it": "Informazioni",
         "de": "Über",
         "pt": "Acerca de",
-        "pl": "Informacje"
+        "pl": "Informacje",
+        "nl": "Over"
       }
     },
     "appearance_auto_description": {
@@ -350,7 +375,8 @@
         "it": "Segue l’aspetto chiaro o scuro di questo dispositivo.",
         "de": "Der hellen oder dunklen Darstellung dieses Geräts folgen.",
         "pt": "Acompanhar o aspeto claro ou escuro deste dispositivo.",
-        "pl": "Dopasuj do jasnego lub ciemnego wyglądu tego urządzenia."
+        "pl": "Dopasuj do jasnego lub ciemnego wyglądu tego urządzenia.",
+        "nl": "De lichte of donkere weergave van dit apparaat volgen."
       }
     },
     "appearance_dark_mode": {
@@ -362,7 +388,8 @@
         "it": "Modalità scura",
         "de": "Dunkelmodus",
         "pt": "Modo escuro",
-        "pl": "Tryb ciemny"
+        "pl": "Tryb ciemny",
+        "nl": "Donkere modus"
       }
     },
     "appearance_light_mode": {
@@ -374,7 +401,8 @@
         "it": "Modalità chiara",
         "de": "Hellmodus",
         "pt": "Modo claro",
-        "pl": "Tryb jasny"
+        "pl": "Tryb jasny",
+        "nl": "Lichte modus"
       }
     },
     "appearance_system_mode": {
@@ -386,7 +414,8 @@
         "it": "Sistema",
         "de": "System",
         "pt": "Sistema",
-        "pl": "System"
+        "pl": "System",
+        "nl": "Systeem"
       }
     },
     "appearance_title": {
@@ -398,7 +427,8 @@
         "it": "Aspetto",
         "de": "Darstellung",
         "pt": "Aspeto",
-        "pl": "Wygląd"
+        "pl": "Wygląd",
+        "nl": "Weergave"
       }
     },
     "approval_connection_request": {
@@ -410,7 +440,8 @@
         "it": "Richiesta di ricezione",
         "de": "Empfangsanfrage",
         "pt": "Pedido de receção",
-        "pl": "Prośba o odbiór"
+        "pl": "Prośba o odbiór",
+        "nl": "Ontvangstverzoek"
       }
     },
     "approval_endpoint_id": {
@@ -428,7 +459,8 @@
         "it": "ID dispositivo: {arg1}",
         "de": "Geräte-ID: {arg1}",
         "pt": "ID do dispositivo: {arg1}",
-        "pl": "Identyfikator urządzenia: {arg1}"
+        "pl": "Identyfikator urządzenia: {arg1}",
+        "nl": "Apparaat-ID: {arg1}"
       }
     },
     "approval_nearby_device": {
@@ -440,7 +472,8 @@
         "it": "Un dispositivo nelle vicinanze",
         "de": "Ein Gerät in der Nähe",
         "pt": "Um dispositivo próximo",
-        "pl": "Urządzenie w pobliżu"
+        "pl": "Urządzenie w pobliżu",
+        "nl": "Een apparaat in de buurt"
       }
     },
     "approval_pending_count": {
@@ -458,7 +491,8 @@
         "it": "{count} richieste in attesa",
         "de": "{count} Anfragen warten",
         "pt": "{count} pedidos em espera",
-        "pl": "Oczekujące prośby: {count}"
+        "pl": "Oczekujące prośby: {count}",
+        "nl": "{count} verzoeken in behandeling"
       }
     },
     "approval_request_body": {
@@ -480,7 +514,8 @@
         "it": "{arg1} vuole ricevere «{arg2}».",
         "de": "{arg1} möchte „{arg2}“ empfangen.",
         "pt": "{arg1} quer receber «{arg2}».",
-        "pl": "{arg1} chce odebrać „{arg2}”."
+        "pl": "{arg1} chce odebrać „{arg2}”.",
+        "nl": "{arg1} wil ‘{arg2}’ ontvangen."
       }
     },
     "battery_level_title": {
@@ -492,7 +527,8 @@
         "it": "Livello batteria",
         "de": "Batteriestand",
         "pt": "Nível da bateria",
-        "pl": "Poziom baterii"
+        "pl": "Poziom baterii",
+        "nl": "Batterijniveau"
       }
     },
     "bug_report_contact_hint": {
@@ -504,7 +540,8 @@
         "it": "nome@esempio.com",
         "de": "name@beispiel.com",
         "pt": "nome@exemplo.com",
-        "pl": "nazwa@przyklad.com"
+        "pl": "nazwa@przyklad.com",
+        "nl": "naam@voorbeeld.com"
       }
     },
     "bug_report_contact_label": {
@@ -516,7 +553,8 @@
         "it": "Email di contatto (facoltativa)",
         "de": "Kontakt-E-Mail (optional)",
         "pt": "E-mail de contacto (opcional)",
-        "pl": "E-mail kontaktowy (opcjonalnie)"
+        "pl": "E-mail kontaktowy (opcjonalnie)",
+        "nl": "Contact-e-mail (optioneel)"
       }
     },
     "bug_report_description": {
@@ -528,7 +566,8 @@
         "it": "Ci dica cosa è andato storto. Alleghiamo le informazioni sul dispositivo e, facoltativamente, i log recenti (con i valori sensibili oscurati).",
         "de": "Sagen Sie uns, was schiefgelaufen ist. Wir hängen Geräteinformationen und optional aktuelle Protokolle an (sensible Werte werden geschwärzt).",
         "pt": "Diga-nos o que correu mal. Anexamos informações do dispositivo e, opcionalmente, registos recentes (com os valores sensíveis ocultados).",
-        "pl": "Napisz, co poszło nie tak. Dołączamy informacje o urządzeniu i opcjonalnie ostatnie dzienniki (z ukrytymi wrażliwymi wartościami)."
+        "pl": "Napisz, co poszło nie tak. Dołączamy informacje o urządzeniu i opcjonalnie ostatnie dzienniki (z ukrytymi wrażliwymi wartościami).",
+        "nl": "Vertel ons wat er misging. We voegen apparaatgegevens toe en optioneel recente logbestanden (met gevoelige waarden onleesbaar gemaakt)."
       }
     },
     "bug_report_device_section": {
@@ -540,7 +579,8 @@
         "it": "Informazioni sul dispositivo",
         "de": "Geräteinformationen",
         "pt": "Informações do dispositivo",
-        "pl": "Informacje o urządzeniu"
+        "pl": "Informacje o urządzeniu",
+        "nl": "Apparaatgegevens"
       }
     },
     "bug_report_expected_hint": {
@@ -552,7 +592,8 @@
         "it": "Descriva cosa si aspettava che accadesse",
         "de": "Beschreiben Sie, was Sie erwartet haben",
         "pt": "Descreva o que esperava que acontecesse",
-        "pl": "Opisz oczekiwane zachowanie"
+        "pl": "Opisz oczekiwane zachowanie",
+        "nl": "Beschrijf wat u verwachtte"
       }
     },
     "bug_report_expected_label": {
@@ -564,7 +605,8 @@
         "it": "Cosa si aspettava?",
         "de": "Was haben Sie erwartet?",
         "pt": "O que esperava?",
-        "pl": "Czego oczekiwano?"
+        "pl": "Czego oczekiwano?",
+        "nl": "Wat verwachtte u?"
       }
     },
     "bug_report_include_logs": {
@@ -576,7 +618,8 @@
         "it": "Includi i log recenti",
         "de": "Aktuelle Protokolle einschließen",
         "pt": "Incluir registos recentes",
-        "pl": "Dołącz ostatnie dzienniki"
+        "pl": "Dołącz ostatnie dzienniki",
+        "nl": "Recente logbestanden meesturen"
       }
     },
     "bug_report_include_logs_description": {
@@ -588,7 +631,8 @@
         "it": "Ci aiuta a diagnosticare il problema. I valori sensibili vengono oscurati prima dell’invio.",
         "de": "Hilft uns, das Problem zu diagnostizieren. Sensible Werte werden vor dem Senden geschwärzt.",
         "pt": "Ajuda-nos a diagnosticar o problema. Os valores sensíveis são ocultados antes do envio.",
-        "pl": "Pomaga nam zdiagnozować problem. Wrażliwe wartości są ukrywane przed wysłaniem."
+        "pl": "Pomaga nam zdiagnozować problem. Wrażliwe wartości są ukrywane przed wysłaniem.",
+        "nl": "Helpt ons het probleem te diagnosticeren. Gevoelige waarden worden vóór verzending onleesbaar gemaakt."
       }
     },
     "bug_report_logs_size": {
@@ -600,7 +644,8 @@
         "it": "Dimensione dell’allegato dei log",
         "de": "Größe des Protokollanhangs",
         "pt": "Tamanho do anexo de registos",
-        "pl": "Rozmiar załącznika z dziennikami"
+        "pl": "Rozmiar załącznika z dziennikami",
+        "nl": "Grootte van logbijlage"
       }
     },
     "bug_report_missing_expected": {
@@ -612,7 +657,8 @@
         "it": "Descriva cosa si aspettava.",
         "de": "Bitte beschreiben Sie, was Sie erwartet haben.",
         "pt": "Descreva o que esperava.",
-        "pl": "Opisz oczekiwane zachowanie."
+        "pl": "Opisz oczekiwane zachowanie.",
+        "nl": "Beschrijf wat u verwachtte."
       }
     },
     "bug_report_missing_what": {
@@ -624,7 +670,8 @@
         "it": "Descriva cosa è accaduto.",
         "de": "Bitte beschreiben Sie, was passiert ist.",
         "pt": "Descreva o que aconteceu.",
-        "pl": "Opisz, co się stało."
+        "pl": "Opisz, co się stało.",
+        "nl": "Beschrijf wat er gebeurde."
       }
     },
     "bug_report_steps_hint": {
@@ -636,7 +683,8 @@
         "it": "Elenchi i passaggi per riprodurre il problema",
         "de": "Listen Sie die Schritte zum Reproduzieren des Problems auf",
         "pt": "Enumere os passos para reproduzir o problema",
-        "pl": "Wymień kroki umożliwiające odtworzenie problemu"
+        "pl": "Wymień kroki umożliwiające odtworzenie problemu",
+        "nl": "Noem de stappen om het probleem te reproduceren"
       }
     },
     "bug_report_steps_label": {
@@ -648,7 +696,8 @@
         "it": "Passaggi per riprodurre (facoltativi)",
         "de": "Schritte zum Reproduzieren (optional)",
         "pt": "Passos para reproduzir (opcional)",
-        "pl": "Kroki do odtworzenia (opcjonalnie)"
+        "pl": "Kroki do odtworzenia (opcjonalnie)",
+        "nl": "Stappen om te reproduceren (optioneel)"
       }
     },
     "bug_report_submit": {
@@ -660,7 +709,8 @@
         "it": "Invia segnalazione",
         "de": "Bericht senden",
         "pt": "Enviar relatório",
-        "pl": "Wyślij zgłoszenie"
+        "pl": "Wyślij zgłoszenie",
+        "nl": "Rapport versturen"
       }
     },
     "bug_report_submit_failed": {
@@ -672,7 +722,8 @@
         "it": "Impossibile inviare la segnalazione. Riprovi più tardi.",
         "de": "Der Fehlerbericht konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.",
         "pt": "Não foi possível enviar o relatório de erro. Tente novamente mais tarde.",
-        "pl": "Nie udało się wysłać zgłoszenia błędu. Spróbuj ponownie później."
+        "pl": "Nie udało się wysłać zgłoszenia błędu. Spróbuj ponownie później.",
+        "nl": "Het foutrapport kon niet worden verstuurd. Probeer het later opnieuw."
       }
     },
     "bug_report_submitted": {
@@ -684,7 +735,8 @@
         "it": "Grazie: la sua segnalazione è stata registrata.",
         "de": "Danke – Ihr Fehlerbericht wurde erfasst.",
         "pt": "Obrigado — o seu relatório de erro foi registado.",
-        "pl": "Dziękujemy — Twoje zgłoszenie błędu zostało zapisane."
+        "pl": "Dziękujemy — Twoje zgłoszenie błędu zostało zapisane.",
+        "nl": "Bedankt — uw foutrapport is vastgelegd."
       }
     },
     "bug_report_submitting": {
@@ -696,7 +748,8 @@
         "it": "Invio in corso…",
         "de": "Wird gesendet…",
         "pt": "A enviar…",
-        "pl": "Wysyłanie…"
+        "pl": "Wysyłanie…",
+        "nl": "Bezig met versturen…"
       }
     },
     "bug_report_what_hint": {
@@ -708,7 +761,8 @@
         "it": "Descriva cosa è accaduto",
         "de": "Beschreiben Sie, was passiert ist",
         "pt": "Descreva o que aconteceu",
-        "pl": "Opisz, co się stało"
+        "pl": "Opisz, co się stało",
+        "nl": "Beschrijf wat er gebeurde"
       }
     },
     "bug_report_what_label": {
@@ -720,7 +774,8 @@
         "it": "Cosa è accaduto?",
         "de": "Was ist passiert?",
         "pt": "O que aconteceu?",
-        "pl": "Co się stało?"
+        "pl": "Co się stało?",
+        "nl": "Wat is er gebeurd?"
       }
     },
     "button_approve": {
@@ -732,7 +787,8 @@
         "it": "Approva",
         "de": "Genehmigen",
         "pt": "Aprovar",
-        "pl": "Zatwierdź"
+        "pl": "Zatwierdź",
+        "nl": "Goedkeuren"
       }
     },
     "button_back": {
@@ -744,7 +800,8 @@
         "it": "Indietro",
         "de": "Zurück",
         "pt": "Voltar",
-        "pl": "Wstecz"
+        "pl": "Wstecz",
+        "nl": "Terug"
       }
     },
     "button_cancel": {
@@ -756,7 +813,8 @@
         "it": "Annulla",
         "de": "Abbrechen",
         "pt": "Cancelar",
-        "pl": "Anuluj"
+        "pl": "Anuluj",
+        "nl": "Annuleren"
       }
     },
     "button_cancel_receive": {
@@ -768,7 +826,8 @@
         "it": "Annulla",
         "de": "Abbrechen",
         "pt": "Cancelar",
-        "pl": "Anuluj"
+        "pl": "Anuluj",
+        "nl": "Annuleren"
       }
     },
     "button_change_files": {
@@ -780,7 +839,8 @@
         "it": "Cambia file",
         "de": "Dateien ändern",
         "pt": "Alterar ficheiros",
-        "pl": "Zmień pliki"
+        "pl": "Zmień pliki",
+        "nl": "Bestanden wijzigen"
       }
     },
     "button_choose_files": {
@@ -792,7 +852,8 @@
         "it": "Scegli file",
         "de": "Dateien auswählen",
         "pt": "Escolher ficheiros",
-        "pl": "Wybierz pliki"
+        "pl": "Wybierz pliki",
+        "nl": "Bestanden kiezen"
       }
     },
     "button_choose_folder": {
@@ -804,7 +865,8 @@
         "it": "Scegli cartella",
         "de": "Ordner auswählen",
         "pt": "Escolher pasta",
-        "pl": "Wybierz folder"
+        "pl": "Wybierz folder",
+        "nl": "Map kiezen"
       }
     },
     "button_clear": {
@@ -816,7 +878,8 @@
         "it": "Cancella",
         "de": "Löschen",
         "pt": "Limpar",
-        "pl": "Wyczyść"
+        "pl": "Wyczyść",
+        "nl": "Wissen"
       }
     },
     "button_close": {
@@ -828,7 +891,8 @@
         "it": "Chiudi",
         "de": "Schließen",
         "pt": "Fechar",
-        "pl": "Zamknij"
+        "pl": "Zamknij",
+        "nl": "Sluiten"
       }
     },
     "button_create_new_transfer": {
@@ -840,7 +904,8 @@
         "it": "Nuovo trasferimento",
         "de": "Neue Übertragung",
         "pt": "Nova transferência",
-        "pl": "Nowy transfer"
+        "pl": "Nowy transfer",
+        "nl": "Nieuwe overdracht"
       }
     },
     "button_delete_transfer": {
@@ -852,7 +917,8 @@
         "it": "Elimina trasferimento",
         "de": "Übertragung löschen",
         "pt": "Eliminar transferência",
-        "pl": "Usuń transfer"
+        "pl": "Usuń transfer",
+        "nl": "Overdracht verwijderen"
       }
     },
     "button_download_invitation": {
@@ -864,7 +930,8 @@
         "it": "Salva file .vnd",
         "de": ".vnd-Datei sichern",
         "pt": "Guardar ficheiro .vnd",
-        "pl": "Zapisz plik .vnd"
+        "pl": "Zapisz plik .vnd",
+        "nl": ".vnd-bestand bewaren"
       }
     },
     "button_native_share": {
@@ -876,7 +943,8 @@
         "it": "Condividi invito",
         "de": "Einladung teilen",
         "pt": "Partilhar convite",
-        "pl": "Udostępnij zaproszenie"
+        "pl": "Udostępnij zaproszenie",
+        "nl": "Uitnodiging delen"
       }
     },
     "button_open_settings": {
@@ -888,7 +956,8 @@
         "it": "Apri Impostazioni",
         "de": "Einstellungen öffnen",
         "pt": "Abrir Definições",
-        "pl": "Otwórz Ustawienia"
+        "pl": "Otwórz Ustawienia",
+        "nl": "Instellingen openen"
       }
     },
     "button_receive": {
@@ -900,7 +969,8 @@
         "it": "Ricevi",
         "de": "Empfangen",
         "pt": "Receber",
-        "pl": "Odbierz"
+        "pl": "Odbierz",
+        "nl": "Ontvangen"
       }
     },
     "button_receive_files": {
@@ -912,7 +982,8 @@
         "it": "Inizia a ricevere",
         "de": "Empfang starten",
         "pt": "Começar a receber",
-        "pl": "Rozpocznij odbieranie"
+        "pl": "Rozpocznij odbieranie",
+        "nl": "Ontvangen starten"
       }
     },
     "button_refuse": {
@@ -924,7 +995,8 @@
         "it": "Rifiuta",
         "de": "Ablehnen",
         "pt": "Recusar",
-        "pl": "Odrzuć"
+        "pl": "Odrzuć",
+        "nl": "Weigeren"
       }
     },
     "button_remove_file": {
@@ -936,7 +1008,8 @@
         "it": "Rimuovi file",
         "de": "Datei entfernen",
         "pt": "Remover ficheiro",
-        "pl": "Usuń plik"
+        "pl": "Usuń plik",
+        "nl": "Bestand verwijderen"
       }
     },
     "button_reset_default": {
@@ -948,7 +1021,8 @@
         "it": "Usa predefinito",
         "de": "Standard verwenden",
         "pt": "Usar predefinição",
-        "pl": "Użyj domyślnego"
+        "pl": "Użyj domyślnego",
+        "nl": "Standaard gebruiken"
       }
     },
     "button_retry": {
@@ -960,7 +1034,8 @@
         "it": "Riprova",
         "de": "Wiederholen",
         "pt": "Tentar novamente",
-        "pl": "Spróbuj ponownie"
+        "pl": "Spróbuj ponownie",
+        "nl": "Opnieuw proberen"
       }
     },
     "button_share_file": {
@@ -972,7 +1047,8 @@
         "it": "Inizia a condividere",
         "de": "Freigabe starten",
         "pt": "Começar a partilhar",
-        "pl": "Rozpocznij udostępnianie"
+        "pl": "Rozpocznij udostępnianie",
+        "nl": "Delen starten"
       }
     },
     "button_sharing_file": {
@@ -984,7 +1060,8 @@
         "it": "Preparazione del trasferimento…",
         "de": "Übertragung wird vorbereitet…",
         "pt": "A preparar a transferência…",
-        "pl": "Przygotowywanie transferu…"
+        "pl": "Przygotowywanie transferu…",
+        "nl": "Overdracht voorbereiden…"
       }
     },
     "button_show_in_files": {
@@ -996,7 +1073,8 @@
         "it": "Mostra in File",
         "de": "In „Dateien“ anzeigen",
         "pt": "Mostrar em Ficheiros",
-        "pl": "Pokaż w Plikach"
+        "pl": "Pokaż w Plikach",
+        "nl": "Toon in Bestanden"
       }
     },
     "button_write_nfc": {
@@ -1008,7 +1086,8 @@
         "it": "Scrivi su tag NFC",
         "de": "Auf NFC-Tag schreiben",
         "pt": "Escrever em etiqueta NFC",
-        "pl": "Zapisz na tagu NFC"
+        "pl": "Zapisz na tagu NFC",
+        "nl": "Naar NFC-tag schrijven"
       }
     },
     "device_model_title": {
@@ -1020,7 +1099,8 @@
         "it": "Modello del dispositivo",
         "de": "Gerätemodell",
         "pt": "Modelo do dispositivo",
-        "pl": "Model urządzenia"
+        "pl": "Model urządzenia",
+        "nl": "Apparaatmodel"
       }
     },
     "device_name_title": {
@@ -1032,7 +1112,8 @@
         "it": "Nome del dispositivo",
         "de": "Gerätename",
         "pt": "Nome do dispositivo",
-        "pl": "Nazwa urządzenia"
+        "pl": "Nazwa urządzenia",
+        "nl": "Apparaatnaam"
       }
     },
     "diagnostics_description": {
@@ -1044,7 +1125,8 @@
         "it": "Invia report di arresto anomalo ed eventi d’uso anonimi per aiutarci a migliorare VniDrop. Può disattivarlo in qualsiasi momento. Inviti, percorsi dei file e contenuti dei trasferimenti non vengono mai inclusi.",
         "de": "Anonyme Absturzberichte und Nutzungsereignisse senden, damit wir VniDrop verbessern können. Sie können dies jederzeit deaktivieren. Einladungen, Dateipfade und Übertragungsinhalte werden niemals einbezogen.",
         "pt": "Enviar relatórios de falhas e eventos de utilização anónimos para nos ajudar a melhorar o VniDrop. Pode desativar isto a qualquer momento. Convites, caminhos de ficheiros e conteúdos das transferências nunca são incluídos.",
-        "pl": "Wysyłaj anonimowe raporty o awariach i zdarzenia użytkowania, aby pomóc nam ulepszać VniDrop. Możesz to wyłączyć w dowolnej chwili. Zaproszenia, ścieżki plików i zawartość transferów nigdy nie są dołączane."
+        "pl": "Wysyłaj anonimowe raporty o awariach i zdarzenia użytkowania, aby pomóc nam ulepszać VniDrop. Możesz to wyłączyć w dowolnej chwili. Zaproszenia, ścieżki plików i zawartość transferów nigdy nie są dołączane.",
+        "nl": "Verstuur anonieme crashrapporten en gebruiksgebeurtenissen zodat we VniDrop kunnen verbeteren. U kunt dit op elk moment uitschakelen. Uitnodigingen, bestandspaden en overdrachtsinhoud worden nooit meegestuurd."
       }
     },
     "diagnostics_disabled_message": {
@@ -1056,7 +1138,8 @@
         "it": "La condivisione dei dati diagnostici è disattivata.",
         "de": "Die Freigabe von Diagnosedaten ist deaktiviert.",
         "pt": "A partilha de diagnósticos está desativada.",
-        "pl": "Udostępnianie diagnostyki jest wyłączone."
+        "pl": "Udostępnianie diagnostyki jest wyłączone.",
+        "nl": "Het delen van diagnostische gegevens is uitgeschakeld."
       }
     },
     "diagnostics_enabled_message": {
@@ -1068,7 +1151,8 @@
         "it": "La condivisione dei dati diagnostici è attivata.",
         "de": "Die Freigabe von Diagnosedaten ist aktiviert.",
         "pt": "A partilha de diagnósticos está ativada.",
-        "pl": "Udostępnianie diagnostyki jest włączone."
+        "pl": "Udostępnianie diagnostyki jest włączone.",
+        "nl": "Het delen van diagnostische gegevens is ingeschakeld."
       }
     },
     "diagnostics_title": {
@@ -1080,7 +1164,8 @@
         "it": "Condividi dati diagnostici",
         "de": "Diagnosedaten teilen",
         "pt": "Partilhar diagnósticos",
-        "pl": "Udostępniaj diagnostykę"
+        "pl": "Udostępniaj diagnostykę",
+        "nl": "Diagnostische gegevens delen"
       }
     },
     "error_camera": {
@@ -1092,7 +1177,8 @@
         "it": "Per scansionare un codice QR è necessario l’accesso alla fotocamera.",
         "de": "Für das Scannen eines QR-Codes ist Kamerazugriff erforderlich.",
         "pt": "É necessário acesso à câmara para ler um código QR.",
-        "pl": "Do zeskanowania kodu QR wymagany jest dostęp do aparatu."
+        "pl": "Do zeskanowania kodu QR wymagany jest dostęp do aparatu.",
+        "nl": "Voor het scannen van een QR-code is toegang tot de camera vereist."
       }
     },
     "error_device_info": {
@@ -1104,7 +1190,8 @@
         "it": "Impossibile caricare le informazioni sul dispositivo.",
         "de": "Geräteinformationen konnten nicht geladen werden.",
         "pt": "Não foi possível carregar as informações do dispositivo.",
-        "pl": "Nie udało się wczytać informacji o urządzeniu."
+        "pl": "Nie udało się wczytać informacji o urządzeniu.",
+        "nl": "Apparaatgegevens konden niet worden geladen."
       }
     },
     "error_filesystem": {
@@ -1116,7 +1203,8 @@
         "it": "VniDrop non ha potuto accedere ai file o alla cartella selezionati. Controlli le autorizzazioni e riprovi.",
         "de": "VniDrop konnte nicht auf die ausgewählten Dateien oder den Ordner zugreifen. Überprüfen Sie die Berechtigungen und versuchen Sie es erneut.",
         "pt": "O VniDrop não conseguiu aceder aos ficheiros ou à pasta selecionados. Verifique as permissões e tente novamente.",
-        "pl": "VniDrop nie mógł uzyskać dostępu do wybranych plików lub folderu. Sprawdź uprawnienia i spróbuj ponownie."
+        "pl": "VniDrop nie mógł uzyskać dostępu do wybranych plików lub folderu. Sprawdź uprawnienia i spróbuj ponownie.",
+        "nl": "VniDrop kon geen toegang krijgen tot de geselecteerde bestanden of map. Controleer de machtigingen en probeer het opnieuw."
       }
     },
     "error_generic": {
@@ -1128,7 +1216,8 @@
         "it": "Qualcosa è andato storto. Riprovi.",
         "de": "Etwas ist schiefgelaufen. Versuchen Sie es erneut.",
         "pt": "Algo correu mal. Tente novamente.",
-        "pl": "Coś poszło nie tak. Spróbuj ponownie."
+        "pl": "Coś poszło nie tak. Spróbuj ponownie.",
+        "nl": "Er is iets misgegaan. Probeer het opnieuw."
       }
     },
     "error_initialization": {
@@ -1140,7 +1229,8 @@
         "it": "VniDrop non ha potuto completare l’avvio. Chiuda l’app e riprovi.",
         "de": "VniDrop konnte den Start nicht abschließen. Schließen Sie die App und versuchen Sie es erneut.",
         "pt": "O VniDrop não conseguiu concluir o arranque. Feche a app e tente novamente.",
-        "pl": "VniDrop nie mógł dokończyć uruchamiania. Zamknij aplikację i spróbuj ponownie."
+        "pl": "VniDrop nie mógł dokończyć uruchamiania. Zamknij aplikację i spróbuj ponownie.",
+        "nl": "VniDrop kon het opstarten niet voltooien. Sluit de app en probeer het opnieuw."
       }
     },
     "error_invalid_ticket": {
@@ -1152,7 +1242,8 @@
         "it": "Impossibile leggere questo invito. Ne chieda uno nuovo al mittente.",
         "de": "Diese Einladung konnte nicht gelesen werden. Bitten Sie den Absender um eine neue.",
         "pt": "Não foi possível ler este convite. Peça um novo ao remetente.",
-        "pl": "Nie udało się odczytać tego zaproszenia. Poproś nadawcę o nowe."
+        "pl": "Nie udało się odczytać tego zaproszenia. Poproś nadawcę o nowe.",
+        "nl": "Deze uitnodiging kon niet worden gelezen. Vraag de afzender om een nieuwe."
       }
     },
     "error_invitation_empty": {
@@ -1164,7 +1255,8 @@
         "it": "Questo invito è vuoto. Provi ad aprirlo di nuovo.",
         "de": "Diese Einladung ist leer. Versuchen Sie, sie erneut zu öffnen.",
         "pt": "Esse convite está vazio. Tente abri-lo novamente.",
-        "pl": "To zaproszenie jest puste. Spróbuj otworzyć je ponownie."
+        "pl": "To zaproszenie jest puste. Spróbuj otworzyć je ponownie.",
+        "nl": "Die uitnodiging is leeg. Probeer deze opnieuw te openen."
       }
     },
     "error_missing_native_library": {
@@ -1176,7 +1268,8 @@
         "it": "La libreria nativa di VniDrop non è presente in questa build.",
         "de": "Die native VniDrop-Bibliothek fehlt in diesem Build.",
         "pt": "A biblioteca nativa do VniDrop está em falta nesta compilação.",
-        "pl": "W tej kompilacji brakuje natywnej biblioteki VniDrop."
+        "pl": "W tej kompilacji brakuje natywnej biblioteki VniDrop.",
+        "nl": "De native VniDrop-bibliotheek ontbreekt in deze build."
       }
     },
     "error_nfc": {
@@ -1188,7 +1281,8 @@
         "it": "Impossibile usare questo tag NFC. Ne provi un altro.",
         "de": "Dieses NFC-Tag konnte nicht verwendet werden. Versuchen Sie ein anderes.",
         "pt": "Não foi possível utilizar esta etiqueta NFC. Tente outra.",
-        "pl": "Nie udało się użyć tego tagu NFC. Spróbuj innego."
+        "pl": "Nie udało się użyć tego tagu NFC. Spróbuj innego.",
+        "nl": "Deze NFC-tag kon niet worden gebruikt. Probeer een andere."
       }
     },
     "error_permission": {
@@ -1200,7 +1294,8 @@
         "it": "Il mittente non ha approvato questo trasferimento, oppure è stato rifiutato.",
         "de": "Der Absender hat diese Übertragung nicht genehmigt oder sie wurde abgelehnt.",
         "pt": "O remetente não aprovou esta transferência, ou foi recusada.",
-        "pl": "Nadawca nie zatwierdził tego transferu lub został on odrzucony."
+        "pl": "Nadawca nie zatwierdził tego transferu lub został on odrzucony.",
+        "nl": "De afzender heeft deze overdracht niet goedgekeurd, of deze is geweigerd."
       }
     },
     "error_repository": {
@@ -1212,7 +1307,8 @@
         "it": "VniDrop non ha potuto salvare i dati del trasferimento su questo dispositivo.",
         "de": "VniDrop konnte die Übertragungsdaten auf diesem Gerät nicht speichern.",
         "pt": "O VniDrop não conseguiu guardar os dados da transferência neste dispositivo.",
-        "pl": "VniDrop nie mógł zapisać danych transferu na tym urządzeniu."
+        "pl": "VniDrop nie mógł zapisać danych transferu na tym urządzeniu.",
+        "nl": "VniDrop kon de overdrachtsgegevens niet op dit apparaat bewaren."
       }
     },
     "error_selection_failed": {
@@ -1224,7 +1320,8 @@
         "it": "Impossibile aprire l’elemento selezionato. Provi a sceglierlo di nuovo.",
         "de": "Das ausgewählte Objekt konnte nicht geöffnet werden. Versuchen Sie, es erneut auszuwählen.",
         "pt": "Não foi possível abrir o item selecionado. Tente escolhê-lo novamente.",
-        "pl": "Nie udało się otworzyć wybranego elementu. Spróbuj wybrać go ponownie."
+        "pl": "Nie udało się otworzyć wybranego elementu. Spróbuj wybrać go ponownie.",
+        "nl": "Het geselecteerde item kon niet worden geopend. Probeer het opnieuw te kiezen."
       }
     },
     "error_share_empty": {
@@ -1236,7 +1333,8 @@
         "it": "Selezioni almeno un elemento da condividere.",
         "de": "Wählen Sie mindestens ein Objekt zum Teilen aus.",
         "pt": "Selecione pelo menos um item para partilhar.",
-        "pl": "Wybierz co najmniej jeden element do udostępnienia."
+        "pl": "Wybierz co najmniej jeden element do udostępnienia.",
+        "nl": "Selecteer minstens één item om te delen."
       }
     },
     "error_socket_bind": {
@@ -1248,7 +1346,8 @@
         "it": "VniDrop non ha potuto aprire i suoi socket di rete su questo dispositivo.",
         "de": "VniDrop konnte seine Netzwerk-Sockets auf diesem Gerät nicht öffnen.",
         "pt": "O VniDrop não conseguiu abrir os seus sockets de rede neste dispositivo.",
-        "pl": "VniDrop nie mógł otworzyć gniazd sieciowych na tym urządzeniu."
+        "pl": "VniDrop nie mógł otworzyć gniazd sieciowych na tym urządzeniu.",
+        "nl": "VniDrop kon zijn netwerksockets niet openen op dit apparaat."
       }
     },
     "error_starting_up": {
@@ -1260,7 +1359,8 @@
         "it": "VniDrop è ancora in fase di avvio. Riapra l’invito tra un momento.",
         "de": "VniDrop startet noch. Öffnen Sie die Einladung gleich erneut.",
         "pt": "O VniDrop ainda está a iniciar. Abra o convite novamente dentro de momentos.",
-        "pl": "VniDrop jeszcze się uruchamia. Otwórz zaproszenie ponownie za chwilę."
+        "pl": "VniDrop jeszcze się uruchamia. Otwórz zaproszenie ponownie za chwilę.",
+        "nl": "VniDrop is nog aan het opstarten. Open de uitnodiging zo meteen opnieuw."
       }
     },
     "error_transfer": {
@@ -1272,7 +1372,8 @@
         "it": "Impossibile completare il trasferimento. Controlli la connessione e riprovi.",
         "de": "Die Übertragung konnte nicht abgeschlossen werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
         "pt": "Não foi possível concluir a transferência. Verifique a sua ligação e tente novamente.",
-        "pl": "Nie udało się ukończyć transferu. Sprawdź połączenie i spróbuj ponownie."
+        "pl": "Nie udało się ukończyć transferu. Sprawdź połączenie i spróbuj ponownie.",
+        "nl": "De overdracht kon niet worden voltooid. Controleer uw verbinding en probeer het opnieuw."
       }
     },
     "field_receiver_name": {
@@ -1284,7 +1385,8 @@
         "it": "Nome del destinatario",
         "de": "Empfängername",
         "pt": "Nome do destinatário",
-        "pl": "Nazwa odbiorcy"
+        "pl": "Nazwa odbiorcy",
+        "nl": "Naam van ontvanger"
       }
     },
     "field_sender_name": {
@@ -1296,7 +1398,8 @@
         "it": "Nome del mittente",
         "de": "Absendername",
         "pt": "Nome do remetente",
-        "pl": "Nazwa nadawcy"
+        "pl": "Nazwa nadawcy",
+        "nl": "Naam van afzender"
       }
     },
     "field_transfer_name": {
@@ -1308,7 +1411,8 @@
         "it": "Nome del trasferimento",
         "de": "Übertragungsname",
         "pt": "Nome da transferência",
-        "pl": "Nazwa transferu"
+        "pl": "Nazwa transferu",
+        "nl": "Naam van overdracht"
       }
     },
     "field_username": {
@@ -1320,7 +1424,8 @@
         "it": "Nome visualizzato",
         "de": "Anzeigename",
         "pt": "Nome a apresentar",
-        "pl": "Nazwa wyświetlana"
+        "pl": "Nazwa wyświetlana",
+        "nl": "Weergavenaam"
       }
     },
     "folder_status_permission_required": {
@@ -1332,7 +1437,8 @@
         "it": "Autorizzazione necessaria",
         "de": "Berechtigung erforderlich",
         "pt": "Permissão necessária",
-        "pl": "Wymagane uprawnienie"
+        "pl": "Wymagane uprawnienie",
+        "nl": "Machtiging vereist"
       }
     },
     "folder_status_unavailable": {
@@ -1344,7 +1450,8 @@
         "it": "Non disponibile",
         "de": "Nicht verfügbar",
         "pt": "Indisponível",
-        "pl": "Niedostępny"
+        "pl": "Niedostępny",
+        "nl": "Niet beschikbaar"
       }
     },
     "folder_status_validating": {
@@ -1356,7 +1463,8 @@
         "it": "Controllo della cartella…",
         "de": "Ordner wird geprüft…",
         "pt": "A verificar a pasta…",
-        "pl": "Sprawdzanie folderu…"
+        "pl": "Sprawdzanie folderu…",
+        "nl": "Map controleren…"
       }
     },
     "folder_status_writable": {
@@ -1368,7 +1476,8 @@
         "it": "Pronta",
         "de": "Bereit",
         "pt": "Pronto",
-        "pl": "Gotowy"
+        "pl": "Gotowy",
+        "nl": "Gereed"
       }
     },
     "metadata_files": {
@@ -1380,7 +1489,8 @@
         "it": "File",
         "de": "Dateien",
         "pt": "Ficheiros",
-        "pl": "Pliki"
+        "pl": "Pliki",
+        "nl": "Bestanden"
       }
     },
     "metadata_size": {
@@ -1392,7 +1502,8 @@
         "it": "Dimensione",
         "de": "Größe",
         "pt": "Tamanho",
-        "pl": "Rozmiar"
+        "pl": "Rozmiar",
+        "nl": "Grootte"
       }
     },
     "metadata_status": {
@@ -1404,7 +1515,8 @@
         "it": "Stato",
         "de": "Status",
         "pt": "Estado",
-        "pl": "Status"
+        "pl": "Status",
+        "nl": "Status"
       }
     },
     "nav_receive": {
@@ -1416,7 +1528,8 @@
         "it": "Ricevi",
         "de": "Empfangen",
         "pt": "Receber",
-        "pl": "Odbierz"
+        "pl": "Odbierz",
+        "nl": "Ontvangen"
       }
     },
     "nav_send": {
@@ -1428,7 +1541,8 @@
         "it": "Invia",
         "de": "Senden",
         "pt": "Enviar",
-        "pl": "Wyślij"
+        "pl": "Wyślij",
+        "nl": "Versturen"
       }
     },
     "nav_settings": {
@@ -1440,7 +1554,8 @@
         "it": "Impostazioni",
         "de": "Einstellungen",
         "pt": "Definições",
-        "pl": "Ustawienia"
+        "pl": "Ustawienia",
+        "nl": "Instellingen"
       }
     },
     "network_title": {
@@ -1452,7 +1567,8 @@
         "it": "Rete",
         "de": "Netzwerk",
         "pt": "Rede",
-        "pl": "Sieć"
+        "pl": "Sieć",
+        "nl": "Netwerk"
       }
     },
     "notifications_description": {
@@ -1464,7 +1580,8 @@
         "it": "Ricevi avvisi sulle nuove richieste di ricezione quando VniDrop è in background.",
         "de": "Werden Sie über neue Empfangsanfragen benachrichtigt, während VniDrop im Hintergrund läuft.",
         "pt": "Seja notificado sobre novos pedidos de receção enquanto o VniDrop está em segundo plano.",
-        "pl": "Otrzymuj powiadomienia o nowych prośbach o odbiór, gdy VniDrop działa w tle."
+        "pl": "Otrzymuj powiadomienia o nowych prośbach o odbiór, gdy VniDrop działa w tle.",
+        "nl": "Ontvang meldingen over nieuwe ontvangstverzoeken terwijl VniDrop op de achtergrond draait."
       }
     },
     "notifications_enabled_message": {
@@ -1476,7 +1593,8 @@
         "it": "Notifiche attivate.",
         "de": "Mitteilungen aktiviert.",
         "pt": "Notificações ativadas.",
-        "pl": "Powiadomienia włączone."
+        "pl": "Powiadomienia włączone.",
+        "nl": "Meldingen ingeschakeld."
       }
     },
     "notifications_local_title": {
@@ -1488,7 +1606,8 @@
         "it": "Consenti le notifiche",
         "de": "Mitteilungen erlauben",
         "pt": "Permitir notificações",
-        "pl": "Zezwól na powiadomienia"
+        "pl": "Zezwól na powiadomienia",
+        "nl": "Meldingen toestaan"
       }
     },
     "notifications_permission_denied": {
@@ -1500,7 +1619,8 @@
         "it": "Le notifiche sono disattivate per VniDrop. Può attivarle in Impostazioni.",
         "de": "Mitteilungen sind für VniDrop deaktiviert. Sie können sie in den Einstellungen aktivieren.",
         "pt": "As notificações estão desativadas para o VniDrop. Pode ativá-las nas Definições.",
-        "pl": "Powiadomienia są wyłączone dla VniDrop. Możesz je włączyć w Ustawieniach."
+        "pl": "Powiadomienia są wyłączone dla VniDrop. Możesz je włączyć w Ustawieniach.",
+        "nl": "Meldingen zijn uitgeschakeld voor VniDrop. U kunt ze inschakelen in Instellingen."
       }
     },
     "notifications_settings_open_failed": {
@@ -1512,7 +1632,8 @@
         "it": "Impossibile aprire le impostazioni delle notifiche.",
         "de": "Die Mitteilungseinstellungen konnten nicht geöffnet werden.",
         "pt": "Não foi possível abrir as definições de notificações.",
-        "pl": "Nie udało się otworzyć ustawień powiadomień."
+        "pl": "Nie udało się otworzyć ustawień powiadomień.",
+        "nl": "De meldingsinstellingen konden niet worden geopend."
       }
     },
     "notifications_title": {
@@ -1524,7 +1645,8 @@
         "it": "Notifiche",
         "de": "Mitteilungen",
         "pt": "Notificações",
-        "pl": "Powiadomienia"
+        "pl": "Powiadomienia",
+        "nl": "Meldingen"
       }
     },
     "notifications_unsupported": {
@@ -1536,7 +1658,8 @@
         "it": "Le notifiche non sono disponibili su questo dispositivo.",
         "de": "Mitteilungen sind auf diesem Gerät nicht verfügbar.",
         "pt": "As notificações não estão disponíveis neste dispositivo.",
-        "pl": "Powiadomienia nie są dostępne na tym urządzeniu."
+        "pl": "Powiadomienia nie są dostępne na tym urządzeniu.",
+        "nl": "Meldingen zijn niet beschikbaar op dit apparaat."
       }
     },
     "os_version_title": {
@@ -1548,7 +1671,8 @@
         "it": "Sistema operativo",
         "de": "Betriebssystem",
         "pt": "Sistema operativo",
-        "pl": "System operacyjny"
+        "pl": "System operacyjny",
+        "nl": "Besturingssysteem"
       }
     },
     "preferences_receive_folder_title": {
@@ -1560,7 +1684,8 @@
         "it": "Salva i trasferimenti ricevuti in",
         "de": "Empfangene Übertragungen sichern in",
         "pt": "Guardar as transferências recebidas em",
-        "pl": "Zapisuj odebrane transfery w"
+        "pl": "Zapisuj odebrane transfery w",
+        "nl": "Ontvangen overdrachten bewaren in"
       }
     },
     "preferences_title": {
@@ -1572,7 +1697,8 @@
         "it": "Preferenze",
         "de": "Voreinstellungen",
         "pt": "Preferências",
-        "pl": "Preferencje"
+        "pl": "Preferencje",
+        "nl": "Voorkeuren"
       }
     },
     "progress_cancelled": {
@@ -1584,7 +1710,8 @@
         "it": "Annullato",
         "de": "Abgebrochen",
         "pt": "Cancelado",
-        "pl": "Anulowano"
+        "pl": "Anulowano",
+        "nl": "Geannuleerd"
       }
     },
     "progress_completed": {
@@ -1596,7 +1723,8 @@
         "it": "Completato",
         "de": "Abgeschlossen",
         "pt": "Concluído",
-        "pl": "Ukończono"
+        "pl": "Ukończono",
+        "nl": "Voltooid"
       }
     },
     "progress_connected": {
@@ -1608,7 +1736,8 @@
         "it": "Connesso",
         "de": "Verbunden",
         "pt": "Ligado",
-        "pl": "Połączono"
+        "pl": "Połączono",
+        "nl": "Verbonden"
       }
     },
     "progress_connecting": {
@@ -1620,7 +1749,8 @@
         "it": "Connessione",
         "de": "Verbinden",
         "pt": "A ligar",
-        "pl": "Łączenie"
+        "pl": "Łączenie",
+        "nl": "Verbinden"
       }
     },
     "progress_downloading": {
@@ -1632,7 +1762,8 @@
         "it": "Download",
         "de": "Wird geladen",
         "pt": "A descarregar",
-        "pl": "Pobieranie"
+        "pl": "Pobieranie",
+        "nl": "Downloaden"
       }
     },
     "progress_failed": {
@@ -1644,7 +1775,8 @@
         "it": "Non riuscito",
         "de": "Fehlgeschlagen",
         "pt": "Falhou",
-        "pl": "Niepowodzenie"
+        "pl": "Niepowodzenie",
+        "nl": "Mislukt"
       }
     },
     "progress_getting_ready": {
@@ -1656,7 +1788,8 @@
         "it": "Preparazione",
         "de": "Wird bereitgemacht",
         "pt": "A preparar-se",
-        "pl": "Przygotowywanie"
+        "pl": "Przygotowywanie",
+        "nl": "Klaarmaken"
       }
     },
     "progress_interrupted": {
@@ -1668,7 +1801,8 @@
         "it": "Trasferimento interrotto",
         "de": "Übertragung unterbrochen",
         "pt": "Transferência interrompida",
-        "pl": "Transfer przerwany"
+        "pl": "Transfer przerwany",
+        "nl": "Overdracht onderbroken"
       }
     },
     "progress_preparing": {
@@ -1680,7 +1814,8 @@
         "it": "Preparazione",
         "de": "Wird vorbereitet",
         "pt": "A preparar",
-        "pl": "Przygotowywanie"
+        "pl": "Przygotowywanie",
+        "nl": "Voorbereiden"
       }
     },
     "progress_ready": {
@@ -1692,7 +1827,8 @@
         "it": "Pronto",
         "de": "Bereit",
         "pt": "Pronto",
-        "pl": "Gotowe"
+        "pl": "Gotowe",
+        "nl": "Gereed"
       }
     },
     "progress_receiving": {
@@ -1704,7 +1840,8 @@
         "it": "Ricezione",
         "de": "Wird empfangen",
         "pt": "A receber",
-        "pl": "Odbieranie"
+        "pl": "Odbieranie",
+        "nl": "Ontvangen"
       }
     },
     "progress_requesting_access": {
@@ -1716,7 +1853,8 @@
         "it": "Richiesta di accesso",
         "de": "Zugriff wird angefragt",
         "pt": "A pedir acesso",
-        "pl": "Prośba o dostęp"
+        "pl": "Prośba o dostęp",
+        "nl": "Toegang aanvragen"
       }
     },
     "progress_saving": {
@@ -1728,7 +1866,8 @@
         "it": "Salvataggio",
         "de": "Wird gesichert",
         "pt": "A guardar",
-        "pl": "Zapisywanie"
+        "pl": "Zapisywanie",
+        "nl": "Bewaren"
       }
     },
     "progress_sending": {
@@ -1740,7 +1879,8 @@
         "it": "Invio",
         "de": "Wird gesendet",
         "pt": "A enviar",
-        "pl": "Wysyłanie"
+        "pl": "Wysyłanie",
+        "nl": "Versturen"
       }
     },
     "progress_sending_to_count": {
@@ -1752,7 +1892,8 @@
         "it": "Invio a {count}",
         "de": "Senden an {count}",
         "pt": "A enviar para {count}",
-        "pl": "Wysyłanie do {count}"
+        "pl": "Wysyłanie do {count}",
+        "nl": "Versturen naar {count}"
       },
       "args": [
         {
@@ -1770,7 +1911,8 @@
         "it": "Pronto per la condivisione",
         "de": "Bereit zum Teilen",
         "pt": "Pronto para partilhar",
-        "pl": "Gotowe do udostępnienia"
+        "pl": "Gotowe do udostępnienia",
+        "nl": "Klaar om te delen"
       }
     },
     "progress_working": {
@@ -1782,7 +1924,8 @@
         "it": "Elaborazione…",
         "de": "Wird bearbeitet…",
         "pt": "A processar…",
-        "pl": "Przetwarzanie…"
+        "pl": "Przetwarzanie…",
+        "nl": "Bezig…"
       }
     },
     "receive_choose_method_body": {
@@ -1794,7 +1937,8 @@
         "it": "Scelga il metodo di invito a sua disposizione.",
         "de": "Wählen Sie die Ihnen zur Verfügung stehende Einladungsmethode.",
         "pt": "Escolha o método de convite ao seu dispor.",
-        "pl": "Wybierz dostępną metodę zaproszenia."
+        "pl": "Wybierz dostępną metodę zaproszenia.",
+        "nl": "Kies de uitnodigingsmethode die u ter beschikking staat."
       }
     },
     "receive_choose_method_title": {
@@ -1806,7 +1950,8 @@
         "it": "Come vuole connettersi?",
         "de": "Wie möchten Sie sich verbinden?",
         "pt": "Como pretende ligar-se?",
-        "pl": "Jak chcesz się połączyć?"
+        "pl": "Jak chcesz się połączyć?",
+        "nl": "Hoe wilt u verbinding maken?"
       }
     },
     "receive_clear_history": {
@@ -1818,7 +1963,8 @@
         "it": "Cancella cronologia",
         "de": "Verlauf löschen",
         "pt": "Limpar histórico",
-        "pl": "Wyczyść historię"
+        "pl": "Wyczyść historię",
+        "nl": "Geschiedenis wissen"
       }
     },
     "receive_clear_history_description": {
@@ -1830,7 +1976,8 @@
         "it": "Tutte le ricezioni completate, non riuscite e annullate verranno rimosse dalla cronologia di VniDrop. I file scaricati rimarranno su questo dispositivo.",
         "de": "Alle abgeschlossenen, fehlgeschlagenen und abgebrochenen Empfänge werden aus dem Verlauf von VniDrop entfernt. Heruntergeladene Dateien verbleiben auf diesem Gerät.",
         "pt": "Todas as receções concluídas, falhadas e canceladas serão removidas do histórico do VniDrop. Os ficheiros descarregados permanecerão neste dispositivo.",
-        "pl": "Wszystkie ukończone, nieudane i anulowane odbiory zostaną usunięte z historii VniDrop. Pobrane pliki pozostaną na tym urządzeniu."
+        "pl": "Wszystkie ukończone, nieudane i anulowane odbiory zostaną usunięte z historii VniDrop. Pobrane pliki pozostaną na tym urządzeniu.",
+        "nl": "Alle voltooide, mislukte en geannuleerde ontvangsten worden uit de geschiedenis van VniDrop verwijderd. Gedownloade bestanden blijven op dit apparaat."
       }
     },
     "receive_clear_history_title": {
@@ -1842,7 +1989,8 @@
         "it": "Cancellare la cronologia di ricezione?",
         "de": "Empfangsverlauf löschen?",
         "pt": "Limpar o histórico de receção?",
-        "pl": "Wyczyścić historię odbioru?"
+        "pl": "Wyczyścić historię odbioru?",
+        "nl": "Ontvangstgeschiedenis wissen?"
       }
     },
     "receive_completed": {
@@ -1854,7 +2002,8 @@
         "it": "Trasferimento ricevuto.",
         "de": "Übertragung empfangen.",
         "pt": "Transferência recebida.",
-        "pl": "Transfer odebrany."
+        "pl": "Transfer odebrany.",
+        "nl": "Overdracht ontvangen."
       }
     },
     "receive_delete_history_description": {
@@ -1872,7 +2021,8 @@
         "it": "«{arg1}» verrà rimosso dalla cronologia di VniDrop. Il file scaricato rimarrà su questo dispositivo.",
         "de": "„{arg1}“ wird aus dem Verlauf von VniDrop entfernt. Die heruntergeladene Datei verbleibt auf diesem Gerät.",
         "pt": "«{arg1}» será removido do histórico do VniDrop. O ficheiro descarregado permanecerá neste dispositivo.",
-        "pl": "„{arg1}” zostanie usunięty z historii VniDrop. Pobrany plik pozostanie na tym urządzeniu."
+        "pl": "„{arg1}” zostanie usunięty z historii VniDrop. Pobrany plik pozostanie na tym urządzeniu.",
+        "nl": "‘{arg1}’ wordt uit de geschiedenis van VniDrop verwijderd. Het gedownloade bestand blijft op dit apparaat."
       }
     },
     "receive_delete_history_item": {
@@ -1884,7 +2034,8 @@
         "it": "Elimina dalla cronologia di ricezione",
         "de": "Aus Empfangsverlauf löschen",
         "pt": "Eliminar do histórico de receção",
-        "pl": "Usuń z historii odbioru"
+        "pl": "Usuń z historii odbioru",
+        "nl": "Uit ontvangstgeschiedenis verwijderen"
       }
     },
     "receive_delete_history_title": {
@@ -1896,7 +2047,8 @@
         "it": "Rimuovere dalla cronologia?",
         "de": "Aus dem Verlauf entfernen?",
         "pt": "Remover do histórico?",
-        "pl": "Usunąć z historii?"
+        "pl": "Usunąć z historii?",
+        "nl": "Uit geschiedenis verwijderen?"
       }
     },
     "receive_empty_body": {
@@ -1908,7 +2060,8 @@
         "it": "Apra un invito VniDrop, scansioni un codice QR o avvicini un tag NFC.",
         "de": "Öffnen Sie eine VniDrop-Einladung, scannen Sie einen QR-Code oder halten Sie das Gerät an ein NFC-Tag.",
         "pt": "Abra um convite do VniDrop, leia um código QR ou aproxime uma etiqueta NFC.",
-        "pl": "Otwórz zaproszenie VniDrop, zeskanuj kod QR lub zbliż tag NFC."
+        "pl": "Otwórz zaproszenie VniDrop, zeskanuj kod QR lub zbliż tag NFC.",
+        "nl": "Open een VniDrop-uitnodiging, scan een QR-code of houd het apparaat bij een NFC-tag."
       }
     },
     "receive_empty_title": {
@@ -1920,7 +2073,8 @@
         "it": "Ancora nulla di ricevuto",
         "de": "Noch nichts empfangen",
         "pt": "Ainda não recebeu nada",
-        "pl": "Nic jeszcze nie odebrano"
+        "pl": "Nic jeszcze nie odebrano",
+        "nl": "Nog niets ontvangen"
       }
     },
     "receive_history_cleared": {
@@ -1932,7 +2086,8 @@
         "it": "Cronologia di ricezione cancellata.",
         "de": "Empfangsverlauf gelöscht.",
         "pt": "Histórico de receção limpo.",
-        "pl": "Historia odbioru wyczyszczona."
+        "pl": "Historia odbioru wyczyszczona.",
+        "nl": "Ontvangstgeschiedenis gewist."
       }
     },
     "receive_history_title": {
@@ -1944,7 +2099,8 @@
         "it": "Cronologia",
         "de": "Verlauf",
         "pt": "Histórico",
-        "pl": "Historia"
+        "pl": "Historia",
+        "nl": "Geschiedenis"
       }
     },
     "receive_method_file": {
@@ -1956,7 +2112,8 @@
         "it": "Apri un invito .vnd",
         "de": "Eine .vnd-Einladung öffnen",
         "pt": "Abrir um convite .vnd",
-        "pl": "Otwórz zaproszenie .vnd"
+        "pl": "Otwórz zaproszenie .vnd",
+        "nl": "Een .vnd-uitnodiging openen"
       }
     },
     "receive_method_file_description": {
@@ -1968,7 +2125,8 @@
         "it": "Scelga un invito salvato o condiviso su questo dispositivo.",
         "de": "Wählen Sie eine auf diesem Gerät gespeicherte oder geteilte Einladung.",
         "pt": "Escolha um convite guardado ou partilhado neste dispositivo.",
-        "pl": "Wybierz zaproszenie zapisane lub udostępnione na tym urządzeniu."
+        "pl": "Wybierz zaproszenie zapisane lub udostępnione na tym urządzeniu.",
+        "nl": "Kies een uitnodiging die op dit apparaat is bewaard of gedeeld."
       }
     },
     "receive_method_nfc": {
@@ -1980,7 +2138,8 @@
         "it": "Leggi tag NFC",
         "de": "NFC-Tag lesen",
         "pt": "Ler etiqueta NFC",
-        "pl": "Odczytaj tag NFC"
+        "pl": "Odczytaj tag NFC",
+        "nl": "NFC-tag lezen"
       }
     },
     "receive_method_nfc_description": {
@@ -1992,7 +2151,8 @@
         "it": "Avvicini questo dispositivo al tag di invito del mittente.",
         "de": "Halten Sie dieses Gerät an das Einladungs-Tag des Absenders.",
         "pt": "Aproxime este dispositivo da etiqueta de convite do remetente.",
-        "pl": "Zbliż to urządzenie do tagu zaproszenia nadawcy."
+        "pl": "Zbliż to urządzenie do tagu zaproszenia nadawcy.",
+        "nl": "Houd dit apparaat bij de uitnodigingstag van de afzender."
       }
     },
     "receive_method_scan": {
@@ -2004,7 +2164,8 @@
         "it": "Scansiona codice QR",
         "de": "QR-Code scannen",
         "pt": "Ler código QR",
-        "pl": "Zeskanuj kod QR"
+        "pl": "Zeskanuj kod QR",
+        "nl": "QR-code scannen"
       }
     },
     "receive_method_scan_description": {
@@ -2016,7 +2177,8 @@
         "it": "Usi la fotocamera per scansionare il codice VniDrop del mittente.",
         "de": "Verwenden Sie die Kamera, um den VniDrop-Code des Absenders zu scannen.",
         "pt": "Use a câmara para ler o código VniDrop do remetente.",
-        "pl": "Użyj aparatu, aby zeskanować kod VniDrop nadawcy."
+        "pl": "Użyj aparatu, aby zeskanować kod VniDrop nadawcy.",
+        "nl": "Gebruik de camera om de VniDrop-code van de afzender te scannen."
       }
     },
     "receive_new_subtitle": {
@@ -2028,7 +2190,8 @@
         "it": "Trasferimenti che ha ricevuto su questo dispositivo.",
         "de": "Übertragungen, die Sie auf diesem Gerät empfangen haben.",
         "pt": "Transferências que recebeu neste dispositivo.",
-        "pl": "Transfery odebrane na tym urządzeniu."
+        "pl": "Transfery odebrane na tym urządzeniu.",
+        "nl": "Overdrachten die u op dit apparaat hebt ontvangen."
       }
     },
     "receive_nfc_waiting": {
@@ -2040,7 +2203,8 @@
         "it": "Avvicini al tag NFC…",
         "de": "Halten Sie das Gerät an das NFC-Tag…",
         "pt": "Aproxime da etiqueta NFC…",
-        "pl": "Zbliż do tagu NFC…"
+        "pl": "Zbliż do tagu NFC…",
+        "nl": "Houd bij de NFC-tag…"
       }
     },
     "receive_open_files_failed": {
@@ -2052,7 +2216,8 @@
         "it": "Impossibile aprire VniDrop in File.",
         "de": "VniDrop konnte in „Dateien“ nicht geöffnet werden.",
         "pt": "Não foi possível abrir o VniDrop em Ficheiros.",
-        "pl": "Nie udało się otworzyć VniDrop w Plikach."
+        "pl": "Nie udało się otworzyć VniDrop w Plikach.",
+        "nl": "VniDrop kon niet worden geopend in Bestanden."
       }
     },
     "receive_review_title": {
@@ -2064,7 +2229,8 @@
         "it": "Rivedi trasferimento",
         "de": "Übertragung prüfen",
         "pt": "Rever transferência",
-        "pl": "Przejrzyj transfer"
+        "pl": "Przejrzyj transfer",
+        "nl": "Overdracht controleren"
       }
     },
     "receive_title": {
@@ -2076,7 +2242,8 @@
         "it": "Ricevi",
         "de": "Empfangen",
         "pt": "Receber",
-        "pl": "Odbierz"
+        "pl": "Odbierz",
+        "nl": "Ontvangen"
       }
     },
     "receive_unknown_transfer": {
@@ -2088,7 +2255,8 @@
         "it": "Trasferimento VniDrop",
         "de": "VniDrop-Übertragung",
         "pt": "Transferência VniDrop",
-        "pl": "Transfer VniDrop"
+        "pl": "Transfer VniDrop",
+        "nl": "VniDrop-overdracht"
       }
     },
     "send_access_anyone": {
@@ -2100,7 +2268,8 @@
         "it": "Chiunque abbia questo trasferimento",
         "de": "Jeder mit dieser Übertragung",
         "pt": "Qualquer pessoa com esta transferência",
-        "pl": "Każdy, kto ma ten transfer"
+        "pl": "Każdy, kto ma ten transfer",
+        "nl": "Iedereen met deze overdracht"
       }
     },
     "send_access_anyone_description": {
@@ -2112,7 +2281,8 @@
         "it": "Nessuna approvazione richiesta. Da usare solo per elementi che non ha problemi a condividere.",
         "de": "Keine Genehmigung erforderlich. Verwenden Sie dies nur für Objekte, die Sie unbedenklich teilen können.",
         "pt": "Não é necessária aprovação. Utilize apenas para itens que não se importe de partilhar.",
-        "pl": "Nie jest wymagane zatwierdzenie. Używaj tylko dla elementów, które możesz swobodnie udostępniać."
+        "pl": "Nie jest wymagane zatwierdzenie. Używaj tylko dla elementów, które możesz swobodnie udostępniać.",
+        "nl": "Geen goedkeuring vereist. Gebruik dit alleen voor items die u gerust kunt delen."
       }
     },
     "send_access_anyone_warning": {
@@ -2124,7 +2294,8 @@
         "it": "Chiunque abbia l’invito può scaricare finché non interrompe la condivisione. Non lo usi per elementi privati o sensibili.",
         "de": "Jeder mit der Einladung kann herunterladen, bis Sie die Freigabe beenden. Verwenden Sie dies nicht für private oder sensible Objekte.",
         "pt": "Qualquer pessoa com o convite pode descarregar até parar de partilhar. Não utilize para itens privados ou sensíveis.",
-        "pl": "Każdy, kto ma zaproszenie, może pobierać, dopóki nie zatrzymasz udostępniania. Nie używaj tego dla prywatnych ani wrażliwych elementów."
+        "pl": "Każdy, kto ma zaproszenie, może pobierać, dopóki nie zatrzymasz udostępniania. Nie używaj tego dla prywatnych ani wrażliwych elementów.",
+        "nl": "Iedereen met de uitnodiging kan downloaden totdat u stopt met delen. Gebruik dit niet voor privé- of gevoelige items."
       }
     },
     "send_access_approval": {
@@ -2136,7 +2307,8 @@
         "it": "Chiedi prima di ogni download",
         "de": "Vor jedem Download fragen",
         "pt": "Perguntar antes de cada descarga",
-        "pl": "Pytaj przed każdym pobraniem"
+        "pl": "Pytaj przed każdym pobraniem",
+        "nl": "Vragen vóór elke download"
       }
     },
     "send_access_approval_description": {
@@ -2148,7 +2320,8 @@
         "it": "Approva o rifiuta ogni nuovo destinatario.",
         "de": "Sie genehmigen oder lehnen jeden neuen Empfänger ab.",
         "pt": "Aprova ou recusa cada novo destinatário.",
-        "pl": "Zatwierdzasz lub odrzucasz każdego nowego odbiorcę."
+        "pl": "Zatwierdzasz lub odrzucasz każdego nowego odbiorcę.",
+        "nl": "U keurt elke nieuwe ontvanger goed of weigert deze."
       }
     },
     "send_access_title": {
@@ -2160,7 +2333,8 @@
         "it": "Chi può riceverlo?",
         "de": "Wer kann sie empfangen?",
         "pt": "Quem a pode receber?",
-        "pl": "Kto może to odebrać?"
+        "pl": "Kto może to odebrać?",
+        "nl": "Wie kan het ontvangen?"
       }
     },
     "send_choose_file_body": {
@@ -2172,7 +2346,8 @@
         "it": "Selezioni file o una cartella da questo dispositivo. Potrà rivedere la selezione prima di creare il trasferimento.",
         "de": "Wählen Sie Dateien oder einen Ordner auf diesem Gerät aus. Sie können die Auswahl überprüfen, bevor Sie die Übertragung erstellen.",
         "pt": "Selecione ficheiros ou uma pasta deste dispositivo. Poderá rever a seleção antes de criar a transferência.",
-        "pl": "Wybierz pliki lub folder z tego urządzenia. Przed utworzeniem transferu możesz przejrzeć wybór."
+        "pl": "Wybierz pliki lub folder z tego urządzenia. Przed utworzeniem transferu możesz przejrzeć wybór.",
+        "nl": "Selecteer bestanden of een map op dit apparaat. U kunt de selectie controleren voordat u de overdracht aanmaakt."
       }
     },
     "send_choose_file_title": {
@@ -2184,7 +2359,8 @@
         "it": "Scelga cosa condividere",
         "de": "Wählen Sie, was Sie teilen möchten",
         "pt": "Escolha o que partilhar",
-        "pl": "Wybierz, co udostępnić"
+        "pl": "Wybierz, co udostępnić",
+        "nl": "Kies wat u wilt delen"
       }
     },
     "send_empty_body": {
@@ -2196,7 +2372,8 @@
         "it": "Crei un trasferimento, decida chi può riceverlo, poi inviti queste persone con un codice QR, un tag NFC o un file di invito.",
         "de": "Erstellen Sie eine Übertragung, entscheiden Sie, wer sie empfangen darf, und laden Sie diese Personen dann mit einem QR-Code, einem NFC-Tag oder einer Einladungsdatei ein.",
         "pt": "Crie uma transferência, decida quem a pode receber e depois convide essas pessoas com um código QR, uma etiqueta NFC ou um ficheiro de convite.",
-        "pl": "Utwórz transfer, zdecyduj, kto może go odebrać, a następnie zaproś te osoby za pomocą kodu QR, tagu NFC lub pliku zaproszenia."
+        "pl": "Utwórz transfer, zdecyduj, kto może go odebrać, a następnie zaproś te osoby za pomocą kodu QR, tagu NFC lub pliku zaproszenia.",
+        "nl": "Maak een overdracht aan, bepaal wie deze kan ontvangen en nodig die personen vervolgens uit met een QR-code, NFC-tag of uitnodigingsbestand."
       }
     },
     "send_empty_title": {
@@ -2208,7 +2385,8 @@
         "it": "Ancora nulla di condiviso",
         "de": "Noch nichts geteilt",
         "pt": "Ainda não partilhou nada",
-        "pl": "Nic jeszcze nie udostępniono"
+        "pl": "Nic jeszcze nie udostępniono",
+        "nl": "Nog niets gedeeld"
       }
     },
     "send_file_size_unknown": {
@@ -2220,7 +2398,8 @@
         "it": "Dimensione non disponibile",
         "de": "Größe nicht verfügbar",
         "pt": "Tamanho indisponível",
-        "pl": "Rozmiar niedostępny"
+        "pl": "Rozmiar niedostępny",
+        "nl": "Grootte niet beschikbaar"
       }
     },
     "send_folder_label": {
@@ -2232,7 +2411,8 @@
         "it": "Cartella",
         "de": "Ordner",
         "pt": "Pasta",
-        "pl": "Folder"
+        "pl": "Folder",
+        "nl": "Map"
       }
     },
     "send_new_transfer_description": {
@@ -2244,7 +2424,8 @@
         "it": "Crea un nuovo trasferimento",
         "de": "Eine neue Übertragung erstellen",
         "pt": "Criar uma nova transferência",
-        "pl": "Utwórz nowy transfer"
+        "pl": "Utwórz nowy transfer",
+        "nl": "Een nieuwe overdracht aanmaken"
       }
     },
     "send_new_transfer_title": {
@@ -2256,7 +2437,8 @@
         "it": "Nuovo trasferimento",
         "de": "Neue Übertragung",
         "pt": "Nova transferência",
-        "pl": "Nowy transfer"
+        "pl": "Nowy transfer",
+        "nl": "Nieuwe overdracht"
       }
     },
     "send_review_title": {
@@ -2268,7 +2450,8 @@
         "it": "Rivedi trasferimento",
         "de": "Übertragung prüfen",
         "pt": "Rever transferência",
-        "pl": "Przejrzyj transfer"
+        "pl": "Przejrzyj transfer",
+        "nl": "Overdracht controleren"
       }
     },
     "send_selected_files_count": {
@@ -2286,7 +2469,8 @@
         "it": "{count} file selezionati",
         "de": "{count} Dateien ausgewählt",
         "pt": "{count} ficheiros selecionados",
-        "pl": "Wybrane pliki: {count}"
+        "pl": "Wybrane pliki: {count}",
+        "nl": "{count} bestanden geselecteerd"
       }
     },
     "send_stop_sharing": {
@@ -2298,7 +2482,8 @@
         "it": "Interrompi condivisione",
         "de": "Freigabe beenden",
         "pt": "Parar de partilhar",
-        "pl": "Zatrzymaj udostępnianie"
+        "pl": "Zatrzymaj udostępnianie",
+        "nl": "Stoppen met delen"
       }
     },
     "send_stop_sharing_description": {
@@ -2310,7 +2495,8 @@
         "it": "Questo interrompe il trasferimento e blocca chiunque lo stia scaricando. Rimane nella sua cronologia come Interrotto.",
         "de": "Dies beendet die Übertragung und unterbricht alle, die sie gerade herunterladen. Sie verbleibt in Ihrem Verlauf als „Beendet“.",
         "pt": "Isto para a transferência e interrompe quem estiver a descarregá-la. Permanece no seu histórico como Parada.",
-        "pl": "To zatrzymuje transfer i przerywa każdego, kto go właśnie pobiera. Pozostaje w historii jako Zatrzymany."
+        "pl": "To zatrzymuje transfer i przerywa każdego, kto go właśnie pobiera. Pozostaje w historii jako Zatrzymany.",
+        "nl": "Hiermee stopt de overdracht en wordt iedereen die deze op dit moment downloadt onderbroken. De overdracht blijft in uw geschiedenis staan als Gestopt."
       }
     },
     "send_subtitle": {
@@ -2322,7 +2508,8 @@
         "it": "Trasferimenti che sta condividendo da questo dispositivo.",
         "de": "Übertragungen, die Sie von diesem Gerät aus teilen.",
         "pt": "Transferências que está a partilhar a partir deste dispositivo.",
-        "pl": "Transfery udostępniane z tego urządzenia."
+        "pl": "Transfery udostępniane z tego urządzenia.",
+        "nl": "Overdrachten die u vanaf dit apparaat deelt."
       }
     },
     "send_title": {
@@ -2334,7 +2521,8 @@
         "it": "Invia",
         "de": "Senden",
         "pt": "Enviar",
-        "pl": "Wyślij"
+        "pl": "Wyślij",
+        "nl": "Versturen"
       }
     },
     "send_transfer_created": {
@@ -2346,7 +2534,8 @@
         "it": "Trasferimento creato.",
         "de": "Übertragung erstellt.",
         "pt": "Transferência criada.",
-        "pl": "Transfer utworzony."
+        "pl": "Transfer utworzony.",
+        "nl": "Overdracht aangemaakt."
       }
     },
     "send_transfer_details_title": {
@@ -2358,7 +2547,8 @@
         "it": "Dettagli del trasferimento",
         "de": "Übertragungsdetails",
         "pt": "Detalhes da transferência",
-        "pl": "Szczegóły transferu"
+        "pl": "Szczegóły transferu",
+        "nl": "Overdrachtsdetails"
       }
     },
     "send_transfers_title": {
@@ -2370,7 +2560,8 @@
         "it": "I suoi trasferimenti",
         "de": "Ihre Übertragungen",
         "pt": "As suas transferências",
-        "pl": "Twoje transfery"
+        "pl": "Twoje transfery",
+        "nl": "Uw overdrachten"
       }
     },
     "settings_subtitle": {
@@ -2382,7 +2573,8 @@
         "it": "Il suo nome, dove vengono salvati i trasferimenti, l’aspetto e le notifiche.",
         "de": "Ihr Name, wo Übertragungen gesichert werden, Darstellung und Mitteilungen.",
         "pt": "O seu nome, onde as transferências são guardadas, o aspeto e as notificações.",
-        "pl": "Twoja nazwa, miejsce zapisu transferów, wygląd i powiadomienia."
+        "pl": "Twoja nazwa, miejsce zapisu transferów, wygląd i powiadomienia.",
+        "nl": "Uw naam, waar overdrachten worden bewaard, weergave en meldingen."
       }
     },
     "settings_title": {
@@ -2394,7 +2586,8 @@
         "it": "Impostazioni",
         "de": "Einstellungen",
         "pt": "Definições",
-        "pl": "Ustawienia"
+        "pl": "Ustawienia",
+        "nl": "Instellingen"
       }
     },
     "snackbar_dismiss": {
@@ -2406,7 +2599,8 @@
         "it": "Ignora",
         "de": "Ausblenden",
         "pt": "Ignorar",
-        "pl": "Zamknij"
+        "pl": "Zamknij",
+        "nl": "Sluiten"
       }
     },
     "status_available": {
@@ -2418,7 +2612,8 @@
         "it": "Disponibile",
         "de": "Verfügbar",
         "pt": "Disponível",
-        "pl": "Dostępny"
+        "pl": "Dostępny",
+        "nl": "Beschikbaar"
       }
     },
     "status_cancelled": {
@@ -2430,7 +2625,8 @@
         "it": "Annullato",
         "de": "Abgebrochen",
         "pt": "Cancelado",
-        "pl": "Anulowany"
+        "pl": "Anulowany",
+        "nl": "Geannuleerd"
       }
     },
     "status_completed": {
@@ -2442,7 +2638,8 @@
         "it": "Completato",
         "de": "Abgeschlossen",
         "pt": "Concluído",
-        "pl": "Ukończony"
+        "pl": "Ukończony",
+        "nl": "Voltooid"
       }
     },
     "status_failed": {
@@ -2454,7 +2651,8 @@
         "it": "Non riuscito",
         "de": "Fehlgeschlagen",
         "pt": "Falhou",
-        "pl": "Niepowodzenie"
+        "pl": "Niepowodzenie",
+        "nl": "Mislukt"
       }
     },
     "status_preparing": {
@@ -2466,7 +2664,8 @@
         "it": "Preparazione",
         "de": "Wird vorbereitet",
         "pt": "A preparar",
-        "pl": "Przygotowywanie"
+        "pl": "Przygotowywanie",
+        "nl": "Voorbereiden"
       }
     },
     "status_receiving": {
@@ -2478,7 +2677,8 @@
         "it": "Ricezione",
         "de": "Wird empfangen",
         "pt": "A receber",
-        "pl": "Odbieranie"
+        "pl": "Odbieranie",
+        "nl": "Ontvangen"
       }
     },
     "status_stopped": {
@@ -2490,7 +2690,8 @@
         "it": "Interrotto",
         "de": "Beendet",
         "pt": "Parada",
-        "pl": "Zatrzymany"
+        "pl": "Zatrzymany",
+        "nl": "Gestopt"
       }
     },
     "storage_calculating": {
@@ -2502,7 +2703,8 @@
         "it": "Calcolo…",
         "de": "Wird berechnet…",
         "pt": "A calcular…",
-        "pl": "Obliczanie…"
+        "pl": "Obliczanie…",
+        "nl": "Berekenen…"
       }
     },
     "storage_delete_transfers": {
@@ -2514,7 +2716,8 @@
         "it": "Elimina tutti i trasferimenti",
         "de": "Alle Übertragungen löschen",
         "pt": "Eliminar todas as transferências",
-        "pl": "Usuń wszystkie transfery"
+        "pl": "Usuń wszystkie transfery",
+        "nl": "Alle overdrachten verwijderen"
       }
     },
     "storage_delete_transfers_description": {
@@ -2526,7 +2729,8 @@
         "it": "Questo cancella dalla cronologia tutti i record dei trasferimenti inviati e ricevuti. I suoi file ricevuti non vengono eliminati. Nota: il motore di trasferimento conserva il contenuto memorizzato, quindi i dati di trasferimento potrebbero non diminuire. Questa operazione non può essere annullata.",
         "de": "Dies löscht alle Datensätze gesendeter und empfangener Übertragungen aus Ihrem Verlauf. Ihre empfangenen Dateien werden nicht gelöscht. Hinweis: Die Übertragungs-Engine behält ihre gespeicherten Inhalte, sodass die Übertragungsdaten möglicherweise nicht abnehmen. Dies kann nicht rückgängig gemacht werden.",
         "pt": "Isto elimina do seu histórico todos os registos de transferências enviadas e recebidas. Os seus ficheiros recebidos não são eliminados. Nota: o motor de transferência mantém o conteúdo armazenado, pelo que os dados de transferência podem não diminuir. Isto não pode ser anulado.",
-        "pl": "To usuwa z historii wszystkie rekordy wysłanych i odebranych transferów. Twoje odebrane pliki nie są usuwane. Uwaga: silnik transferu zachowuje przechowywaną zawartość, więc dane transferu mogą się nie zmniejszyć. Tej operacji nie można cofnąć."
+        "pl": "To usuwa z historii wszystkie rekordy wysłanych i odebranych transferów. Twoje odebrane pliki nie są usuwane. Uwaga: silnik transferu zachowuje przechowywaną zawartość, więc dane transferu mogą się nie zmniejszyć. Tej operacji nie można cofnąć.",
+        "nl": "Hiermee worden alle records van verzonden en ontvangen overdrachten uit uw geschiedenis gewist. Uw ontvangen bestanden worden niet verwijderd. Let op: de overdrachtsengine bewaart de opgeslagen inhoud, dus de overdrachtsgegevens nemen mogelijk niet af. Dit kan niet ongedaan worden gemaakt."
       }
     },
     "storage_deleting": {
@@ -2538,7 +2742,8 @@
         "it": "Eliminazione…",
         "de": "Wird gelöscht…",
         "pt": "A eliminar…",
-        "pl": "Usuwanie…"
+        "pl": "Usuwanie…",
+        "nl": "Verwijderen…"
       }
     },
     "storage_footer": {
@@ -2550,7 +2755,8 @@
         "it": "I dati di trasferimento sono gestiti dal motore di trasferimento: la sua cronologia più il contenuto dei file che ha condiviso. Il pulsante qui sotto cancella i record dei trasferimenti; il motore conserva il contenuto memorizzato, quindi questo valore potrebbe non diminuire. I file ricevuti sono i file che ha scaricato e non vengono mai eliminati qui.",
         "de": "Übertragungsdaten werden von der Übertragungs-Engine verwaltet – Ihr Verlauf sowie der Inhalt der von Ihnen geteilten Dateien. Die Schaltfläche unten löscht Ihre Übertragungsdatensätze; die Engine behält ihre gespeicherten Inhalte, sodass dieser Wert möglicherweise nicht sinkt. Empfangene Dateien sind Ihre heruntergeladenen Dateien und werden hier niemals gelöscht.",
         "pt": "Os dados de transferência são geridos pelo motor de transferência — o seu histórico mais o conteúdo dos ficheiros que partilhou. O botão abaixo elimina os seus registos de transferências; o motor mantém o conteúdo armazenado, pelo que este valor pode não descer. Os ficheiros recebidos são os ficheiros que descarregou e nunca são eliminados aqui.",
-        "pl": "Danymi transferu zarządza silnik transferu — Twoja historia oraz zawartość udostępnionych plików. Przycisk poniżej usuwa rekordy transferów; silnik zachowuje przechowywaną zawartość, więc ta wartość może się nie zmniejszyć. Odebrane pliki to Twoje pobrane pliki i nigdy nie są tu usuwane."
+        "pl": "Danymi transferu zarządza silnik transferu — Twoja historia oraz zawartość udostępnionych plików. Przycisk poniżej usuwa rekordy transferów; silnik zachowuje przechowywaną zawartość, więc ta wartość może się nie zmniejszyć. Odebrane pliki to Twoje pobrane pliki i nigdy nie są tu usuwane.",
+        "nl": "Overdrachtsgegevens worden beheerd door de overdrachtsengine — uw geschiedenis plus de inhoud van de bestanden die u hebt gedeeld. De knop hieronder wist uw overdrachtsrecords; de engine bewaart de opgeslagen inhoud, dus deze waarde daalt mogelijk niet. Ontvangen bestanden zijn uw gedownloade bestanden en worden hier nooit verwijderd."
       }
     },
     "storage_received_files": {
@@ -2562,7 +2768,8 @@
         "it": "File ricevuti",
         "de": "Empfangene Dateien",
         "pt": "Ficheiros recebidos",
-        "pl": "Odebrane pliki"
+        "pl": "Odebrane pliki",
+        "nl": "Ontvangen bestanden"
       }
     },
     "storage_temporary": {
@@ -2574,7 +2781,8 @@
         "it": "File temporanei",
         "de": "Temporäre Dateien",
         "pt": "Ficheiros temporários",
-        "pl": "Pliki tymczasowe"
+        "pl": "Pliki tymczasowe",
+        "nl": "Tijdelijke bestanden"
       }
     },
     "storage_title": {
@@ -2586,7 +2794,8 @@
         "it": "Archiviazione",
         "de": "Speicher",
         "pt": "Armazenamento",
-        "pl": "Pamięć"
+        "pl": "Pamięć",
+        "nl": "Opslag"
       }
     },
     "storage_total": {
@@ -2598,7 +2807,8 @@
         "it": "Totale",
         "de": "Gesamt",
         "pt": "Total",
-        "pl": "Łącznie"
+        "pl": "Łącznie",
+        "nl": "Totaal"
       }
     },
     "storage_transfer_data": {
@@ -2610,7 +2820,8 @@
         "it": "Dati di trasferimento",
         "de": "Übertragungsdaten",
         "pt": "Dados de transferência",
-        "pl": "Dane transferu"
+        "pl": "Dane transferu",
+        "nl": "Overdrachtsgegevens"
       }
     },
     "storage_transfers_deleted": {
@@ -2622,7 +2833,8 @@
         "it": "Tutti i trasferimenti eliminati",
         "de": "Alle Übertragungen gelöscht",
         "pt": "Todas as transferências eliminadas",
-        "pl": "Usunięto wszystkie transfery"
+        "pl": "Usunięto wszystkie transfery",
+        "nl": "Alle overdrachten verwijderd"
       }
     },
     "transfer_activity_description": {
@@ -2634,7 +2846,8 @@
         "it": "Veda gli aggiornamenti importanti di questo trasferimento",
         "de": "Wichtige Aktualisierungen zu dieser Übertragung ansehen",
         "pt": "Ver as atualizações importantes desta transferência",
-        "pl": "Zobacz ważne aktualizacje tego transferu"
+        "pl": "Zobacz ważne aktualizacje tego transferu",
+        "nl": "Bekijk belangrijke updates voor deze overdracht"
       }
     },
     "transfer_activity_title": {
@@ -2646,7 +2859,8 @@
         "it": "Attività",
         "de": "Aktivität",
         "pt": "Atividade",
-        "pl": "Aktywność"
+        "pl": "Aktywność",
+        "nl": "Activiteit"
       }
     },
     "transfer_delete_description": {
@@ -2664,7 +2878,8 @@
         "it": "«{arg1}» non verrà più condiviso e la sua cronologia di trasferimento verrà rimossa da questo dispositivo.",
         "de": "„{arg1}“ wird nicht mehr geteilt und sein Übertragungsverlauf wird von diesem Gerät entfernt.",
         "pt": "«{arg1}» deixará de ser partilhado e o seu histórico de transferência será removido deste dispositivo.",
-        "pl": "„{arg1}” przestanie być udostępniany, a jego historia transferu zostanie usunięta z tego urządzenia."
+        "pl": "„{arg1}” przestanie być udostępniany, a jego historia transferu zostanie usunięta z tego urządzenia.",
+        "nl": "‘{arg1}’ wordt niet meer gedeeld en de overdrachtsgeschiedenis wordt van dit apparaat verwijderd."
       }
     },
     "transfer_delete_title": {
@@ -2676,7 +2891,8 @@
         "it": "Eliminare il trasferimento?",
         "de": "Übertragung löschen?",
         "pt": "Eliminar a transferência?",
-        "pl": "Usunąć transfer?"
+        "pl": "Usunąć transfer?",
+        "nl": "Overdracht verwijderen?"
       }
     },
     "transfer_deleted": {
@@ -2688,7 +2904,8 @@
         "it": "Trasferimento eliminato.",
         "de": "Übertragung gelöscht.",
         "pt": "Transferência eliminada.",
-        "pl": "Transfer usunięty."
+        "pl": "Transfer usunięty.",
+        "nl": "Overdracht verwijderd."
       }
     },
     "transfer_deleting": {
@@ -2700,7 +2917,8 @@
         "it": "Eliminazione…",
         "de": "Wird gelöscht…",
         "pt": "A eliminar…",
-        "pl": "Usuwanie…"
+        "pl": "Usuwanie…",
+        "nl": "Verwijderen…"
       }
     },
     "transfer_details_title": {
@@ -2712,7 +2930,8 @@
         "it": "Dettagli del trasferimento",
         "de": "Übertragungsdetails",
         "pt": "Detalhes da transferência",
-        "pl": "Szczegóły transferu"
+        "pl": "Szczegóły transferu",
+        "nl": "Overdrachtsdetails"
       }
     },
     "transfer_event_approved": {
@@ -2724,7 +2943,8 @@
         "it": "Accesso del destinatario approvato",
         "de": "Empfängerzugriff genehmigt",
         "pt": "Acesso do destinatário aprovado",
-        "pl": "Zatwierdzono dostęp odbiorcy"
+        "pl": "Zatwierdzono dostęp odbiorcy",
+        "nl": "Toegang ontvanger goedgekeurd"
       }
     },
     "transfer_event_completed": {
@@ -2736,7 +2956,8 @@
         "it": "Un destinatario ha completato il trasferimento",
         "de": "Ein Empfänger hat die Übertragung abgeschlossen",
         "pt": "Um destinatário concluiu a transferência",
-        "pl": "Odbiorca ukończył transfer"
+        "pl": "Odbiorca ukończył transfer",
+        "nl": "Een ontvanger heeft de overdracht voltooid"
       }
     },
     "transfer_event_connecting": {
@@ -2748,7 +2969,8 @@
         "it": "Connessione al mittente",
         "de": "Verbindung zum Absender",
         "pt": "A ligar ao remetente",
-        "pl": "Łączenie z nadawcą"
+        "pl": "Łączenie z nadawcą",
+        "nl": "Verbinden met afzender"
       }
     },
     "transfer_event_downloading": {
@@ -2760,7 +2982,8 @@
         "it": "Download",
         "de": "Wird geladen",
         "pt": "A descarregar",
-        "pl": "Pobieranie"
+        "pl": "Pobieranie",
+        "nl": "Downloaden"
       }
     },
     "transfer_event_failed": {
@@ -2772,7 +2995,8 @@
         "it": "Il trasferimento ha riscontrato un problema",
         "de": "Bei der Übertragung ist ein Problem aufgetreten",
         "pt": "A transferência teve um problema",
-        "pl": "Podczas transferu wystąpił problem"
+        "pl": "Podczas transferu wystąpił problem",
+        "nl": "Er is een probleem opgetreden bij de overdracht"
       }
     },
     "transfer_event_preparing": {
@@ -2784,7 +3008,8 @@
         "it": "Preparazione del trasferimento",
         "de": "Ihre Übertragung wird vorbereitet",
         "pt": "A preparar a sua transferência",
-        "pl": "Przygotowywanie transferu"
+        "pl": "Przygotowywanie transferu",
+        "nl": "Uw overdracht voorbereiden"
       }
     },
     "transfer_event_ready": {
@@ -2796,7 +3021,8 @@
         "it": "Pronto per la condivisione",
         "de": "Bereit zum Teilen",
         "pt": "Pronto para partilhar",
-        "pl": "Gotowe do udostępnienia"
+        "pl": "Gotowe do udostępnienia",
+        "nl": "Klaar om te delen"
       }
     },
     "transfer_event_refused": {
@@ -2808,7 +3034,8 @@
         "it": "Accesso del destinatario rifiutato",
         "de": "Empfängerzugriff abgelehnt",
         "pt": "Acesso do destinatário recusado",
-        "pl": "Odrzucono dostęp odbiorcy"
+        "pl": "Odrzucono dostęp odbiorcy",
+        "nl": "Toegang ontvanger geweigerd"
       }
     },
     "transfer_event_requested": {
@@ -2820,7 +3047,8 @@
         "it": "Un destinatario ha richiesto l’accesso",
         "de": "Ein Empfänger hat Zugriff angefragt",
         "pt": "Um destinatário pediu acesso",
-        "pl": "Odbiorca poprosił o dostęp"
+        "pl": "Odbiorca poprosił o dostęp",
+        "nl": "Een ontvanger heeft toegang aangevraagd"
       }
     },
     "transfer_event_saving": {
@@ -2832,7 +3060,8 @@
         "it": "Salvataggio",
         "de": "Wird gesichert",
         "pt": "A guardar",
-        "pl": "Zapisywanie"
+        "pl": "Zapisywanie",
+        "nl": "Bewaren"
       }
     },
     "transfer_event_stopped": {
@@ -2844,7 +3073,8 @@
         "it": "Condivisione interrotta",
         "de": "Freigabe beendet",
         "pt": "Partilha parada",
-        "pl": "Zatrzymano udostępnianie"
+        "pl": "Zatrzymano udostępnianie",
+        "nl": "Delen gestopt"
       }
     },
     "transfer_event_updated": {
@@ -2856,7 +3086,8 @@
         "it": "Trasferimento aggiornato",
         "de": "Übertragung aktualisiert",
         "pt": "Transferência atualizada",
-        "pl": "Transfer zaktualizowany"
+        "pl": "Transfer zaktualizowany",
+        "nl": "Overdracht bijgewerkt"
       }
     },
     "transfer_file_count": {
@@ -2897,6 +3128,10 @@
           "few": "{count} pliki",
           "many": "{count} plików",
           "other": "{count} pliku"
+        },
+        "nl": {
+          "one": "{count} bestand",
+          "other": "{count} bestanden"
         }
       }
     },
@@ -2909,7 +3144,8 @@
         "it": "Invito salvato.",
         "de": "Einladung gesichert.",
         "pt": "Convite guardado.",
-        "pl": "Zaproszenie zapisane."
+        "pl": "Zaproszenie zapisane.",
+        "nl": "Uitnodiging bewaard."
       }
     },
     "transfer_nearby_device": {
@@ -2921,7 +3157,8 @@
         "it": "Dispositivo nelle vicinanze",
         "de": "Gerät in der Nähe",
         "pt": "Dispositivo próximo",
-        "pl": "Urządzenie w pobliżu"
+        "pl": "Urządzenie w pobliżu",
+        "nl": "Apparaat in de buurt"
       }
     },
     "transfer_nfc_unavailable": {
@@ -2933,7 +3170,8 @@
         "it": "La scrittura dei tag NFC non è disponibile su questo dispositivo.",
         "de": "Das Beschreiben von NFC-Tags ist auf diesem Gerät nicht verfügbar.",
         "pt": "A escrita de etiquetas NFC não está disponível neste dispositivo.",
-        "pl": "Zapis tagów NFC nie jest dostępny na tym urządzeniu."
+        "pl": "Zapis tagów NFC nie jest dostępny na tym urządzeniu.",
+        "nl": "Het schrijven van NFC-tags is niet beschikbaar op dit apparaat."
       }
     },
     "transfer_nfc_waiting": {
@@ -2945,7 +3183,8 @@
         "it": "Avvicini il dispositivo a un tag NFC scrivibile.",
         "de": "Halten Sie Ihr Gerät an ein beschreibbares NFC-Tag.",
         "pt": "Aproxime o seu dispositivo de uma etiqueta NFC gravável.",
-        "pl": "Zbliż urządzenie do zapisywalnego tagu NFC."
+        "pl": "Zbliż urządzenie do zapisywalnego tagu NFC.",
+        "nl": "Houd uw apparaat bij een beschrijfbare NFC-tag."
       }
     },
     "transfer_nfc_written": {
@@ -2957,7 +3196,8 @@
         "it": "Invito scritto sul tag NFC.",
         "de": "Einladung auf das NFC-Tag geschrieben.",
         "pt": "Convite escrito na etiqueta NFC.",
-        "pl": "Zaproszenie zapisane na tagu NFC."
+        "pl": "Zaproszenie zapisane na tagu NFC.",
+        "nl": "Uitnodiging naar de NFC-tag geschreven."
       }
     },
     "transfer_no_activity": {
@@ -2969,7 +3209,8 @@
         "it": "Non c’è ancora alcuna attività da mostrare.",
         "de": "Es gibt noch keine Aktivität anzuzeigen.",
         "pt": "Ainda não há atividade para mostrar.",
-        "pl": "Nie ma jeszcze aktywności do wyświetlenia."
+        "pl": "Nie ma jeszcze aktywności do wyświetlenia.",
+        "nl": "Er is nog geen activiteit om weer te geven."
       }
     },
     "transfer_no_receivers": {
@@ -2981,7 +3222,8 @@
         "it": "Nessuno ha ancora richiesto questo trasferimento.",
         "de": "Noch niemand hat diese Übertragung angefragt.",
         "pt": "Ainda ninguém pediu esta transferência.",
-        "pl": "Nikt jeszcze nie poprosił o ten transfer."
+        "pl": "Nikt jeszcze nie poprosił o ten transfer.",
+        "nl": "Nog niemand heeft deze overdracht aangevraagd."
       }
     },
     "transfer_receiver_accepted": {
@@ -2993,7 +3235,8 @@
         "it": "Approvato: in attesa del completamento",
         "de": "Genehmigt – wartet auf Abschluss",
         "pt": "Aprovado — a aguardar conclusão",
-        "pl": "Zatwierdzono — oczekiwanie na ukończenie"
+        "pl": "Zatwierdzono — oczekiwanie na ukończenie",
+        "nl": "Goedgekeurd — wachten op voltooiing"
       }
     },
     "transfer_receiver_completed": {
@@ -3005,7 +3248,8 @@
         "it": "Ricevuto correttamente",
         "de": "Erfolgreich empfangen",
         "pt": "Recebido com sucesso",
-        "pl": "Odebrano pomyślnie"
+        "pl": "Odebrano pomyślnie",
+        "nl": "Succesvol ontvangen"
       }
     },
     "transfer_receiver_expired": {
@@ -3017,7 +3261,8 @@
         "it": "Richiesta scaduta",
         "de": "Anfrage abgelaufen",
         "pt": "Pedido expirado",
-        "pl": "Prośba wygasła"
+        "pl": "Prośba wygasła",
+        "nl": "Verzoek verlopen"
       }
     },
     "transfer_receiver_refused": {
@@ -3029,7 +3274,8 @@
         "it": "Richiesta rifiutata",
         "de": "Anfrage abgelehnt",
         "pt": "Pedido recusado",
-        "pl": "Prośba odrzucona"
+        "pl": "Prośba odrzucona",
+        "nl": "Verzoek geweigerd"
       }
     },
     "transfer_receiver_requested": {
@@ -3041,7 +3287,8 @@
         "it": "In attesa della sua approvazione",
         "de": "Wartet auf Ihre Genehmigung",
         "pt": "A aguardar a sua aprovação",
-        "pl": "Oczekiwanie na Twoje zatwierdzenie"
+        "pl": "Oczekiwanie na Twoje zatwierdzenie",
+        "nl": "Wachten op uw goedkeuring"
       }
     },
     "transfer_receiver_unknown": {
@@ -3053,7 +3300,8 @@
         "it": "Stato non disponibile",
         "de": "Status nicht verfügbar",
         "pt": "Estado indisponível",
-        "pl": "Status niedostępny"
+        "pl": "Status niedostępny",
+        "nl": "Status niet beschikbaar"
       }
     },
     "transfer_receivers_completed_count": {
@@ -3071,7 +3319,8 @@
         "it": "{count} completati",
         "de": "{count} abgeschlossen",
         "pt": "{count} concluídos",
-        "pl": "Ukończone: {count}"
+        "pl": "Ukończone: {count}",
+        "nl": "{count} voltooid"
       }
     },
     "transfer_receivers_description": {
@@ -3083,7 +3332,8 @@
         "it": "Richieste, approvazioni e consegne completate",
         "de": "Anfragen, Genehmigungen und abgeschlossene Zustellungen",
         "pt": "Pedidos, aprovações e entregas concluídas",
-        "pl": "Prośby, zatwierdzenia i ukończone dostawy"
+        "pl": "Prośby, zatwierdzenia i ukończone dostawy",
+        "nl": "Verzoeken, goedkeuringen en voltooide leveringen"
       }
     },
     "transfer_receivers_pending": {
@@ -3101,7 +3351,8 @@
         "it": "{count} in attesa",
         "de": "{count} warten",
         "pt": "{count} em espera",
-        "pl": "Oczekujące: {count}"
+        "pl": "Oczekujące: {count}",
+        "nl": "{count} in behandeling"
       }
     },
     "transfer_receivers_title": {
@@ -3113,7 +3364,8 @@
         "it": "Destinatari",
         "de": "Empfänger",
         "pt": "Destinatários",
-        "pl": "Odbiorcy"
+        "pl": "Odbiorcy",
+        "nl": "Ontvangers"
       }
     },
     "transfer_scan_qr": {
@@ -3125,7 +3377,8 @@
         "it": "Scansioni con VniDrop per ricevere questo trasferimento",
         "de": "Mit VniDrop scannen, um diese Übertragung zu empfangen",
         "pt": "Leia com o VniDrop para receber esta transferência",
-        "pl": "Zeskanuj za pomocą VniDrop, aby odebrać ten transfer"
+        "pl": "Zeskanuj za pomocą VniDrop, aby odebrać ten transfer",
+        "nl": "Scan met VniDrop om deze overdracht te ontvangen"
       }
     },
     "transfer_share_description": {
@@ -3137,7 +3390,8 @@
         "it": "Codice QR, file di invito e opzioni nelle vicinanze",
         "de": "QR-Code, Einladungsdatei und Optionen in der Nähe",
         "pt": "Código QR, ficheiro de convite e opções por perto",
-        "pl": "Kod QR, plik zaproszenia i opcje w pobliżu"
+        "pl": "Kod QR, plik zaproszenia i opcje w pobliżu",
+        "nl": "QR-code, uitnodigingsbestand en opties in de buurt"
       }
     },
     "transfer_share_title": {
@@ -3149,7 +3403,8 @@
         "it": "Condividi",
         "de": "Teilen",
         "pt": "Partilhar",
-        "pl": "Udostępnij"
+        "pl": "Udostępnij",
+        "nl": "Delen"
       }
     },
     "value_unavailable": {
@@ -3161,7 +3416,8 @@
         "it": "Non disponibile",
         "de": "Nicht verfügbar",
         "pt": "Indisponível",
-        "pl": "Niedostępne"
+        "pl": "Niedostępne",
+        "nl": "Niet beschikbaar"
       }
     },
     "version_title": {
@@ -3173,7 +3429,8 @@
         "it": "Versione dell’app",
         "de": "App-Version",
         "pt": "Versão da app",
-        "pl": "Wersja aplikacji"
+        "pl": "Wersja aplikacji",
+        "nl": "App-versie"
       }
     }
   }

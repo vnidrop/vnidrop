@@ -11,6 +11,7 @@
 		<string>de</string>
 		<string>pt</string>
 		<string>pl</string>
+		<string>nl</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
