@@ -38,6 +38,12 @@
             "state": "needs_review",
             "value": "%1$@ %2$@ · %3$@"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ %2$@ · %3$@"
+          }
         }
       }
     },
@@ -70,6 +76,12 @@
           }
         },
         "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@"
+          }
+        },
+        "pt": {
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ · %2$@"
@@ -114,6 +126,12 @@
             "state": "needs_review",
             "value": "Segnala un bug"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Comunicar um erro"
+          }
         }
       }
     },
@@ -149,6 +167,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "VniDrop trasferisce file e cartelle direttamente da un dispositivo a un altro sulla rete, senza caricarli su alcun servizio di hosting. Non c’è alcun account da creare e nessuna copia del suo trasferimento rimane nel cloud una volta terminato."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop transfere ficheiros e pastas diretamente de um dispositivo para outro através da rede, sem os carregar para qualquer serviço de alojamento. Não é necessário criar qualquer conta e não fica nenhuma cópia da sua transferência na nuvem depois de terminar."
           }
         }
       }
@@ -186,6 +210,12 @@
             "state": "needs_review",
             "value": "Un trasferimento diretto da dispositivo a dispositivo: i suoi file vanno direttamente al destinatario."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Uma transferência direta entre dispositivos — os seus ficheiros vão diretamente para o destinatário."
+          }
         }
       }
     },
@@ -221,6 +251,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Le connessioni sono autenticate e cifrate end-to-end (tramite Iroh) e i file in arrivo vengono verificati tramite l’impronta del loro contenuto."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "As ligações são autenticadas e cifradas ponto a ponto (através do Iroh), e os ficheiros recebidos são verificados pela impressão digital do seu conteúdo."
           }
         }
       }
@@ -258,6 +294,12 @@
             "state": "needs_review",
             "value": "Lei decide chi riceve: approvi ogni richiesta oppure apra un trasferimento a chiunque disponga dell’invito."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "É você quem decide quem recebe: aprove cada pedido ou abra uma transferência a qualquer pessoa que tenha o convite."
+          }
         }
       }
     },
@@ -293,6 +335,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Senza account: non c’è nulla da registrare."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sem conta — não há nada para registar."
           }
         }
       }
@@ -330,6 +378,12 @@
             "state": "needs_review",
             "value": "Open source, rilasciato con licenza Apache 2.0."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Código aberto, publicado sob a licença Apache 2.0."
+          }
         }
       }
     },
@@ -365,6 +419,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cos’è VniDrop"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O que o VniDrop é"
           }
         }
       }
@@ -402,6 +462,12 @@
             "state": "needs_review",
             "value": "Non è un’archiviazione cloud: nessun server conserva i suoi file e nulla resta nel cloud dopo un trasferimento."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não é armazenamento na nuvem — nenhum servidor guarda os seus ficheiros e nada fica na nuvem após uma transferência."
+          }
         }
       }
     },
@@ -437,6 +503,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non è una diffusione pubblica: un invito è un link di accesso privato, non un annuncio a tutti nelle vicinanze."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não é difusão pública — um convite é uma ligação de acesso privado, não um anúncio a toda a gente por perto."
           }
         }
       }
@@ -474,6 +546,12 @@
             "state": "needs_review",
             "value": "Non è un servizio di sincronizzazione o di backup."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não é um serviço de sincronização ou de cópia de segurança."
+          }
         }
       }
     },
@@ -509,6 +587,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cosa non è VniDrop"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O que o VniDrop não é"
           }
         }
       }
@@ -546,6 +630,12 @@
             "state": "needs_review",
             "value": "Licenza"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Licença"
+          }
         }
       }
     },
@@ -581,6 +671,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Informativa sulla privacy"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Política de privacidade"
           }
         }
       }
@@ -618,6 +714,12 @@
             "state": "needs_review",
             "value": "Gli inviti sono chiavi di accesso. Tratti un codice QR, un tag NFC o un file .vnd come un link di accesso privato e lo condivida solo con le persone previste, soprattutto con «Chiunque abbia questo trasferimento»."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Os convites são chaves de acesso. Trate um código QR, uma etiqueta NFC ou um ficheiro .vnd como uma ligação de acesso privado e partilhe-o apenas com as pessoas pretendidas — sobretudo com «Qualquer pessoa com esta transferência»."
+          }
         }
       }
     },
@@ -653,6 +755,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rifiuto predefinito: VniDrop serve solo il contenuto di una condivisione attiva e rifiuta le richieste sconosciute."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recusa por predefinição — o VniDrop apenas fornece o conteúdo de uma partilha ativa e rejeita pedidos desconhecidos."
           }
         }
       }
@@ -690,6 +798,12 @@
             "state": "needs_review",
             "value": "I file ricevuti vengono salvati sul suo dispositivo e non sovrascrivono mai un file esistente."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Os ficheiros recebidos são guardados no seu dispositivo e nunca substituem um ficheiro existente."
+          }
         }
       }
     },
@@ -725,6 +839,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Informativa sulla privacy"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Política de privacidade"
           }
         }
       }
@@ -762,6 +882,12 @@
             "state": "needs_review",
             "value": "Se due dispositivi non riescono a connettersi direttamente, la connessione cifrata può essere instradata tramite relay. I relay inoltrano solo pacchetti cifrati; non memorizzano mai i suoi file."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Se dois dispositivos não conseguirem ligar-se diretamente, a ligação cifrada pode ser retransmitida. Os retransmissores apenas encaminham pacotes cifrados; nunca guardam os seus ficheiros."
+          }
         }
       }
     },
@@ -797,6 +923,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Privacy e sicurezza"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Privacidade e segurança"
           }
         }
       }
@@ -834,6 +966,12 @@
             "state": "needs_review",
             "value": "Invii file direttamente. Mantenga il controllo su chi li riceve."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Envie ficheiros diretamente. Mantenha o controlo sobre quem os recebe."
+          }
         }
       }
     },
@@ -869,6 +1007,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Informazioni"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Acerca de"
           }
         }
       }
@@ -906,6 +1050,12 @@
             "state": "needs_review",
             "value": "Segue l’aspetto chiaro o scuro di questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Acompanhar o aspeto claro ou escuro deste dispositivo."
+          }
         }
       }
     },
@@ -941,6 +1091,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Modalità scura"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Modo escuro"
           }
         }
       }
@@ -978,6 +1134,12 @@
             "state": "needs_review",
             "value": "Modalità chiara"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Modo claro"
+          }
         }
       }
     },
@@ -1010,6 +1172,12 @@
           }
         },
         "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sistema"
+          }
+        },
+        "pt": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Sistema"
@@ -1050,6 +1218,12 @@
             "state": "needs_review",
             "value": "Aspetto"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aspeto"
+          }
         }
       }
     },
@@ -1085,6 +1259,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Richiesta di ricezione"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pedido de receção"
           }
         }
       }
@@ -1122,6 +1302,12 @@
             "state": "needs_review",
             "value": "ID dispositivo: %1$@"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ID do dispositivo: %1$@"
+          }
         }
       }
     },
@@ -1157,6 +1343,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Un dispositivo nelle vicinanze"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Um dispositivo próximo"
           }
         }
       }
@@ -1194,6 +1386,12 @@
             "state": "needs_review",
             "value": "%1$d richieste in attesa"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d pedidos em espera"
+          }
         }
       }
     },
@@ -1229,6 +1427,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$@ vuole ricevere «%2$@»."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ quer receber «%2$@»."
           }
         }
       }
@@ -1266,6 +1470,12 @@
             "state": "needs_review",
             "value": "Livello batteria"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nível da bateria"
+          }
         }
       }
     },
@@ -1301,6 +1511,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "nome@esempio.com"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "nome@exemplo.com"
           }
         }
       }
@@ -1338,6 +1554,12 @@
             "state": "needs_review",
             "value": "Email di contatto (facoltativa)"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "E-mail de contacto (opcional)"
+          }
         }
       }
     },
@@ -1373,6 +1595,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ci dica cosa è andato storto. Alleghiamo le informazioni sul dispositivo e, facoltativamente, i log recenti (con i valori sensibili oscurati)."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diga-nos o que correu mal. Anexamos informações do dispositivo e, opcionalmente, registos recentes (com os valores sensíveis ocultados)."
           }
         }
       }
@@ -1410,6 +1638,12 @@
             "state": "needs_review",
             "value": "Informazioni sul dispositivo"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Informações do dispositivo"
+          }
         }
       }
     },
@@ -1445,6 +1679,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Descriva cosa si aspettava che accadesse"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Descreva o que esperava que acontecesse"
           }
         }
       }
@@ -1482,6 +1722,12 @@
             "state": "needs_review",
             "value": "Cosa si aspettava?"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O que esperava?"
+          }
         }
       }
     },
@@ -1517,6 +1763,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Includi i log recenti"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Incluir registos recentes"
           }
         }
       }
@@ -1554,6 +1806,12 @@
             "state": "needs_review",
             "value": "Ci aiuta a diagnosticare il problema. I valori sensibili vengono oscurati prima dell’invio."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajuda-nos a diagnosticar o problema. Os valores sensíveis são ocultados antes do envio."
+          }
         }
       }
     },
@@ -1589,6 +1847,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dimensione dell’allegato dei log"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tamanho do anexo de registos"
           }
         }
       }
@@ -1626,6 +1890,12 @@
             "state": "needs_review",
             "value": "Descriva cosa si aspettava."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Descreva o que esperava."
+          }
         }
       }
     },
@@ -1661,6 +1931,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Descriva cosa è accaduto."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Descreva o que aconteceu."
           }
         }
       }
@@ -1698,6 +1974,12 @@
             "state": "needs_review",
             "value": "Elenchi i passaggi per riprodurre il problema"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Enumere os passos para reproduzir o problema"
+          }
         }
       }
     },
@@ -1733,6 +2015,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Passaggi per riprodurre (facoltativi)"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Passos para reproduzir (opcional)"
           }
         }
       }
@@ -1770,6 +2058,12 @@
             "state": "needs_review",
             "value": "Invia segnalazione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Enviar relatório"
+          }
         }
       }
     },
@@ -1805,6 +2099,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile inviare la segnalazione. Riprovi più tardi."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível enviar o relatório de erro. Tente novamente mais tarde."
           }
         }
       }
@@ -1842,6 +2142,12 @@
             "state": "needs_review",
             "value": "Grazie: la sua segnalazione è stata registrata."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Obrigado — o seu relatório de erro foi registado."
+          }
         }
       }
     },
@@ -1877,6 +2183,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invio in corso…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A enviar…"
           }
         }
       }
@@ -1914,6 +2226,12 @@
             "state": "needs_review",
             "value": "Descriva cosa è accaduto"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Descreva o que aconteceu"
+          }
         }
       }
     },
@@ -1949,6 +2267,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cosa è accaduto?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O que aconteceu?"
           }
         }
       }
@@ -1986,6 +2310,12 @@
             "state": "needs_review",
             "value": "Approva"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aprovar"
+          }
         }
       }
     },
@@ -2021,6 +2351,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Indietro"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voltar"
           }
         }
       }
@@ -2058,6 +2394,12 @@
             "state": "needs_review",
             "value": "Annulla"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cancelar"
+          }
         }
       }
     },
@@ -2093,6 +2435,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Annulla"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cancelar"
           }
         }
       }
@@ -2130,6 +2478,12 @@
             "state": "needs_review",
             "value": "Cambia file"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alterar ficheiros"
+          }
         }
       }
     },
@@ -2165,6 +2519,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scegli file"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escolher ficheiros"
           }
         }
       }
@@ -2202,6 +2562,12 @@
             "state": "needs_review",
             "value": "Scegli cartella"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escolher pasta"
+          }
         }
       }
     },
@@ -2237,6 +2603,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cancella"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Limpar"
           }
         }
       }
@@ -2274,6 +2646,12 @@
             "state": "needs_review",
             "value": "Chiudi"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fechar"
+          }
         }
       }
     },
@@ -2309,6 +2687,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nuovo trasferimento"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nova transferência"
           }
         }
       }
@@ -2346,6 +2730,12 @@
             "state": "needs_review",
             "value": "Elimina trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eliminar transferência"
+          }
         }
       }
     },
@@ -2381,6 +2771,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Salva file .vnd"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Guardar ficheiro .vnd"
           }
         }
       }
@@ -2418,6 +2814,12 @@
             "state": "needs_review",
             "value": "Condividi invito"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Partilhar convite"
+          }
         }
       }
     },
@@ -2453,6 +2855,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Apri Impostazioni"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abrir Definições"
           }
         }
       }
@@ -2490,6 +2898,12 @@
             "state": "needs_review",
             "value": "Ricevi"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Receber"
+          }
         }
       }
     },
@@ -2525,6 +2939,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Inizia a ricevere"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Começar a receber"
           }
         }
       }
@@ -2562,6 +2982,12 @@
             "state": "needs_review",
             "value": "Rifiuta"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recusar"
+          }
         }
       }
     },
@@ -2597,6 +3023,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rimuovi file"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Remover ficheiro"
           }
         }
       }
@@ -2634,6 +3066,12 @@
             "state": "needs_review",
             "value": "Usa predefinito"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Usar predefinição"
+          }
         }
       }
     },
@@ -2669,6 +3107,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Riprova"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tentar novamente"
           }
         }
       }
@@ -2706,6 +3150,12 @@
             "state": "needs_review",
             "value": "Inizia a condividere"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Começar a partilhar"
+          }
         }
       }
     },
@@ -2741,6 +3191,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preparazione del trasferimento…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A preparar a transferência…"
           }
         }
       }
@@ -2778,6 +3234,12 @@
             "state": "needs_review",
             "value": "Mostra in File"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mostrar em Ficheiros"
+          }
         }
       }
     },
@@ -2813,6 +3275,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scrivi su tag NFC"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escrever em etiqueta NFC"
           }
         }
       }
@@ -2850,6 +3318,12 @@
             "state": "needs_review",
             "value": "Modello del dispositivo"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Modelo do dispositivo"
+          }
         }
       }
     },
@@ -2885,6 +3359,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nome del dispositivo"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nome do dispositivo"
           }
         }
       }
@@ -2922,6 +3402,12 @@
             "state": "needs_review",
             "value": "Invia report di arresto anomalo ed eventi d’uso anonimi per aiutarci a migliorare VniDrop. Può disattivarlo in qualsiasi momento. Inviti, percorsi dei file e contenuti dei trasferimenti non vengono mai inclusi."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Enviar relatórios de falhas e eventos de utilização anónimos para nos ajudar a melhorar o VniDrop. Pode desativar isto a qualquer momento. Convites, caminhos de ficheiros e conteúdos das transferências nunca são incluídos."
+          }
         }
       }
     },
@@ -2957,6 +3443,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "La condivisione dei dati diagnostici è disattivata."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A partilha de diagnósticos está desativada."
           }
         }
       }
@@ -2994,6 +3486,12 @@
             "state": "needs_review",
             "value": "La condivisione dei dati diagnostici è attivata."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A partilha de diagnósticos está ativada."
+          }
         }
       }
     },
@@ -3029,6 +3527,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Condividi dati diagnostici"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Partilhar diagnósticos"
           }
         }
       }
@@ -3066,6 +3570,12 @@
             "state": "needs_review",
             "value": "Per scansionare un codice QR è necessario l’accesso alla fotocamera."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "É necessário acesso à câmara para ler um código QR."
+          }
         }
       }
     },
@@ -3101,6 +3611,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile caricare le informazioni sul dispositivo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível carregar as informações do dispositivo."
           }
         }
       }
@@ -3138,6 +3654,12 @@
             "state": "needs_review",
             "value": "VniDrop non ha potuto accedere ai file o alla cartella selezionati. Controlli le autorizzazioni e riprovi."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop não conseguiu aceder aos ficheiros ou à pasta selecionados. Verifique as permissões e tente novamente."
+          }
         }
       }
     },
@@ -3173,6 +3695,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Qualcosa è andato storto. Riprovi."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Algo correu mal. Tente novamente."
           }
         }
       }
@@ -3210,6 +3738,12 @@
             "state": "needs_review",
             "value": "VniDrop non ha potuto completare l’avvio. Chiuda l’app e riprovi."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop não conseguiu concluir o arranque. Feche a app e tente novamente."
+          }
         }
       }
     },
@@ -3245,6 +3779,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile leggere questo invito. Ne chieda uno nuovo al mittente."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível ler este convite. Peça um novo ao remetente."
           }
         }
       }
@@ -3282,6 +3822,12 @@
             "state": "needs_review",
             "value": "Questo invito è vuoto. Provi ad aprirlo di nuovo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Esse convite está vazio. Tente abri-lo novamente."
+          }
         }
       }
     },
@@ -3317,6 +3863,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "La libreria nativa di VniDrop non è presente in questa build."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A biblioteca nativa do VniDrop está em falta nesta compilação."
           }
         }
       }
@@ -3354,6 +3906,12 @@
             "state": "needs_review",
             "value": "Impossibile usare questo tag NFC. Ne provi un altro."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível utilizar esta etiqueta NFC. Tente outra."
+          }
         }
       }
     },
@@ -3389,6 +3947,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Il mittente non ha approvato questo trasferimento, oppure è stato rifiutato."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O remetente não aprovou esta transferência, ou foi recusada."
           }
         }
       }
@@ -3426,6 +3990,12 @@
             "state": "needs_review",
             "value": "VniDrop non ha potuto salvare i dati del trasferimento su questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop não conseguiu guardar os dados da transferência neste dispositivo."
+          }
         }
       }
     },
@@ -3461,6 +4031,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile aprire l’elemento selezionato. Provi a sceglierlo di nuovo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível abrir o item selecionado. Tente escolhê-lo novamente."
           }
         }
       }
@@ -3498,6 +4074,12 @@
             "state": "needs_review",
             "value": "Selezioni almeno un elemento da condividere."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selecione pelo menos um item para partilhar."
+          }
         }
       }
     },
@@ -3533,6 +4115,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "VniDrop non ha potuto aprire i suoi socket di rete su questo dispositivo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop não conseguiu abrir os seus sockets de rede neste dispositivo."
           }
         }
       }
@@ -3570,6 +4158,12 @@
             "state": "needs_review",
             "value": "VniDrop è ancora in fase di avvio. Riapra l’invito tra un momento."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop ainda está a iniciar. Abra o convite novamente dentro de momentos."
+          }
         }
       }
     },
@@ -3605,6 +4199,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile completare il trasferimento. Controlli la connessione e riprovi."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível concluir a transferência. Verifique a sua ligação e tente novamente."
           }
         }
       }
@@ -3642,6 +4242,12 @@
             "state": "needs_review",
             "value": "Nome del destinatario"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nome do destinatário"
+          }
         }
       }
     },
@@ -3677,6 +4283,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nome del mittente"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nome do remetente"
           }
         }
       }
@@ -3714,6 +4326,12 @@
             "state": "needs_review",
             "value": "Nome del trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nome da transferência"
+          }
         }
       }
     },
@@ -3749,6 +4367,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nome visualizzato"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nome a apresentar"
           }
         }
       }
@@ -3786,6 +4410,12 @@
             "state": "needs_review",
             "value": "Autorizzazione necessaria"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Permissão necessária"
+          }
         }
       }
     },
@@ -3821,6 +4451,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non disponibile"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Indisponível"
           }
         }
       }
@@ -3858,6 +4494,12 @@
             "state": "needs_review",
             "value": "Controllo della cartella…"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A verificar a pasta…"
+          }
         }
       }
     },
@@ -3893,6 +4535,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Pronta"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pronto"
           }
         }
       }
@@ -3930,6 +4578,12 @@
             "state": "needs_review",
             "value": "File"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ficheiros"
+          }
         }
       }
     },
@@ -3965,6 +4619,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dimensione"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tamanho"
           }
         }
       }
@@ -4002,6 +4662,12 @@
             "state": "needs_review",
             "value": "Stato"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Estado"
+          }
         }
       }
     },
@@ -4037,6 +4703,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricevi"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Receber"
           }
         }
       }
@@ -4074,6 +4746,12 @@
             "state": "needs_review",
             "value": "Invia"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Enviar"
+          }
         }
       }
     },
@@ -4109,6 +4787,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impostazioni"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Definições"
           }
         }
       }
@@ -4146,6 +4830,12 @@
             "state": "needs_review",
             "value": "Rete"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rede"
+          }
         }
       }
     },
@@ -4181,6 +4871,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricevi avvisi sulle nuove richieste di ricezione quando VniDrop è in background."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Seja notificado sobre novos pedidos de receção enquanto o VniDrop está em segundo plano."
           }
         }
       }
@@ -4218,6 +4914,12 @@
             "state": "needs_review",
             "value": "Notifiche attivate."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notificações ativadas."
+          }
         }
       }
     },
@@ -4253,6 +4955,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Consenti le notifiche"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Permitir notificações"
           }
         }
       }
@@ -4290,6 +4998,12 @@
             "state": "needs_review",
             "value": "Le notifiche sono disattivate per VniDrop. Può attivarle in Impostazioni."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "As notificações estão desativadas para o VniDrop. Pode ativá-las nas Definições."
+          }
         }
       }
     },
@@ -4325,6 +5039,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Impossibile aprire le impostazioni delle notifiche."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível abrir as definições de notificações."
           }
         }
       }
@@ -4362,6 +5082,12 @@
             "state": "needs_review",
             "value": "Notifiche"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Notificações"
+          }
         }
       }
     },
@@ -4398,6 +5124,12 @@
             "state": "needs_review",
             "value": "Le notifiche non sono disponibili su questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "As notificações não estão disponíveis neste dispositivo."
+          }
         }
       }
     },
@@ -4430,6 +5162,12 @@
           }
         },
         "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sistema operativo"
+          }
+        },
+        "pt": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Sistema operativo"
@@ -4470,6 +5208,12 @@
             "state": "needs_review",
             "value": "Salva i trasferimenti ricevuti in"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Guardar as transferências recebidas em"
+          }
         }
       }
     },
@@ -4505,6 +5249,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Preferenze"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Preferências"
           }
         }
       }
@@ -4542,6 +5292,12 @@
             "state": "needs_review",
             "value": "Annullato"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cancelado"
+          }
         }
       }
     },
@@ -4577,6 +5333,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Completato"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Concluído"
           }
         }
       }
@@ -4614,6 +5376,12 @@
             "state": "needs_review",
             "value": "Connesso"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ligado"
+          }
         }
       }
     },
@@ -4649,6 +5417,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Connessione"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A ligar"
           }
         }
       }
@@ -4686,6 +5460,12 @@
             "state": "needs_review",
             "value": "Download"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A descarregar"
+          }
         }
       }
     },
@@ -4721,6 +5501,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non riuscito"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Falhou"
           }
         }
       }
@@ -4758,6 +5544,12 @@
             "state": "needs_review",
             "value": "Preparazione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A preparar-se"
+          }
         }
       }
     },
@@ -4793,6 +5585,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento interrotto"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferência interrompida"
           }
         }
       }
@@ -4830,6 +5628,12 @@
             "state": "needs_review",
             "value": "Preparazione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A preparar"
+          }
         }
       }
     },
@@ -4862,6 +5666,12 @@
           }
         },
         "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pronto"
+          }
+        },
+        "pt": {
           "stringUnit": {
             "state": "needs_review",
             "value": "Pronto"
@@ -4902,6 +5712,12 @@
             "state": "needs_review",
             "value": "Ricezione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A receber"
+          }
         }
       }
     },
@@ -4937,6 +5753,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Richiesta di accesso"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A pedir acesso"
           }
         }
       }
@@ -4974,6 +5796,12 @@
             "state": "needs_review",
             "value": "Salvataggio"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A guardar"
+          }
         }
       }
     },
@@ -5009,6 +5837,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invio"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A enviar"
           }
         }
       }
@@ -5046,6 +5880,12 @@
             "state": "needs_review",
             "value": "Invio a %1$d"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A enviar para %1$d"
+          }
         }
       }
     },
@@ -5081,6 +5921,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Pronto per la condivisione"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pronto para partilhar"
           }
         }
       }
@@ -5118,6 +5964,12 @@
             "state": "needs_review",
             "value": "Elaborazione…"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A processar…"
+          }
         }
       }
     },
@@ -5153,6 +6005,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scelga il metodo di invito a sua disposizione."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escolha o método de convite ao seu dispor."
           }
         }
       }
@@ -5190,6 +6048,12 @@
             "state": "needs_review",
             "value": "Come vuole connettersi?"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Como pretende ligar-se?"
+          }
         }
       }
     },
@@ -5225,6 +6089,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cancella cronologia"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Limpar histórico"
           }
         }
       }
@@ -5262,6 +6132,12 @@
             "state": "needs_review",
             "value": "Tutte le ricezioni completate, non riuscite e annullate verranno rimosse dalla cronologia di VniDrop. I file scaricati rimarranno su questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Todas as receções concluídas, falhadas e canceladas serão removidas do histórico do VniDrop. Os ficheiros descarregados permanecerão neste dispositivo."
+          }
         }
       }
     },
@@ -5297,6 +6173,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cancellare la cronologia di ricezione?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Limpar o histórico de receção?"
           }
         }
       }
@@ -5334,6 +6216,12 @@
             "state": "needs_review",
             "value": "Trasferimento ricevuto."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferência recebida."
+          }
         }
       }
     },
@@ -5369,6 +6257,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "«%1$@» verrà rimosso dalla cronologia di VniDrop. Il file scaricato rimarrà su questo dispositivo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "«%1$@» será removido do histórico do VniDrop. O ficheiro descarregado permanecerá neste dispositivo."
           }
         }
       }
@@ -5406,6 +6300,12 @@
             "state": "needs_review",
             "value": "Elimina dalla cronologia di ricezione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eliminar do histórico de receção"
+          }
         }
       }
     },
@@ -5441,6 +6341,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rimuovere dalla cronologia?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Remover do histórico?"
           }
         }
       }
@@ -5478,6 +6384,12 @@
             "state": "needs_review",
             "value": "Apra un invito VniDrop, scansioni un codice QR o avvicini un tag NFC."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abra um convite do VniDrop, leia um código QR ou aproxime uma etiqueta NFC."
+          }
         }
       }
     },
@@ -5513,6 +6425,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ancora nulla di ricevuto"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ainda não recebeu nada"
           }
         }
       }
@@ -5550,6 +6468,12 @@
             "state": "needs_review",
             "value": "Cronologia di ricezione cancellata."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Histórico de receção limpo."
+          }
         }
       }
     },
@@ -5585,6 +6509,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cronologia"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Histórico"
           }
         }
       }
@@ -5622,6 +6552,12 @@
             "state": "needs_review",
             "value": "Apri un invito .vnd"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abrir um convite .vnd"
+          }
         }
       }
     },
@@ -5657,6 +6593,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scelga un invito salvato o condiviso su questo dispositivo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escolha um convite guardado ou partilhado neste dispositivo."
           }
         }
       }
@@ -5694,6 +6636,12 @@
             "state": "needs_review",
             "value": "Leggi tag NFC"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ler etiqueta NFC"
+          }
         }
       }
     },
@@ -5729,6 +6677,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Avvicini questo dispositivo al tag di invito del mittente."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aproxime este dispositivo da etiqueta de convite do remetente."
           }
         }
       }
@@ -5766,6 +6720,12 @@
             "state": "needs_review",
             "value": "Scansiona codice QR"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ler código QR"
+          }
         }
       }
     },
@@ -5801,6 +6761,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Usi la fotocamera per scansionare il codice VniDrop del mittente."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Use a câmara para ler o código VniDrop do remetente."
           }
         }
       }
@@ -5838,6 +6804,12 @@
             "state": "needs_review",
             "value": "Trasferimenti che ha ricevuto su questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferências que recebeu neste dispositivo."
+          }
         }
       }
     },
@@ -5873,6 +6845,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Avvicini al tag NFC…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aproxime da etiqueta NFC…"
           }
         }
       }
@@ -5910,6 +6888,12 @@
             "state": "needs_review",
             "value": "Impossibile aprire VniDrop in File."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível abrir o VniDrop em Ficheiros."
+          }
         }
       }
     },
@@ -5945,6 +6929,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Rivedi trasferimento"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rever transferência"
           }
         }
       }
@@ -5982,6 +6972,12 @@
             "state": "needs_review",
             "value": "Ricevi"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Receber"
+          }
         }
       }
     },
@@ -6017,6 +7013,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento VniDrop"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferência VniDrop"
           }
         }
       }
@@ -6054,6 +7056,12 @@
             "state": "needs_review",
             "value": "Chiunque abbia questo trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Qualquer pessoa com esta transferência"
+          }
         }
       }
     },
@@ -6089,6 +7097,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nessuna approvazione richiesta. Da usare solo per elementi che non ha problemi a condividere."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não é necessária aprovação. Utilize apenas para itens que não se importe de partilhar."
           }
         }
       }
@@ -6126,6 +7140,12 @@
             "state": "needs_review",
             "value": "Chiunque abbia l’invito può scaricare finché non interrompe la condivisione. Non lo usi per elementi privati o sensibili."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Qualquer pessoa com o convite pode descarregar até parar de partilhar. Não utilize para itens privados ou sensíveis."
+          }
         }
       }
     },
@@ -6161,6 +7181,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Chiedi prima di ogni download"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Perguntar antes de cada descarga"
           }
         }
       }
@@ -6198,6 +7224,12 @@
             "state": "needs_review",
             "value": "Approva o rifiuta ogni nuovo destinatario."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aprova ou recusa cada novo destinatário."
+          }
         }
       }
     },
@@ -6233,6 +7265,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Chi può riceverlo?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Quem a pode receber?"
           }
         }
       }
@@ -6270,6 +7308,12 @@
             "state": "needs_review",
             "value": "Selezioni file o una cartella da questo dispositivo. Potrà rivedere la selezione prima di creare il trasferimento."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Selecione ficheiros ou uma pasta deste dispositivo. Poderá rever a seleção antes de criar a transferência."
+          }
         }
       }
     },
@@ -6305,6 +7349,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Scelga cosa condividere"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Escolha o que partilhar"
           }
         }
       }
@@ -6342,6 +7392,12 @@
             "state": "needs_review",
             "value": "Crei un trasferimento, decida chi può riceverlo, poi inviti queste persone con un codice QR, un tag NFC o un file di invito."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Crie uma transferência, decida quem a pode receber e depois convide essas pessoas com um código QR, uma etiqueta NFC ou um ficheiro de convite."
+          }
         }
       }
     },
@@ -6377,6 +7433,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ancora nulla di condiviso"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ainda não partilhou nada"
           }
         }
       }
@@ -6414,6 +7476,12 @@
             "state": "needs_review",
             "value": "Dimensione non disponibile"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tamanho indisponível"
+          }
         }
       }
     },
@@ -6449,6 +7517,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Cartella"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pasta"
           }
         }
       }
@@ -6486,6 +7560,12 @@
             "state": "needs_review",
             "value": "Crea un nuovo trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Criar uma nova transferência"
+          }
         }
       }
     },
@@ -6521,6 +7601,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nuovo trasferimento"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nova transferência"
           }
         }
       }
@@ -6558,6 +7644,12 @@
             "state": "needs_review",
             "value": "Rivedi trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rever transferência"
+          }
         }
       }
     },
@@ -6593,6 +7685,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "%1$d file selezionati"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d ficheiros selecionados"
           }
         }
       }
@@ -6630,6 +7728,12 @@
             "state": "needs_review",
             "value": "Interrompi condivisione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Parar de partilhar"
+          }
         }
       }
     },
@@ -6665,6 +7769,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Questo interrompe il trasferimento e blocca chiunque lo stia scaricando. Rimane nella sua cronologia come Interrotto."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Isto para a transferência e interrompe quem estiver a descarregá-la. Permanece no seu histórico como Parada."
           }
         }
       }
@@ -6702,6 +7812,12 @@
             "state": "needs_review",
             "value": "Trasferimenti che sta condividendo da questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferências que está a partilhar a partir deste dispositivo."
+          }
         }
       }
     },
@@ -6737,6 +7853,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invia"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Enviar"
           }
         }
       }
@@ -6774,6 +7896,12 @@
             "state": "needs_review",
             "value": "Trasferimento creato."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferência criada."
+          }
         }
       }
     },
@@ -6809,6 +7937,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Dettagli del trasferimento"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Detalhes da transferência"
           }
         }
       }
@@ -6846,6 +7980,12 @@
             "state": "needs_review",
             "value": "I suoi trasferimenti"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "As suas transferências"
+          }
         }
       }
     },
@@ -6881,6 +8021,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Il suo nome, dove vengono salvati i trasferimenti, l’aspetto e le notifiche."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O seu nome, onde as transferências são guardadas, o aspeto e as notificações."
           }
         }
       }
@@ -6918,6 +8064,12 @@
             "state": "needs_review",
             "value": "Impostazioni"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Definições"
+          }
         }
       }
     },
@@ -6953,6 +8105,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ignora"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ignorar"
           }
         }
       }
@@ -6990,6 +8148,12 @@
             "state": "needs_review",
             "value": "Disponibile"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Disponível"
+          }
         }
       }
     },
@@ -7025,6 +8189,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Annullato"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Cancelado"
           }
         }
       }
@@ -7062,6 +8232,12 @@
             "state": "needs_review",
             "value": "Completato"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Concluído"
+          }
         }
       }
     },
@@ -7097,6 +8273,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Non riuscito"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Falhou"
           }
         }
       }
@@ -7134,6 +8316,12 @@
             "state": "needs_review",
             "value": "Preparazione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A preparar"
+          }
         }
       }
     },
@@ -7169,6 +8357,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricezione"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A receber"
           }
         }
       }
@@ -7206,6 +8400,12 @@
             "state": "needs_review",
             "value": "Interrotto"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Parada"
+          }
         }
       }
     },
@@ -7241,6 +8441,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Calcolo…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A calcular…"
           }
         }
       }
@@ -7278,6 +8484,12 @@
             "state": "needs_review",
             "value": "Elimina tutti i trasferimenti"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eliminar todas as transferências"
+          }
         }
       }
     },
@@ -7313,6 +8525,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Questo cancella dalla cronologia tutti i record dei trasferimenti inviati e ricevuti. I suoi file ricevuti non vengono eliminati. Nota: il motore di trasferimento conserva il contenuto memorizzato, quindi i dati di trasferimento potrebbero non diminuire. Questa operazione non può essere annullata."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Isto elimina do seu histórico todos os registos de transferências enviadas e recebidas. Os seus ficheiros recebidos não são eliminados. Nota: o motor de transferência mantém o conteúdo armazenado, pelo que os dados de transferência podem não diminuir. Isto não pode ser anulado."
           }
         }
       }
@@ -7350,6 +8568,12 @@
             "state": "needs_review",
             "value": "Eliminazione…"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A eliminar…"
+          }
         }
       }
     },
@@ -7385,6 +8609,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "I dati di trasferimento sono gestiti dal motore di trasferimento: la sua cronologia più il contenuto dei file che ha condiviso. Il pulsante qui sotto cancella i record dei trasferimenti; il motore conserva il contenuto memorizzato, quindi questo valore potrebbe non diminuire. I file ricevuti sono i file che ha scaricato e non vengono mai eliminati qui."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Os dados de transferência são geridos pelo motor de transferência — o seu histórico mais o conteúdo dos ficheiros que partilhou. O botão abaixo elimina os seus registos de transferências; o motor mantém o conteúdo armazenado, pelo que este valor pode não descer. Os ficheiros recebidos são os ficheiros que descarregou e nunca são eliminados aqui."
           }
         }
       }
@@ -7422,6 +8652,12 @@
             "state": "needs_review",
             "value": "File ricevuti"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ficheiros recebidos"
+          }
         }
       }
     },
@@ -7457,6 +8693,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "File temporanei"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ficheiros temporários"
           }
         }
       }
@@ -7494,6 +8736,12 @@
             "state": "needs_review",
             "value": "Archiviazione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Armazenamento"
+          }
         }
       }
     },
@@ -7529,6 +8777,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Totale"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Total"
           }
         }
       }
@@ -7566,6 +8820,12 @@
             "state": "needs_review",
             "value": "Dati di trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dados de transferência"
+          }
         }
       }
     },
@@ -7601,6 +8861,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Tutti i trasferimenti eliminati"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Todas as transferências eliminadas"
           }
         }
       }
@@ -7638,6 +8904,12 @@
             "state": "needs_review",
             "value": "Veda gli aggiornamenti importanti di questo trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ver as atualizações importantes desta transferência"
+          }
         }
       }
     },
@@ -7673,6 +8945,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Attività"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Atividade"
           }
         }
       }
@@ -7710,6 +8988,12 @@
             "state": "needs_review",
             "value": "«%1$@» non verrà più condiviso e la sua cronologia di trasferimento verrà rimossa da questo dispositivo."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "«%1$@» deixará de ser partilhado e o seu histórico de transferência será removido deste dispositivo."
+          }
         }
       }
     },
@@ -7745,6 +9029,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Eliminare il trasferimento?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eliminar a transferência?"
           }
         }
       }
@@ -7782,6 +9072,12 @@
             "state": "needs_review",
             "value": "Trasferimento eliminato."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferência eliminada."
+          }
         }
       }
     },
@@ -7817,6 +9113,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Eliminazione…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A eliminar…"
           }
         }
       }
@@ -7854,6 +9156,12 @@
             "state": "needs_review",
             "value": "Dettagli del trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Detalhes da transferência"
+          }
         }
       }
     },
@@ -7889,6 +9197,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Accesso del destinatario approvato"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Acesso do destinatário aprovado"
           }
         }
       }
@@ -7926,6 +9240,12 @@
             "state": "needs_review",
             "value": "Un destinatario ha completato il trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Um destinatário concluiu a transferência"
+          }
         }
       }
     },
@@ -7961,6 +9281,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Connessione al mittente"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A ligar ao remetente"
           }
         }
       }
@@ -7998,6 +9324,12 @@
             "state": "needs_review",
             "value": "Download"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A descarregar"
+          }
         }
       }
     },
@@ -8033,6 +9365,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Il trasferimento ha riscontrato un problema"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A transferência teve um problema"
           }
         }
       }
@@ -8070,6 +9408,12 @@
             "state": "needs_review",
             "value": "Preparazione del trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A preparar a sua transferência"
+          }
         }
       }
     },
@@ -8105,6 +9449,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Pronto per la condivisione"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pronto para partilhar"
           }
         }
       }
@@ -8142,6 +9492,12 @@
             "state": "needs_review",
             "value": "Accesso del destinatario rifiutato"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Acesso do destinatário recusado"
+          }
         }
       }
     },
@@ -8177,6 +9533,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Un destinatario ha richiesto l’accesso"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Um destinatário pediu acesso"
           }
         }
       }
@@ -8214,6 +9576,12 @@
             "state": "needs_review",
             "value": "Salvataggio"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A guardar"
+          }
         }
       }
     },
@@ -8250,6 +9618,12 @@
             "state": "needs_review",
             "value": "Condivisione interrotta"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Partilha parada"
+          }
         }
       }
     },
@@ -8285,6 +9659,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Trasferimento aggiornato"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferência atualizada"
           }
         }
       }
@@ -8382,6 +9762,24 @@
               }
             }
           }
+        },
+        "pt": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%1$d ficheiro"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%1$d ficheiros"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -8417,6 +9815,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invito salvato."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Convite guardado."
           }
         }
       }
@@ -8454,6 +9858,12 @@
             "state": "needs_review",
             "value": "Dispositivo nelle vicinanze"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dispositivo próximo"
+          }
         }
       }
     },
@@ -8489,6 +9899,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "La scrittura dei tag NFC non è disponibile su questo dispositivo."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A escrita de etiquetas NFC não está disponível neste dispositivo."
           }
         }
       }
@@ -8526,6 +9942,12 @@
             "state": "needs_review",
             "value": "Avvicini il dispositivo a un tag NFC scrivibile."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aproxime o seu dispositivo de uma etiqueta NFC gravável."
+          }
         }
       }
     },
@@ -8561,6 +9983,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Invito scritto sul tag NFC."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Convite escrito na etiqueta NFC."
           }
         }
       }
@@ -8598,6 +10026,12 @@
             "state": "needs_review",
             "value": "Non c’è ancora alcuna attività da mostrare."
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ainda não há atividade para mostrar."
+          }
         }
       }
     },
@@ -8633,6 +10067,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Nessuno ha ancora richiesto questo trasferimento."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ainda ninguém pediu esta transferência."
           }
         }
       }
@@ -8670,6 +10110,12 @@
             "state": "needs_review",
             "value": "Approvato: in attesa del completamento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aprovado — a aguardar conclusão"
+          }
         }
       }
     },
@@ -8705,6 +10151,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ricevuto correttamente"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Recebido com sucesso"
           }
         }
       }
@@ -8742,6 +10194,12 @@
             "state": "needs_review",
             "value": "Richiesta scaduta"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pedido expirado"
+          }
         }
       }
     },
@@ -8777,6 +10235,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Richiesta rifiutata"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pedido recusado"
           }
         }
       }
@@ -8814,6 +10278,12 @@
             "state": "needs_review",
             "value": "In attesa della sua approvazione"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A aguardar a sua aprovação"
+          }
         }
       }
     },
@@ -8849,6 +10319,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Stato non disponibile"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Estado indisponível"
           }
         }
       }
@@ -8886,6 +10362,12 @@
             "state": "needs_review",
             "value": "%1$d completati"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d concluídos"
+          }
         }
       }
     },
@@ -8921,6 +10403,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Richieste, approvazioni e consegne completate"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pedidos, aprovações e entregas concluídas"
           }
         }
       }
@@ -8958,6 +10446,12 @@
             "state": "needs_review",
             "value": "%1$d in attesa"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d em espera"
+          }
         }
       }
     },
@@ -8993,6 +10487,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Destinatari"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Destinatários"
           }
         }
       }
@@ -9030,6 +10530,12 @@
             "state": "needs_review",
             "value": "Scansioni con VniDrop per ricevere questo trasferimento"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Leia com o VniDrop para receber esta transferência"
+          }
         }
       }
     },
@@ -9065,6 +10571,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Codice QR, file di invito e opzioni nelle vicinanze"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Código QR, ficheiro de convite e opções por perto"
           }
         }
       }
@@ -9102,6 +10614,12 @@
             "state": "needs_review",
             "value": "Condividi"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Partilhar"
+          }
         }
       }
     },
@@ -9138,6 +10656,12 @@
             "state": "needs_review",
             "value": "Non disponibile"
           }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Indisponível"
+          }
         }
       }
     },
@@ -9173,6 +10697,12 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Versione dell’app"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Versão da app"
           }
         }
       }
