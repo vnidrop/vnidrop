@@ -12,6 +12,12 @@ export const APPLE_XCSTRINGS = join(
   "apple/VniDrop/Resources/Localizable.xcstrings",
 );
 
+/** Apple app Info.plist — its CFBundleLocalizations is kept in sync with supportedLanguages. */
+export const APPLE_INFO_PLIST = join(
+  REPO_ROOT,
+  "apple/VniDrop/Resources/Info.plist",
+);
+
 /** KMP / Compose Multiplatform resources root; one values[-lang]/strings.xml per language. */
 export const KMP_RESOURCES = join(
   REPO_ROOT,

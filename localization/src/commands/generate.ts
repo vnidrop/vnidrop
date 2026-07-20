@@ -6,6 +6,7 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import {
+  APPLE_INFO_PLIST,
   APPLE_XCSTRINGS,
   kmpValuesDir,
   KMP_RESOURCES,
@@ -79,6 +80,29 @@ function buildAndroid(doc: StringsFile, lang: string): ParsedAndroid {
   return out;
 }
 
+// ---- Apple Info.plist CFBundleLocalizations ---------------------------------
+
+/**
+ * Keep the app's CFBundleLocalizations in sync with supportedLanguages so iOS
+ * advertises the languages (and shows the per-app language picker in Settings).
+ * Replaces an existing array or inserts one right after the root <dict>.
+ */
+async function syncInfoPlistLocalizations(langs: string[]) {
+  const plist = await Bun.file(APPLE_INFO_PLIST).text();
+  const items = langs.map((l) => `\t\t<string>${l}</string>`).join("\n");
+  const block = `\t<key>CFBundleLocalizations</key>\n\t<array>\n${items}\n\t</array>\n`;
+
+  const existing = /\t*<key>CFBundleLocalizations<\/key>\s*<array>[\s\S]*?<\/array>\n/;
+  const next = existing.test(plist)
+    ? plist.replace(existing, block)
+    : plist.replace(/(<dict>\n)/, `$1${block}`);
+
+  if (next !== plist) {
+    await Bun.write(APPLE_INFO_PLIST, next);
+    console.log(`Updated CFBundleLocalizations in ${APPLE_INFO_PLIST}`);
+  }
+}
+
 // ---- entry ------------------------------------------------------------------
 
 export async function generate() {
@@ -86,6 +110,8 @@ export async function generate() {
 
   await Bun.write(APPLE_XCSTRINGS, renderXcstrings(buildXcstrings(doc)));
   console.log(`Wrote ${APPLE_XCSTRINGS}`);
+
+  await syncInfoPlistLocalizations(doc.supportedLanguages);
 
   for (const lang of doc.supportedLanguages) {
     const dir = join(KMP_RESOURCES, kmpValuesDir(lang, doc.sourceLanguage));
