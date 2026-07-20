@@ -1124,7 +1124,7 @@
         "pt": "Começar a partilhar",
         "pl": "Rozpocznij udostępnianie",
         "nl": "Delen starten",
-        "ru": "Начать раздачу"
+        "ru": "Начать общий доступ"
       }
     },
     "button_sharing_file": {
@@ -2054,7 +2054,7 @@
         "pt": "Pronto para partilhar",
         "pl": "Gotowe do udostępnienia",
         "nl": "Klaar om te delen",
-        "ru": "Готово к раздаче"
+        "ru": "Готово к отправке"
       }
     },
     "progress_working": {
@@ -2466,7 +2466,7 @@
         "pt": "Qualquer pessoa com o convite pode descarregar até parar de partilhar. Não utilize para itens privados ou sensíveis.",
         "pl": "Każdy, kto ma zaproszenie, może pobierać, dopóki nie zatrzymasz udostępniania. Nie używaj tego dla prywatnych ani wrażliwych elementów.",
         "nl": "Iedereen met de uitnodiging kan downloaden totdat u stopt met delen. Gebruik dit niet voor privé- of gevoelige items.",
-        "ru": "Любой, у кого есть приглашение, может загружать, пока вы не остановите раздачу. Не используйте это для личных или конфиденциальных объектов."
+        "ru": "Любой, у кого есть приглашение, может загружать, пока вы не остановите общий доступ. Не используйте это для личных или конфиденциальных объектов."
       }
     },
     "send_access_approval": {
@@ -2668,7 +2668,7 @@
         "pt": "Parar de partilhar",
         "pl": "Zatrzymaj udostępnianie",
         "nl": "Stoppen met delen",
-        "ru": "Остановить раздачу"
+        "ru": "Остановить общий доступ"
       }
     },
     "send_stop_sharing_description": {
@@ -3094,7 +3094,7 @@
         "pt": "«{arg1}» deixará de ser partilhado e o seu histórico de transferência será removido deste dispositivo.",
         "pl": "„{arg1}” przestanie być udostępniany, a jego historia transferu zostanie usunięta z tego urządzenia.",
         "nl": "‘{arg1}’ wordt niet meer gedeeld en de overdrachtsgeschiedenis wordt van dit apparaat verwijderd.",
-        "ru": "«{arg1}» перестанет раздаваться, а её история передачи будет удалена с этого устройства."
+        "ru": "Общий доступ к «{arg1}» будет остановлен, а история передачи будет удалена с этого устройства."
       }
     },
     "transfer_delete_title": {
@@ -3248,7 +3248,7 @@
         "pt": "Pronto para partilhar",
         "pl": "Gotowe do udostępnienia",
         "nl": "Klaar om te delen",
-        "ru": "Готово к раздаче"
+        "ru": "Готово к отправке"
       }
     },
     "transfer_event_refused": {

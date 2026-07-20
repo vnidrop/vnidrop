@@ -72,7 +72,7 @@
     <string name="button_remove_file">Удалить файл</string>
     <string name="button_reset_default">По умолчанию</string>
     <string name="button_retry">Повторить</string>
-    <string name="button_share_file">Начать раздачу</string>
+    <string name="button_share_file">Начать общий доступ</string>
     <string name="button_sharing_file">Подготовка передачи…</string>
     <string name="button_show_in_files">Показать в Файлах</string>
     <string name="button_write_nfc">Записать на NFC-метку</string>
@@ -138,7 +138,7 @@
     <string name="progress_saving">Сохранение</string>
     <string name="progress_sending">Отправка</string>
     <string name="progress_sending_to_count">Отправка получателям: %1$d</string>
-    <string name="progress_share_ready">Готово к раздаче</string>
+    <string name="progress_share_ready">Готово к отправке</string>
     <string name="progress_working">Обработка…</string>
     <string name="receive_choose_method_body">Выберите доступный вам способ приглашения.</string>
     <string name="receive_choose_method_title">Как вы хотите подключиться?</string>
@@ -167,7 +167,7 @@
     <string name="receive_unknown_transfer">Передача VniDrop</string>
     <string name="send_access_anyone">Любой, у кого есть эта передача</string>
     <string name="send_access_anyone_description">Одобрение не требуется. Используйте только для объектов, которыми вы готовы поделиться.</string>
-    <string name="send_access_anyone_warning">Любой, у кого есть приглашение, может загружать, пока вы не остановите раздачу. Не используйте это для личных или конфиденциальных объектов.</string>
+    <string name="send_access_anyone_warning">Любой, у кого есть приглашение, может загружать, пока вы не остановите общий доступ. Не используйте это для личных или конфиденциальных объектов.</string>
     <string name="send_access_approval">Спрашивать перед каждой загрузкой</string>
     <string name="send_access_approval_description">Вы одобряете или отклоняете каждого нового получателя.</string>
     <string name="send_access_title">Кто может это получить?</string>
@@ -181,7 +181,7 @@
     <string name="send_new_transfer_title">Новая передача</string>
     <string name="send_review_title">Проверить передачу</string>
     <string name="send_selected_files_count">Выбрано файлов: %1$d</string>
-    <string name="send_stop_sharing">Остановить раздачу</string>
+    <string name="send_stop_sharing">Остановить общий доступ</string>
     <string name="send_stop_sharing_description">Это остановит передачу и прервёт всех, кто сейчас её загружает. Она останется в вашей истории со статусом «Остановлена».</string>
     <string name="send_subtitle">Передачи, которыми вы делитесь с этого устройства.</string>
     <string name="send_title">Отправить</string>
@@ -211,7 +211,7 @@
     <string name="storage_transfers_deleted">Все передачи удалены</string>
     <string name="transfer_activity_description">Просматривайте важные обновления этой передачи</string>
     <string name="transfer_activity_title">Активность</string>
-    <string name="transfer_delete_description">«%1$s» перестанет раздаваться, а её история передачи будет удалена с этого устройства.</string>
+    <string name="transfer_delete_description">Общий доступ к «%1$s» будет остановлен, а история передачи будет удалена с этого устройства.</string>
     <string name="transfer_delete_title">Удалить передачу?</string>
     <string name="transfer_deleted">Передача удалена.</string>
     <string name="transfer_deleting">Удаление…</string>
@@ -222,7 +222,7 @@
     <string name="transfer_event_downloading">Загрузка</string>
     <string name="transfer_event_failed">При передаче возникла проблема</string>
     <string name="transfer_event_preparing">Подготовка вашей передачи</string>
-    <string name="transfer_event_ready">Готово к раздаче</string>
+    <string name="transfer_event_ready">Готово к отправке</string>
     <string name="transfer_event_refused">Доступ получателя отклонён</string>
     <string name="transfer_event_requested">Получатель запросил доступ</string>
     <string name="transfer_event_saving">Сохранение</string>
