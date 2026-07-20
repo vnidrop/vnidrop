@@ -31,20 +31,27 @@ struct SendPickers: ViewModifier {
 	@ObservedObject var model: SendModel
 
 	func body(content: Content) -> some View {
+		// A single .fileImporter, switched between files and folders. Stacking two
+		// .fileImporter modifiers on one view silently breaks on iOS/macOS < 27:
+		// the second shadows the first, so "Choose files" never presents.
 		content
 			.fileImporter(
-				isPresented: Binding(get: { model.pendingFilePick }, set: { model.pendingFilePick = $0 }),
-				allowedContentTypes: [.item],
-				allowsMultipleSelection: true
+				isPresented: Binding(
+					get: { model.pendingFilePick || model.pendingFolderPick },
+					set: { presented in
+						if !presented {
+							model.pendingFilePick = false
+							model.pendingFolderPick = false
+						}
+					}
+				),
+				allowedContentTypes: model.pendingFolderPick ? [.folder] : [.item],
+				allowsMultipleSelection: !model.pendingFolderPick
 			) { result in
-				handleShareSelection(result, isDirectory: false)
-			}
-			.fileImporter(
-				isPresented: Binding(get: { model.pendingFolderPick }, set: { model.pendingFolderPick = $0 }),
-				allowedContentTypes: [.folder],
-				allowsMultipleSelection: false
-			) { result in
-				handleShareSelection(result, isDirectory: true)
+				let isDirectory = model.pendingFolderPick
+				model.pendingFilePick = false
+				model.pendingFolderPick = false
+				handleShareSelection(result, isDirectory: isDirectory)
 			}
 	}
 
