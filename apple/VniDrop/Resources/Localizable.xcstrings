@@ -2,11 +2,11 @@
   "sourceLanguage": "en",
   "strings": {
     "%@": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Apple format passthrough placeholder (single value). Legacy literal key — rename to a semantic key.",
       "extractionState": "manual"
     },
     "%@ %@ · %@": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Apple format template composing three values with a middot separator (e.g. metadata rows). Legacy literal key — rename.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -18,7 +18,7 @@
       }
     },
     "%@ · %@": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Apple format template composing two values with a middot separator. Legacy literal key — rename.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -30,11 +30,11 @@
       }
     },
     "%@%%": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Apple format template appending a percent sign to a value (e.g. battery level). Legacy literal key — rename.",
       "extractionState": "manual"
     },
     "about_bug_report": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: button/link that opens the bug report form.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -46,7 +46,7 @@
       }
     },
     "about_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: intro paragraph describing what VniDrop does.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -58,7 +58,7 @@
       }
     },
     "about_is_direct": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop is' list: point about direct device-to-device transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -70,7 +70,7 @@
       }
     },
     "about_is_encrypted": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop is' list: point about encrypted, verified connections.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -82,7 +82,7 @@
       }
     },
     "about_is_in_control": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop is' list: point about controlling who receives.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -94,7 +94,7 @@
       }
     },
     "about_is_no_account": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop is' list: point about being account-free.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -106,7 +106,7 @@
       }
     },
     "about_is_open": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop is' list: point about being open source.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -118,7 +118,7 @@
       }
     },
     "about_is_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: section heading for the 'What VniDrop is' list.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -130,7 +130,7 @@
       }
     },
     "about_isnt_cloud": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop isn't' list: point about not being cloud storage.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -142,7 +142,7 @@
       }
     },
     "about_isnt_public": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop isn't' list: point about invitations not being public broadcasts.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -154,7 +154,7 @@
       }
     },
     "about_isnt_sync": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, 'What VniDrop isn't' list: point about not being sync/backup.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -166,7 +166,7 @@
       }
     },
     "about_isnt_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: section heading for the 'What VniDrop isn't' list.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -178,7 +178,7 @@
       }
     },
     "about_license_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: label for the license row.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -190,7 +190,7 @@
       }
     },
     "about_privacy": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: link to the privacy policy.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -202,7 +202,7 @@
       }
     },
     "about_privacy_capability": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, Privacy & security list: point that invitations are capabilities to share carefully.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -214,7 +214,7 @@
       }
     },
     "about_privacy_deny": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, Privacy & security list: point about denying unknown requests by default.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -226,7 +226,7 @@
       }
     },
     "about_privacy_local": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, Privacy & security list: point about received files staying local and never overwriting.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -238,7 +238,7 @@
       }
     },
     "about_privacy_policy_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: label for the privacy policy row.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -250,7 +250,7 @@
       }
     },
     "about_privacy_relay": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen, Privacy & security list: point explaining encrypted relays.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -262,7 +262,7 @@
       }
     },
     "about_privacy_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: section heading for the Privacy & security list.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -274,7 +274,7 @@
       }
     },
     "about_tagline": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: short tagline under the app name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -286,7 +286,7 @@
       }
     },
     "about_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "About screen: navigation/screen title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -298,7 +298,7 @@
       }
     },
     "appearance_auto_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Appearance: description for the System/auto option.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -310,7 +310,7 @@
       }
     },
     "appearance_dark_mode": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Appearance: label for the dark theme option.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -322,7 +322,7 @@
       }
     },
     "appearance_light_mode": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Appearance: label for the light theme option.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -334,7 +334,7 @@
       }
     },
     "appearance_system_mode": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Appearance: label for the follow-system option.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -346,7 +346,7 @@
       }
     },
     "appearance_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Appearance: section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -358,7 +358,7 @@
       }
     },
     "approval_connection_request": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Approval prompt: title when a receiver requests to download a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -370,7 +370,7 @@
       }
     },
     "approval_endpoint_id": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Approval prompt: shows the requesting device's ID. {arg1} = device/endpoint identifier.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -382,7 +382,7 @@
       }
     },
     "approval_nearby_device": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Approval prompt: fallback label for a requester with no display name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -394,7 +394,7 @@
       }
     },
     "approval_pending_count": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send/transfer list: badge showing how many receive requests are awaiting approval. {count} = pending requests.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -406,7 +406,7 @@
       }
     },
     "approval_request_body": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Approval prompt body: '{arg1} wants to receive \"{arg2}\".' {arg1} = requester name, {arg2} = transfer name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -418,7 +418,7 @@
       }
     },
     "battery_level_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Device information row: battery level label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -430,7 +430,7 @@
       }
     },
     "bug_report_contact_hint": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: placeholder text in the contact email field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -442,7 +442,7 @@
       }
     },
     "bug_report_contact_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: label for the optional contact email field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -454,7 +454,7 @@
       }
     },
     "bug_report_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: intro text explaining what gets attached.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -466,7 +466,7 @@
       }
     },
     "bug_report_device_section": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: heading for the attached device information section.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -478,7 +478,7 @@
       }
     },
     "bug_report_expected_hint": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: placeholder in the 'what did you expect' field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -490,7 +490,7 @@
       }
     },
     "bug_report_expected_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: label for the expected-behavior field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -502,7 +502,7 @@
       }
     },
     "bug_report_include_logs": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: toggle label to attach recent logs.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -514,7 +514,7 @@
       }
     },
     "bug_report_include_logs_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: explanation under the include-logs toggle.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -526,7 +526,7 @@
       }
     },
     "bug_report_logs_size": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: label showing the size of the log attachment.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -538,7 +538,7 @@
       }
     },
     "bug_report_missing_expected": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: validation error when the expected-behavior field is empty.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -550,7 +550,7 @@
       }
     },
     "bug_report_missing_what": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: validation error when the what-happened field is empty.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -562,7 +562,7 @@
       }
     },
     "bug_report_steps_hint": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: placeholder in the steps-to-reproduce field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -574,7 +574,7 @@
       }
     },
     "bug_report_steps_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: label for the optional steps-to-reproduce field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -586,7 +586,7 @@
       }
     },
     "bug_report_submit": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: submit button.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -598,7 +598,7 @@
       }
     },
     "bug_report_submit_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: error message when submission fails.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -610,7 +610,7 @@
       }
     },
     "bug_report_submitted": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: confirmation message after a successful submission.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -622,7 +622,7 @@
       }
     },
     "bug_report_submitting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: progress label while the report is being sent.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -634,7 +634,7 @@
       }
     },
     "bug_report_what_hint": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: placeholder in the what-happened field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -646,7 +646,7 @@
       }
     },
     "bug_report_what_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bug report form: label for the what-happened field.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -658,7 +658,7 @@
       }
     },
     "button_approve": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: approve a receiver's request.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -670,7 +670,7 @@
       }
     },
     "button_back": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: go back to the previous step/screen.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -682,7 +682,7 @@
       }
     },
     "button_cancel": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: cancel the current action or dialog.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -694,7 +694,7 @@
       }
     },
     "button_cancel_receive": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: cancel an in-progress receive.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -706,7 +706,7 @@
       }
     },
     "button_change_files": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: change the selected files in the send flow.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -718,7 +718,7 @@
       }
     },
     "button_choose_files": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: open the file picker to choose files to send.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -730,7 +730,7 @@
       }
     },
     "button_choose_folder": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: open the folder picker (send selection or receive folder).",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -742,7 +742,7 @@
       }
     },
     "button_clear": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: clear the current input or selection.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -754,7 +754,7 @@
       }
     },
     "button_close": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: close the current sheet/dialog.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -766,7 +766,7 @@
       }
     },
     "button_create_new_transfer": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: start creating a new transfer (Send tab).",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -778,7 +778,7 @@
       }
     },
     "button_delete_transfer": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: delete a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -790,7 +790,7 @@
       }
     },
     "button_download_invitation": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: save the invitation as a .vnd file.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -802,7 +802,7 @@
       }
     },
     "button_native_share": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: open the OS share sheet to share the invitation.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -814,7 +814,7 @@
       }
     },
     "button_open_settings": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: open the OS Settings app (e.g. for permissions).",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -826,7 +826,7 @@
       }
     },
     "button_receive": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: receive label (Receive action).",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -838,7 +838,7 @@
       }
     },
     "button_receive_files": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: start receiving a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -850,7 +850,7 @@
       }
     },
     "button_refuse": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: refuse a receiver's request.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -862,7 +862,7 @@
       }
     },
     "button_remove_file": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: remove a single file from the send selection.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -874,7 +874,7 @@
       }
     },
     "button_reset_default": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: reset a setting to its default value.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -886,7 +886,7 @@
       }
     },
     "button_retry": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: retry after a failed operation.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -898,7 +898,7 @@
       }
     },
     "button_share_file": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: start sharing the transfer (make it available).",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -910,7 +910,7 @@
       }
     },
     "button_sharing_file": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: disabled/loading state while the transfer is being prepared.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -922,7 +922,7 @@
       }
     },
     "button_show_in_files": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: reveal a received file in the Files app.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -934,7 +934,7 @@
       }
     },
     "button_write_nfc": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Button: write the invitation to an NFC tag.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -946,7 +946,7 @@
       }
     },
     "device_model_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Device information row: device model label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -958,7 +958,7 @@
       }
     },
     "device_name_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Device information row: device name label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -970,7 +970,7 @@
       }
     },
     "diagnostics_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Diagnostics: explanation of what anonymous diagnostics collect.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -982,7 +982,7 @@
       }
     },
     "diagnostics_disabled_message": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Diagnostics: confirmation shown when diagnostics are turned off.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -994,7 +994,7 @@
       }
     },
     "diagnostics_enabled_message": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Diagnostics: confirmation shown when diagnostics are turned on.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1006,7 +1006,7 @@
       }
     },
     "diagnostics_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Diagnostics: toggle title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1018,7 +1018,7 @@
       }
     },
     "error_camera": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: camera permission is needed to scan a QR code.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1030,7 +1030,7 @@
       }
     },
     "error_device_info": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: device information could not be loaded.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1042,7 +1042,7 @@
       }
     },
     "error_filesystem": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the selected files/folder could not be accessed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1054,7 +1054,7 @@
       }
     },
     "error_generic": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: generic fallback message.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1066,7 +1066,7 @@
       }
     },
     "error_initialization": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the app failed to finish starting up.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1078,7 +1078,7 @@
       }
     },
     "error_invalid_ticket": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the invitation/ticket could not be parsed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1090,7 +1090,7 @@
       }
     },
     "error_invitation_empty": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the opened invitation contained no data.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1102,7 +1102,7 @@
       }
     },
     "error_missing_native_library": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the native library is missing from the build.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1114,7 +1114,7 @@
       }
     },
     "error_nfc": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the NFC tag could not be read/used.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1126,7 +1126,7 @@
       }
     },
     "error_permission": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the transfer was not approved or was refused by the sender.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1138,7 +1138,7 @@
       }
     },
     "error_repository": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: transfer data could not be saved locally.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1150,7 +1150,7 @@
       }
     },
     "error_selection_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the selected item could not be opened.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1162,7 +1162,7 @@
       }
     },
     "error_share_empty": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: attempted to share with nothing selected.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1174,7 +1174,7 @@
       }
     },
     "error_socket_bind": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the app could not open its network sockets.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1186,7 +1186,7 @@
       }
     },
     "error_starting_up": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: an invitation was opened before startup finished.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1198,7 +1198,7 @@
       }
     },
     "error_transfer": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Error: the transfer could not be completed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1210,7 +1210,7 @@
       }
     },
     "field_receiver_name": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Text field label: the receiver's display name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1222,7 +1222,7 @@
       }
     },
     "field_sender_name": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Text field label: the sender's display name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1234,7 +1234,7 @@
       }
     },
     "field_transfer_name": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Text field label: the name given to a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1246,7 +1246,7 @@
       }
     },
     "field_username": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings text field label: this device's display name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1258,7 +1258,7 @@
       }
     },
     "folder_status_permission_required": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive-folder status: permission is required to write to the chosen folder.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1270,7 +1270,7 @@
       }
     },
     "folder_status_unavailable": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive-folder status: the chosen folder is unavailable.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1282,7 +1282,7 @@
       }
     },
     "folder_status_validating": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive-folder status: the folder is being checked.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1294,7 +1294,7 @@
       }
     },
     "folder_status_writable": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive-folder status: the folder is valid and writable.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1306,7 +1306,7 @@
       }
     },
     "metadata_files": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer metadata label: number of files.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1318,7 +1318,7 @@
       }
     },
     "metadata_size": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer metadata label: total size.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1330,7 +1330,7 @@
       }
     },
     "metadata_status": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer metadata label: current status.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1342,7 +1342,7 @@
       }
     },
     "nav_receive": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bottom navigation: Receive tab label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1354,7 +1354,7 @@
       }
     },
     "nav_send": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bottom navigation: Send tab label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1366,7 +1366,7 @@
       }
     },
     "nav_settings": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Bottom navigation: Settings tab label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1378,7 +1378,7 @@
       }
     },
     "network_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Device information row: network label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1390,7 +1390,7 @@
       }
     },
     "notifications_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: explanation of what notifications are used for.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1402,7 +1402,7 @@
       }
     },
     "notifications_enabled_message": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: confirmation when notifications are enabled.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1414,7 +1414,7 @@
       }
     },
     "notifications_local_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: label for the allow-notifications action.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1426,7 +1426,7 @@
       }
     },
     "notifications_permission_denied": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: message when the OS permission is denied.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1438,7 +1438,7 @@
       }
     },
     "notifications_settings_open_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: error when the OS notification settings can't be opened.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1450,7 +1450,7 @@
       }
     },
     "notifications_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1462,7 +1462,7 @@
       }
     },
     "notifications_unsupported": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Notifications: message when notifications aren't supported on the device.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1474,7 +1474,7 @@
       }
     },
     "os_version_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Device information row: operating system version label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1486,7 +1486,7 @@
       }
     },
     "preferences_receive_folder_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Preferences: label for the received-files destination folder.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1498,7 +1498,7 @@
       }
     },
     "preferences_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Preferences: section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1510,7 +1510,7 @@
       }
     },
     "progress_cancelled": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: cancelled.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1522,7 +1522,7 @@
       }
     },
     "progress_completed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: completed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1534,7 +1534,7 @@
       }
     },
     "progress_connected": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: connected.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1546,7 +1546,7 @@
       }
     },
     "progress_connecting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: connecting.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1558,7 +1558,7 @@
       }
     },
     "progress_downloading": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: downloading.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1570,7 +1570,7 @@
       }
     },
     "progress_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: failed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1582,7 +1582,7 @@
       }
     },
     "progress_getting_ready": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: getting ready.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1594,7 +1594,7 @@
       }
     },
     "progress_interrupted": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: the transfer was interrupted.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1606,7 +1606,7 @@
       }
     },
     "progress_preparing": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: preparing.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1618,7 +1618,7 @@
       }
     },
     "progress_ready": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: ready.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1630,7 +1630,7 @@
       }
     },
     "progress_receiving": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: receiving.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1642,7 +1642,7 @@
       }
     },
     "progress_requesting_access": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: requesting access from the sender.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1654,7 +1654,7 @@
       }
     },
     "progress_saving": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: saving received files.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1666,7 +1666,7 @@
       }
     },
     "progress_sending": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: sending.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1678,7 +1678,7 @@
       }
     },
     "progress_sending_to_count": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: sending to N receivers. %lld = receiver count.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1690,7 +1690,7 @@
       }
     },
     "progress_share_ready": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: the share is ready.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1702,7 +1702,7 @@
       }
     },
     "progress_working": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer progress label: generic working/in-progress state.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1714,7 +1714,7 @@
       }
     },
     "receive_choose_method_body": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: body text prompting the user to pick an invitation method.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1726,7 +1726,7 @@
       }
     },
     "receive_choose_method_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: title of the connect-method chooser.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1738,7 +1738,7 @@
       }
     },
     "receive_clear_history": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: action to clear all history.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1750,7 +1750,7 @@
       }
     },
     "receive_clear_history_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: confirmation dialog body for clearing all history.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1762,7 +1762,7 @@
       }
     },
     "receive_clear_history_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: confirmation dialog title for clearing all history.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1774,7 +1774,7 @@
       }
     },
     "receive_completed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: toast/message when a transfer finishes downloading.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1786,7 +1786,7 @@
       }
     },
     "receive_delete_history_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: confirmation body for removing one item. {arg1} = transfer name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1798,7 +1798,7 @@
       }
     },
     "receive_delete_history_item": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: swipe/menu action to delete a single history item.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1810,7 +1810,7 @@
       }
     },
     "receive_delete_history_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: confirmation title for removing one item.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1822,7 +1822,7 @@
       }
     },
     "receive_empty_body": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive tab empty state: instructions on how to receive.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1834,7 +1834,7 @@
       }
     },
     "receive_empty_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive tab empty state: title when nothing has been received.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1846,7 +1846,7 @@
       }
     },
     "receive_history_cleared": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive history: toast confirming history was cleared.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1858,7 +1858,7 @@
       }
     },
     "receive_history_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive tab: History section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1870,7 +1870,7 @@
       }
     },
     "receive_method_file": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive method: open a .vnd invitation file.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1882,7 +1882,7 @@
       }
     },
     "receive_method_file_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive method description: open a saved/shared invitation file.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1894,7 +1894,7 @@
       }
     },
     "receive_method_nfc": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive method: read an NFC tag.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1906,7 +1906,7 @@
       }
     },
     "receive_method_nfc_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive method description: hold near the sender's NFC tag.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1918,7 +1918,7 @@
       }
     },
     "receive_method_scan": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive method: scan a QR code.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1930,7 +1930,7 @@
       }
     },
     "receive_method_scan_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive method description: use the camera to scan the sender's code.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1942,7 +1942,7 @@
       }
     },
     "receive_new_subtitle": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive tab: subtitle under the title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1954,7 +1954,7 @@
       }
     },
     "receive_nfc_waiting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: prompt while waiting to read an NFC tag.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1966,7 +1966,7 @@
       }
     },
     "receive_open_files_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: error when opening VniDrop's folder in Files fails.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1978,7 +1978,7 @@
       }
     },
     "receive_review_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: title of the review screen before accepting a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -1990,7 +1990,7 @@
       }
     },
     "receive_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive tab: screen title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2002,7 +2002,7 @@
       }
     },
     "receive_unknown_transfer": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receive flow: fallback name for a transfer with no title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2014,7 +2014,7 @@
       }
     },
     "send_access_anyone": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send access option: anyone with the invitation can receive.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2026,7 +2026,7 @@
       }
     },
     "send_access_anyone_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send access option description: no approval required.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2038,7 +2038,7 @@
       }
     },
     "send_access_anyone_warning": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send access option warning: caution about open access.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2050,7 +2050,7 @@
       }
     },
     "send_access_approval": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send access option: approve each receiver.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2062,7 +2062,7 @@
       }
     },
     "send_access_approval_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send access option description: you approve/refuse each receiver.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2074,7 +2074,7 @@
       }
     },
     "send_access_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: heading for the who-can-receive access chooser.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2086,7 +2086,7 @@
       }
     },
     "send_choose_file_body": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: body text for the choose-what-to-share step.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2098,7 +2098,7 @@
       }
     },
     "send_choose_file_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: title of the choose-what-to-share step.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2110,7 +2110,7 @@
       }
     },
     "send_empty_body": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send tab empty state: instructions on how to create a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2122,7 +2122,7 @@
       }
     },
     "send_empty_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send tab empty state: title when nothing has been shared.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2134,7 +2134,7 @@
       }
     },
     "send_file_size_unknown": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: shown when a selected file's size can't be determined.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2146,7 +2146,7 @@
       }
     },
     "send_folder_label": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: label indicating a selected item is a folder.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2158,7 +2158,7 @@
       }
     },
     "send_new_transfer_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: description for the create-new-transfer entry.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2170,7 +2170,7 @@
       }
     },
     "send_new_transfer_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: title for the new-transfer step.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2182,7 +2182,7 @@
       }
     },
     "send_review_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: title of the review-transfer step before creating it.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2194,7 +2194,7 @@
       }
     },
     "send_selected_files_count": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: count of files chosen. {count} = selected files. NOTE: singular case reads '1 files' — should become a plural.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2206,7 +2206,7 @@
       }
     },
     "send_stop_sharing": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: action to stop sharing a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2218,7 +2218,7 @@
       }
     },
     "send_stop_sharing_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: confirmation body for stopping sharing.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2230,7 +2230,7 @@
       }
     },
     "send_subtitle": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send tab: subtitle under the title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2242,7 +2242,7 @@
       }
     },
     "send_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send tab: screen title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2254,7 +2254,7 @@
       }
     },
     "send_transfer_created": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: toast confirming a transfer was created.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2266,7 +2266,7 @@
       }
     },
     "send_transfer_details_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send flow: title of the transfer details screen.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2278,7 +2278,7 @@
       }
     },
     "send_transfers_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Send tab: 'Your transfers' list heading.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2290,7 +2290,7 @@
       }
     },
     "settings_subtitle": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings screen: subtitle summarizing what's configurable.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2302,7 +2302,7 @@
       }
     },
     "settings_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings screen: title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2314,7 +2314,7 @@
       }
     },
     "snackbar_dismiss": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Snackbar: accessibility label / action to dismiss the snackbar.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2326,7 +2326,7 @@
       }
     },
     "status_available": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: available (actively shared).",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2338,7 +2338,7 @@
       }
     },
     "status_cancelled": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: cancelled.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2350,7 +2350,7 @@
       }
     },
     "status_completed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: completed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2362,7 +2362,7 @@
       }
     },
     "status_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: failed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2374,7 +2374,7 @@
       }
     },
     "status_preparing": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: preparing.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2386,7 +2386,7 @@
       }
     },
     "status_receiving": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: receiving.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2398,7 +2398,7 @@
       }
     },
     "status_stopped": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer status: stopped.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2410,7 +2410,7 @@
       }
     },
     "storage_calculating": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: placeholder while a size is being calculated.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2422,7 +2422,7 @@
       }
     },
     "storage_delete_transfers": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: button to delete all transfer records.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2434,7 +2434,7 @@
       }
     },
     "storage_delete_transfers_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: confirmation body for deleting all transfer records.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2446,7 +2446,7 @@
       }
     },
     "storage_deleting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: progress label while transfers are being deleted.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2458,7 +2458,7 @@
       }
     },
     "storage_footer": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: footer explaining how storage is managed.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2470,7 +2470,7 @@
       }
     },
     "storage_received_files": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: label for the received-files size row.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2482,7 +2482,7 @@
       }
     },
     "storage_temporary": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: label for the temporary-files size row.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2494,7 +2494,7 @@
       }
     },
     "storage_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2506,7 +2506,7 @@
       }
     },
     "storage_total": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: label for the total-size row.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2518,7 +2518,7 @@
       }
     },
     "storage_transfer_data": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: label for the transfer-engine data size row.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2530,7 +2530,7 @@
       }
     },
     "storage_transfers_deleted": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Settings > Storage: toast confirming all transfers were deleted.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2542,7 +2542,7 @@
       }
     },
     "transfer_activity_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: description under the Activity section.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2554,7 +2554,7 @@
       }
     },
     "transfer_activity_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: Activity section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2566,7 +2566,7 @@
       }
     },
     "transfer_delete_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: confirmation body for deleting a transfer. {arg1} = transfer name.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2578,7 +2578,7 @@
       }
     },
     "transfer_delete_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: confirmation title for deleting a transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2590,7 +2590,7 @@
       }
     },
     "transfer_deleted": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: toast confirming a transfer was deleted.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2602,7 +2602,7 @@
       }
     },
     "transfer_deleting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: progress label while a transfer is being deleted.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2614,7 +2614,7 @@
       }
     },
     "transfer_details_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: screen title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2626,7 +2626,7 @@
       }
     },
     "transfer_event_approved": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: a receiver's access was approved.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2638,7 +2638,7 @@
       }
     },
     "transfer_event_completed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: a receiver completed the transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2650,7 +2650,7 @@
       }
     },
     "transfer_event_connecting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: connecting to the sender.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2662,7 +2662,7 @@
       }
     },
     "transfer_event_downloading": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: downloading.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2674,7 +2674,7 @@
       }
     },
     "transfer_event_failed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: the transfer hit a problem.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2686,7 +2686,7 @@
       }
     },
     "transfer_event_preparing": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: preparing the transfer.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2698,7 +2698,7 @@
       }
     },
     "transfer_event_ready": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: ready to share.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2710,7 +2710,7 @@
       }
     },
     "transfer_event_refused": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: a receiver's access was refused.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2722,7 +2722,7 @@
       }
     },
     "transfer_event_requested": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: a receiver requested access.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2734,7 +2734,7 @@
       }
     },
     "transfer_event_saving": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: saving received files.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2746,7 +2746,7 @@
       }
     },
     "transfer_event_stopped": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: sharing was stopped.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2758,7 +2758,7 @@
       }
     },
     "transfer_event_updated": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer activity event: the transfer was updated.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2770,7 +2770,7 @@
       }
     },
     "transfer_file_count": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer subtitle: file count with pluralization. {count} = number of files.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2794,7 +2794,7 @@
       }
     },
     "transfer_invitation_saved": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer share: toast confirming the invitation file was saved.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2806,7 +2806,7 @@
       }
     },
     "transfer_nearby_device": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer share/receivers: label for a nearby device.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2818,7 +2818,7 @@
       }
     },
     "transfer_nfc_unavailable": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer share: message when NFC writing isn't available on the device.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2830,7 +2830,7 @@
       }
     },
     "transfer_nfc_waiting": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer share: prompt while waiting to write an NFC tag.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2842,7 +2842,7 @@
       }
     },
     "transfer_nfc_written": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer share: confirmation the invitation was written to the NFC tag.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2854,7 +2854,7 @@
       }
     },
     "transfer_no_activity": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: empty state for the Activity section.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2866,7 +2866,7 @@
       }
     },
     "transfer_no_receivers": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: empty state for the Receivers section.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2878,7 +2878,7 @@
       }
     },
     "transfer_receiver_accepted": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receiver status: approved, waiting for the download to complete.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2890,7 +2890,7 @@
       }
     },
     "transfer_receiver_completed": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receiver status: received successfully.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2902,7 +2902,7 @@
       }
     },
     "transfer_receiver_expired": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receiver status: the request expired.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2914,7 +2914,7 @@
       }
     },
     "transfer_receiver_refused": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receiver status: the request was refused.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2926,7 +2926,7 @@
       }
     },
     "transfer_receiver_requested": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receiver status: waiting for the sender's approval.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2938,7 +2938,7 @@
       }
     },
     "transfer_receiver_unknown": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receiver status: status unavailable/unknown.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2950,7 +2950,7 @@
       }
     },
     "transfer_receivers_completed_count": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receivers summary: how many receivers completed. {count} = completed receivers.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2962,7 +2962,7 @@
       }
     },
     "transfer_receivers_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: description under the Receivers section.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2974,7 +2974,7 @@
       }
     },
     "transfer_receivers_pending": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Receivers summary: how many requests are waiting. {count} = pending receivers.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2986,7 +2986,7 @@
       }
     },
     "transfer_receivers_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: Receivers section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -2998,7 +2998,7 @@
       }
     },
     "transfer_scan_qr": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer share: caption under the QR code.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3010,7 +3010,7 @@
       }
     },
     "transfer_share_description": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: description under the Share section.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3022,7 +3022,7 @@
       }
     },
     "transfer_share_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Transfer details: Share section title.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3034,7 +3034,7 @@
       }
     },
     "value_unavailable": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Placeholder shown when a device-info or metadata value can't be read.",
       "extractionState": "manual",
       "localizations": {
         "en": {
@@ -3046,7 +3046,7 @@
       }
     },
     "version_title": {
-      "comment": "TODO: describe where this appears.",
+      "comment": "Device information / Settings row: app version label.",
       "extractionState": "manual",
       "localizations": {
         "en": {
