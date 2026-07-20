@@ -67,108 +67,72 @@
     },
     "about_description": {
       "context": "About screen: intro paragraph describing what VniDrop does.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "VniDrop moves files and folders straight from one device to another over the network, without uploading them to any file-hosting service. There’s no account to create, and no copy of your transfer is left in the cloud once you’re done."
       }
     },
     "about_is_direct": {
       "context": "About screen, 'What VniDrop is' list: point about direct device-to-device transfer.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "A direct device-to-device transfer — your files go straight to the receiver."
       }
     },
     "about_is_encrypted": {
       "context": "About screen, 'What VniDrop is' list: point about encrypted, verified connections.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Connections are authenticated and end-to-end encrypted (via Iroh), and incoming files are verified by their content hash."
       }
     },
     "about_is_in_control": {
       "context": "About screen, 'What VniDrop is' list: point about controlling who receives.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "You decide who receives: approve each request, or open a transfer to anyone holding the invitation."
       }
     },
     "about_is_no_account": {
       "context": "About screen, 'What VniDrop is' list: point about being account-free.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Account-free — there’s nothing to sign up for."
       }
     },
     "about_is_open": {
       "context": "About screen, 'What VniDrop is' list: point about being open source.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Open source, released under the Apache 2.0 license."
       }
     },
     "about_is_title": {
       "context": "About screen: section heading for the 'What VniDrop is' list.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "What VniDrop is"
       }
     },
     "about_isnt_cloud": {
       "context": "About screen, 'What VniDrop isn't' list: point about not being cloud storage.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Not cloud storage — no server holds your files, and nothing waits in the cloud after a transfer."
       }
     },
     "about_isnt_public": {
       "context": "About screen, 'What VniDrop isn't' list: point about invitations not being public broadcasts.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Not public broadcasting — an invitation is a private access link, not an announcement to everyone nearby."
       }
     },
     "about_isnt_sync": {
       "context": "About screen, 'What VniDrop isn't' list: point about not being sync/backup.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Not a sync or backup service."
       }
     },
     "about_isnt_title": {
       "context": "About screen: section heading for the 'What VniDrop isn't' list.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "What VniDrop isn’t"
       }
     },
     "about_license_label": {
       "context": "About screen: label for the license row.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "License"
       }
@@ -181,63 +145,42 @@
     },
     "about_privacy_capability": {
       "context": "About screen, Privacy & security list: point that invitations are capabilities to share carefully.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Invitations are capabilities. Treat a QR code, NFC tag, or .vnd file like a private access link and share it only with the people you intend — especially with “Anyone with this transfer.”"
       }
     },
     "about_privacy_deny": {
       "context": "About screen, Privacy & security list: point about denying unknown requests by default.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Deny by default — VniDrop serves only the content of an active share and rejects unknown requests."
       }
     },
     "about_privacy_local": {
       "context": "About screen, Privacy & security list: point about received files staying local and never overwriting.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Received files are saved on your device and never silently overwrite an existing file."
       }
     },
     "about_privacy_policy_label": {
       "context": "About screen: label for the privacy policy row.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Privacy policy"
       }
     },
     "about_privacy_relay": {
       "context": "About screen, Privacy & security list: point explaining encrypted relays.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "If two devices can’t connect directly, the encrypted connection may be relayed. Relays forward encrypted packets only; they never store your files."
       }
     },
     "about_privacy_title": {
       "context": "About screen: section heading for the Privacy & security list.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Privacy & security"
       }
     },
     "about_tagline": {
       "context": "About screen: short tagline under the app name.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Send files directly. Stay in control of who receives them."
       }
@@ -338,9 +281,6 @@
     },
     "bug_report_contact_hint": {
       "context": "Bug report form: placeholder text in the contact email field.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "name@example.com"
       }
@@ -365,9 +305,6 @@
     },
     "bug_report_expected_hint": {
       "context": "Bug report form: placeholder in the 'what did you expect' field.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Describe what you expected to happen"
       }
@@ -410,9 +347,6 @@
     },
     "bug_report_steps_hint": {
       "context": "Bug report form: placeholder in the steps-to-reproduce field.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "List the steps to reproduce the issue"
       }
@@ -449,9 +383,6 @@
     },
     "bug_report_what_hint": {
       "context": "Bug report form: placeholder in the what-happened field.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Describe what happened"
       }
@@ -974,12 +905,15 @@
     },
     "progress_sending_to_count": {
       "context": "Transfer progress label: sending to N receivers. %lld = receiver count.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
-        "en": "Sending to %lld"
-      }
+        "en": "Sending to {count}"
+      },
+      "args": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ]
     },
     "progress_share_ready": {
       "context": "Transfer progress label: the share is ready.",
@@ -1253,18 +1187,12 @@
     },
     "send_stop_sharing": {
       "context": "Transfer details: action to stop sharing a transfer.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Stop sharing"
       }
     },
     "send_stop_sharing_description": {
       "context": "Transfer details: confirmation body for stopping sharing.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "This stops the transfer and interrupts anyone currently downloading it. It stays in your history as Stopped."
       }
@@ -1361,99 +1289,66 @@
     },
     "storage_calculating": {
       "context": "Settings > Storage: placeholder while a size is being calculated.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Calculating…"
       }
     },
     "storage_delete_transfers": {
       "context": "Settings > Storage: button to delete all transfer records.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Delete all transfers"
       }
     },
     "storage_delete_transfers_description": {
       "context": "Settings > Storage: confirmation body for deleting all transfer records.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "This clears all sent and received transfer records from your history. Your received files are not deleted. Note: the transfer engine keeps its stored content, so Transfer data may not decrease. This can’t be undone."
       }
     },
     "storage_deleting": {
       "context": "Settings > Storage: progress label while transfers are being deleted.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Deleting…"
       }
     },
     "storage_footer": {
       "context": "Settings > Storage: footer explaining how storage is managed.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Transfer data is managed by the transfer engine — your history plus the content of files you’ve shared. The button below clears your transfer records; the engine keeps its stored content, so this value may not drop. Received files are your downloaded files and are never deleted here."
       }
     },
     "storage_received_files": {
       "context": "Settings > Storage: label for the received-files size row.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Received files"
       }
     },
     "storage_temporary": {
       "context": "Settings > Storage: label for the temporary-files size row.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Temporary files"
       }
     },
     "storage_title": {
       "context": "Settings > Storage: section title.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Storage"
       }
     },
     "storage_total": {
       "context": "Settings > Storage: label for the total-size row.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Total"
       }
     },
     "storage_transfer_data": {
       "context": "Settings > Storage: label for the transfer-engine data size row.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "Transfer data"
       }
     },
     "storage_transfers_deleted": {
       "context": "Settings > Storage: toast confirming all transfers were deleted.",
-      "targets": [
-        "apple"
-      ],
       "translations": {
         "en": "All transfers deleted"
       }

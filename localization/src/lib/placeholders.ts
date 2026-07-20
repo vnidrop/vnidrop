@@ -60,8 +60,9 @@ export interface ParsedString {
   args: Arg[];
 }
 
-// Matches an escaped literal `%%` or a printf specifier (positional or bare).
-const CONV = /%%|%(?:(\d+)\$)?([@sdif])/g;
+// Matches an escaped literal `%%` or a printf specifier (positional or bare),
+// tolerating C length modifiers like `%lld` / `%ld` on the integer forms.
+const CONV = /%%|%(?:(\d+)\$)?l{0,2}([@sdif])/g;
 
 function typeForConv(conv: string): ArgType {
   if (conv === "@" || conv === "s") return "string";
