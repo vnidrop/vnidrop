@@ -8,6 +8,7 @@
 		<string>fr</string>
 		<string>es</string>
 		<string>it</string>
+		<string>de</string>
 	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>

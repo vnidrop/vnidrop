@@ -9,6 +9,12 @@
       "comment": "Apple format template composing three values with a middot separator (e.g. metadata rows). Legacy literal key — rename.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ %2$@ · %3$@"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -39,6 +45,12 @@
       "comment": "Apple format template composing two values with a middot separator. Legacy literal key — rename.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ · %2$@"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -73,6 +85,12 @@
       "comment": "About screen: button/link that opens the bug report form.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fehler melden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -103,6 +121,12 @@
       "comment": "About screen: intro paragraph describing what VniDrop does.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop überträgt Dateien und Ordner direkt von einem Gerät auf ein anderes über das Netzwerk, ohne sie auf einen Hosting-Dienst hochzuladen. Es muss kein Konto erstellt werden, und nach Abschluss verbleibt keine Kopie Ihrer Übertragung in der Cloud."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -133,6 +157,12 @@
       "comment": "About screen, 'What VniDrop is' list: point about direct device-to-device transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eine direkte Gerät-zu-Gerät-Übertragung – Ihre Dateien gehen direkt an den Empfänger."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -163,6 +193,12 @@
       "comment": "About screen, 'What VniDrop is' list: point about encrypted, verified connections.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbindungen sind authentifiziert und Ende-zu-Ende-verschlüsselt (über Iroh), und eingehende Dateien werden anhand ihres Inhalts-Hashs überprüft."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -193,6 +229,12 @@
       "comment": "About screen, 'What VniDrop is' list: point about controlling who receives.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sie entscheiden, wer empfängt: Genehmigen Sie jede Anfrage oder öffnen Sie eine Übertragung für alle, die die Einladung besitzen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -223,6 +265,12 @@
       "comment": "About screen, 'What VniDrop is' list: point about being account-free.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ohne Konto – es gibt nichts zu registrieren."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -253,6 +301,12 @@
       "comment": "About screen, 'What VniDrop is' list: point about being open source.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Open Source, veröffentlicht unter der Apache-2.0-Lizenz."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -283,6 +337,12 @@
       "comment": "About screen: section heading for the 'What VniDrop is' list.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Was VniDrop ist"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -313,6 +373,12 @@
       "comment": "About screen, 'What VniDrop isn't' list: point about not being cloud storage.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kein Cloud-Speicher – kein Server hält Ihre Dateien, und nach einer Übertragung wartet nichts in der Cloud."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -343,6 +409,12 @@
       "comment": "About screen, 'What VniDrop isn't' list: point about invitations not being public broadcasts.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Keine öffentliche Übertragung – eine Einladung ist ein privater Zugangslink, keine Ankündigung an alle in der Nähe."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -373,6 +445,12 @@
       "comment": "About screen, 'What VniDrop isn't' list: point about not being sync/backup.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kein Synchronisierungs- oder Backup-Dienst."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -403,6 +481,12 @@
       "comment": "About screen: section heading for the 'What VniDrop isn't' list.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Was VniDrop nicht ist"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -433,6 +517,12 @@
       "comment": "About screen: label for the license row.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Lizenz"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -463,6 +553,12 @@
       "comment": "About screen: link to the privacy policy.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Datenschutzrichtlinie"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -493,6 +589,12 @@
       "comment": "About screen, Privacy & security list: point that invitations are capabilities to share carefully.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einladungen sind Zugangsschlüssel. Behandeln Sie einen QR-Code, ein NFC-Tag oder eine .vnd-Datei wie einen privaten Zugangslink und teilen Sie ihn nur mit den vorgesehenen Personen – insbesondere bei „Jeder mit dieser Übertragung“."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -523,6 +625,12 @@
       "comment": "About screen, Privacy & security list: point about denying unknown requests by default.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Standardmäßig ablehnen – VniDrop stellt nur den Inhalt einer aktiven Freigabe bereit und weist unbekannte Anfragen ab."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -553,6 +661,12 @@
       "comment": "About screen, Privacy & security list: point about received files staying local and never overwriting.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangene Dateien werden auf Ihrem Gerät gespeichert und überschreiben niemals eine vorhandene Datei."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -583,6 +697,12 @@
       "comment": "About screen: label for the privacy policy row.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Datenschutzrichtlinie"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -613,6 +733,12 @@
       "comment": "About screen, Privacy & security list: point explaining encrypted relays.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wenn zwei Geräte sich nicht direkt verbinden können, kann die verschlüsselte Verbindung weitergeleitet werden. Relays leiten nur verschlüsselte Pakete weiter; sie speichern niemals Ihre Dateien."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -643,6 +769,12 @@
       "comment": "About screen: section heading for the Privacy & security list.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Datenschutz & Sicherheit"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -673,6 +805,12 @@
       "comment": "About screen: short tagline under the app name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Senden Sie Dateien direkt. Behalten Sie die Kontrolle darüber, wer sie empfängt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -703,6 +841,12 @@
       "comment": "About screen: navigation/screen title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Über"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -733,6 +877,12 @@
       "comment": "Settings > Appearance: description for the System/auto option.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Der hellen oder dunklen Darstellung dieses Geräts folgen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -763,6 +913,12 @@
       "comment": "Settings > Appearance: label for the dark theme option.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dunkelmodus"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -793,6 +949,12 @@
       "comment": "Settings > Appearance: label for the light theme option.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hellmodus"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -823,6 +985,12 @@
       "comment": "Settings > Appearance: label for the follow-system option.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "System"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -853,6 +1021,12 @@
       "comment": "Settings > Appearance: section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Darstellung"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -883,6 +1057,12 @@
       "comment": "Approval prompt: title when a receiver requests to download a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangsanfrage"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -913,6 +1093,12 @@
       "comment": "Approval prompt: shows the requesting device's ID. {arg1} = device/endpoint identifier.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geräte-ID: %1$@"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -943,6 +1129,12 @@
       "comment": "Approval prompt: fallback label for a requester with no display name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ein Gerät in der Nähe"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -973,6 +1165,12 @@
       "comment": "Send/transfer list: badge showing how many receive requests are awaiting approval. {count} = pending requests.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d Anfragen warten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1003,6 +1201,12 @@
       "comment": "Approval prompt body: '{arg1} wants to receive \"{arg2}\".' {arg1} = requester name, {arg2} = transfer name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$@ möchte „%2$@“ empfangen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1033,6 +1237,12 @@
       "comment": "Device information row: battery level label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Batteriestand"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1063,6 +1273,12 @@
       "comment": "Bug report form: placeholder text in the contact email field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "name@beispiel.com"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1093,6 +1309,12 @@
       "comment": "Bug report form: label for the optional contact email field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kontakt-E-Mail (optional)"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1123,6 +1345,12 @@
       "comment": "Bug report form: intro text explaining what gets attached.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sagen Sie uns, was schiefgelaufen ist. Wir hängen Geräteinformationen und optional aktuelle Protokolle an (sensible Werte werden geschwärzt)."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1153,6 +1381,12 @@
       "comment": "Bug report form: heading for the attached device information section.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geräteinformationen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1183,6 +1417,12 @@
       "comment": "Bug report form: placeholder in the 'what did you expect' field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschreiben Sie, was Sie erwartet haben"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1213,6 +1453,12 @@
       "comment": "Bug report form: label for the expected-behavior field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Was haben Sie erwartet?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1243,6 +1489,12 @@
       "comment": "Bug report form: toggle label to attach recent logs.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aktuelle Protokolle einschließen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1273,6 +1525,12 @@
       "comment": "Bug report form: explanation under the include-logs toggle.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Hilft uns, das Problem zu diagnostizieren. Sensible Werte werden vor dem Senden geschwärzt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1303,6 +1561,12 @@
       "comment": "Bug report form: label showing the size of the log attachment.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Größe des Protokollanhangs"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1333,6 +1597,12 @@
       "comment": "Bug report form: validation error when the expected-behavior field is empty.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bitte beschreiben Sie, was Sie erwartet haben."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1363,6 +1633,12 @@
       "comment": "Bug report form: validation error when the what-happened field is empty.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bitte beschreiben Sie, was passiert ist."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1393,6 +1669,12 @@
       "comment": "Bug report form: placeholder in the steps-to-reproduce field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Listen Sie die Schritte zum Reproduzieren des Problems auf"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1423,6 +1705,12 @@
       "comment": "Bug report form: label for the optional steps-to-reproduce field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schritte zum Reproduzieren (optional)"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1453,6 +1741,12 @@
       "comment": "Bug report form: submit button.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bericht senden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1483,6 +1777,12 @@
       "comment": "Bug report form: error message when submission fails.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Der Fehlerbericht konnte nicht gesendet werden. Bitte versuchen Sie es später erneut."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1513,6 +1813,12 @@
       "comment": "Bug report form: confirmation message after a successful submission.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Danke – Ihr Fehlerbericht wurde erfasst."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1543,6 +1849,12 @@
       "comment": "Bug report form: progress label while the report is being sent.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird gesendet…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1573,6 +1885,12 @@
       "comment": "Bug report form: placeholder in the what-happened field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beschreiben Sie, was passiert ist"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1603,6 +1921,12 @@
       "comment": "Bug report form: label for the what-happened field.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Was ist passiert?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1633,6 +1957,12 @@
       "comment": "Button: approve a receiver's request.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Genehmigen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1663,6 +1993,12 @@
       "comment": "Button: go back to the previous step/screen.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zurück"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1693,6 +2029,12 @@
       "comment": "Button: cancel the current action or dialog.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abbrechen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1723,6 +2065,12 @@
       "comment": "Button: cancel an in-progress receive.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abbrechen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1753,6 +2101,12 @@
       "comment": "Button: change the selected files in the send flow.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dateien ändern"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1783,6 +2137,12 @@
       "comment": "Button: open the file picker to choose files to send.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dateien auswählen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1813,6 +2173,12 @@
       "comment": "Button: open the folder picker (send selection or receive folder).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ordner auswählen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1843,6 +2209,12 @@
       "comment": "Button: clear the current input or selection.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Löschen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1873,6 +2245,12 @@
       "comment": "Button: close the current sheet/dialog.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Schließen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1903,6 +2281,12 @@
       "comment": "Button: start creating a new transfer (Send tab).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Neue Übertragung"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1933,6 +2317,12 @@
       "comment": "Button: delete a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung löschen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1963,6 +2353,12 @@
       "comment": "Button: save the invitation as a .vnd file.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": ".vnd-Datei sichern"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -1993,6 +2389,12 @@
       "comment": "Button: open the OS share sheet to share the invitation.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einladung teilen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2023,6 +2425,12 @@
       "comment": "Button: open the OS Settings app (e.g. for permissions).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einstellungen öffnen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2053,6 +2461,12 @@
       "comment": "Button: receive label (Receive action).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2083,6 +2497,12 @@
       "comment": "Button: start receiving a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfang starten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2113,6 +2533,12 @@
       "comment": "Button: refuse a receiver's request.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ablehnen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2143,6 +2569,12 @@
       "comment": "Button: remove a single file from the send selection.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Datei entfernen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2173,6 +2605,12 @@
       "comment": "Button: reset a setting to its default value.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Standard verwenden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2203,6 +2641,12 @@
       "comment": "Button: retry after a failed operation.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wiederholen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2233,6 +2677,12 @@
       "comment": "Button: start sharing the transfer (make it available).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Freigabe starten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2263,6 +2713,12 @@
       "comment": "Button: disabled/loading state while the transfer is being prepared.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung wird vorbereitet…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2293,6 +2749,12 @@
       "comment": "Button: reveal a received file in the Files app.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "In „Dateien“ anzeigen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2323,6 +2785,12 @@
       "comment": "Button: write the invitation to an NFC tag.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Auf NFC-Tag schreiben"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2353,6 +2821,12 @@
       "comment": "Device information row: device model label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gerätemodell"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2383,6 +2857,12 @@
       "comment": "Device information row: device name label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gerätename"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2413,6 +2893,12 @@
       "comment": "Settings > Diagnostics: explanation of what anonymous diagnostics collect.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Anonyme Absturzberichte und Nutzungsereignisse senden, damit wir VniDrop verbessern können. Sie können dies jederzeit deaktivieren. Einladungen, Dateipfade und Übertragungsinhalte werden niemals einbezogen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2443,6 +2929,12 @@
       "comment": "Settings > Diagnostics: confirmation shown when diagnostics are turned off.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Freigabe von Diagnosedaten ist deaktiviert."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2473,6 +2965,12 @@
       "comment": "Settings > Diagnostics: confirmation shown when diagnostics are turned on.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Freigabe von Diagnosedaten ist aktiviert."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2503,6 +3001,12 @@
       "comment": "Settings > Diagnostics: toggle title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diagnosedaten teilen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2533,6 +3037,12 @@
       "comment": "Error: camera permission is needed to scan a QR code.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Für das Scannen eines QR-Codes ist Kamerazugriff erforderlich."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2563,6 +3073,12 @@
       "comment": "Error: device information could not be loaded.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geräteinformationen konnten nicht geladen werden."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2593,6 +3109,12 @@
       "comment": "Error: the selected files/folder could not be accessed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop konnte nicht auf die ausgewählten Dateien oder den Ordner zugreifen. Überprüfen Sie die Berechtigungen und versuchen Sie es erneut."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2623,6 +3145,12 @@
       "comment": "Error: generic fallback message.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Etwas ist schiefgelaufen. Versuchen Sie es erneut."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2653,6 +3181,12 @@
       "comment": "Error: the app failed to finish starting up.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop konnte den Start nicht abschließen. Schließen Sie die App und versuchen Sie es erneut."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2683,6 +3217,12 @@
       "comment": "Error: the invitation/ticket could not be parsed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diese Einladung konnte nicht gelesen werden. Bitten Sie den Absender um eine neue."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2713,6 +3253,12 @@
       "comment": "Error: the opened invitation contained no data.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diese Einladung ist leer. Versuchen Sie, sie erneut zu öffnen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2743,6 +3289,12 @@
       "comment": "Error: the native library is missing from the build.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die native VniDrop-Bibliothek fehlt in diesem Build."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2773,6 +3325,12 @@
       "comment": "Error: the NFC tag could not be read/used.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dieses NFC-Tag konnte nicht verwendet werden. Versuchen Sie ein anderes."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2803,6 +3361,12 @@
       "comment": "Error: the transfer was not approved or was refused by the sender.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Der Absender hat diese Übertragung nicht genehmigt oder sie wurde abgelehnt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2833,6 +3397,12 @@
       "comment": "Error: transfer data could not be saved locally.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop konnte die Übertragungsdaten auf diesem Gerät nicht speichern."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2863,6 +3433,12 @@
       "comment": "Error: the selected item could not be opened.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Das ausgewählte Objekt konnte nicht geöffnet werden. Versuchen Sie, es erneut auszuwählen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2893,6 +3469,12 @@
       "comment": "Error: attempted to share with nothing selected.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wählen Sie mindestens ein Objekt zum Teilen aus."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2923,6 +3505,12 @@
       "comment": "Error: the app could not open its network sockets.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop konnte seine Netzwerk-Sockets auf diesem Gerät nicht öffnen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2953,6 +3541,12 @@
       "comment": "Error: an invitation was opened before startup finished.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop startet noch. Öffnen Sie die Einladung gleich erneut."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -2983,6 +3577,12 @@
       "comment": "Error: the transfer could not be completed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Übertragung konnte nicht abgeschlossen werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3013,6 +3613,12 @@
       "comment": "Text field label: the receiver's display name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfängername"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3043,6 +3649,12 @@
       "comment": "Text field label: the sender's display name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Absendername"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3073,6 +3685,12 @@
       "comment": "Text field label: the name given to a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungsname"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3103,6 +3721,12 @@
       "comment": "Settings text field label: this device's display name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Anzeigename"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3133,6 +3757,12 @@
       "comment": "Receive-folder status: permission is required to write to the chosen folder.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Berechtigung erforderlich"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3163,6 +3793,12 @@
       "comment": "Receive-folder status: the chosen folder is unavailable.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nicht verfügbar"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3193,6 +3829,12 @@
       "comment": "Receive-folder status: the folder is being checked.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ordner wird geprüft…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3223,6 +3865,12 @@
       "comment": "Receive-folder status: the folder is valid and writable.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bereit"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3253,6 +3901,12 @@
       "comment": "Transfer metadata label: number of files.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dateien"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3283,6 +3937,12 @@
       "comment": "Transfer metadata label: total size.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Größe"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3313,6 +3973,12 @@
       "comment": "Transfer metadata label: current status.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Status"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3343,6 +4009,12 @@
       "comment": "Bottom navigation: Receive tab label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3373,6 +4045,12 @@
       "comment": "Bottom navigation: Send tab label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Senden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3403,6 +4081,12 @@
       "comment": "Bottom navigation: Settings tab label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einstellungen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3433,6 +4117,12 @@
       "comment": "Device information row: network label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netzwerk"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3463,6 +4153,12 @@
       "comment": "Settings > Notifications: explanation of what notifications are used for.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Werden Sie über neue Empfangsanfragen benachrichtigt, während VniDrop im Hintergrund läuft."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3493,6 +4189,12 @@
       "comment": "Settings > Notifications: confirmation when notifications are enabled.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mitteilungen aktiviert."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3523,6 +4225,12 @@
       "comment": "Settings > Notifications: label for the allow-notifications action.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mitteilungen erlauben"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3553,6 +4261,12 @@
       "comment": "Settings > Notifications: message when the OS permission is denied.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mitteilungen sind für VniDrop deaktiviert. Sie können sie in den Einstellungen aktivieren."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3583,6 +4297,12 @@
       "comment": "Settings > Notifications: error when the OS notification settings can't be opened.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Mitteilungseinstellungen konnten nicht geöffnet werden."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3613,6 +4333,12 @@
       "comment": "Settings > Notifications: section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mitteilungen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3643,6 +4369,12 @@
       "comment": "Settings > Notifications: message when notifications aren't supported on the device.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mitteilungen sind auf diesem Gerät nicht verfügbar."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3673,6 +4405,12 @@
       "comment": "Device information row: operating system version label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Betriebssystem"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3703,6 +4441,12 @@
       "comment": "Settings > Preferences: label for the received-files destination folder.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangene Übertragungen sichern in"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3733,6 +4477,12 @@
       "comment": "Settings > Preferences: section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voreinstellungen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3763,6 +4513,12 @@
       "comment": "Transfer progress label: cancelled.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abgebrochen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3793,6 +4549,12 @@
       "comment": "Transfer progress label: completed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abgeschlossen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3823,6 +4585,12 @@
       "comment": "Transfer progress label: connected.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbunden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3853,6 +4621,12 @@
       "comment": "Transfer progress label: connecting.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbinden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3883,6 +4657,12 @@
       "comment": "Transfer progress label: downloading.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird geladen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3913,6 +4693,12 @@
       "comment": "Transfer progress label: failed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fehlgeschlagen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3943,6 +4729,12 @@
       "comment": "Transfer progress label: getting ready.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird bereitgemacht"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -3973,6 +4765,12 @@
       "comment": "Transfer progress label: the transfer was interrupted.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung unterbrochen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4003,6 +4801,12 @@
       "comment": "Transfer progress label: preparing.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird vorbereitet"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4033,6 +4837,12 @@
       "comment": "Transfer progress label: ready.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bereit"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4063,6 +4873,12 @@
       "comment": "Transfer progress label: receiving.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4093,6 +4909,12 @@
       "comment": "Transfer progress label: requesting access from the sender.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zugriff wird angefragt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4123,6 +4945,12 @@
       "comment": "Transfer progress label: saving received files.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird gesichert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4153,6 +4981,12 @@
       "comment": "Transfer progress label: sending.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird gesendet"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4183,6 +5017,12 @@
       "comment": "Transfer progress label: sending to N receivers. %lld = receiver count.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Senden an %1$d"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4213,6 +5053,12 @@
       "comment": "Transfer progress label: the share is ready.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bereit zum Teilen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4243,6 +5089,12 @@
       "comment": "Transfer progress label: generic working/in-progress state.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird bearbeitet…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4273,6 +5125,12 @@
       "comment": "Receive flow: body text prompting the user to pick an invitation method.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wählen Sie die Ihnen zur Verfügung stehende Einladungsmethode."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4303,6 +5161,12 @@
       "comment": "Receive flow: title of the connect-method chooser.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wie möchten Sie sich verbinden?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4333,6 +5197,12 @@
       "comment": "Receive history: action to clear all history.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verlauf löschen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4363,6 +5233,12 @@
       "comment": "Receive history: confirmation dialog body for clearing all history.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alle abgeschlossenen, fehlgeschlagenen und abgebrochenen Empfänge werden aus dem Verlauf von VniDrop entfernt. Heruntergeladene Dateien verbleiben auf diesem Gerät."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4393,6 +5269,12 @@
       "comment": "Receive history: confirmation dialog title for clearing all history.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangsverlauf löschen?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4423,6 +5305,12 @@
       "comment": "Receive flow: toast/message when a transfer finishes downloading.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung empfangen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4453,6 +5341,12 @@
       "comment": "Receive history: confirmation body for removing one item. {arg1} = transfer name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "„%1$@“ wird aus dem Verlauf von VniDrop entfernt. Die heruntergeladene Datei verbleibt auf diesem Gerät."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4483,6 +5377,12 @@
       "comment": "Receive history: swipe/menu action to delete a single history item.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aus Empfangsverlauf löschen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4513,6 +5413,12 @@
       "comment": "Receive history: confirmation title for removing one item.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aus dem Verlauf entfernen?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4543,6 +5449,12 @@
       "comment": "Receive tab empty state: instructions on how to receive.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Öffnen Sie eine VniDrop-Einladung, scannen Sie einen QR-Code oder halten Sie das Gerät an ein NFC-Tag."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4573,6 +5485,12 @@
       "comment": "Receive tab empty state: title when nothing has been received.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noch nichts empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4603,6 +5521,12 @@
       "comment": "Receive history: toast confirming history was cleared.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangsverlauf gelöscht."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4633,6 +5557,12 @@
       "comment": "Receive tab: History section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verlauf"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4663,6 +5593,12 @@
       "comment": "Receive method: open a .vnd invitation file.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eine .vnd-Einladung öffnen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4693,6 +5629,12 @@
       "comment": "Receive method description: open a saved/shared invitation file.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wählen Sie eine auf diesem Gerät gespeicherte oder geteilte Einladung."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4723,6 +5665,12 @@
       "comment": "Receive method: read an NFC tag.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "NFC-Tag lesen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4753,6 +5701,12 @@
       "comment": "Receive method description: hold near the sender's NFC tag.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Halten Sie dieses Gerät an das Einladungs-Tag des Absenders."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4783,6 +5737,12 @@
       "comment": "Receive method: scan a QR code.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "QR-Code scannen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4813,6 +5773,12 @@
       "comment": "Receive method description: use the camera to scan the sender's code.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verwenden Sie die Kamera, um den VniDrop-Code des Absenders zu scannen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4843,6 +5809,12 @@
       "comment": "Receive tab: subtitle under the title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungen, die Sie auf diesem Gerät empfangen haben."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4873,6 +5845,12 @@
       "comment": "Receive flow: prompt while waiting to read an NFC tag.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Halten Sie das Gerät an das NFC-Tag…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4903,6 +5881,12 @@
       "comment": "Receive flow: error when opening VniDrop's folder in Files fails.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop konnte in „Dateien“ nicht geöffnet werden."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4933,6 +5917,12 @@
       "comment": "Receive flow: title of the review screen before accepting a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung prüfen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4963,6 +5953,12 @@
       "comment": "Receive tab: screen title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -4993,6 +5989,12 @@
       "comment": "Receive flow: fallback name for a transfer with no title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop-Übertragung"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5023,6 +6025,12 @@
       "comment": "Send access option: anyone with the invitation can receive.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jeder mit dieser Übertragung"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5053,6 +6061,12 @@
       "comment": "Send access option description: no approval required.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Keine Genehmigung erforderlich. Verwenden Sie dies nur für Objekte, die Sie unbedenklich teilen können."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5083,6 +6097,12 @@
       "comment": "Send access option warning: caution about open access.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Jeder mit der Einladung kann herunterladen, bis Sie die Freigabe beenden. Verwenden Sie dies nicht für private oder sensible Objekte."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5113,6 +6133,12 @@
       "comment": "Send access option: approve each receiver.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vor jedem Download fragen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5143,6 +6169,12 @@
       "comment": "Send access option description: you approve/refuse each receiver.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sie genehmigen oder lehnen jeden neuen Empfänger ab."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5173,6 +6205,12 @@
       "comment": "Send flow: heading for the who-can-receive access chooser.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wer kann sie empfangen?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5203,6 +6241,12 @@
       "comment": "Send flow: body text for the choose-what-to-share step.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wählen Sie Dateien oder einen Ordner auf diesem Gerät aus. Sie können die Auswahl überprüfen, bevor Sie die Übertragung erstellen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5233,6 +6277,12 @@
       "comment": "Send flow: title of the choose-what-to-share step.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wählen Sie, was Sie teilen möchten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5263,6 +6313,12 @@
       "comment": "Send tab empty state: instructions on how to create a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Erstellen Sie eine Übertragung, entscheiden Sie, wer sie empfangen darf, und laden Sie diese Personen dann mit einem QR-Code, einem NFC-Tag oder einer Einladungsdatei ein."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5293,6 +6349,12 @@
       "comment": "Send tab empty state: title when nothing has been shared.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noch nichts geteilt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5323,6 +6385,12 @@
       "comment": "Send flow: shown when a selected file's size can't be determined.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Größe nicht verfügbar"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5353,6 +6421,12 @@
       "comment": "Send flow: label indicating a selected item is a folder.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ordner"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5383,6 +6457,12 @@
       "comment": "Send flow: description for the create-new-transfer entry.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eine neue Übertragung erstellen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5413,6 +6493,12 @@
       "comment": "Send flow: title for the new-transfer step.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Neue Übertragung"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5443,6 +6529,12 @@
       "comment": "Send flow: title of the review-transfer step before creating it.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung prüfen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5473,6 +6565,12 @@
       "comment": "Send flow: count of files chosen. {count} = selected files. NOTE: singular case reads '1 files' — should become a plural.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d Dateien ausgewählt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5503,6 +6601,12 @@
       "comment": "Transfer details: action to stop sharing a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Freigabe beenden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5533,6 +6637,12 @@
       "comment": "Transfer details: confirmation body for stopping sharing.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dies beendet die Übertragung und unterbricht alle, die sie gerade herunterladen. Sie verbleibt in Ihrem Verlauf als „Beendet“."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5563,6 +6673,12 @@
       "comment": "Send tab: subtitle under the title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungen, die Sie von diesem Gerät aus teilen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5593,6 +6709,12 @@
       "comment": "Send tab: screen title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Senden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5623,6 +6745,12 @@
       "comment": "Send flow: toast confirming a transfer was created.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung erstellt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5653,6 +6781,12 @@
       "comment": "Send flow: title of the transfer details screen.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungsdetails"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5683,6 +6817,12 @@
       "comment": "Send tab: 'Your transfers' list heading.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ihre Übertragungen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5713,6 +6853,12 @@
       "comment": "Settings screen: subtitle summarizing what's configurable.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ihr Name, wo Übertragungen gesichert werden, Darstellung und Mitteilungen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5743,6 +6889,12 @@
       "comment": "Settings screen: title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einstellungen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5773,6 +6925,12 @@
       "comment": "Snackbar: accessibility label / action to dismiss the snackbar.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ausblenden"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5803,6 +6961,12 @@
       "comment": "Transfer status: available (actively shared).",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verfügbar"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5833,6 +6997,12 @@
       "comment": "Transfer status: cancelled.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abgebrochen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5863,6 +7033,12 @@
       "comment": "Transfer status: completed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Abgeschlossen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5893,6 +7069,12 @@
       "comment": "Transfer status: failed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fehlgeschlagen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5923,6 +7105,12 @@
       "comment": "Transfer status: preparing.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird vorbereitet"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5953,6 +7141,12 @@
       "comment": "Transfer status: receiving.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -5983,6 +7177,12 @@
       "comment": "Transfer status: stopped.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beendet"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6013,6 +7213,12 @@
       "comment": "Settings > Storage: placeholder while a size is being calculated.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird berechnet…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6043,6 +7249,12 @@
       "comment": "Settings > Storage: button to delete all transfer records.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alle Übertragungen löschen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6073,6 +7285,12 @@
       "comment": "Settings > Storage: confirmation body for deleting all transfer records.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dies löscht alle Datensätze gesendeter und empfangener Übertragungen aus Ihrem Verlauf. Ihre empfangenen Dateien werden nicht gelöscht. Hinweis: Die Übertragungs-Engine behält ihre gespeicherten Inhalte, sodass die Übertragungsdaten möglicherweise nicht abnehmen. Dies kann nicht rückgängig gemacht werden."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6103,6 +7321,12 @@
       "comment": "Settings > Storage: progress label while transfers are being deleted.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird gelöscht…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6133,6 +7357,12 @@
       "comment": "Settings > Storage: footer explaining how storage is managed.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungsdaten werden von der Übertragungs-Engine verwaltet – Ihr Verlauf sowie der Inhalt der von Ihnen geteilten Dateien. Die Schaltfläche unten löscht Ihre Übertragungsdatensätze; die Engine behält ihre gespeicherten Inhalte, sodass dieser Wert möglicherweise nicht sinkt. Empfangene Dateien sind Ihre heruntergeladenen Dateien und werden hier niemals gelöscht."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6163,6 +7393,12 @@
       "comment": "Settings > Storage: label for the received-files size row.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfangene Dateien"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6193,6 +7429,12 @@
       "comment": "Settings > Storage: label for the temporary-files size row.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Temporäre Dateien"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6223,6 +7465,12 @@
       "comment": "Settings > Storage: section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Speicher"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6253,6 +7501,12 @@
       "comment": "Settings > Storage: label for the total-size row.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gesamt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6283,6 +7537,12 @@
       "comment": "Settings > Storage: label for the transfer-engine data size row.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungsdaten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6313,6 +7573,12 @@
       "comment": "Settings > Storage: toast confirming all transfers were deleted.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alle Übertragungen gelöscht"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6343,6 +7609,12 @@
       "comment": "Transfer details: description under the Activity section.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wichtige Aktualisierungen zu dieser Übertragung ansehen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6373,6 +7645,12 @@
       "comment": "Transfer details: Activity section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aktivität"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6403,6 +7681,12 @@
       "comment": "Transfer details: confirmation body for deleting a transfer. {arg1} = transfer name.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "„%1$@“ wird nicht mehr geteilt und sein Übertragungsverlauf wird von diesem Gerät entfernt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6433,6 +7717,12 @@
       "comment": "Transfer details: confirmation title for deleting a transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung löschen?"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6463,6 +7753,12 @@
       "comment": "Transfer details: toast confirming a transfer was deleted.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung gelöscht."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6493,6 +7789,12 @@
       "comment": "Transfer details: progress label while a transfer is being deleted.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird gelöscht…"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6523,6 +7825,12 @@
       "comment": "Transfer details: screen title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragungsdetails"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6553,6 +7861,12 @@
       "comment": "Transfer activity event: a receiver's access was approved.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfängerzugriff genehmigt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6583,6 +7897,12 @@
       "comment": "Transfer activity event: a receiver completed the transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ein Empfänger hat die Übertragung abgeschlossen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6613,6 +7933,12 @@
       "comment": "Transfer activity event: connecting to the sender.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verbindung zum Absender"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6643,6 +7969,12 @@
       "comment": "Transfer activity event: downloading.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird geladen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6673,6 +8005,12 @@
       "comment": "Transfer activity event: the transfer hit a problem.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bei der Übertragung ist ein Problem aufgetreten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6703,6 +8041,12 @@
       "comment": "Transfer activity event: preparing the transfer.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ihre Übertragung wird vorbereitet"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6733,6 +8077,12 @@
       "comment": "Transfer activity event: ready to share.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bereit zum Teilen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6763,6 +8113,12 @@
       "comment": "Transfer activity event: a receiver's access was refused.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfängerzugriff abgelehnt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6793,6 +8149,12 @@
       "comment": "Transfer activity event: a receiver requested access.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ein Empfänger hat Zugriff angefragt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6823,6 +8185,12 @@
       "comment": "Transfer activity event: saving received files.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird gesichert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6853,6 +8221,12 @@
       "comment": "Transfer activity event: sharing was stopped.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Freigabe beendet"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6883,6 +8257,12 @@
       "comment": "Transfer activity event: the transfer was updated.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung aktualisiert"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -6913,6 +8293,24 @@
       "comment": "Transfer subtitle: file count with pluralization. {count} = number of files.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%1$d Datei"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "needs_review",
+                  "value": "%1$d Dateien"
+                }
+              }
+            }
+          }
+        },
         "en": {
           "variations": {
             "plural": {
@@ -6991,6 +8389,12 @@
       "comment": "Transfer share: toast confirming the invitation file was saved.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einladung gesichert."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7021,6 +8425,12 @@
       "comment": "Transfer share/receivers: label for a nearby device.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gerät in der Nähe"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7051,6 +8461,12 @@
       "comment": "Transfer share: message when NFC writing isn't available on the device.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Das Beschreiben von NFC-Tags ist auf diesem Gerät nicht verfügbar."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7081,6 +8497,12 @@
       "comment": "Transfer share: prompt while waiting to write an NFC tag.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Halten Sie Ihr Gerät an ein beschreibbares NFC-Tag."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7111,6 +8533,12 @@
       "comment": "Transfer share: confirmation the invitation was written to the NFC tag.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einladung auf das NFC-Tag geschrieben."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7141,6 +8569,12 @@
       "comment": "Transfer details: empty state for the Activity section.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Es gibt noch keine Aktivität anzuzeigen."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7171,6 +8605,12 @@
       "comment": "Transfer details: empty state for the Receivers section.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Noch niemand hat diese Übertragung angefragt."
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7201,6 +8641,12 @@
       "comment": "Receiver status: approved, waiting for the download to complete.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Genehmigt – wartet auf Abschluss"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7231,6 +8677,12 @@
       "comment": "Receiver status: received successfully.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Erfolgreich empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7261,6 +8713,12 @@
       "comment": "Receiver status: the request expired.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Anfrage abgelaufen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7291,6 +8749,12 @@
       "comment": "Receiver status: the request was refused.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Anfrage abgelehnt"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7321,6 +8785,12 @@
       "comment": "Receiver status: waiting for the sender's approval.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wartet auf Ihre Genehmigung"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7351,6 +8821,12 @@
       "comment": "Receiver status: status unavailable/unknown.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Status nicht verfügbar"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7381,6 +8857,12 @@
       "comment": "Receivers summary: how many receivers completed. {count} = completed receivers.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d abgeschlossen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7411,6 +8893,12 @@
       "comment": "Transfer details: description under the Receivers section.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Anfragen, Genehmigungen und abgeschlossene Zustellungen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7441,6 +8929,12 @@
       "comment": "Receivers summary: how many requests are waiting. {count} = pending receivers.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "%1$d warten"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7471,6 +8965,12 @@
       "comment": "Transfer details: Receivers section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Empfänger"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7501,6 +9001,12 @@
       "comment": "Transfer share: caption under the QR code.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Mit VniDrop scannen, um diese Übertragung zu empfangen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7531,6 +9037,12 @@
       "comment": "Transfer details: description under the Share section.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "QR-Code, Einladungsdatei und Optionen in der Nähe"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7561,6 +9073,12 @@
       "comment": "Transfer details: Share section title.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Teilen"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7591,6 +9109,12 @@
       "comment": "Placeholder shown when a device-info or metadata value can't be read.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nicht verfügbar"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
@@ -7621,6 +9145,12 @@
       "comment": "Device information / Settings row: app version label.",
       "extractionState": "manual",
       "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "App-Version"
+          }
+        },
         "en": {
           "stringUnit": {
             "state": "translated",
