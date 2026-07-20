@@ -20,8 +20,7 @@ import vnidrop.shared.generated.resources.progress_interrupted
 import vnidrop.shared.generated.resources.progress_saving
 import vnidrop.shared.generated.resources.progress_sending
 import vnidrop.shared.generated.resources.progress_working
-import vnidrop.shared.generated.resources.transfer_file_count_one
-import vnidrop.shared.generated.resources.transfer_file_count_other
+import vnidrop.shared.generated.resources.transfer_file_count
 
 class AppUiModelsTest {
 	@Test
@@ -235,10 +234,8 @@ class AppUiModelsTest {
 	}
 
 	@Test
-	fun transferFileCountPicksSingularAndPluralResources() {
-		assertEquals(Res.string.transfer_file_count_one, transferFileCountResource(1UL))
-		assertEquals(Res.string.transfer_file_count_other, transferFileCountResource(2UL))
-		assertEquals(Res.string.transfer_file_count_other, transferFileCountResource(0UL))
+	fun transferFileCountUsesPluralResource() {
+		assertEquals(Res.plurals.transfer_file_count, transferFileCountResource())
 	}
 
 	@Test

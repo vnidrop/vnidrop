@@ -1,0 +1,1741 @@
+{
+  "$schema": "./schema.json",
+  "sourceLanguage": "en",
+  "supportedLanguages": [
+    "en"
+  ],
+  "strings": {
+    "%@": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ]
+    },
+    "%@ %@ · %@": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "args": [
+        {
+          "name": "arg1",
+          "type": "string"
+        },
+        {
+          "name": "arg2",
+          "type": "string"
+        },
+        {
+          "name": "arg3",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "{arg1} {arg2} · {arg3}"
+      }
+    },
+    "%@ · %@": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "args": [
+        {
+          "name": "arg1",
+          "type": "string"
+        },
+        {
+          "name": "arg2",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "{arg1} · {arg2}"
+      }
+    },
+    "%@%%": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ]
+    },
+    "about_bug_report": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Report a bug"
+      }
+    },
+    "about_description": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "VniDrop moves files and folders straight from one device to another over the network, without uploading them to any file-hosting service. There’s no account to create, and no copy of your transfer is left in the cloud once you’re done."
+      }
+    },
+    "about_is_direct": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "A direct device-to-device transfer — your files go straight to the receiver."
+      }
+    },
+    "about_is_encrypted": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Connections are authenticated and end-to-end encrypted (via Iroh), and incoming files are verified by their content hash."
+      }
+    },
+    "about_is_in_control": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "You decide who receives: approve each request, or open a transfer to anyone holding the invitation."
+      }
+    },
+    "about_is_no_account": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Account-free — there’s nothing to sign up for."
+      }
+    },
+    "about_is_open": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Open source, released under the Apache 2.0 license."
+      }
+    },
+    "about_is_title": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "What VniDrop is"
+      }
+    },
+    "about_isnt_cloud": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Not cloud storage — no server holds your files, and nothing waits in the cloud after a transfer."
+      }
+    },
+    "about_isnt_public": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Not public broadcasting — an invitation is a private access link, not an announcement to everyone nearby."
+      }
+    },
+    "about_isnt_sync": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Not a sync or backup service."
+      }
+    },
+    "about_isnt_title": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "What VniDrop isn’t"
+      }
+    },
+    "about_license_label": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "License"
+      }
+    },
+    "about_privacy": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Privacy policy"
+      }
+    },
+    "about_privacy_capability": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Invitations are capabilities. Treat a QR code, NFC tag, or .vnd file like a private access link and share it only with the people you intend — especially with “Anyone with this transfer.”"
+      }
+    },
+    "about_privacy_deny": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Deny by default — VniDrop serves only the content of an active share and rejects unknown requests."
+      }
+    },
+    "about_privacy_local": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Received files are saved on your device and never silently overwrite an existing file."
+      }
+    },
+    "about_privacy_policy_label": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Privacy policy"
+      }
+    },
+    "about_privacy_relay": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "If two devices can’t connect directly, the encrypted connection may be relayed. Relays forward encrypted packets only; they never store your files."
+      }
+    },
+    "about_privacy_title": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Privacy & security"
+      }
+    },
+    "about_tagline": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Send files directly. Stay in control of who receives them."
+      }
+    },
+    "about_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "About"
+      }
+    },
+    "appearance_auto_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Match this device’s light or dark appearance."
+      }
+    },
+    "appearance_dark_mode": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Dark mode"
+      }
+    },
+    "appearance_light_mode": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Light mode"
+      }
+    },
+    "appearance_system_mode": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "System"
+      }
+    },
+    "appearance_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Appearance"
+      }
+    },
+    "approval_connection_request": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receive request"
+      }
+    },
+    "approval_endpoint_id": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "arg1",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "Device ID: {arg1}"
+      }
+    },
+    "approval_nearby_device": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "A nearby device"
+      }
+    },
+    "approval_pending_count": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "translations": {
+        "en": "{count} requests waiting"
+      }
+    },
+    "approval_request_body": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "arg1",
+          "type": "string"
+        },
+        {
+          "name": "arg2",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "{arg1} wants to receive “{arg2}”."
+      }
+    },
+    "battery_level_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Battery level"
+      }
+    },
+    "bug_report_contact_hint": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "name@example.com"
+      }
+    },
+    "bug_report_contact_label": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Contact email (optional)"
+      }
+    },
+    "bug_report_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Tell us what went wrong. We attach device info and optional recent logs (with sensitive values redacted)."
+      }
+    },
+    "bug_report_device_section": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Device information"
+      }
+    },
+    "bug_report_expected_hint": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Describe what you expected to happen"
+      }
+    },
+    "bug_report_expected_label": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "What did you expect?"
+      }
+    },
+    "bug_report_include_logs": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Include recent logs"
+      }
+    },
+    "bug_report_include_logs_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Helps us diagnose the issue. Sensitive values are redacted before sending."
+      }
+    },
+    "bug_report_logs_size": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Log attachment size"
+      }
+    },
+    "bug_report_missing_expected": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Please describe what you expected."
+      }
+    },
+    "bug_report_missing_what": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Please describe what happened."
+      }
+    },
+    "bug_report_steps_hint": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "List the steps to reproduce the issue"
+      }
+    },
+    "bug_report_steps_label": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Steps to reproduce (optional)"
+      }
+    },
+    "bug_report_submit": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Submit report"
+      }
+    },
+    "bug_report_submit_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Could not submit the bug report. Try again later."
+      }
+    },
+    "bug_report_submitted": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Thanks — your bug report was recorded."
+      }
+    },
+    "bug_report_submitting": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Submitting…"
+      }
+    },
+    "bug_report_what_hint": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Describe what happened"
+      }
+    },
+    "bug_report_what_label": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "What happened?"
+      }
+    },
+    "button_approve": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Approve"
+      }
+    },
+    "button_back": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Back"
+      }
+    },
+    "button_cancel": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Cancel"
+      }
+    },
+    "button_cancel_receive": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Cancel"
+      }
+    },
+    "button_change_files": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Change files"
+      }
+    },
+    "button_choose_files": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Choose files"
+      }
+    },
+    "button_choose_folder": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Choose folder"
+      }
+    },
+    "button_clear": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Clear"
+      }
+    },
+    "button_close": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Close"
+      }
+    },
+    "button_create_new_transfer": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "New transfer"
+      }
+    },
+    "button_delete_transfer": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Delete transfer"
+      }
+    },
+    "button_download_invitation": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Save .vnd file"
+      }
+    },
+    "button_native_share": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Share invitation"
+      }
+    },
+    "button_open_settings": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Open Settings"
+      }
+    },
+    "button_receive": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receive"
+      }
+    },
+    "button_receive_files": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Start receiving"
+      }
+    },
+    "button_refuse": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Refuse"
+      }
+    },
+    "button_remove_file": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Remove file"
+      }
+    },
+    "button_reset_default": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Use default"
+      }
+    },
+    "button_retry": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Retry"
+      }
+    },
+    "button_share_file": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Start sharing"
+      }
+    },
+    "button_sharing_file": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Preparing transfer…"
+      }
+    },
+    "button_show_in_files": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Show in Files"
+      }
+    },
+    "button_write_nfc": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Write to NFC tag"
+      }
+    },
+    "device_model_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Device model"
+      }
+    },
+    "device_name_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Device name"
+      }
+    },
+    "diagnostics_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Send anonymous crash reports and usage events so we can improve VniDrop. You can turn this off anytime. Invitations, file paths, and transfer contents are never included."
+      }
+    },
+    "diagnostics_disabled_message": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Diagnostics sharing is off."
+      }
+    },
+    "diagnostics_enabled_message": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Diagnostics sharing is on."
+      }
+    },
+    "diagnostics_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Share diagnostics"
+      }
+    },
+    "error_camera": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Camera access is required to scan a QR code."
+      }
+    },
+    "error_device_info": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Could not load device information."
+      }
+    },
+    "error_filesystem": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "VniDrop could not access the selected files or folder. Check permissions and try again."
+      }
+    },
+    "error_generic": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Something went wrong. Try again."
+      }
+    },
+    "error_initialization": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "VniDrop could not finish starting up. Close the app and try again."
+      }
+    },
+    "error_invalid_ticket": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "This invitation could not be read. Ask the sender for a new one."
+      }
+    },
+    "error_invitation_empty": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "That invitation is empty. Try opening it again."
+      }
+    },
+    "error_missing_native_library": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "The native VniDrop library is missing from this build."
+      }
+    },
+    "error_nfc": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "This NFC tag could not be used. Try another tag."
+      }
+    },
+    "error_permission": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "The sender has not approved this transfer, or it was refused."
+      }
+    },
+    "error_repository": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "VniDrop could not save transfer data on this device."
+      }
+    },
+    "error_selection_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Could not open the selected item. Try choosing it again."
+      }
+    },
+    "error_share_empty": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Select at least one item to share."
+      }
+    },
+    "error_socket_bind": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "VniDrop could not open its network sockets on this device."
+      }
+    },
+    "error_starting_up": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "VniDrop is still starting. Open the invitation again in a moment."
+      }
+    },
+    "error_transfer": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "The transfer could not be completed. Check your connection and try again."
+      }
+    },
+    "field_receiver_name": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receiver name"
+      }
+    },
+    "field_sender_name": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Sender name"
+      }
+    },
+    "field_transfer_name": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer name"
+      }
+    },
+    "field_username": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Display name"
+      }
+    },
+    "folder_status_permission_required": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Permission needed"
+      }
+    },
+    "folder_status_unavailable": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Unavailable"
+      }
+    },
+    "folder_status_validating": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Checking folder…"
+      }
+    },
+    "folder_status_writable": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Ready"
+      }
+    },
+    "metadata_files": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Files"
+      }
+    },
+    "metadata_size": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Size"
+      }
+    },
+    "metadata_status": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Status"
+      }
+    },
+    "nav_receive": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receive"
+      }
+    },
+    "nav_send": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Send"
+      }
+    },
+    "nav_settings": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Settings"
+      }
+    },
+    "network_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Network"
+      }
+    },
+    "notifications_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Get notified about new receive requests while VniDrop is in the background."
+      }
+    },
+    "notifications_enabled_message": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Notifications enabled."
+      }
+    },
+    "notifications_local_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Allow notifications"
+      }
+    },
+    "notifications_permission_denied": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Notifications are turned off for VniDrop. You can enable them in Settings."
+      }
+    },
+    "notifications_settings_open_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Could not open notification settings."
+      }
+    },
+    "notifications_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Notifications"
+      }
+    },
+    "notifications_unsupported": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Notifications are not available on this device."
+      }
+    },
+    "os_version_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Operating system"
+      }
+    },
+    "preferences_receive_folder_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Save received transfers to"
+      }
+    },
+    "preferences_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Preferences"
+      }
+    },
+    "progress_cancelled": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Cancelled"
+      }
+    },
+    "progress_completed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Completed"
+      }
+    },
+    "progress_connected": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Connected"
+      }
+    },
+    "progress_connecting": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Connecting"
+      }
+    },
+    "progress_downloading": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Downloading"
+      }
+    },
+    "progress_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Failed"
+      }
+    },
+    "progress_getting_ready": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Getting ready"
+      }
+    },
+    "progress_interrupted": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer interrupted"
+      }
+    },
+    "progress_preparing": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Preparing"
+      }
+    },
+    "progress_ready": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Ready"
+      }
+    },
+    "progress_receiving": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receiving"
+      }
+    },
+    "progress_requesting_access": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Requesting access"
+      }
+    },
+    "progress_saving": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Saving"
+      }
+    },
+    "progress_sending": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Sending"
+      }
+    },
+    "progress_sending_to_count": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Sending to %lld"
+      }
+    },
+    "progress_share_ready": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Ready to share"
+      }
+    },
+    "progress_working": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Working…"
+      }
+    },
+    "receive_choose_method_body": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Choose the invitation method available to you."
+      }
+    },
+    "receive_choose_method_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "How would you like to connect?"
+      }
+    },
+    "receive_clear_history": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Clear history"
+      }
+    },
+    "receive_clear_history_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "All completed, failed, and cancelled receives will be removed from VniDrop’s history. Downloaded files will remain on this device."
+      }
+    },
+    "receive_clear_history_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Clear receive history?"
+      }
+    },
+    "receive_completed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer received."
+      }
+    },
+    "receive_delete_history_description": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "arg1",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "“{arg1}” will be removed from VniDrop’s history. The downloaded file will remain on this device."
+      }
+    },
+    "receive_delete_history_item": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Delete from receive history"
+      }
+    },
+    "receive_delete_history_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Remove from history?"
+      }
+    },
+    "receive_empty_body": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Open a VniDrop invitation, scan a QR code, or hold near an NFC tag."
+      }
+    },
+    "receive_empty_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Nothing received yet"
+      }
+    },
+    "receive_history_cleared": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receive history cleared."
+      }
+    },
+    "receive_history_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "History"
+      }
+    },
+    "receive_method_file": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Open a .vnd invitation"
+      }
+    },
+    "receive_method_file_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Choose an invitation saved or shared to this device."
+      }
+    },
+    "receive_method_nfc": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Read NFC tag"
+      }
+    },
+    "receive_method_nfc_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Hold this device near the sender’s invitation tag."
+      }
+    },
+    "receive_method_scan": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Scan QR code"
+      }
+    },
+    "receive_method_scan_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Use the camera to scan the sender’s VniDrop code."
+      }
+    },
+    "receive_new_subtitle": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfers you’ve received on this device."
+      }
+    },
+    "receive_nfc_waiting": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Hold near the NFC tag…"
+      }
+    },
+    "receive_open_files_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Couldn’t open VniDrop in Files."
+      }
+    },
+    "receive_review_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Review transfer"
+      }
+    },
+    "receive_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receive"
+      }
+    },
+    "receive_unknown_transfer": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "VniDrop transfer"
+      }
+    },
+    "send_access_anyone": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Anyone with this transfer"
+      }
+    },
+    "send_access_anyone_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "No approval is required. Only use this for items you are comfortable sharing."
+      }
+    },
+    "send_access_anyone_warning": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Anyone with the invitation can download until you stop sharing. Do not use this for private or sensitive items."
+      }
+    },
+    "send_access_approval": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Ask before each download"
+      }
+    },
+    "send_access_approval_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "You approve or refuse every new receiver."
+      }
+    },
+    "send_access_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Who can receive it?"
+      }
+    },
+    "send_choose_file_body": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Select files or a folder from this device. You can review the selection before creating the transfer."
+      }
+    },
+    "send_choose_file_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Choose what to share"
+      }
+    },
+    "send_empty_body": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Create a transfer, decide who can receive it, then invite them with a QR code, NFC tag, or invitation file."
+      }
+    },
+    "send_empty_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Nothing shared yet"
+      }
+    },
+    "send_file_size_unknown": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Size unavailable"
+      }
+    },
+    "send_folder_label": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Folder"
+      }
+    },
+    "send_new_transfer_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Create a new transfer"
+      }
+    },
+    "send_new_transfer_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "New transfer"
+      }
+    },
+    "send_review_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Review transfer"
+      }
+    },
+    "send_selected_files_count": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "translations": {
+        "en": "{count} files selected"
+      }
+    },
+    "send_stop_sharing": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Stop sharing"
+      }
+    },
+    "send_stop_sharing_description": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "This stops the transfer and interrupts anyone currently downloading it. It stays in your history as Stopped."
+      }
+    },
+    "send_subtitle": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfers you’re sharing from this device."
+      }
+    },
+    "send_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Send"
+      }
+    },
+    "send_transfer_created": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer created."
+      }
+    },
+    "send_transfer_details_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer details"
+      }
+    },
+    "send_transfers_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Your transfers"
+      }
+    },
+    "settings_subtitle": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Your name, where transfers are saved, appearance, and notifications."
+      }
+    },
+    "settings_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Settings"
+      }
+    },
+    "snackbar_dismiss": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Dismiss"
+      }
+    },
+    "status_available": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Available"
+      }
+    },
+    "status_cancelled": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Cancelled"
+      }
+    },
+    "status_completed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Completed"
+      }
+    },
+    "status_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Failed"
+      }
+    },
+    "status_preparing": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Preparing"
+      }
+    },
+    "status_receiving": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receiving"
+      }
+    },
+    "status_stopped": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Stopped"
+      }
+    },
+    "storage_calculating": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Calculating…"
+      }
+    },
+    "storage_delete_transfers": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Delete all transfers"
+      }
+    },
+    "storage_delete_transfers_description": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "This clears all sent and received transfer records from your history. Your received files are not deleted. Note: the transfer engine keeps its stored content, so Transfer data may not decrease. This can’t be undone."
+      }
+    },
+    "storage_deleting": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Deleting…"
+      }
+    },
+    "storage_footer": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Transfer data is managed by the transfer engine — your history plus the content of files you’ve shared. The button below clears your transfer records; the engine keeps its stored content, so this value may not drop. Received files are your downloaded files and are never deleted here."
+      }
+    },
+    "storage_received_files": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Received files"
+      }
+    },
+    "storage_temporary": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Temporary files"
+      }
+    },
+    "storage_title": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Storage"
+      }
+    },
+    "storage_total": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Total"
+      }
+    },
+    "storage_transfer_data": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "Transfer data"
+      }
+    },
+    "storage_transfers_deleted": {
+      "context": "TODO: describe where this appears.",
+      "targets": [
+        "apple"
+      ],
+      "translations": {
+        "en": "All transfers deleted"
+      }
+    },
+    "transfer_activity_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "See important updates for this transfer"
+      }
+    },
+    "transfer_activity_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Activity"
+      }
+    },
+    "transfer_delete_description": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "arg1",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "“{arg1}” will stop being shared and its transfer history will be removed from this device."
+      }
+    },
+    "transfer_delete_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Delete transfer?"
+      }
+    },
+    "transfer_deleted": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer deleted."
+      }
+    },
+    "transfer_deleting": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Deleting…"
+      }
+    },
+    "transfer_details_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer details"
+      }
+    },
+    "transfer_event_approved": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receiver access approved"
+      }
+    },
+    "transfer_event_completed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "A receiver completed the transfer"
+      }
+    },
+    "transfer_event_connecting": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Connecting to sender"
+      }
+    },
+    "transfer_event_downloading": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Downloading"
+      }
+    },
+    "transfer_event_failed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "The transfer encountered a problem"
+      }
+    },
+    "transfer_event_preparing": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Preparing your transfer"
+      }
+    },
+    "transfer_event_ready": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Ready to share"
+      }
+    },
+    "transfer_event_refused": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receiver access refused"
+      }
+    },
+    "transfer_event_requested": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "A receiver requested access"
+      }
+    },
+    "transfer_event_saving": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Saving"
+      }
+    },
+    "transfer_event_stopped": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Sharing stopped"
+      }
+    },
+    "transfer_event_updated": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Transfer updated"
+      }
+    },
+    "transfer_file_count": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "plural": {
+        "en": {
+          "other": "{count} files",
+          "one": "{count} file"
+        }
+      }
+    },
+    "transfer_invitation_saved": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Invitation saved."
+      }
+    },
+    "transfer_nearby_device": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Nearby device"
+      }
+    },
+    "transfer_nfc_unavailable": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "NFC tag writing is not available on this device."
+      }
+    },
+    "transfer_nfc_waiting": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Hold your device near a writable NFC tag."
+      }
+    },
+    "transfer_nfc_written": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Invitation written to the NFC tag."
+      }
+    },
+    "transfer_no_activity": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "There is no activity to show yet."
+      }
+    },
+    "transfer_no_receivers": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Nobody has requested this transfer yet."
+      }
+    },
+    "transfer_receiver_accepted": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Approved — waiting for completion"
+      }
+    },
+    "transfer_receiver_completed": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Received successfully"
+      }
+    },
+    "transfer_receiver_expired": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Request expired"
+      }
+    },
+    "transfer_receiver_refused": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Request refused"
+      }
+    },
+    "transfer_receiver_requested": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Waiting for your approval"
+      }
+    },
+    "transfer_receiver_unknown": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Status unavailable"
+      }
+    },
+    "transfer_receivers_completed_count": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "translations": {
+        "en": "{count} completed"
+      }
+    },
+    "transfer_receivers_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Requests, approvals, and completed deliveries"
+      }
+    },
+    "transfer_receivers_pending": {
+      "context": "TODO: describe where this appears.",
+      "args": [
+        {
+          "name": "count",
+          "type": "int"
+        }
+      ],
+      "translations": {
+        "en": "{count} waiting"
+      }
+    },
+    "transfer_receivers_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Receivers"
+      }
+    },
+    "transfer_scan_qr": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Scan with VniDrop to receive this transfer"
+      }
+    },
+    "transfer_share_description": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "QR code, invitation file, and nearby options"
+      }
+    },
+    "transfer_share_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Share"
+      }
+    },
+    "value_unavailable": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "Not available"
+      }
+    },
+    "version_title": {
+      "context": "TODO: describe where this appears.",
+      "translations": {
+        "en": "App version"
+      }
+    }
+  }
+}

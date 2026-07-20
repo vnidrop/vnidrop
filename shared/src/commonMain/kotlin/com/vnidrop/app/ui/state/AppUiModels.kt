@@ -5,6 +5,7 @@ import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
 import kotlin.math.roundToInt
+import org.jetbrains.compose.resources.PluralStringResource
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -30,8 +31,7 @@ import vnidrop.shared.generated.resources.status_failed
 import vnidrop.shared.generated.resources.status_preparing
 import vnidrop.shared.generated.resources.status_receiving
 import vnidrop.shared.generated.resources.status_stopped
-import vnidrop.shared.generated.resources.transfer_file_count_one
-import vnidrop.shared.generated.resources.transfer_file_count_other
+import vnidrop.shared.generated.resources.transfer_file_count
 
 enum class WindowClass {
 	Phone,
@@ -206,9 +206,8 @@ fun summarizeProgress(events: List<CoreEventModel>): List<TransferProgress> =
 		.take(6)
 		.mapNotNull { progressForTransfer(events, it) }
 
-/** File-count string resource for transfer subtitles (resolve with [stringResource]). */
-fun transferFileCountResource(fileCount: ULong): StringResource =
-	if (fileCount == 1UL) Res.string.transfer_file_count_one else Res.string.transfer_file_count_other
+/** File-count plural resource for transfer subtitles (resolve with [pluralStringResource]). */
+fun transferFileCountResource(): PluralStringResource = Res.plurals.transfer_file_count
 
 fun formatBytes(size: ULong): String {
 	val value = size.toDouble()
