@@ -1,0 +1,18 @@
+{
+  "name": "vnidrop-localization",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Single-source localization for VniDrop: strings.json -> .xcstrings (Apple) + per-language strings.xml (KMP/Compose).",
+  "bin": {
+    "loc": "./src/cli.ts"
+  },
+  "scripts": {
+    "migrate": "bun run src/cli.ts migrate",
+    "generate": "bun run src/cli.ts generate",
+    "validate": "bun run src/cli.ts validate"
+  },
+  "devDependencies": {
+    "bun-types": "^1.3.14"
+  }
+}

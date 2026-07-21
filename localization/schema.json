@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VniDrop localization source",
+  "type": "object",
+  "required": ["sourceLanguage", "supportedLanguages", "strings"],
+  "additionalProperties": false,
+  "properties": {
+    "sourceLanguage": { "type": "string", "description": "Default/base language code, e.g. \"en\"." },
+    "supportedLanguages": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "strings": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/definitions/entry" }
+    }
+  },
+  "definitions": {
+    "entry": {
+      "type": "object",
+      "required": ["context"],
+      "additionalProperties": false,
+      "oneOf": [
+        { "required": ["translations"] },
+        { "required": ["plural"] },
+        { "not": { "anyOf": [{ "required": ["translations"] }, { "required": ["plural"] }] } }
+      ],
+      "properties": {
+        "context": { "type": "string" },
+        "targets": {
+          "type": "array",
+          "items": { "enum": ["kmp", "apple"] },
+          "uniqueItems": true
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+              "type": { "enum": ["string", "int", "double"] }
+            }
+          }
+        },
+        "translations": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "plural": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["other"],
+            "additionalProperties": false,
+            "properties": {
+              "zero": { "type": "string" },
+              "one": { "type": "string" },
+              "two": { "type": "string" },
+              "few": { "type": "string" },
+              "many": { "type": "string" },
+              "other": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
