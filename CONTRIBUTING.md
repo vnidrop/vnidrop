@@ -38,7 +38,7 @@ Install the tools needed for the area you plan to change:
 - JDK 17 or newer for Gradle and application builds
 - Rust stable with `rustfmt` and Clippy for the transfer core
 - Android SDK and NDK for Android builds
-- Xcode on macOS for iOS builds and simulator tests
+- Xcode and XcodeGen on macOS for native Apple builds and simulator tests
 - Node.js 22.12 or newer for the optional diagnostics service
 
 The first Rust and Gradle builds may take several minutes while dependencies are
@@ -49,10 +49,10 @@ downloaded and native components are compiled.
 | Path | Purpose |
 |------|---------|
 | `crates/vnidrop/` | Rust transfer core, persistence, approval, and streaming |
-| `shared/` | Shared Kotlin Multiplatform UI and platform bridges |
+| `shared/` | Compose Multiplatform UI and bridges for Android, Windows, and Linux |
 | `androidApp/` | Android application shell |
-| `iosApp/` | iOS application shell |
-| `desktopApp/` | Desktop JVM application shell |
+| `desktopApp/` | Windows/Linux JVM application shell |
+| `apple/` | Native SwiftUI application and Rust/UniFFI integration for Apple platforms |
 | `services/diagnostics-api/` | Optional Cloudflare diagnostics service |
 
 Read the nearest contributor guidance before editing:
@@ -114,8 +114,20 @@ Platform-specific checks may also be appropriate:
 
 ```bash
 ./gradlew :shared:testAndroidHostTest
-./gradlew :shared:iosSimulatorArm64Test
 ./gradlew :androidApp:assembleDebug
+```
+
+### Native Apple App
+
+```bash
+cd apple
+./scripts/build-core.sh debug
+xcodegen generate
+xcodebuild test \
+  -project VniDrop.xcodeproj \
+  -scheme VniDrop \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  CODE_SIGNING_ALLOWED=NO
 ```
 
 ### Diagnostics Service

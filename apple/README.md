@@ -3,7 +3,7 @@
 A native SwiftUI app for Apple platforms, sharing the existing Rust transfer core
 (`crates/vnidrop`) through UniFFI-generated Swift bindings. The Rust crate is not
 modified; the Kotlin/Compose app layer is ported to Swift and mirrors the Compose
-UI screen-for-screen. Android and desktop JVM continue to use `shared/` + Compose.
+UI screen-for-screen. Android, Windows, and Linux continue to use `shared/` + Compose.
 
 ## Layout
 

@@ -161,14 +161,10 @@ class ReceiveViewModel(
 				it.copy(isReceiving = true, lastReceiveError = null, activeReceiveTransferId = null)
 			}
 			val outputSink = fileSystemService.createReceiveOutputSink(folder)
-			val result = when {
-				outputSink != null -> repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
-				folder.kind == ReceiveFolderKind.IosSecurityScopedUrl -> repository.receiveIntoSecurityScopedDirectory(
-					current.ticket,
-					folder.value,
-					current.receiverName,
-				)
-				else -> repository.receive(current.ticket, folder.value, current.receiverName)
+			val result = if (outputSink != null) {
+				repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
+			} else {
+				repository.receive(current.ticket, folder.value, current.receiverName)
 			}
 			result.fold(
 				onSuccess = {

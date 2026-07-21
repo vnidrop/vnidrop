@@ -1,7 +1,6 @@
 import Foundation
 
-/// Builds a `.vnd` invitation filename from a transfer name, mirroring the iOS
-/// helper in `TransferShareActions.ios.kt`.
+/// Builds a `.vnd` invitation filename from a transfer name.
 func invitationFileName(_ transferName: String) -> String {
 	let trimmed = transferName.trimmingCharacters(in: .whitespacesAndNewlines)
 	let base = trimmed.isEmpty ? "invitation" : trimmed

@@ -88,7 +88,8 @@ people, especially when using **Anyone with this transfer**.
 - Per-receiver requests, approvals, progress, and delivery status
 - Cancel, stop sharing, and local transfer history
 - Safe receive destinations that do not silently overwrite existing files
-- Android, iOS, and desktop apps built from a shared Compose Multiplatform UI
+- Native SwiftUI apps on iOS, iPadOS, and macOS; Compose apps on Android,
+  Windows, and Linux
 - Opt-in diagnostics with transfer contents, invitations, and file paths
   excluded
 
@@ -117,14 +118,17 @@ if you want to try the current version.
 git clone https://github.com/vnidrop/vnidrop.git
 cd vnidrop
 
-# Desktop
+# Windows/Linux desktop
 ./gradlew :desktopApp:run
 
 # Android debug build
 ./gradlew :androidApp:assembleDebug
 
-# iOS
-open iosApp/iosApp.xcodeproj
+# iOS, iPadOS, and macOS
+cd apple
+./scripts/build-core.sh debug
+xcodegen generate
+open VniDrop.xcodeproj
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for prerequisites, development setup,

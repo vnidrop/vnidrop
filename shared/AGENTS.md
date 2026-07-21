@@ -7,9 +7,10 @@ still applies; this file wins for UI/KMP work.
 
 ## Purpose
 
-`shared` is the multiplatform app layer: Compose UI, feature ViewModels, and
-`expect`/`actual` bridges into Android, iOS, and desktop. Native transfer work
-goes through UniFFI `VnidropCore` (see `crates/vnidrop`).
+`shared` is the Compose Multiplatform app layer for Android, Windows, and Linux:
+Compose UI, feature ViewModels, and `expect`/`actual` platform bridges. Native
+transfer work goes through UniFFI `VnidropCore` (see `crates/vnidrop`). Apple
+platforms use the native SwiftUI app under `apple/`.
 
 ---
 
@@ -33,7 +34,7 @@ lists, animation, accessibility:
 | Theme | Only `LocalVniDropColors` / `VniDropThemeTokens` (`ui/theme/VniDropTheme.kt`). Brand primary light ≈ `#A855F7` (HSL 271, 91%, 65%). |
 | Strings | CMP composeResources / `Res.string.*` — not Android `R` in `commonMain`. |
 | DI | Follow existing `AppGraph` construction; no unprompted Hilt/Koin migration. |
-| Platform | `androidMain` / `iosMain` / `jvmMain` for pickers, SAF, security-scoped URLs, NFC/QR. |
+| Platform | `androidMain` / `jvmMain` for pickers, SAF, NFC/QR, and desktop integration. |
 | Dependencies | Before adding Jetpack/AndroidX to `commonMain`, verify multiplatform artifacts for all targets. |
 
 compose-skill “Existing Project Policy”: adapt to this repo; do not force-migrate.
@@ -53,14 +54,12 @@ Optional:
 
 ```bash
 ./gradlew :shared:testAndroidHostTest
-./gradlew :shared:iosSimulatorArm64Test
 ./gradlew :desktopApp:run
 ./gradlew :androidApp:assembleDebug
 ```
 
-CI `:shared:jvmTest` currently runs on **macOS**. Gobley host cargo follows the
-current host and architecture, including Linux and Windows; use macOS only when
-exact CI parity is required.
+CI `:shared:jvmTest` runs on **Linux**. Gobley host cargo follows the current
+host and architecture so local desktop builds embed their matching Rust library.
 
 When Kotlin changes touch UniFFI-generated APIs, rebuild/test with a full
 `jvmTest` so Gobley/native pieces stay aligned.
@@ -76,7 +75,7 @@ src/
     feature/send|receive|approvals|settings|app/
     ui/                   # theme, components, navigation, feedback, state helpers
   commonMain/composeResources/
-  androidMain|iosMain|jvmMain/
+  androidMain|jvmMain/
   commonTest|jvmTest|...
 ```
 
@@ -86,7 +85,8 @@ src/
   documents with relative `displayName` paths before calling Rust
   (`FileSystemService.android.kt` / `expandShareDirectory`).
 - **Android receive:** MediaStore Downloads sink and/or SAF tree write sink.
-- **iOS:** keep security-scoped leases alive while Rust reads paths.
+- **Apple:** lives outside this module under `apple/`; do not add Apple platform
+  behavior back to KMP.
 - **Desktop:** filesystem paths; directories may be marked `isDirectory` for Rust walk.
 
 Never pass a directory as a single Android FD into `SourceKind.FILE_DESCRIPTOR`.

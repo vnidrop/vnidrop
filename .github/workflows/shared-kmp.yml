@@ -44,8 +44,7 @@ concurrency:
 jobs:
   jvm-test:
     # Host Rust embedding is enabled only for the current Gobley host target.
-    # This job stays on macOS to cover the Apple targets as well as JVM tests.
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 75
     steps:
       - name: Checkout
@@ -63,7 +62,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,aarch64-linux-android,x86_64-linux-android
+          targets: aarch64-linux-android,x86_64-linux-android
 
       - name: Cache Cargo
         uses: actions/cache@v4

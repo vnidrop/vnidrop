@@ -25,7 +25,6 @@ dependencies {
 
 	implementation(compose.desktop.currentOs)
 	implementation(libs.kotlinx.coroutinesSwing)
-	implementation(libs.jna)
 
 	implementation(libs.compose.uiToolingPreview)
 	testImplementation(libs.kotlin.testJunit)
@@ -37,16 +36,12 @@ compose.desktop {
 		buildTypes.release.proguard.isEnabled.set(false)
 
 		nativeDistributions {
-			targetFormats(TargetFormat.Dmg, TargetFormat.Deb, TargetFormat.Rpm)
+			targetFormats(TargetFormat.Deb, TargetFormat.Rpm)
 			packageName = "VniDrop"
 			packageVersion = appVersion
 			description = "Send files directly across your devices"
 			vendor = "Sudosy Labs"
 			licenseFile.set(project.file("../LICENSE"))
-			macOS {
-				bundleID = "com.vnidrop.app"
-				iconFile.set(project.file("../assets/macos/app-icon.icns"))
-			}
 			windows {
 				iconFile.set(project.file("../assets/windows/app-icon.ico"))
 			}

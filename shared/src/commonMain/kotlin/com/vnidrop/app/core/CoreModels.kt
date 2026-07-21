@@ -134,13 +134,6 @@ interface CoreGateway {
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	): Result<Share>
-	suspend fun shareSecurityScopedFileUrl(
-		fileUrl: String,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	): Result<Share>
 	/** Multi-source share used by multi-file pickers. */
 	suspend fun shareSources(
 		sources: List<uniffi.vnidrop.ShareSource>,
@@ -151,7 +144,6 @@ interface CoreGateway {
 	suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel>
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit>
 	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit>
-	suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String): Result<Unit>
 	suspend fun cancel(transferId: ULong): Result<Unit>
 	suspend fun delete(transferId: ULong): Result<Unit>
 	suspend fun clearReceiveHistory(): Result<ULong>

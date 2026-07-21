@@ -128,44 +128,11 @@ private fun File.systemIconPng(): ByteArray? = runCatching {
 	}
 }.getOrNull()
 
-private fun pickDirectory(title: String): File? =
-	if (isMacOs()) {
-		val dialog = withMacDirectoryDialog {
-			nativeFileDialog(title).apply { isVisible = true }
-		}
-		try {
-			val directory = dialog.directory ?: return null
-			dialog.file
-				?.let { File(directory, it) }
-				?: File(directory)
-		} finally {
-			dialog.dispose()
-		}
-	} else {
-		val chooser = JFileChooser().apply {
-			dialogTitle = title
-			fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
-			isAcceptAllFileFilterUsed = false
-		}
-		if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) chooser.selectedFile else null
+private fun pickDirectory(title: String): File? {
+	val chooser = JFileChooser().apply {
+		dialogTitle = title
+		fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+		isAcceptAllFileFilterUsed = false
 	}
-
-private fun <T> withMacDirectoryDialog(block: () -> T): T {
-	if (!isMacOs()) return block()
-
-	val key = "apple.awt.fileDialogForDirectories"
-	val previous = System.getProperty(key)
-	System.setProperty(key, "true")
-	return try {
-		block()
-	} finally {
-		if (previous == null) {
-			System.clearProperty(key)
-		} else {
-			System.setProperty(key, previous)
-		}
-	}
+	return if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) chooser.selectedFile else null
 }
-
-private fun isMacOs(): Boolean =
-	System.getProperty("os.name").startsWith("Mac", ignoreCase = true)
