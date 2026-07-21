@@ -1,5 +1,5 @@
 [workspace]
-members = ["crates/vnidrop", "crates/uniffi-bindgen"]
+members = ["crates/vnidrop", "crates/uniffi-bindgen", "crates/vni"]
 resolver = "2"
 
 [profile.dev]

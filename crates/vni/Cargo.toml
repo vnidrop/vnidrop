@@ -1,0 +1,17 @@
+[package]
+name = "vni"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "Command-line client for the VniDrop transfer core"
+
+# The shipped binary is `vnidrop`; `vni` stays available as a user-defined alias.
+[[bin]]
+name = "vnidrop"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1.0.102"
+clap = { version = "4.5.51", features = ["derive"] }
+serde_json = "1"
+vnidrop = { path = "../vnidrop" }
