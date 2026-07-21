@@ -3,6 +3,7 @@ package com.vnidrop.app.core
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.RelayMode
 
 data class CoreStatus(
 	val endpointId: String,
@@ -124,7 +125,11 @@ interface CoreGateway {
 	val state: StateFlow<CoreState>
 	val signals: SharedFlow<CoreSignal>
 
-	suspend fun initialize(appDataDir: String): Result<Unit>
+	/**
+	 * Relay settings are applied when the endpoint is built, so they can only be
+	 * supplied here — changing them later requires a restart.
+	 */
+	suspend fun initialize(appDataDir: String, relayMode: RelayMode): Result<Unit>
 	fun shutdown()
 	suspend fun sharePath(path: String, transferName: String, senderName: String, accessPolicy: ShareAccessPolicy): Result<Share>
 	suspend fun shareFileDescriptor(

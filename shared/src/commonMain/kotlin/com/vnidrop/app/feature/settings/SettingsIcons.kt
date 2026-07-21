@@ -88,6 +88,21 @@ internal object SettingsIcons {
 		moveTo(10f, 21f)
 		arcTo(2f, 2f, 0f, false, false, 14f, 21f)
 	}
+	/** Broadcast arcs over a point — the relay/network section. */
+	val Antenna = lineIcon("Antenna") {
+		moveTo(12f, 13f)
+		arcTo(1.5f, 1.5f, 0f, false, false, 12f, 10f)
+		arcTo(1.5f, 1.5f, 0f, false, false, 12f, 13f)
+		close()
+		moveTo(8.5f, 15f)
+		arcTo(5f, 5f, 0f, false, true, 8.5f, 8f)
+		moveTo(15.5f, 8f)
+		arcTo(5f, 5f, 0f, false, true, 15.5f, 15f)
+		moveTo(6f, 18f)
+		arcTo(9f, 9f, 0f, false, true, 6f, 5f)
+		moveTo(18f, 5f)
+		arcTo(9f, 9f, 0f, false, true, 18f, 18f)
+	}
 	val Document = lineIcon("Document") {
 		moveTo(14f, 2f)
 		lineTo(6f, 2f)

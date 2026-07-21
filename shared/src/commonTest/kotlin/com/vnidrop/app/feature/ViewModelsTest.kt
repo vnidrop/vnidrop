@@ -25,6 +25,10 @@ import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.preferences.RelayModeSetting
+import com.vnidrop.app.preferences.RelaySettings
+import com.vnidrop.app.preferences.toCoreRelayMode
+import uniffi.vnidrop.RelayMode
 import com.vnidrop.app.support.FakeCoreGateway
 import com.vnidrop.app.support.FakeFileSystemService
 import com.vnidrop.app.support.FakeFilePreviewRepository
@@ -48,6 +52,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import vnidrop.shared.generated.resources.Res
@@ -71,6 +76,109 @@ class ViewModelsTest {
 		assertTrue(core.state.value.isInitialized)
 		viewModel.selectDestination(AppDestination.Settings)
 		assertEquals(AppDestination.Settings, viewModel.state.value.destination)
+	}
+
+	@Test
+	fun appViewModelPassesPersistedRelayModeToTheCore() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway()
+		val preferences = preferences()
+		preferences.mutablePreferences.value = preferences.mutablePreferences.value
+			.copy(relay = RelaySettings(mode = RelayModeSetting.Disabled))
+		AppViewModel(environment(), core, preferences, UiMessageController())
+		advanceUntilIdle()
+		assertEquals(RelayMode.Disabled, core.lastInitializeRelayMode)
+	}
+
+	@Test
+	fun settingsRelayModeChangePersistsAndAsksForRestart() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		viewModel.setRelayMode(RelayModeSetting.Disabled)
+		advanceUntilIdle()
+		assertEquals(RelayModeSetting.Disabled, preferences.mutablePreferences.value.relay.mode)
+		assertTrue(viewModel.state.value.relayNeedsRestart)
+	}
+
+	/** Returning to the mode the running core was built with clears the notice. */
+	@Test
+	fun settingsRelayRestartNoticeClearsWhenRevertedToLaunchMode() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		viewModel.setRelayMode(RelayModeSetting.Disabled)
+		advanceUntilIdle()
+		assertTrue(viewModel.state.value.relayNeedsRestart)
+		viewModel.setRelayMode(RelayModeSetting.Standard)
+		advanceUntilIdle()
+		assertFalse(viewModel.state.value.relayNeedsRestart)
+	}
+
+	@Test
+	fun settingsRelayCustomUrlsAreTrimmedAndPersisted() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		viewModel.setRelayCustomUrlsDraft("https://relay-1.example.org\n  https://relay-2.example.org  \n")
+		viewModel.commitRelayCustomUrls()
+		advanceUntilIdle()
+		assertNull(viewModel.state.value.relayValidationError)
+		assertEquals(
+			listOf("https://relay-1.example.org", "https://relay-2.example.org"),
+			preferences.mutablePreferences.value.relay.customUrls,
+		)
+	}
+
+	/** Validation runs through the core, so the CLI and both apps agree. */
+	@Test
+	fun settingsRelayRejectsInvalidSchemeWithoutPersisting() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		viewModel.setRelayCustomUrlsDraft("ftp://relay.example.org")
+		viewModel.commitRelayCustomUrls()
+		advanceUntilIdle()
+		assertNotNull(viewModel.state.value.relayValidationError)
+		assertEquals(RelayModeSetting.Standard, preferences.mutablePreferences.value.relay.mode)
+		assertTrue(preferences.mutablePreferences.value.relay.customUrls.isEmpty())
+	}
+
+	@Test
+	fun settingsRelayRejectsEmptyCustomUrls() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences)
+		advanceUntilIdle()
+		viewModel.setRelayCustomUrlsDraft("   \n  ")
+		viewModel.commitRelayCustomUrls()
+		advanceUntilIdle()
+		assertNotNull(viewModel.state.value.relayValidationError)
+		assertEquals(RelayModeSetting.Standard, preferences.mutablePreferences.value.relay.mode)
+	}
+
+	@Test
+	fun relaySettingsMapIntoTheCoreRelayMode() {
+		assertEquals(RelayMode.Default, RelaySettings(RelayModeSetting.Standard).toCoreRelayMode())
+		assertEquals(RelayMode.Disabled, RelaySettings(RelayModeSetting.Disabled).toCoreRelayMode())
+		assertEquals(
+			RelayMode.Custom(listOf("https://relay.example.org")),
+			RelaySettings(RelayModeSetting.Custom, listOf("https://relay.example.org")).toCoreRelayMode(),
+		)
+	}
+
+	/**
+	 * Custom with an empty relay map would silently be local-network only, which
+	 * is not what the user asked for — fall back to the default relays instead.
+	 */
+	@Test
+	fun relaySettingsWithoutUsableUrlsFallBackToDefault() {
+		assertEquals(RelayMode.Default, RelaySettings(RelayModeSetting.Custom, emptyList()).toCoreRelayMode())
+		assertEquals(RelayMode.Default, RelaySettings(RelayModeSetting.Custom, listOf(" ", "\n")).toCoreRelayMode())
 	}
 
 	@Test

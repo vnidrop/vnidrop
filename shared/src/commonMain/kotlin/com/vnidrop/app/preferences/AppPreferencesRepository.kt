@@ -11,11 +11,46 @@ import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.ui.theme.ThemeMode
 import com.vnidrop.app.util.randomUuidString
+import uniffi.vnidrop.RelayMode as CoreRelayMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okio.Path.Companion.toPath
+
+/**
+ * Relay transport choice. Mirrors the core's `RelayMode` without the URLs, which
+ * are stored alongside so a user can switch modes without retyping them.
+ *
+ * [Disabled] is local-network only: without relays the endpoint never discovers a
+ * public address, so peers can only be reached on the same network.
+ */
+enum class RelayModeSetting {
+	Standard,
+	Custom,
+	Disabled,
+}
+
+data class RelaySettings(
+	val mode: RelayModeSetting = RelayModeSetting.Standard,
+	/** Retained across mode changes; only meaningful when [mode] is [RelayModeSetting.Custom]. */
+	val customUrls: List<String> = emptyList(),
+)
+
+/**
+ * Translates the persisted setting into the core's relay configuration.
+ *
+ * Custom with no usable URL would leave the endpoint with an empty relay map —
+ * silently local-network only — so it falls back to the default relays.
+ */
+fun RelaySettings.toCoreRelayMode(): CoreRelayMode = when (mode) {
+	RelayModeSetting.Standard -> CoreRelayMode.Default
+	RelayModeSetting.Disabled -> CoreRelayMode.Disabled
+	RelayModeSetting.Custom -> {
+		val urls = customUrls.map { it.trim() }.filter { it.isNotEmpty() }
+		if (urls.isEmpty()) CoreRelayMode.Default else CoreRelayMode.Custom(urls)
+	}
+}
 
 data class AppPreferences(
 	val username: String,
@@ -26,6 +61,7 @@ data class AppPreferences(
 	val diagnosticsEnabled: Boolean = false,
 	/** Stable anonymous install id; never an account or advertising id. */
 	val diagnosticsInstallId: String = "",
+	val relay: RelaySettings = RelaySettings(),
 )
 
 class AppPreferencesDefaults(
@@ -44,6 +80,12 @@ interface PreferencesRepository {
 	suspend fun setThemeMode(mode: ThemeMode)
 	suspend fun setNotificationsEnabled(enabled: Boolean)
 	suspend fun setDiagnosticsEnabled(enabled: Boolean)
+
+	/**
+	 * Relay changes only take effect when the core is next initialized, because
+	 * the endpoint is built once at startup.
+	 */
+	suspend fun setRelay(relay: RelaySettings)
 	/** Ensures a durable install id exists and returns it. */
 	suspend fun ensureDiagnosticsInstallId(): String
 }
@@ -62,6 +104,7 @@ class AppPreferencesRepository(
 				notificationsEnabled = prefs[PreferenceKeys.NotificationsEnabled] ?: defaults.notificationsEnabled,
 				diagnosticsEnabled = prefs[PreferenceKeys.DiagnosticsEnabled] ?: defaults.diagnosticsEnabled,
 				diagnosticsInstallId = prefs[PreferenceKeys.DiagnosticsInstallId].orEmpty(),
+					relay = resolveRelay(prefs),
 			)
 		}
 
@@ -92,6 +135,15 @@ class AppPreferencesRepository(
 	override suspend fun setNotificationsEnabled(enabled: Boolean) {
 		dataStore.edit { prefs ->
 			prefs[PreferenceKeys.NotificationsEnabled] = enabled
+		}
+	}
+
+	override suspend fun setRelay(relay: RelaySettings) {
+		dataStore.edit { prefs ->
+			prefs[PreferenceKeys.RelayMode] = relay.mode.name
+			// Stored as newline-joined text rather than a preference set so the
+			// order the user entered survives a round trip.
+			prefs[PreferenceKeys.RelayCustomUrls] = relay.customUrls.joinToString("\n")
 		}
 	}
 
@@ -128,7 +180,24 @@ private object PreferenceKeys {
 	val NotificationsEnabled = booleanPreferencesKey("notifications_enabled")
 	val DiagnosticsEnabled = booleanPreferencesKey("diagnostics_enabled")
 	val DiagnosticsInstallId = stringPreferencesKey("diagnostics_install_id")
+	val RelayMode = stringPreferencesKey("relay_mode")
+	val RelayCustomUrls = stringPreferencesKey("relay_custom_urls")
 }
+
+private fun resolveRelay(prefs: Preferences): RelaySettings {
+	// An unknown persisted mode falls back to the shipped default rather than
+	// failing initialization; the URLs stay so the user can switch back.
+	val mode = prefs[PreferenceKeys.RelayMode]?.let { relayModeOrNull(it) } ?: RelayModeSetting.Standard
+	val urls = prefs[PreferenceKeys.RelayCustomUrls]
+		?.split('\n')
+		?.map { it.trim() }
+		?.filter { it.isNotEmpty() }
+		.orEmpty()
+	return RelaySettings(mode = mode, customUrls = urls)
+}
+
+private fun relayModeOrNull(raw: String): RelayModeSetting? =
+	runCatching { RelayModeSetting.valueOf(raw) }.getOrNull()
 
 private fun resolveReceiveFolder(prefs: Preferences, defaults: ReceiveFolder): ReceiveFolder {
 	val kind = prefs[PreferenceKeys.ReceiveFolderKind]?.let { receiveFolderKindOrNull(it) }

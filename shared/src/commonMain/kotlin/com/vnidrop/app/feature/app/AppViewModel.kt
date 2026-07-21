@@ -9,12 +9,14 @@ import com.vnidrop.app.core.CoreGateway
 import com.vnidrop.app.diagnostics.DiagnosticsCoordinator
 import com.vnidrop.app.logging.AppLogger
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.preferences.toCoreRelayMode
 import com.vnidrop.app.ui.feedback.UiMessageController
 import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.theme.ThemeMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -35,7 +37,7 @@ class AppGraphViewModel(dependencies: AppDependencies) : ViewModel() {
 class AppViewModel(
 	private val environment: PlatformEnvironment,
 	private val repository: CoreGateway,
-	preferencesRepository: PreferencesRepository,
+	private val preferencesRepository: PreferencesRepository,
 	private val messages: UiMessageController,
 	private val diagnostics: DiagnosticsCoordinator? = null,
 ) : ViewModel() {
@@ -46,7 +48,10 @@ class AppViewModel(
 		AppLogger.info("lifecycle", "app started", mapOf("platform" to environment.name))
 		diagnostics?.record("app_open", mapOf("platform" to environment.name, "version" to environment.appVersion))
 		viewModelScope.launch {
-			repository.initialize(environment.defaultCoreDataDir).onFailure(messages::error)
+			// Read before initializing: the relay transport is fixed when the
+			// endpoint is built, so a change only takes effect on the next launch.
+			val relayMode = preferencesRepository.preferences.first().relay.toCoreRelayMode()
+			repository.initialize(environment.defaultCoreDataDir, relayMode).onFailure(messages::error)
 		}
 		viewModelScope.launch {
 			preferencesRepository.preferences.collect { preferences ->

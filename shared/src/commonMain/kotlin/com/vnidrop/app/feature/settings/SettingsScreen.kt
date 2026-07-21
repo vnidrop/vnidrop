@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.preferences.RelayModeSetting
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.theme.ThemeMode
 
@@ -22,6 +23,9 @@ fun SettingsScreen(
 	onResetFolder: () -> Unit,
 	onNotificationsChanged: (Boolean) -> Unit,
 	onOpenNotificationSettings: () -> Unit,
+	onRelayModeChanged: (RelayModeSetting) -> Unit,
+	onRelayCustomUrlsChanged: (String) -> Unit,
+	onApplyRelayCustomUrls: () -> Unit,
 	onDiagnosticsChanged: (Boolean) -> Unit,
 	onBugWhatChanged: (String) -> Unit,
 	onBugExpectedChanged: (String) -> Unit,
@@ -51,6 +55,9 @@ fun SettingsScreen(
 					onResetFolder = onResetFolder,
 					onNotificationsChanged = onNotificationsChanged,
 					onOpenNotificationSettings = onOpenNotificationSettings,
+					onRelayModeChanged = onRelayModeChanged,
+					onRelayCustomUrlsChanged = onRelayCustomUrlsChanged,
+					onApplyRelayCustomUrls = onApplyRelayCustomUrls,
 					onDiagnosticsChanged = onDiagnosticsChanged,
 					onBugWhatChanged = onBugWhatChanged,
 					onBugExpectedChanged = onBugExpectedChanged,
@@ -84,6 +91,9 @@ fun SettingsScreen(
 				onResetFolder = onResetFolder,
 				onNotificationsChanged = onNotificationsChanged,
 				onOpenNotificationSettings = onOpenNotificationSettings,
+				onRelayModeChanged = onRelayModeChanged,
+				onRelayCustomUrlsChanged = onRelayCustomUrlsChanged,
+				onApplyRelayCustomUrls = onApplyRelayCustomUrls,
 				onDiagnosticsChanged = onDiagnosticsChanged,
 				onBugWhatChanged = onBugWhatChanged,
 				onBugExpectedChanged = onBugExpectedChanged,
@@ -109,6 +119,9 @@ private fun SettingsSectionContent(
 	onResetFolder: () -> Unit,
 	onNotificationsChanged: (Boolean) -> Unit,
 	onOpenNotificationSettings: () -> Unit,
+	onRelayModeChanged: (RelayModeSetting) -> Unit,
+	onRelayCustomUrlsChanged: (String) -> Unit,
+	onApplyRelayCustomUrls: () -> Unit,
 	onDiagnosticsChanged: (Boolean) -> Unit,
 	onBugWhatChanged: (String) -> Unit,
 	onBugExpectedChanged: (String) -> Unit,
@@ -122,6 +135,14 @@ private fun SettingsSectionContent(
 		SettingsSection.Preferences -> PreferencesSettings(state, onUsernameChanged, onChooseFolder, onResetFolder, onBack, showBack)
 		SettingsSection.Appearance -> AppearanceSettings(state.themeMode, onThemeModeChanged, onBack, showBack)
 		SettingsSection.Notifications -> NotificationSettings(state, onNotificationsChanged, onOpenNotificationSettings, onBack, showBack)
+		SettingsSection.Relay -> RelaySettings(
+			state = state,
+			onModeChanged = onRelayModeChanged,
+			onCustomUrlsChanged = onRelayCustomUrlsChanged,
+			onApplyCustomUrls = onApplyRelayCustomUrls,
+			onBack = onBack,
+			showBack = showBack,
+		)
 		SettingsSection.About -> AboutSettings(
 			state = state,
 			onDiagnosticsChanged = onDiagnosticsChanged,

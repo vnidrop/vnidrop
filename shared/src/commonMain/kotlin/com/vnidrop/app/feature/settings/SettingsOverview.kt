@@ -18,6 +18,7 @@ import vnidrop.shared.generated.resources.appearance_system_mode
 import vnidrop.shared.generated.resources.appearance_title
 import vnidrop.shared.generated.resources.notifications_title
 import vnidrop.shared.generated.resources.preferences_title
+import vnidrop.shared.generated.resources.relay_title
 import vnidrop.shared.generated.resources.settings_subtitle
 import vnidrop.shared.generated.resources.settings_title
 
@@ -63,6 +64,14 @@ internal fun SettingsOverview(
 				title = stringResource(Res.string.notifications_title),
 				selected = state.selectedSection == SettingsSection.Notifications,
 				onClick = { onSectionSelected(SettingsSection.Notifications) },
+			)
+			SettingsDivider()
+			SettingsRow(
+				icon = SettingsIcons.Antenna,
+				title = stringResource(Res.string.relay_title),
+				value = relayModeLabel(state.relay.mode),
+				selected = state.selectedSection == SettingsSection.Relay,
+				onClick = { onSectionSelected(SettingsSection.Relay) },
 			)
 			SettingsDivider()
 			SettingsRow(

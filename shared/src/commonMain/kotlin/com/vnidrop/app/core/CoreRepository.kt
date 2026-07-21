@@ -17,6 +17,8 @@ import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.RelayMode
+import uniffi.vnidrop.defaultCoreLimits
 import uniffi.vnidrop.ReceiverRequest
 import uniffi.vnidrop.ShareMetadataInput
 import uniffi.vnidrop.ShareResult
@@ -59,9 +61,9 @@ class CoreRepository(
 		}
 	}
 
-	override suspend fun initialize(appDataDir: String): Result<Unit> = runCore {
+	override suspend fun initialize(appDataDir: String, relayMode: RelayMode): Result<Unit> = runCore {
 		core?.shutdown()
-		core = VnidropCore.initialize(appDataDir, sink)
+		core = VnidropCore.initializeWithOptions(appDataDir, sink, defaultCoreLimits(), relayMode)
 		refreshSnapshot()
 		_state.update { it.copy(isInitialized = true) }
 	}

@@ -15,6 +15,11 @@ import com.vnidrop.app.diagnostics.DiagnosticsCoordinator
 import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.preferences.RelayModeSetting
+import com.vnidrop.app.preferences.RelaySettings
+import com.vnidrop.app.ui.feedback.technicalDetail
+import uniffi.vnidrop.RelayMode as CoreRelayMode
+import uniffi.vnidrop.validateRelayMode
 import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
 import com.vnidrop.app.ui.feedback.UiMessageTone
@@ -42,12 +47,15 @@ import vnidrop.shared.generated.resources.notifications_enabled_message
 import vnidrop.shared.generated.resources.notifications_permission_denied
 import vnidrop.shared.generated.resources.notifications_settings_open_failed
 import vnidrop.shared.generated.resources.notifications_unsupported
+import vnidrop.shared.generated.resources.relay_error_no_urls
+import vnidrop.shared.generated.resources.relay_restart_required
 
 enum class SettingsSection {
 	Overview,
 	Preferences,
 	Appearance,
 	Notifications,
+	Relay,
 	About,
 	BugReport,
 }
@@ -63,6 +71,12 @@ data class SettingsState(
 	val notificationsEnabled: Boolean = false,
 	val notificationPermission: NotificationPermission = NotificationPermission.NotDetermined,
 	val diagnosticsEnabled: Boolean = false,
+	val relay: RelaySettings = RelaySettings(),
+	/** Free-text mirror of [relay].customUrls, one URL per line, kept while editing. */
+	val relayCustomUrlsDraft: String = "",
+	val relayValidationError: UiText? = null,
+	/** Set once the applied relay differs from the one the running core was built with. */
+	val relayNeedsRestart: Boolean = false,
 	val deviceInfo: DeviceInfo? = null,
 	val appVersion: String = "",
 	val isLoadingDeviceInfo: Boolean = false,
@@ -103,6 +117,9 @@ class SettingsViewModel(
 	private var enableNotificationsAfterSettings = false
 	private var usernamePersistJob: Job? = null
 	private var hasLocalUsernameDraft = false
+	private var hasLocalRelayDraft = false
+	/** Relay configuration the running core was built with, to detect a restart need. */
+	private var launchRelay: RelaySettings? = null
 
 	init {
 		viewModelScope.launch {
@@ -116,8 +133,16 @@ class SettingsViewModel(
 						themeMode = preferences.themeMode,
 						notificationsEnabled = preferences.notificationsEnabled,
 						diagnosticsEnabled = preferences.diagnosticsEnabled,
+						relay = preferences.relay,
+						relayCustomUrlsDraft = if (hasLocalRelayDraft) {
+							current.relayCustomUrlsDraft
+						} else {
+							preferences.relay.customUrls.joinToString("\n")
+						},
 					)
 				}
+				// The first emission reflects what the core was initialized with.
+				if (launchRelay == null) launchRelay = preferences.relay
 				if (receiveFolder != previousFolder) {
 					validateFolder(receiveFolder)
 				}
@@ -150,6 +175,57 @@ class SettingsViewModel(
 
 	fun setThemeMode(mode: ThemeMode) {
 		viewModelScope.launch { preferencesRepository.setThemeMode(mode) }
+	}
+
+	fun setRelayMode(mode: RelayModeSetting) {
+		val current = _state.value.relay
+		if (mode == current.mode) return
+		persistRelay(current.copy(mode = mode))
+	}
+
+	/** Holds the raw text while typing; URLs are parsed and validated on commit. */
+	fun setRelayCustomUrlsDraft(value: String) {
+		hasLocalRelayDraft = true
+		_state.update { it.copy(relayCustomUrlsDraft = value, relayValidationError = null) }
+	}
+
+	/**
+	 * Validates through the core so the CLI, Apple, and Android all accept exactly
+	 * the same input.
+	 */
+	fun commitRelayCustomUrls() {
+		hasLocalRelayDraft = false
+		val urls = _state.value.relayCustomUrlsDraft
+			.lines()
+			.map { it.trim() }
+			.filter { it.isNotEmpty() }
+		if (urls.isEmpty()) {
+			_state.update { it.copy(relayValidationError = UiText.Resource(Res.string.relay_error_no_urls)) }
+			return
+		}
+		val failure = runCatching { validateRelayMode(CoreRelayMode.Custom(urls)) }.exceptionOrNull()
+		if (failure != null) {
+			// Inline field error: the specific reason is the actionable part.
+			_state.update { it.copy(relayValidationError = UiText.Dynamic(failure.technicalDetail())) }
+			return
+		}
+		_state.update { it.copy(relayValidationError = null) }
+		persistRelay(RelaySettings(mode = RelayModeSetting.Custom, customUrls = urls))
+	}
+
+	private fun persistRelay(relay: RelaySettings) {
+		viewModelScope.launch {
+			preferencesRepository.setRelay(relay)
+			// Compare against what the endpoint was actually built with, so undoing
+			// a change back to the launch value clears the notice.
+			val needsRestart = relay != launchRelay
+			_state.update { it.copy(relayNeedsRestart = needsRestart) }
+			if (needsRestart) {
+				messages.show(
+					UiMessage(text = UiText.Resource(Res.string.relay_restart_required), tone = UiMessageTone.Info),
+				)
+			}
+		}
 	}
 
 	fun chooseReceiveFolder() {

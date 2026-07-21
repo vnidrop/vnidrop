@@ -19,6 +19,8 @@ import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
 import com.vnidrop.app.preferences.PreferencesRepository
+import com.vnidrop.app.preferences.RelaySettings
+import uniffi.vnidrop.RelayMode
 import com.vnidrop.app.feature.send.FilePreviewRepository
 import com.vnidrop.app.ui.theme.ThemeMode
 import kotlinx.coroutines.CompletableDeferred
@@ -62,7 +64,9 @@ class FakeCoreGateway : CoreGateway {
 		gate.await()
 	}
 
-	override suspend fun initialize(appDataDir: String): Result<Unit> {
+	var lastInitializeRelayMode: RelayMode? = null
+	override suspend fun initialize(appDataDir: String, relayMode: RelayMode): Result<Unit> {
+		lastInitializeRelayMode = relayMode
 		mutableState.value = mutableState.value.copy(isInitialized = true)
 		return Result.success(Unit)
 	}
@@ -199,6 +203,9 @@ class FakePreferencesRepository(
 	override suspend fun setNotificationsEnabled(enabled: Boolean) { mutablePreferences.value = mutablePreferences.value.copy(notificationsEnabled = enabled) }
 	override suspend fun setDiagnosticsEnabled(enabled: Boolean) {
 		mutablePreferences.value = mutablePreferences.value.copy(diagnosticsEnabled = enabled)
+	}
+	override suspend fun setRelay(relay: RelaySettings) {
+		mutablePreferences.value = mutablePreferences.value.copy(relay = relay)
 	}
 	override suspend fun ensureDiagnosticsInstallId(): String {
 		val existing = mutablePreferences.value.diagnosticsInstallId
