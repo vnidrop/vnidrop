@@ -211,6 +211,8 @@ impl CoreInner {
             .connect(sender_addr.clone(), iroh_blobs::ALPN)
             .await?;
         self.emit_transfer(transfer_id, "receive", "network", "connected", json!({}));
+        self.emit_active_path(transfer_id, "receive", sender_addr.id, "connected")
+            .await;
 
         let hash_and_format = parsed.blob_ticket.hash_and_format();
         let (_hash_seq, sizes) =
@@ -259,6 +261,12 @@ impl CoreInner {
                 GetProgressItem::Error(error) => anyhow::bail!("download failed: {error}"),
             }
         }
+
+        // Sampled again after the bytes moved: a relayed connection can be
+        // upgraded to a direct path mid-transfer, so the initial sample alone
+        // would overstate relay usage.
+        self.emit_active_path(transfer_id, "receive", sender_addr.id, "downloaded")
+            .await;
 
         let collection = Collection::load(hash_and_format.hash, self.store.as_ref()).await?;
         self.export_collection(transfer_id, total_files, target, collection)

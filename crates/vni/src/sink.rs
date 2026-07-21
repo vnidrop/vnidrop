@@ -1,6 +1,6 @@
 use std::{
     io::Write,
-    sync::atomic::{AtomicU64, Ordering},
+    sync::atomic::{AtomicBool, AtomicU64, Ordering},
     sync::Arc,
 };
 
@@ -13,6 +13,9 @@ pub struct PrintingSink {
     /// Newest total byte count seen for the active transfer, for percentages.
     /// Progress events carry the total only once the size is known.
     total_bytes: AtomicU64,
+    /// Whether an in-place progress line is currently on screen, so other
+    /// output breaks the line instead of overwriting it.
+    progress_open: AtomicBool,
 }
 
 impl PrintingSink {
@@ -21,6 +24,7 @@ impl PrintingSink {
             json,
             verbose,
             total_bytes: AtomicU64::new(0),
+            progress_open: AtomicBool::new(false),
         })
     }
 
@@ -49,7 +53,15 @@ impl PrintingSink {
         } else {
             print!("\r  {label}: {current} bytes");
         }
+        self.progress_open.store(true, Ordering::Relaxed);
         let _ = std::io::stdout().flush();
+    }
+
+    /// Terminates a pending progress line so the next output starts clean.
+    fn end_progress_line(&self) {
+        if self.progress_open.swap(false, Ordering::Relaxed) {
+            println!();
+        }
     }
 }
 
@@ -107,10 +119,44 @@ impl CoreEventSink for PrintingSink {
             ("transfer", "progress") => {
                 self.progress_line("send", u64_field(&data, "end_offset"), 0);
             }
-            ("transfer", "completed") | ("delivery", _) => {
-                println!();
+            // The measurement this exists for: whether payload bytes went over a
+            // relay or a direct path.
+            ("network", "active-path") => {
+                self.end_progress_line();
+                let kind = data
+                    .get("kind")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("unknown");
+                let when = data
+                    .get("when")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("");
+                let relay = data
+                    .get("relay_url")
+                    .and_then(|value| value.as_str())
+                    .map(|url| format!(" via {url}"))
+                    .unwrap_or_default();
+                println!("  path ({when}): {kind}{relay}");
             }
-            ("error", _) => eprintln!("error: {}", event.data_json),
+            ("network", "relay-status") => {
+                self.end_progress_line();
+                let status = data
+                    .get("status")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("unknown");
+                let mode = data
+                    .get("mode")
+                    .and_then(|value| value.as_str())
+                    .unwrap_or("unknown");
+                println!("  relays: {mode} ({status})");
+            }
+            ("transfer", "completed") | ("delivery", _) => {
+                self.end_progress_line();
+            }
+            ("error", _) => {
+                self.end_progress_line();
+                eprintln!("error: {}", event.data_json);
+            }
             _ => {}
         }
     }

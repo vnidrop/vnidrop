@@ -24,7 +24,11 @@ use std::{
 };
 
 use anyhow::Result;
-use iroh::{endpoint::presets, protocol::Router, Endpoint, RelayMode as IrohRelayMode};
+use iroh::{
+    endpoint::{presets, TransportAddrUsage},
+    protocol::Router,
+    Endpoint, EndpointId, RelayMode as IrohRelayMode, TransportAddr,
+};
 use iroh_blobs::{
     api::TempTag,
     format::collection::Collection,
@@ -315,6 +319,52 @@ impl CoreInner {
 
     pub(super) fn emit_endpoint(&self, phase: &str, kind: &str, data: serde_json::Value) {
         self.event_hub.emit_endpoint(phase, kind, data);
+    }
+
+    /// Reports whether a transfer is running over a direct path or a relay.
+    ///
+    /// Relays carry payload bytes, not just connection setup, so this is what
+    /// tells us how much traffic actually depends on relay infrastructure.
+    /// Sampled rather than watched: the path can be upgraded from relay to
+    /// direct mid-transfer, so callers sample at both ends of a transfer.
+    ///
+    /// Peer IP addresses are deliberately not emitted — only the path kind and
+    /// the relay URL, which is infrastructure rather than personal data.
+    pub(super) async fn emit_active_path(
+        &self,
+        transfer_id: u64,
+        direction: &str,
+        peer: EndpointId,
+        when: &str,
+    ) {
+        let Some(info) = self.endpoint.remote_info(peer).await else {
+            return;
+        };
+        let mut relay_url = None;
+        let mut direct = false;
+        for addr in info.addrs() {
+            if !matches!(addr.usage(), TransportAddrUsage::Active) {
+                continue;
+            }
+            match addr.addr() {
+                TransportAddr::Relay(url) => relay_url = Some(url.to_string()),
+                TransportAddr::Ip(_) => direct = true,
+                _ => {}
+            }
+        }
+        let kind = match (direct, relay_url.is_some()) {
+            (true, true) => "mixed",
+            (true, false) => "direct",
+            (false, true) => "relay",
+            (false, false) => "unknown",
+        };
+        self.emit_transfer(
+            transfer_id,
+            direction,
+            "network",
+            "active-path",
+            json!({ "when": when, "kind": kind, "relay_url": relay_url }),
+        );
     }
 
     pub(super) fn emit_transfer(
