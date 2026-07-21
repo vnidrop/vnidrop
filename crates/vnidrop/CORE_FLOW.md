@@ -51,7 +51,7 @@ bytes through Kotlin memory.
 - Desktop uses normal filesystem paths.
 - Android opens SAF/content URIs in Kotlin and passes a borrowed file
   descriptor; Rust duplicates the descriptor before streaming.
-- iOS starts the security-scoped URL lease in Kotlin and keeps it alive while
+- iOS starts the security-scoped URL lease in Swift and keeps it alive while
   Rust streams from the accessible file URL/path.
 
 ## Durability And Filesystem Policy

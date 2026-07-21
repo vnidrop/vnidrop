@@ -7,7 +7,7 @@ import UniformTypeIdentifiers
 @MainActor
 func makeReceiveInvitationActions() -> ReceiveInvitationActions { IosReceiveInvitationActions() }
 
-/// iOS invitation acquisition, ported from `ReceiveInvitationActions.ios.kt`:
+/// iOS invitation acquisition:
 /// document picker, camera QR scanner, and NFC read.
 final class IosReceiveInvitationActions: NSObject, ReceiveInvitationActions, UIDocumentPickerDelegate {
 	private var documentResult: ((Result<String, Error>) -> Void)?

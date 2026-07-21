@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// App entry point for iOS/iPadOS/macOS, ported from `iOSApp.swift` + `App.kt`.
+/// Native app entry point for iOS, iPadOS, and macOS.
 /// Opens `.vnd` invitations via `onOpenURL` and routes them to the receive flow.
 @main
 struct VniDropApp: App {

@@ -1,12 +1,10 @@
 @file:OptIn(gobley.gradle.InternalGobleyGradleApi::class)
 
-import gobley.gradle.cargo.dsl.appleMobile
 import gobley.gradle.cargo.dsl.jvm
 import gobley.gradle.cargo.tasks.CargoBuildTask
 import gobley.gradle.cargo.tasks.CargoCheckTask
 import gobley.gradle.GobleyHost
 import gobley.gradle.rust.targets.RustAndroidTarget
-import gobley.gradle.rust.targets.RustAppleMobileTarget
 import gobley.gradle.rust.targets.RustTarget
 import gobley.gradle.Variant
 import org.gradle.api.DefaultTask
@@ -113,18 +111,6 @@ val generateDiagnosticsBuildConfig by tasks.registering {
 }
 
 kotlin {
-	if (GobleyHost.current.platform == GobleyHost.Platform.MacOS) {
-		listOf(
-			iosArm64(),
-			iosSimulatorArm64()
-		).forEach { iosTarget ->
-			iosTarget.binaries.framework {
-				baseName = "Shared"
-				isStatic = true
-			}
-		}
-	}
-
 	androidTarget {
 		compilerOptions {
 			jvmTarget = JvmTarget.JVM_11
@@ -190,9 +176,6 @@ android {
 val hostCargoTargets = buildSet<RustTarget> {
 	add(GobleyHost.current.rustTarget)
 	addAll(RustAndroidTarget.entries)
-	if (GobleyHost.current.platform == GobleyHost.Platform.MacOS) {
-		addAll(RustAppleMobileTarget.entries)
-	}
 }
 
 cargo {
@@ -205,15 +188,6 @@ cargo {
 			// Desktop distributions are built per host. Do not publish disabled
 			// cross-platform native jars into the app runtime classpath.
 			embedRustLibrary.set(rustTarget == GobleyHost.current.rustTarget)
-		}
-	}
-	builds.appleMobile {
-		variants {
-			buildTaskProvider.configure {
-				if (rustTarget.cinteropName == "ios") {
-					additionalEnvironment.put("IPHONEOS_DEPLOYMENT_TARGET", "16.0.0")
-				}
-			}
 		}
 	}
 	builds.configureEach {

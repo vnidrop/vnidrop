@@ -10,9 +10,9 @@ data class PickedShareFile(
 	/** App-owned picker copy that may be deleted after import or when selection is abandoned. */
 	val isTemporaryCopy: Boolean = false,
 	/**
-	 * When true, [value] is a directory (filesystem path, iOS security-scoped
-	 * folder URL, or Android document tree URI). Platform share code expands or
-	 * walks it; Rust cannot treat an Android FD as a directory.
+	 * When true, [value] is a directory (filesystem path or Android document tree
+	 * URI). Platform share code expands or walks it; Rust cannot treat an Android
+	 * FD as a directory.
 	 */
 	val isDirectory: Boolean = false,
 )

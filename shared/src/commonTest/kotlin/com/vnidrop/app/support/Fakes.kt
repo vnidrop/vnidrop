@@ -89,13 +89,6 @@ class FakeCoreGateway : CoreGateway {
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	) = Result.failure<Share>(UnsupportedOperationException())
-	override suspend fun shareSecurityScopedFileUrl(
-		fileUrl: String,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	) = Result.failure<Share>(UnsupportedOperationException())
 	override suspend fun shareSources(
 		sources: List<uniffi.vnidrop.ShareSource>,
 		transferName: String,
@@ -136,13 +129,6 @@ class FakeCoreGateway : CoreGateway {
 		return receiveResult
 	}
 	override suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit> {
-		receiveCount += 1
-		lastReceiveTicket = ticket
-		lastReceiveReceiverName = receiverName
-		awaitReceiveIfNeeded()
-		return receiveResult
-	}
-	override suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String): Result<Unit> {
 		receiveCount += 1
 		lastReceiveTicket = ticket
 		lastReceiveReceiverName = receiverName

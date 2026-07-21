@@ -5,8 +5,8 @@ The product website for VniDrop, built with Next.js and exported as a static sit
 ## Local development
 
 ```bash
-npm install
-npm run dev
+# From the repository root:
+make run-docs
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -14,9 +14,7 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Checks
 
 ```bash
-npm run lint
-npm run typecheck
-npm run build
+make check-docs
 ```
 
 The production build is written to `out/` and can be hosted by any static web server.

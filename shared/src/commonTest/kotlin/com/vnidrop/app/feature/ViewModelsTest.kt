@@ -217,7 +217,7 @@ class ViewModelsTest {
 	fun settingsUsesDefaultReceiveFolderWhenPlatformDoesNotSupportCustomFolders() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val appDocuments = ReceiveFolder(ReceiveFolderKind.FileSystemPath, "/app/Documents", "Documents")
-		val externalFolder = ReceiveFolder(ReceiveFolderKind.IosSecurityScopedUrl, "file:///external", "External")
+		val externalFolder = ReceiveFolder(ReceiveFolderKind.AndroidTreeUri, "content://external", "External")
 		val preferences = preferences().apply {
 			mutablePreferences.value = mutablePreferences.value.copy(receiveFolder = externalFolder)
 		}

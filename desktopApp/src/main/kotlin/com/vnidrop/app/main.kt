@@ -47,31 +47,23 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowScope
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.vnidrop.app.platform.DesktopAppearanceBridge
-import com.vnidrop.app.feature.send.DesktopShareBridge
 import com.vnidrop.app.feature.receive.ExternalInvitationController
 import com.vnidrop.app.feature.receive.MaxVniDropInvitationBytes
 import com.vnidrop.app.feature.receive.VniDropInvitationExtension
 import com.vnidrop.app.feature.receive.decodeInvitationBytes
+import com.vnidrop.app.platform.DesktopAppearanceBridge
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import java.awt.Desktop
 import java.io.File
 
 fun main(args: Array<String>) {
 	val externalInvitations = ExternalInvitationController()
-	val macOs = DesktopAppearanceBridge.isMacOs()
 	val linux = DesktopAppearanceBridge.isLinux()
-	val customWindowChrome = macOs || linux
-	configureMacOsNativeAppearance()
 	configureInvitationOpenHandler(externalInvitations)
 	args.asSequence()
 		.map(::File)
 		.filter { it.extension.equals(VniDropInvitationExtension, ignoreCase = true) }
 		.forEach { externalInvitations.openFile(it) }
-	DesktopAppearanceBridge.applyNativeAppearance = MacOsAppKitAppearance::apply
-	if (macOs) {
-		DesktopShareBridge.shareFile = MacOsShareSheet::share
-	}
 	application {
 		val windowState = rememberWindowState()
 		Window(
@@ -83,29 +75,21 @@ fun main(args: Array<String>) {
 		) {
 			App(
 				dependencies = rememberJvmAppDependencies(externalInvitations),
-				windowChromeTopInset = when {
-					macOs -> MacOsTitleBarHeight
-					linux -> LinuxTitleBarHeight
-					else -> 0.dp
-				},
-				windowContentTopStartRadius = if (customWindowChrome) DesktopContentCornerRadius else 0.dp,
-				windowChrome = when {
-					macOs -> {
-						{ MacOsTitleBar() }
+				windowChromeTopInset = if (linux) LinuxTitleBarHeight else 0.dp,
+				windowContentTopStartRadius = if (linux) DesktopContentCornerRadius else 0.dp,
+				windowChrome = if (linux) {
+					{
+						LinuxTitleBar(
+							isMaximized = windowState.placement == WindowPlacement.Maximized,
+							onMinimize = { windowState.isMinimized = true },
+							onToggleMaximize = {
+								windowState.placement = toggledWindowPlacement(windowState.placement)
+							},
+							onClose = ::exitApplication,
+						)
 					}
-					linux -> {
-						{
-							LinuxTitleBar(
-								isMaximized = windowState.placement == WindowPlacement.Maximized,
-								onMinimize = { windowState.isMinimized = true },
-								onToggleMaximize = {
-									windowState.placement = toggledWindowPlacement(windowState.placement)
-								},
-								onClose = ::exitApplication,
-							)
-						}
-					}
-					else -> null
+				} else {
+					null
 				},
 			)
 		}
@@ -130,54 +114,10 @@ private fun ExternalInvitationController.openFile(file: File) {
 	}
 }
 
-private fun configureMacOsNativeAppearance() {
-	if (!DesktopAppearanceBridge.isMacOs()) return
-	// AWT reads this before creating the first native window. Runtime theme
-	// changes are handled in the JVM platform appearance hook.
-	System.setProperty("apple.awt.application.appearance", "system")
-}
-
-private val MacOsTitleBarHeight = 28.dp
-private val MacOsTrafficLightsWidth = 76.dp
 private val LinuxTitleBarHeight = 40.dp
 private val LinuxWindowControlWidth = 46.dp
 private val LinuxWindowControlsWidth = 138.dp
 private val DesktopContentCornerRadius = 20.dp
-
-@Composable
-@OptIn(ExperimentalComposeUiApi::class)
-private fun WindowScope.MacOsTitleBar() {
-	val colors = LocalVniDropColors.current
-	Box(
-		modifier = Modifier
-			.fillMaxWidth()
-			.height(MacOsTitleBarHeight)
-			.background(colors.backgroundSurface200),
-	) {
-		WindowDraggableArea(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(start = MacOsTrafficLightsWidth)
-				.onPointerEvent(PointerEventType.Press) { event ->
-					if (event.awtEventOrNull?.clickCount == 2) {
-						DesktopAppearanceBridge.toggleMaximized(window)
-					}
-				},
-		) {
-			Box(modifier = Modifier.fillMaxSize().padding(end = MacOsTrafficLightsWidth)) {
-				BasicText(
-					text = "VniDrop",
-					modifier = Modifier.align(Alignment.Center),
-					style = TextStyle(
-						color = colors.foregroundDefault,
-						fontSize = 13.sp,
-						fontWeight = FontWeight.SemiBold,
-					),
-				)
-			}
-		}
-	}
-}
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)

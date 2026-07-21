@@ -11,7 +11,7 @@ import java.io.File
 @Composable
 actual fun rememberTransferShareActions(): TransferShareActions = remember {
 	object : TransferShareActions {
-		override val canUseNativeShare = DesktopShareBridge.shareFile != null
+		override val canUseNativeShare = false
 		override val nfcAvailability = NfcShareAvailability.Hidden
 
 		override fun exportInvitation(ticket: String, transferName: String, onResult: (Result<Unit>) -> Unit) {
@@ -31,18 +31,7 @@ actual fun rememberTransferShareActions(): TransferShareActions = remember {
 		}
 
 		override fun shareInvitation(ticket: String, transferName: String, onResult: (Result<Unit>) -> Unit) {
-			EventQueue.invokeLater {
-				val share = DesktopShareBridge.shareFile
-				if (share == null) {
-					onResult(Result.failure(UnsupportedOperationException("System sharing is unavailable on this desktop")))
-					return@invokeLater
-				}
-				onResult(runCatching {
-					val directory = File(System.getProperty("java.io.tmpdir"), "vnidrop-share").apply { mkdirs() }
-					val file = File(directory, invitationFileName(transferName)).apply { writeText(ticket) }
-					share(file).getOrThrow()
-				})
-			}
+			onResult(Result.failure(UnsupportedOperationException("System sharing is unavailable on this desktop")))
 		}
 
 		override fun writeInvitationToNfc(ticket: String, onResult: (Result<Unit>) -> Unit) {
@@ -55,8 +44,3 @@ actual fun rememberTransferShareActions(): TransferShareActions = remember {
 private fun activeFrame(): Frame? =
 	(KeyboardFocusManager.getCurrentKeyboardFocusManager().activeWindow as? Frame)
 		?: Frame.getFrames().firstOrNull { it.isActive || it.isFocused }
-
-object DesktopShareBridge {
-	@Volatile
-	var shareFile: ((File) -> Result<Unit>)? = null
-}

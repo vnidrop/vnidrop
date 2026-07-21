@@ -1,8 +1,7 @@
 import Foundation
 import Combine
 
-/// Persisted per-transfer thumbnail store, ported from
-/// `feature/send/FilePreviewRepository.kt` + `PlatformPreviewStore.ios.kt`.
+/// Native Apple preview cache and thumbnail loader.
 /// Only small PNG/JPEG/WEBP previews are retained, under a total quota.
 struct PreviewStoragePolicy {
 	var maxEntryBytes: Int = 512 * 1024

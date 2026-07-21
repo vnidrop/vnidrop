@@ -2,7 +2,7 @@ import SwiftUI
 
 enum NfcShareAvailability { case available, unavailable, hidden }
 
-/// Invitation delivery actions, ported from `TransferShareActions` (iosMain).
+/// Invitation delivery actions shared by the native Apple feature models.
 /// Platform implementations perform export, native share, and NFC write.
 @MainActor
 protocol TransferShareActions: AnyObject {

@@ -5,7 +5,7 @@ import UIKit
 @MainActor
 func makePlatformShareActions() -> TransferShareActions { IosTransferShareActions() }
 
-/// iOS invitation delivery, ported from `TransferShareActions.ios.kt`: export via
+/// iOS invitation delivery: export via
 /// document picker, native share via `UIActivityViewController`, and NFC write.
 final class IosTransferShareActions: NSObject, TransferShareActions {
 	private var nfcWriter: InvitationNfcWriter?
@@ -61,8 +61,7 @@ final class IosTransferShareActions: NSObject, TransferShareActions {
 	}
 }
 
-/// Writes a VniDrop invitation to a writable NDEF tag, ported from
-/// `InvitationNfcWriter` in `TransferShareActions.ios.kt`.
+/// Writes a VniDrop invitation to a writable NDEF tag.
 // Runs entirely on the NFC session's `.main` delegate queue.
 final class InvitationNfcWriter: NSObject, NFCNDEFReaderSessionDelegate, @unchecked Sendable {
 	private let ticket: String

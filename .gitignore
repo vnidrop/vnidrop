@@ -19,6 +19,7 @@ captures
 node_modules/
 target/
 .junie
+config.override.mk
 
 # Local design export scratch
 output/

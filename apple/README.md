@@ -3,7 +3,7 @@
 A native SwiftUI app for Apple platforms, sharing the existing Rust transfer core
 (`crates/vnidrop`) through UniFFI-generated Swift bindings. The Rust crate is not
 modified; the Kotlin/Compose app layer is ported to Swift and mirrors the Compose
-UI screen-for-screen. Android and desktop JVM continue to use `shared/` + Compose.
+UI screen-for-screen. Android, Windows, and Linux continue to use `shared/` + Compose.
 
 ## Layout
 
@@ -30,20 +30,23 @@ Prerequisites: Xcode, Rust with the Apple targets
 `aarch64-apple-darwin`), and `xcodegen` (`brew install xcodegen`).
 
 ```bash
-# 1. Build the Rust core and generate the Swift bindings + xcframework.
-apple/scripts/build-core.sh debug        # or: release (see note below)
-
-# 2. Generate the Xcode project.
-cd apple && xcodegen generate
-
-# 3. Open and run, or build from the CLI:
-open VniDrop.xcodeproj
-#   macOS:
-xcodebuild -project VniDrop.xcodeproj -scheme VniDrop -destination 'platform=macOS' build
-#   iOS simulator:
-xcodebuild -project VniDrop.xcodeproj -scheme VniDrop \
-  -destination 'platform=iOS Simulator,name=iPhone 15' build
+# From the repository root:
+make apple-core          # Rust core, Swift bindings, and XCFramework
+make apple-project       # generate apple/VniDrop.xcodeproj
+make open-apple-project  # generate and open the project in Xcode
+make build-apple-macos   # unsigned macOS build
+make open-apple          # build and launch the macOS app
+make build-apple-ios     # unsigned iOS simulator build
+make check-apple         # iOS simulator tests
 ```
+
+Use `APPLE_PROFILE=release` to request a release Rust core, or set
+`APPLE_DESTINATION` to override the automatically selected iOS simulator.
+Code signing is disabled for the app and test targets; local and CI builds do
+not require an Apple Development team or provisioning profile. Make builds can
+opt in with `APPLE_CODE_SIGNING=YES`. For signed builds from Xcode, create the
+ignored `apple/Local.xcconfig` and override the signing settings there, including
+the development team.
 
 ## Command-line typecheck & tests
 

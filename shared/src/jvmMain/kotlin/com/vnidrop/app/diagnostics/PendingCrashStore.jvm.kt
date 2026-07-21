@@ -31,10 +31,13 @@ private class JvmPendingCrashStore(
 		return directory
 			.listFiles { file -> file.isFile && file.name.endsWith(".crash") }
 			.orEmpty()
-			.sortedByDescending { it.lastModified() }
 			.mapNotNull { file ->
 				runCatching { CrashReportCodec.decode(file.readText(StandardCharsets.UTF_8)) }.getOrNull()
 			}
+			.sortedWith(
+				compareByDescending<CrashReport> { it.timestampMillis }
+					.thenBy { it.id },
+			)
 	}
 
 	@Synchronized
@@ -64,7 +67,10 @@ private class JvmPendingCrashStore(
 					file to report
 				}
 			}
-			.sortedByDescending { (_, report) -> report.timestampMillis }
+			.sortedWith(
+				compareByDescending<Pair<File, CrashReport>> { (_, report) -> report.timestampMillis }
+					.thenBy { (_, report) -> report.id },
+			)
 		reports.forEachIndexed { index, (file, report) ->
 			if (index >= maxCount || report.timestampMillis < olderThanTimestampMillis) file.delete()
 		}

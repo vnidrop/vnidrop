@@ -13,13 +13,14 @@ Nested guides take precedence when editing under those trees:
 
 ## Project overview
 
-VniDrop is a cross-platform **local P2P file transfer** app (Android, iOS, Desktop).
+VniDrop is a cross-platform **local P2P file transfer** app.
 
 | Layer | Path | Responsibility |
 |-------|------|----------------|
 | Rust core | `crates/vnidrop/` | Iroh endpoint, blobs, SQLite, tickets, approval, streaming |
-| Shared KMP | `shared/` | Compose UI, ViewModels, expect/actual platform bridges |
-| Hosts | `androidApp/`, `iosApp/`, `desktopApp/` | Thin app shells |
+| Shared KMP | `shared/` | Compose UI and platform bridges for Android, Windows, and Linux |
+| Compose hosts | `androidApp/`, `desktopApp/` | Thin Android and Windows/Linux app shells |
+| Apple app | `apple/` | Native SwiftUI UI using generated Rust/UniFFI Swift bindings |
 
 **Invariant:** UI/platform opens files and handles pickers; **Rust streams bytes**.
 Do not design features that move transfer payloads through Kotlin heap by default.
@@ -52,67 +53,62 @@ Domain docs (reference, do not paste into PRs):
 
 ## Build and test
 
-Install prerequisites when missing: Rust stable + rustfmt + clippy, JDK 17,
-Android NDK/SDK only if building Android, Xcode only for iOS.
+Install prerequisites when missing: GNU Make + Bash, Rust stable + rustfmt + clippy, JDK 17,
+Android NDK/SDK only if building Android, Xcode only for the native Apple app.
 
 ### Rust core (`crates/vnidrop` or workspace root)
 
 Run from the **repo root** (Cargo workspace):
 
 ```bash
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace --all-targets
+make check-rust
 ```
 
 Focused:
 
 ```bash
-cargo test -p vnidrop
-cargo test -p vnidrop --test output_sink
-cargo test -p vnidrop --test transfer
-cargo test -p vnidrop --test approval
-cargo test -p vnidrop --test lifecycle
+make test-rust
+make test-rust-output-sink
+make test-rust-transfer
+make test-rust-approval
+make test-rust-lifecycle
 ```
 
 After finishing Rust edits, format:
 
 ```bash
-cargo fmt --all
+make format
 ```
 
-CI also runs `cargo doc --workspace --no-deps` with `RUSTDOCFLAGS=-D warnings`
-(see `.github/workflows/rust-core.yml`). Run it before large Rust public-API changes.
+`make check-rust` includes documentation with warnings denied, matching
+`.github/workflows/rust-core.yml`.
 
 ### Shared KMP / Compose (`shared/`)
 
 ```bash
-./gradlew :shared:jvmTest
-./gradlew :shared:compileKotlinJvm
+make check-shared
 ```
 
 Other targets (slower / machine-dependent):
 
 ```bash
-./gradlew :shared:testAndroidHostTest
-./gradlew :shared:iosSimulatorArm64Test   # macOS + Xcode
-./gradlew :androidApp:assembleDebug
-./gradlew :desktopApp:run
+make test-android-host
+make check-android
+make run-desktop
 ```
 
-**Note:** `jvmTest` CI currently runs on **macOS**. Gobley host cargo is enabled
-for the current host and architecture, so local Linux and Windows builds embed
-their matching desktop Rust library. Prefer macOS only when exact CI parity is
-required.
+**Note:** `jvmTest` CI runs on **Linux**. Gobley host cargo is enabled for the
+current host and architecture, so local desktop builds embed their matching
+Rust library.
 
 ### What to run before finishing
 
 | You changed… | Minimum verification |
 |--------------|----------------------|
-| `crates/vnidrop/**` only | `cargo fmt`, `cargo clippy … -D warnings`, `cargo test -p vnidrop` |
-| Cancel / export / sinks | Above + `cargo test -p vnidrop --test output_sink` |
-| `shared/**` only | `./gradlew :shared:jvmTest` |
-| Both | Rust suite + `:shared:jvmTest` |
+| `crates/vnidrop/**` only | `make check-rust` |
+| Cancel / export / sinks | Above + `make test-rust-output-sink` |
+| `shared/**` only | `make test-shared` |
+| Both | `make test-rust test-shared` |
 | Docs only | No suite required; verify links/paths |
 
 Do not kill long `cargo` / Gradle runs mid-flight unless they hang past several
@@ -144,12 +140,12 @@ shared/src/commonMain/kotlin/com/vnidrop/app/
   core/           # CoreGateway, models, pickers interfaces
   feature/send|receive|approvals|settings|app/
   ui/theme|components|navigation|feedback|state/
-androidMain|iosMain|jvmMain/   # expect/actual implementations
+androidMain|jvmMain/   # expect/actual implementations
 ```
 
 ### Platform file rules (do not violate)
 
-- Desktop / path-based iOS: paths; directory walk in Rust when `is_directory`.
+- Windows/Linux desktop: paths; directory walk in Rust when `is_directory`.
 - Android **share**: ParcelFileDescriptor **file** FDs only — never a directory FD.
   Folder share expands SAF trees in Kotlin to per-file FDs + relative names.
 - Android **receive** default: MediaStore Downloads sink; custom trees via SAF write.

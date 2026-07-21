@@ -52,15 +52,13 @@ private class AndroidFileSystemService(
 			ReceiveFolderKind.FileSystemPath -> validatePath(folder.value)
 			ReceiveFolderKind.AndroidPublicDownloads -> validatePublicDownloads()
 			ReceiveFolderKind.AndroidTreeUri -> validateTreeUri(folder.value)
-			ReceiveFolderKind.IosSecurityScopedUrl -> FolderAccessStatus.Unavailable
 		}
 
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? =
 		when (folder.kind) {
 			ReceiveFolderKind.AndroidPublicDownloads -> AndroidMediaStoreDownloadsSink(context)
 			ReceiveFolderKind.AndroidTreeUri -> AndroidTreeReceiveOutputSink(context, folder.value.toUri())
-			ReceiveFolderKind.FileSystemPath,
-			ReceiveFolderKind.IosSecurityScopedUrl -> null
+			ReceiveFolderKind.FileSystemPath -> null
 		}
 
 	override suspend fun sharePickedFiles(

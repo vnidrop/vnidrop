@@ -113,27 +113,6 @@ class CoreRepository(
 			accessPolicy = accessPolicy,
 		)
 
-	override suspend fun shareSecurityScopedFileUrl(
-		fileUrl: String,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	): Result<Share> =
-		shareSources(
-			sources = listOf(
-				ShareSource(
-					kind = SourceKind.IOS_SECURITY_SCOPED_URL,
-					value = fileUrl,
-					displayName = displayName.ifBlank { fileUrl.substringAfterLast('/').ifBlank { "transfer" } },
-					isDirectory = false,
-				),
-			),
-			transferName = transferName,
-			senderName = senderName,
-			accessPolicy = accessPolicy,
-		)
-
 	override suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel> = runCore {
 		requireCore().inspectTicket(ticket).toModel().also { inspection ->
 			_state.update { it.copy(lastInspection = inspection) }
@@ -151,17 +130,6 @@ class CoreRepository(
 		receiverName: String,
 	): Result<Unit> = runCore {
 		requireCore().receiveWithOutputSink(ticket, outputSink, receiverName.ifBlank { null })
-		refreshSnapshot()
-	}
-
-	override suspend fun receiveIntoSecurityScopedDirectory(
-		ticket: String,
-		outputDirectoryUrl: String,
-		receiverName: String,
-	): Result<Unit> = runCore {
-		withPlatformPathAccess(SourceKind.IOS_SECURITY_SCOPED_URL, outputDirectoryUrl) {
-			requireCore().receive(ticket, outputDirectoryUrl, receiverName.ifBlank { null })
-		}
 		refreshSnapshot()
 	}
 
