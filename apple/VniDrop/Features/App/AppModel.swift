@@ -25,8 +25,14 @@ final class AppModel: ObservableObject {
 
 		AppLogger.info("lifecycle", "app started", ["platform": environment.name])
 
+		// Read before initializing: the relay transport is fixed when the endpoint
+		// is built, so a change only takes effect on the next launch.
+		let relayMode = preferences.preferences.relay.coreRelayMode
 		Task {
-			let result = await repository.initialize(appDataDir: environment.defaultCoreDataDir)
+			let result = await repository.initialize(
+				appDataDir: environment.defaultCoreDataDir,
+				relayMode: relayMode
+			)
 			if case .failure(let error) = result { messages.error(error) }
 		}
 

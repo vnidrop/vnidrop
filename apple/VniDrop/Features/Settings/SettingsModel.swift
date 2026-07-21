@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import VnidropCore
 
 /// Settings sections, ported from `feature/settings/SettingsViewModel.kt`.
 enum SettingsSection: Hashable {
@@ -7,6 +8,7 @@ enum SettingsSection: Hashable {
 	case preferences
 	case appearance
 	case notifications
+	case relay
 	case storage
 	case about
 	case bugReport
@@ -17,6 +19,7 @@ enum SettingsSection: Hashable {
 		case .preferences: return "preferences_title"
 		case .appearance: return "appearance_title"
 		case .notifications: return "notifications_title"
+		case .relay: return "relay_title"
 		case .storage: return "storage_title"
 		case .about: return "about_title"
 		case .bugReport: return "about_bug_report"
@@ -42,6 +45,12 @@ struct SettingsState: Equatable {
 	var themeMode: ThemeMode = .system
 	var notificationsEnabled = false
 	var notificationPermission: NotificationPermission = .notDetermined
+	var relay = RelaySettings()
+	/// Free-text mirror of `relay.customUrls`, one URL per line, kept while editing.
+	var relayCustomUrlsDraft = ""
+	var relayValidationError: String?
+	/// Set once the applied relay differs from the saved one.
+	var relayNeedsRestart = false
 	var diagnosticsEnabled = false
 	var deviceInfo: DeviceInfo?
 	var appVersion = ""
@@ -64,6 +73,9 @@ struct SettingsState: Equatable {
 			&& lhs.supportsCustomReceiveFolders == rhs.supportsCustomReceiveFolders
 			&& lhs.themeMode == rhs.themeMode && lhs.notificationsEnabled == rhs.notificationsEnabled
 			&& lhs.notificationPermission == rhs.notificationPermission
+			&& lhs.relay == rhs.relay && lhs.relayCustomUrlsDraft == rhs.relayCustomUrlsDraft
+			&& lhs.relayValidationError == rhs.relayValidationError
+			&& lhs.relayNeedsRestart == rhs.relayNeedsRestart
 			&& lhs.diagnosticsEnabled == rhs.diagnosticsEnabled && lhs.appVersion == rhs.appVersion
 			&& lhs.isLoadingDeviceInfo == rhs.isLoadingDeviceInfo
 			&& lhs.bugWhatHappened == rhs.bugWhatHappened && lhs.bugExpected == rhs.bugExpected
@@ -95,6 +107,9 @@ final class SettingsModel: ObservableObject {
 	private var enableNotificationsAfterSettings = false
 	private var usernamePersistTask: Task<Void, Never>?
 	private var hasLocalUsernameDraft = false
+	private var hasLocalRelayDraft = false
+	/// Relay configuration the running core was built with, to detect a restart need.
+	private let launchRelay: RelaySettings
 	private var cancellables = Set<AnyCancellable>()
 
 	init(
@@ -117,6 +132,7 @@ final class SettingsModel: ObservableObject {
 		self.messages = messages
 		self.bugReports = bugReports
 		self.diagnosticsIncluded = diagnosticsIncluded
+		self.launchRelay = preferences.preferences.relay
 		self.state = SettingsState(
 			supportsCustomReceiveFolders: fileSystemService.supportsCustomReceiveFolders,
 			appVersion: environment.appVersion
@@ -131,6 +147,10 @@ final class SettingsModel: ObservableObject {
 				self.state.receiveFolder = folder
 				self.state.themeMode = prefs.themeMode
 				self.state.notificationsEnabled = prefs.notificationsEnabled
+				self.state.relay = prefs.relay
+				if !self.hasLocalRelayDraft {
+					self.state.relayCustomUrlsDraft = prefs.relay.customUrls.joined(separator: "\n")
+				}
 				self.state.diagnosticsEnabled = prefs.diagnosticsEnabled
 				if folder != previousFolder { Task { await self.validateFolder(folder) } }
 			}
@@ -160,6 +180,52 @@ final class SettingsModel: ObservableObject {
 	}
 
 	func setThemeMode(_ mode: ThemeMode) { preferences.setThemeMode(mode) }
+
+	// MARK: - Relay
+
+	func setRelayMode(_ mode: RelayModeSetting) {
+		guard mode != state.relay.mode else { return }
+		persistRelay(RelaySettings(mode: mode, customUrls: state.relay.customUrls))
+	}
+
+	/// Holds the raw text while typing; URLs are parsed and validated on commit.
+	func updateRelayCustomUrlsDraft(_ text: String) {
+		hasLocalRelayDraft = true
+		state.relayCustomUrlsDraft = text
+		state.relayValidationError = nil
+	}
+
+	/// Validates through the core so the CLI, Apple, and Android all accept
+	/// exactly the same input.
+	func commitRelayCustomUrls() {
+		hasLocalRelayDraft = false
+		let urls = state.relayCustomUrlsDraft
+			.split(whereSeparator: \.isNewline)
+			.map { $0.trimmingCharacters(in: .whitespaces) }
+			.filter { !$0.isEmpty }
+		if urls.isEmpty {
+			state.relayValidationError = String(localized: "relay_error_no_urls")
+			return
+		}
+		do {
+			try validateRelayMode(mode: .custom(urls: urls))
+		} catch {
+			state.relayValidationError = error.technicalDetail
+			return
+		}
+		state.relayValidationError = nil
+		persistRelay(RelaySettings(mode: .custom, customUrls: urls))
+	}
+
+	private func persistRelay(_ relay: RelaySettings) {
+		preferences.setRelay(relay)
+		// Compare against what the endpoint was actually built with, so undoing a
+		// change back to the launch value clears the notice.
+		state.relayNeedsRestart = relay != launchRelay
+		if state.relayNeedsRestart {
+			messages.show(UiMessage(text: .resource("relay_restart_required"), tone: .info))
+		}
+	}
 
 	func chooseReceiveFolder() {
 		if !fileSystemService.supportsCustomReceiveFolders { return }

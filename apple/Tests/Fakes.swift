@@ -35,11 +35,13 @@ final class FakeCoreGateway: CoreGateway {
 	private(set) var lastReceiveTicket: String?
 	private(set) var lastReceiveReceiverName: String?
 	private(set) var lastShareAccessPolicy: ShareAccessPolicy?
+	private(set) var lastInitializeRelayMode: RelayMode?
 
 	func setState(_ state: CoreState) { stateSubject.send(state) }
 	func emit(_ signal: CoreSignal) { signalsSubject.send(signal) }
 
-	func initialize(appDataDir: String) async -> Result<Void, Error> {
+	func initialize(appDataDir: String, relayMode: RelayMode) async -> Result<Void, Error> {
+		lastInitializeRelayMode = relayMode
 		var s = stateSubject.value
 		s.isInitialized = true
 		stateSubject.send(s)

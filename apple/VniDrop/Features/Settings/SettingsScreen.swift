@@ -35,6 +35,13 @@ struct SettingsScreen: View {
 					NavigationLink(value: SettingsSection.notifications) {
 						SettingsRow(icon: "bell", title: String(localized: "notifications_title"), value: nil)
 					}
+					NavigationLink(value: SettingsSection.relay) {
+						SettingsRow(
+							icon: "antenna.radiowaves.left.and.right",
+							title: String(localized: "relay_title"),
+							value: relayModeLabel(model.state.relay.mode)
+						)
+					}
 					NavigationLink(value: SettingsSection.storage) {
 						SettingsRow(icon: "internaldrive", title: String(localized: "storage_title"), value: nil)
 					}
@@ -99,6 +106,8 @@ private struct SettingsSectionContent: View {
 			AppearanceSettings(model: model)
 		case .notifications:
 			NotificationSettings(model: model)
+		case .relay:
+			RelaySettingsSection(model: model)
 		case .storage:
 			StorageSettings(model: model)
 		case .about:

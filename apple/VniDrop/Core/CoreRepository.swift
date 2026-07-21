@@ -30,10 +30,15 @@ final class CoreRepository: ObservableObject, CoreGateway {
 
 	// MARK: - Lifecycle
 
-	func initialize(appDataDir: String) async -> Result<Void, Error> {
+	func initialize(appDataDir: String, relayMode: RelayMode) async -> Result<Void, Error> {
 		await runCore { [sink] in
 			self.core?.shutdown()
-			let created = try VnidropCore.initialize(appDataDir: appDataDir, eventSink: sink)
+			let created = try VnidropCore.initializeWithOptions(
+				appDataDir: appDataDir,
+				eventSink: sink,
+				limits: defaultCoreLimits(),
+				relayMode: relayMode
+			)
 			return created
 		}.map { created in
 			self.core = created

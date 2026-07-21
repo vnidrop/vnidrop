@@ -39,6 +39,84 @@ struct AppearanceSettings: View {
 	}
 }
 
+struct RelaySettingsSection: View {
+	@ObservedObject var model: SettingsModel
+	@FocusState private var urlsFocused: Bool
+
+	var body: some View {
+		Section {
+			Picker(String(localized: "relay_title"),
+				   selection: Binding(get: { model.state.relay.mode }, set: { model.setRelayMode($0) })) {
+				ForEach(RelayModeSetting.allCases, id: \.self) { mode in
+					Text(relayModeLabel(mode)).tag(mode)
+				}
+			}
+			.pickerStyle(.inline)
+			.labelsHidden()
+		} footer: {
+			Text(LocalizedStringKey(relayModeDescriptionKey(model.state.relay.mode)))
+		}
+
+		if model.state.relay.mode == .disabled {
+			Section {
+				Label(String(localized: "relay_none_warning"), systemImage: "exclamationmark.triangle")
+					.foregroundStyle(.orange)
+			}
+		}
+
+		if model.state.relay.mode == .custom {
+			Section {
+				TextEditor(text: Binding(
+					get: { model.state.relayCustomUrlsDraft },
+					set: { model.updateRelayCustomUrlsDraft($0) }
+				))
+				.frame(minHeight: 88)
+				.font(.body.monospaced())
+				.autocorrectionDisabled()
+				#if os(iOS)
+				.textInputAutocapitalization(.never)
+				#endif
+				.focused($urlsFocused)
+				.onChange(of: urlsFocused) { _, focused in
+					if !focused { model.commitRelayCustomUrls() }
+				}
+				Button(String(localized: "relay_custom_apply"), action: model.commitRelayCustomUrls)
+				if let error = model.state.relayValidationError {
+					Text(error)
+						.font(.footnote)
+						.foregroundStyle(.red)
+				}
+			} header: {
+				Text(LocalizedStringKey("relay_custom_urls_label"))
+			} footer: {
+				Text(LocalizedStringKey("relay_custom_urls_help"))
+			}
+		}
+
+		if model.state.relayNeedsRestart {
+			Section {
+				Label(String(localized: "relay_restart_required"), systemImage: "arrow.clockwise")
+			}
+		}
+	}
+}
+
+func relayModeLabel(_ mode: RelayModeSetting) -> String {
+	switch mode {
+	case .standard: return String(localized: "relay_mode_default")
+	case .custom: return String(localized: "relay_mode_custom")
+	case .disabled: return String(localized: "relay_mode_none")
+	}
+}
+
+private func relayModeDescriptionKey(_ mode: RelayModeSetting) -> String {
+	switch mode {
+	case .standard: return "relay_mode_default_description"
+	case .custom: return "relay_mode_custom_description"
+	case .disabled: return "relay_mode_none_description"
+	}
+}
+
 struct NotificationSettings: View {
 	@ObservedObject var model: SettingsModel
 

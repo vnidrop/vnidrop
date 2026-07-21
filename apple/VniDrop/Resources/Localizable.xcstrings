@@ -959,16 +959,6 @@
         }
       }
     },
-    "error_relay_configuration" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The relay settings are not valid. Check the relay addresses in Settings."
-          }
-        }
-      }
-    },
     "error_repository" : {
       "localizations" : {
         "en" : {
@@ -1702,6 +1692,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "VniDrop transfer"
+          }
+        }
+      }
+    },
+    "relay_custom_apply" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apply addresses"
+          }
+        }
+      }
+    },
+    "relay_custom_urls_help" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One address per line, starting with https://. Relays that require an access token are not supported yet."
+          }
+        }
+      }
+    },
+    "relay_custom_urls_label" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relay addresses"
+          }
+        }
+      }
+    },
+    "relay_error_no_urls" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter at least one relay address."
+          }
+        }
+      }
+    },
+    "relay_mode_custom" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Custom relays"
+          }
+        }
+      }
+    },
+    "relay_mode_custom_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use your own relay servers instead of the default ones. Other people you transfer with may connect through your relay."
+          }
+        }
+      }
+    },
+    "relay_mode_default" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default relays"
+          }
+        }
+      }
+    },
+    "relay_mode_default_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfers connect directly when possible. When a direct connection cannot be made, a relay forwards the encrypted transfer. The relay cannot read your files."
+          }
+        }
+      }
+    },
+    "relay_mode_none" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Local network only"
+          }
+        }
+      }
+    },
+    "relay_mode_none_description" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No relays are used. Devices must be able to reach each other directly."
+          }
+        }
+      }
+    },
+    "relay_none_warning" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transfers will only work between devices on the same network. Sending over the internet or mobile data will not connect."
+          }
+        }
+      }
+    },
+    "relay_restart_required" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relay changes take effect the next time VniDrop starts. Restarting may interrupt transfers that are in progress."
+          }
+        }
+      }
+    },
+    "relay_title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Relays"
           }
         }
       }
