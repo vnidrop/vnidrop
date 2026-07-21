@@ -20,10 +20,11 @@ use std::{
     path::PathBuf,
     str::FromStr,
     sync::{atomic::AtomicBool, Arc},
+    time::Duration,
 };
 
 use anyhow::Result;
-use iroh::{endpoint::presets, protocol::Router, Endpoint};
+use iroh::{endpoint::presets, protocol::Router, Endpoint, RelayMode as IrohRelayMode};
 use iroh_blobs::{
     api::TempTag,
     format::collection::Collection,
@@ -39,7 +40,7 @@ use tokio::{
 
 use crate::{
     access_policy::{mode_from_storage, AccessPolicy},
-    api::{CoreEvent, CoreEventSink, CoreLimits},
+    api::{CoreEvent, CoreEventSink, CoreLimits, RelayMode},
     approval::ApprovalService,
     event_hub::EventHub,
     handshake::HandshakeService,
@@ -81,11 +82,75 @@ pub(super) struct ActiveTransfer {
     pub(super) cancel: oneshot::Sender<()>,
 }
 
+/// How long startup waits for a home relay before continuing without one.
+const RELAY_ONLINE_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// Outcome of the startup relay wait, reported as a `network` event.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum RelayStatus {
+    /// No relays configured, so none can connect.
+    Disabled,
+    Connected,
+    /// No relay answered in time. The endpoint still works for direct
+    /// connections, so this is not a startup failure.
+    Unreachable,
+}
+
+impl RelayStatus {
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Disabled => "disabled",
+            Self::Connected => "connected",
+            Self::Unreachable => "unreachable",
+        }
+    }
+}
+
+/// How long to wait for a home relay, or `None` when no relay can ever connect.
+///
+/// `Endpoint::online()` waits on the home-relay watcher, which stays empty when
+/// no relay is configured — so awaiting it under [`RelayMode::Disabled`] blocks
+/// forever rather than returning or erroring. Every mode is bounded regardless,
+/// because a configured-but-unreachable relay hangs the same way.
+pub(crate) fn relay_wait_timeout(mode: &RelayMode) -> Option<Duration> {
+    match mode {
+        RelayMode::Disabled => None,
+        RelayMode::Default | RelayMode::Custom { .. } => Some(RELAY_ONLINE_TIMEOUT),
+    }
+}
+
+pub(crate) fn relay_mode_label(mode: &RelayMode) -> &'static str {
+    match mode {
+        RelayMode::Default => "default",
+        RelayMode::Custom { .. } => "custom",
+        RelayMode::Disabled => "disabled",
+    }
+}
+
+fn iroh_relay_mode(mode: &RelayMode) -> Result<IrohRelayMode> {
+    Ok(match mode {
+        RelayMode::Default => IrohRelayMode::Default,
+        RelayMode::Disabled => IrohRelayMode::Disabled,
+        RelayMode::Custom { .. } => IrohRelayMode::custom(mode.parsed_urls()?),
+    })
+}
+
+async fn connect_home_relay(endpoint: &Endpoint, mode: &RelayMode) -> RelayStatus {
+    let Some(wait) = relay_wait_timeout(mode) else {
+        return RelayStatus::Disabled;
+    };
+    match tokio::time::timeout(wait, endpoint.online()).await {
+        Ok(()) => RelayStatus::Connected,
+        Err(_) => RelayStatus::Unreachable,
+    }
+}
+
 impl CoreInner {
     pub(super) async fn start(
         app_data_dir: PathBuf,
         event_sink: Arc<dyn CoreEventSink>,
         limits: CoreLimits,
+        relay_mode: RelayMode,
     ) -> Result<Arc<Self>> {
         tokio::fs::create_dir_all(&app_data_dir).await?;
         init_logging(&app_data_dir)?;
@@ -93,11 +158,14 @@ impl CoreInner {
         let repository = Repository::open(&app_data_dir).await?;
         let store_root = app_data_dir.join("blobs");
         let store = FsStore::load(&store_root).await?;
+        // presets::N0 also installs endpoint discovery, which stays enabled in
+        // every relay mode; only the relay transport is overridden here.
         let endpoint = Endpoint::builder(presets::N0)
+            .relay_mode(iroh_relay_mode(&relay_mode)?)
             .secret_key(secret_key)
             .bind()
             .await?;
-        endpoint.online().await;
+        let relay_status = connect_home_relay(&endpoint, &relay_mode).await;
 
         // Provider events are where the sender sees remote readers.  The core
         // uses them for send progress and for the current approval gate.
@@ -110,6 +178,16 @@ impl CoreInner {
             limits.event_queue_capacity as usize,
             limits.max_events,
         ));
+        // Emitted after the hub exists so the app can explain a later
+        // connection failure ("no relay was reachable at startup").
+        event_hub.emit_endpoint(
+            "network",
+            "relay-status",
+            json!({
+                "status": relay_status.as_str(),
+                "mode": relay_mode_label(&relay_mode),
+            }),
+        );
         for recovered in recovered_transfers {
             event_hub.emit_transfer(
                 recovered.transfer_id,

@@ -10,6 +10,7 @@ import vnidrop.shared.generated.resources.error_invalid_ticket
 import vnidrop.shared.generated.resources.error_invitation_empty
 import vnidrop.shared.generated.resources.error_missing_native_library
 import vnidrop.shared.generated.resources.error_permission
+import vnidrop.shared.generated.resources.error_relay_configuration
 import vnidrop.shared.generated.resources.error_repository
 import vnidrop.shared.generated.resources.error_selection_failed
 import vnidrop.shared.generated.resources.error_socket_bind
@@ -32,6 +33,7 @@ fun Throwable.toUiText(): UiText =
 		is VnidropException.Transfer -> transferUiText(reason)
 		is VnidropException.Repository -> UiText.Resource(Res.string.error_repository)
 		is VnidropException.Initialization -> initializationUiText(reason)
+		is VnidropException.Configuration -> UiText.Resource(Res.string.error_relay_configuration)
 		is VnidropException.Internal -> reasonHints(reason) ?: UiText.Resource(Res.string.error_generic)
 		else -> reasonHints(technicalDetail()) ?: UiText.Resource(Res.string.error_generic)
 	}
@@ -55,6 +57,7 @@ fun Throwable.technicalDetail(): String =
 		is VnidropException.Transfer -> reason
 		is VnidropException.Permission -> reason
 		is VnidropException.Repository -> reason
+		is VnidropException.Configuration -> reason
 		is VnidropException.Internal -> reason
 		else -> message.orEmpty()
 	}

@@ -959,6 +959,16 @@
         }
       }
     },
+    "error_relay_configuration" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The relay settings are not valid. Check the relay addresses in Settings."
+          }
+        }
+      }
+    },
     "error_repository" : {
       "localizations" : {
         "en" : {

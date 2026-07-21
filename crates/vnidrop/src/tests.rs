@@ -6,6 +6,8 @@ mod filesystem_tests;
 mod handshake_tests;
 #[path = "tests/limits.rs"]
 mod limits_tests;
+#[path = "tests/relay.rs"]
+mod relay_tests;
 #[path = "tests/repository.rs"]
 mod repository_tests;
 #[path = "tests/runtime.rs"]

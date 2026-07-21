@@ -6,9 +6,9 @@ use serde_json::json;
 use super::CoreInner;
 use crate::{
     api::{
-        CoreEvent, CoreEventSink, CoreLimits, ReceiveOutputSink, ReceiverRequest, RuntimeStatus,
-        ShareMetadataInput, ShareResult, ShareSource, StoredTransfer, TicketInspection,
-        TransferAccessMode,
+        CoreEvent, CoreEventSink, CoreLimits, ReceiveOutputSink, ReceiverRequest, RelayMode,
+        RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource, StoredTransfer,
+        TicketInspection, TransferAccessMode,
     },
     error::VnidropError,
     filesystem::platform_path,
@@ -51,14 +51,33 @@ impl VnidropCore {
         event_sink: Arc<dyn CoreEventSink>,
         limits: CoreLimits,
     ) -> Result<Arc<Self>, VnidropError> {
+        Self::initialize_with_options(app_data_dir, event_sink, limits, RelayMode::default())
+    }
+
+    /// Full initialization surface. Relay settings are applied when the
+    /// endpoint is built, so they take effect only on the next launch.
+    #[uniffi::constructor]
+    pub fn initialize_with_options(
+        app_data_dir: String,
+        event_sink: Arc<dyn CoreEventSink>,
+        limits: CoreLimits,
+        relay_mode: RelayMode,
+    ) -> Result<Arc<Self>, VnidropError> {
         limits.validate().map_err(VnidropError::initialization)?;
+        // Reject malformed relay URLs before any durable or network work.
+        relay_mode.validate().map_err(VnidropError::config)?;
         let runtime = tokio::runtime::Builder::new_multi_thread()
             .enable_all()
             .thread_name("vnidrop")
             .build()?;
         let app_data_dir = PathBuf::from(app_data_dir);
         let inner = runtime
-            .block_on(CoreInner::start(app_data_dir, event_sink, limits))
+            .block_on(CoreInner::start(
+                app_data_dir,
+                event_sink,
+                limits,
+                relay_mode,
+            ))
             .map_err(VnidropError::initialization)?;
         Ok(Arc::new(Self { runtime, inner }))
     }

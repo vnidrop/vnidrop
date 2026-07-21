@@ -207,6 +207,7 @@
     <string name="error_filesystem">VniDrop could not access the selected files or folder. Check permissions and try again.</string>
     <string name="error_transfer">The transfer could not be completed. Check your connection and try again.</string>
     <string name="error_repository">VniDrop could not save transfer data on this device.</string>
+    <string name="error_relay_configuration">The relay settings are not valid. Check the relay addresses in Settings.</string>
     <string name="error_initialization">VniDrop could not finish starting up. Close the app and try again.</string>
     <string name="error_socket_bind">VniDrop could not open its network sockets on this device.</string>
     <string name="error_missing_native_library">The native VniDrop library is missing from this build.</string>

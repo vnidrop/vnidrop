@@ -94,6 +94,75 @@ pub fn default_core_limits() -> CoreLimits {
     CoreLimits::default()
 }
 
+/// Relay transport selection, applied when the Iroh endpoint is built.
+///
+/// Relays only carry traffic when a direct path cannot be established; they
+/// never see plaintext. [`RelayMode::Disabled`] does **not** disable endpoint
+/// discovery — peers are still resolved by node id, they just lose the relayed
+/// fallback when hole punching fails.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize, uniffi::Enum)]
+pub enum RelayMode {
+    /// The n0 public relay servers (the historical behaviour).
+    #[default]
+    Default,
+    /// Self-hosted or third-party relays.
+    Custom { urls: Vec<String> },
+    /// No relays. Direct connections only.
+    Disabled,
+}
+
+impl RelayMode {
+    /// Parses and validates the configured relay URLs.
+    ///
+    /// `RelayUrl`'s `FromStr` is a bare `Url` parse with no scheme or host
+    /// checks, so `nonsense://x` would be accepted here and only surface later
+    /// as a relay that never connects. Reject that up front instead.
+    pub(crate) fn parsed_urls(&self) -> anyhow::Result<Vec<iroh::RelayUrl>> {
+        let Self::Custom { urls } = self else {
+            return Ok(Vec::new());
+        };
+        if urls.is_empty() {
+            anyhow::bail!("custom relay mode requires at least one relay URL");
+        }
+        urls.iter().map(|url| parse_relay_url(url)).collect()
+    }
+
+    pub fn validate(&self) -> anyhow::Result<()> {
+        self.parsed_urls().map(|_| ())
+    }
+}
+
+fn parse_relay_url(value: &str) -> anyhow::Result<iroh::RelayUrl> {
+    let trimmed = value.trim();
+    if trimmed.is_empty() {
+        anyhow::bail!("relay URL must not be empty");
+    }
+    let url: iroh::RelayUrl = trimmed
+        .parse()
+        .with_context(|| format!("relay URL {trimmed} is not a valid URL"))?;
+    match url.scheme() {
+        "https" | "http" => {}
+        other => anyhow::bail!("relay URL {trimmed} uses unsupported scheme {other}; use https"),
+    }
+    match url.host_str() {
+        Some(host) if !host.is_empty() => {}
+        _ => anyhow::bail!("relay URL {trimmed} is missing a host"),
+    }
+    Ok(url)
+}
+
+#[uniffi::export]
+pub fn default_relay_mode() -> RelayMode {
+    RelayMode::default()
+}
+
+/// Validates relay settings before they are persisted, so the UI can reject
+/// bad input at entry time rather than at next launch.
+#[uniffi::export]
+pub fn validate_relay_mode(mode: RelayMode) -> Result<(), crate::error::VnidropError> {
+    mode.validate().map_err(crate::error::VnidropError::config)
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct CoreEvent {
     pub id: String,

@@ -19,6 +19,8 @@ extension Error {
 				return .resource("error_repository")
 			case .Initialization(let reason):
 				return initializationUiText(reason)
+			case .Configuration:
+				return .resource("error_relay_configuration")
 			case .Internal(let reason):
 				return reasonHints(reason) ?? .resource("error_generic")
 			}
@@ -45,7 +47,8 @@ extension Error {
 		if let vni = self as? VnidropError {
 			switch vni {
 			case .Initialization(let r), .Ticket(let r), .Filesystem(let r),
-				 .Transfer(let r), .Permission(let r), .Repository(let r), .Internal(let r):
+				 .Transfer(let r), .Permission(let r), .Repository(let r),
+				 .Configuration(let r), .Internal(let r):
 				return r
 			}
 		}

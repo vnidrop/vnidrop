@@ -14,11 +14,19 @@ pub enum VnidropError {
     Permission { reason: String },
     #[error("repository error: {reason}")]
     Repository { reason: String },
+    #[error("configuration error: {reason}")]
+    Configuration { reason: String },
     #[error("internal error: {reason}")]
     Internal { reason: String },
 }
 
 impl VnidropError {
+    pub(crate) fn config(error: impl Into<anyhow::Error>) -> Self {
+        Self::Configuration {
+            reason: error.into().to_string(),
+        }
+    }
+
     pub(crate) fn initialization(error: impl Into<anyhow::Error>) -> Self {
         Self::Initialization {
             reason: error.into().to_string(),
