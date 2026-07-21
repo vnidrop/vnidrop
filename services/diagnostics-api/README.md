@@ -85,19 +85,23 @@ npx wrangler r2 bucket create vnidrop-diagnostics
 ```
 
 Replace the placeholder `database_id` in `wrangler.jsonc` with the UUID returned
-by `wrangler d1 create`. Set the ingest key interactively, apply the tracked D1
-migrations, and configure the R2 retention rule once:
+by `wrangler d1 create`. Set the ingest key interactively and configure the R2
+retention rule once:
 
 ```bash
 npx wrangler secret put INGEST_KEY
-npm run db:migrate:remote
 npx wrangler r2 bucket lifecycle add vnidrop-diagnostics diagnostics-retention --expire-days 90
-npm run check
-npm run deploy
 ```
 
-`npm run deploy` also runs the complete `check` script automatically before
-Wrangler changes the remote Worker.
+Then apply migrations and deploy from the repository root:
+
+```bash
+make diagnostics-db-remote
+make deploy-diagnostics
+```
+
+`make deploy-diagnostics` runs the complete check before Wrangler changes the
+remote Worker.
 
 The lifecycle command changes the remote bucket. Before adding or changing a
 rule, inspect the current state with:
@@ -117,8 +121,9 @@ INGEST_KEY=local-development-only
 Then initialize the local D1 database and run the Worker:
 
 ```bash
-npm run db:migrate:local
-npm run dev
+# From the repository root:
+make diagnostics-db-local
+make run-diagnostics
 ```
 
 Wrangler keeps local D1 and R2 state under the ignored `.wrangler/` directory.
@@ -133,7 +138,7 @@ Never edit an applied migration; add the next numbered SQL file instead.
 bindings cannot silently drift from the Worker code:
 
 ```bash
-npm run typegen       # regenerate after changing bindings or vars
+make diagnostics-typegen # from the repository root
 npm run types:check   # verify the committed file is current
 ```
 

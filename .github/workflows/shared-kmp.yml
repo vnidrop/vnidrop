@@ -15,6 +15,9 @@ on:
       - "gradle.properties"
       - "androidApp/**"
       - "desktopApp/**"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
       - ".github/workflows/shared-kmp.yml"
   push:
     branches:
@@ -32,6 +35,9 @@ on:
       - "gradle.properties"
       - "androidApp/**"
       - "desktopApp/**"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
       - ".github/workflows/shared-kmp.yml"
 
 permissions:
@@ -94,7 +100,7 @@ jobs:
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
 
       - name: Run shared JVM tests
-        run: ./gradlew :shared:jvmTest --no-daemon --stacktrace
+        run: make check-shared
 
       - name: Verify Android native libraries
-        run: ./gradlew :androidApp:verifyDebugVnidropLibraries --no-daemon --stacktrace
+        run: make verify-android-libs

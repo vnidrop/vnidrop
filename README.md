@@ -118,17 +118,21 @@ if you want to try the current version.
 git clone https://github.com/vnidrop/vnidrop.git
 cd vnidrop
 
+# List the supported development commands and check prerequisites
+make help
+make doctor
+
 # Windows/Linux desktop
-./gradlew :desktopApp:run
+make run-desktop
 
 # Android debug build
-./gradlew :androidApp:assembleDebug
+make build-android
 
-# iOS, iPadOS, and macOS
-cd apple
-./scripts/build-core.sh debug
-xcodegen generate
-open VniDrop.xcodeproj
+# Build and launch the macOS app
+make open-apple
+
+# Open the native project for iOS, iPadOS, or Xcode development
+make open-apple-project
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for prerequisites, development setup,

@@ -11,10 +11,10 @@ A Bun CLI generates the platform-native files from it:
 ## Workflow
 
 ```bash
-cd localization
-bun run src/cli.ts validate    # structural checks (run before committing)
-bun run src/cli.ts generate    # regenerate .xcstrings + strings.xml from strings.json
-bun run src/cli.ts migrate     # one-time: rebuild strings.json from existing platform files
+# From the repository root:
+make check-localization      # structural checks (run before committing)
+make localization            # regenerate .xcstrings + strings.xml from strings.json
+make localization-migrate    # one-time: rebuild strings.json from platform files
 ```
 
 **Never edit the generated `.xcstrings` / `strings.xml` by hand** — edit `strings.json` and

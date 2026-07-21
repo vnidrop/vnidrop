@@ -17,6 +17,9 @@ on:
       - "gradle.properties"
       - "gradle/**"
       - "gradlew"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
   push:
     tags:
       - "v*.*.*"
@@ -92,37 +95,7 @@ jobs:
           echo "app=$version" >> "$GITHUB_OUTPUT"
 
       - name: Test and build Debian package
-        run: |
-          ./gradlew \
-            :shared:jvmTest \
-            :desktopApp:packageReleaseDeb \
-            -Pvnidrop.version=${{ steps.version.outputs.app }} \
-            -Pvnidrop.desktop.rustVariant=release \
-            -Pvnidrop.diagnostics.included=false \
-            --no-daemon \
-            --no-configuration-cache \
-            --stacktrace
-
-      - name: Validate Debian package
-        id: package
-        env:
-          VERSION: ${{ steps.version.outputs.app }}
-        run: |
-          mapfile -t packages < <(find desktopApp/build/compose/binaries/main-release/deb -maxdepth 1 -type f -name '*.deb')
-          if (( ${#packages[@]} != 1 )); then
-            echo "Expected exactly one Debian package, found ${#packages[@]}" >&2
-            exit 1
-          fi
-
-          output_directory=build/release/linux/deb
-          output_name="vnidrop_${VERSION}-1_amd64.deb"
-          mkdir -p "$output_directory"
-          cp "${packages[0]}" "$output_directory/$output_name"
-          packaging/linux/verify-package.sh deb "$VERSION" "$output_directory/$output_name"
-          (
-            cd "$output_directory"
-            sha256sum "$output_name" > "$output_name.sha256"
-          )
+        run: make package-deb VERSION=${{ steps.version.outputs.app }}
 
       - name: Upload Debian artifact
         if: github.event_name != 'pull_request'
@@ -225,35 +198,7 @@ jobs:
           echo "app=$version" >> "$GITHUB_OUTPUT"
 
       - name: Build RPM package
-        run: |
-          ./gradlew \
-            :desktopApp:packageReleaseRpm \
-            -Pvnidrop.version=${{ steps.version.outputs.app }} \
-            -Pvnidrop.desktop.rustVariant=release \
-            -Pvnidrop.diagnostics.included=false \
-            --no-daemon \
-            --no-configuration-cache \
-            --stacktrace
-
-      - name: Validate RPM package
-        env:
-          VERSION: ${{ steps.version.outputs.app }}
-        run: |
-          mapfile -t packages < <(find desktopApp/build/compose/binaries/main-release/rpm -maxdepth 1 -type f -name '*.rpm')
-          if (( ${#packages[@]} != 1 )); then
-            echo "Expected exactly one RPM package, found ${#packages[@]}" >&2
-            exit 1
-          fi
-
-          output_directory=build/release/linux/rpm
-          output_name="vnidrop-${VERSION}-1.x86_64.rpm"
-          mkdir -p "$output_directory"
-          cp "${packages[0]}" "$output_directory/$output_name"
-          packaging/linux/verify-package.sh rpm "$VERSION" "$output_directory/$output_name"
-          (
-            cd "$output_directory"
-            sha256sum "$output_name" > "$output_name.sha256"
-          )
+        run: make package-rpm VERSION=${{ steps.version.outputs.app }}
 
       - name: Upload RPM artifact
         if: github.event_name != 'pull_request'

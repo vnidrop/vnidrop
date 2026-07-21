@@ -46,16 +46,15 @@ compose-skill “Existing Project Policy”: adapt to this repo; do not force-mi
 From repo root:
 
 ```bash
-./gradlew :shared:jvmTest
-./gradlew :shared:compileKotlinJvm
+make check-shared
 ```
 
 Optional:
 
 ```bash
-./gradlew :shared:testAndroidHostTest
-./gradlew :desktopApp:run
-./gradlew :androidApp:assembleDebug
+make test-android-host
+make run-desktop
+make check-android
 ```
 
 CI `:shared:jvmTest` runs on **Linux**. Gobley host cargo follows the current
@@ -113,7 +112,7 @@ Never pass a directory as a single Android FD into `SourceKind.FILE_DESCRIPTOR`.
 - Prefer fakes in `commonTest` support over real UniFFI in pure unit tests.
 
 ```bash
-./gradlew :shared:jvmTest
+make test-shared
 ```
 
 ---

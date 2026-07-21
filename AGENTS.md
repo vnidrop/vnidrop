@@ -53,7 +53,7 @@ Domain docs (reference, do not paste into PRs):
 
 ## Build and test
 
-Install prerequisites when missing: Rust stable + rustfmt + clippy, JDK 17,
+Install prerequisites when missing: GNU Make + Bash, Rust stable + rustfmt + clippy, JDK 17,
 Android NDK/SDK only if building Android, Xcode only for the native Apple app.
 
 ### Rust core (`crates/vnidrop` or workspace root)
@@ -61,43 +61,40 @@ Android NDK/SDK only if building Android, Xcode only for the native Apple app.
 Run from the **repo root** (Cargo workspace):
 
 ```bash
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace --all-targets
+make check-rust
 ```
 
 Focused:
 
 ```bash
-cargo test -p vnidrop
-cargo test -p vnidrop --test output_sink
-cargo test -p vnidrop --test transfer
-cargo test -p vnidrop --test approval
-cargo test -p vnidrop --test lifecycle
+make test-rust
+make test-rust-output-sink
+make test-rust-transfer
+make test-rust-approval
+make test-rust-lifecycle
 ```
 
 After finishing Rust edits, format:
 
 ```bash
-cargo fmt --all
+make format
 ```
 
-CI also runs `cargo doc --workspace --no-deps` with `RUSTDOCFLAGS=-D warnings`
-(see `.github/workflows/rust-core.yml`). Run it before large Rust public-API changes.
+`make check-rust` includes documentation with warnings denied, matching
+`.github/workflows/rust-core.yml`.
 
 ### Shared KMP / Compose (`shared/`)
 
 ```bash
-./gradlew :shared:jvmTest
-./gradlew :shared:compileKotlinJvm
+make check-shared
 ```
 
 Other targets (slower / machine-dependent):
 
 ```bash
-./gradlew :shared:testAndroidHostTest
-./gradlew :androidApp:assembleDebug
-./gradlew :desktopApp:run
+make test-android-host
+make check-android
+make run-desktop
 ```
 
 **Note:** `jvmTest` CI runs on **Linux**. Gobley host cargo is enabled for the
@@ -108,10 +105,10 @@ Rust library.
 
 | You changed… | Minimum verification |
 |--------------|----------------------|
-| `crates/vnidrop/**` only | `cargo fmt`, `cargo clippy … -D warnings`, `cargo test -p vnidrop` |
-| Cancel / export / sinks | Above + `cargo test -p vnidrop --test output_sink` |
-| `shared/**` only | `./gradlew :shared:jvmTest` |
-| Both | Rust suite + `:shared:jvmTest` |
+| `crates/vnidrop/**` only | `make check-rust` |
+| Cancel / export / sinks | Above + `make test-rust-output-sink` |
+| `shared/**` only | `make test-shared` |
+| Both | `make test-rust test-shared` |
 | Docs only | No suite required; verify links/paths |
 
 Do not kill long `cargo` / Gradle runs mid-flight unless they hang past several

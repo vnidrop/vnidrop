@@ -35,6 +35,7 @@ Use a branch name that describes the outcome, such as
 
 Install the tools needed for the area you plan to change:
 
+- GNU Make and Bash for the root command interface
 - JDK 17 or newer for Gradle and application builds
 - Rust stable with `rustfmt` and Clippy for the transfer core
 - Android SDK and NDK for Android builds
@@ -43,6 +44,25 @@ Install the tools needed for the area you plan to change:
 
 The first Rust and Gradle builds may take several minutes while dependencies are
 downloaded and native components are compiled.
+
+## Command Interface
+
+Run development commands through the root `Makefile`. It keeps local and CI
+commands aligned while continuing to delegate builds to Cargo, Gradle, Xcode,
+Bun, and npm:
+
+```bash
+make help       # list commands
+make doctor     # report missing host tools
+make setup      # install repository-local JavaScript dependencies
+make check      # portable Rust, shared, localization, docs, and service checks
+```
+
+Configuration can be passed on the command line, for example
+`make package-deb VERSION=1.2.0`, or placed in an ignored
+`config.override.mk`. Windows use requires GNU Make in a Bash environment; the
+underlying Gradle and PowerShell entry points remain available when Make is not
+installed.
 
 ## Repository Structure
 
@@ -87,55 +107,48 @@ Run checks from the repository root. Choose the suite for the files you changed.
 ### Rust Core
 
 ```bash
-cargo fmt --all
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test -p vnidrop
+make format
+make test-rust
 ```
 
 For cancel, export, or output-sink changes, also run:
 
 ```bash
-cargo test -p vnidrop --test output_sink
+make test-rust-output-sink
 ```
 
 For broader core changes, run the complete workspace suite:
 
 ```bash
-cargo test --workspace --all-targets
+make check-rust
 ```
 
 ### Shared Kotlin and Compose
 
 ```bash
-./gradlew :shared:jvmTest
+make test-shared
 ```
 
 Platform-specific checks may also be appropriate:
 
 ```bash
-./gradlew :shared:testAndroidHostTest
-./gradlew :androidApp:assembleDebug
+make test-android-host
+make check-android
 ```
 
 ### Native Apple App
 
 ```bash
-cd apple
-./scripts/build-core.sh debug
-xcodegen generate
-xcodebuild test \
-  -project VniDrop.xcodeproj \
-  -scheme VniDrop \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
-  CODE_SIGNING_ALLOWED=NO
+make check-apple
 ```
+
+Override the selected simulator when needed with
+`make check-apple APPLE_DESTINATION='platform=iOS Simulator,name=iPhone 16'`.
 
 ### Diagnostics Service
 
 ```bash
-cd services/diagnostics-api
-npm ci
-npm run check
+make check-diagnostics
 ```
 
 If a required check cannot run on your machine, explain why in the pull request

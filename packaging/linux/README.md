@@ -64,21 +64,10 @@ Ubuntu prevents `jpackage` from discovering normal RPM dependencies.
 From the repository root on the matching Linux family, run one of:
 
 ```bash
-./gradlew :shared:jvmTest :desktopApp:packageReleaseDeb \
-  -Pvnidrop.version=1.0.0 \
-  -Pvnidrop.desktop.rustVariant=release \
-  -Pvnidrop.diagnostics.included=false \
-  --no-daemon --no-configuration-cache --stacktrace
-
-./gradlew :shared:jvmTest :desktopApp:packageReleaseRpm \
-  -Pvnidrop.version=1.0.0 \
-  -Pvnidrop.desktop.rustVariant=release \
-  -Pvnidrop.diagnostics.included=false \
-  --no-daemon --no-configuration-cache --stacktrace
+make package-deb VERSION=1.0.0
+make package-rpm VERSION=1.0.0
 ```
 
-Compose writes the packages under
-`desktopApp/build/compose/binaries/main-release/deb/` and
-`desktopApp/build/compose/binaries/main-release/rpm/`. The workflow then
-validates package identity, version, architecture, dependencies, bundled JVM,
-and release Rust payload before publishing anything.
+The Make targets collect the Compose output under `build/release/linux/`, then
+validate package identity, version, architecture, dependencies, bundled JVM,
+and release Rust payload before generating a SHA-256 checksum.

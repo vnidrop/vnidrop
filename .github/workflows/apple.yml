@@ -8,6 +8,9 @@ on:
       - "crates/uniffi-bindgen/**"
       - "Cargo.toml"
       - "Cargo.lock"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
       - ".github/workflows/apple.yml"
   push:
     branches:
@@ -18,6 +21,9 @@ on:
       - "crates/uniffi-bindgen/**"
       - "Cargo.toml"
       - "Cargo.lock"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
       - ".github/workflows/apple.yml"
 
 permissions:
@@ -57,23 +63,5 @@ jobs:
       - name: Install XcodeGen
         run: brew install xcodegen
 
-      - name: Build Rust core (xcframework + Swift bindings)
-        working-directory: apple
-        run: ./scripts/build-core.sh debug
-
-      - name: Generate Xcode project
-        working-directory: apple
-        run: xcodegen generate
-
-      - name: Run unit tests (iOS Simulator)
-        working-directory: apple
-        run: |
-          set -euo pipefail
-          DEVICE=$(xcrun simctl list devices available \
-            | grep -oE 'iPhone [0-9]+( Pro)?' | head -1)
-          echo "Testing on: ${DEVICE:-iPhone 16}"
-          xcodebuild test \
-            -project VniDrop.xcodeproj \
-            -scheme VniDrop \
-            -destination "platform=iOS Simulator,name=${DEVICE:-iPhone 16}" \
-            CODE_SIGNING_ALLOWED=NO
+      - name: Build and test Apple app
+        run: make check-apple
