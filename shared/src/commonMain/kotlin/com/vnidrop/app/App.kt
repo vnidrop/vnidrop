@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -54,6 +55,8 @@ fun App(
 	dependencies: AppDependencies,
 	windowChromeTopInset: Dp = 0.dp,
 	windowContentTopStartRadius: Dp = 0.dp,
+	useNativeWindowBackdrop: Boolean = false,
+	onResolvedDarkThemeChanged: (Boolean) -> Unit = {},
 	windowChrome: (@Composable () -> Unit)? = null,
 ) {
 	val graphHolder = viewModel { AppGraphViewModel(dependencies) }
@@ -140,13 +143,19 @@ fun App(
 	}
 
 	val darkTheme = rememberResolvedDarkTheme(appState.themeMode)
+	LaunchedEffect(darkTheme, onResolvedDarkThemeChanged) {
+		onResolvedDarkThemeChanged(darkTheme)
+	}
 	PlatformSystemAppearance(darkTheme)
 	CompositionLocalProvider(LocalUiPlatform provides dependencies.environment.uiPlatform) {
 		VniDropTheme(isDarkTheme = darkTheme) {
 			Box(
 				modifier = Modifier
 					.fillMaxSize()
-					.background(LocalVniDropColors.current.backgroundSurface200),
+					.background(
+						if (useNativeWindowBackdrop) Color.Transparent
+						else LocalVniDropColors.current.backgroundSurface200,
+					),
 			) {
 				BoxWithConstraints(
 					modifier = Modifier
@@ -171,6 +180,7 @@ fun App(
 						windowClass = windowClass,
 						uiPlatform = dependencies.environment.uiPlatform,
 						mainContentTopStartRadius = windowContentTopStartRadius,
+						useNativeWindowBackdrop = useNativeWindowBackdrop,
 						onDestinationSelected = appViewModel::selectDestination,
 						overlay = {
 							VniDropSnackbarHost(graph.messages, Modifier.align(Alignment.BottomCenter))

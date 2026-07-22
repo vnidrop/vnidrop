@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,7 +19,12 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.runtime.CompositionLocalProvider
@@ -55,6 +61,7 @@ import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.shell.AppShell
 import com.vnidrop.app.ui.theme.VniDropTheme
+import com.vnidrop.app.ui.theme.LocalVniDropColors
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -288,6 +295,68 @@ class FoundationComposeTest {
 		onNodeWithText("VniDrop").assertIsDisplayed()
 		onNodeWithText("Receive").performClick()
 		runOnIdle { assertEquals(AppDestination.Receive, selected) }
+	}
+
+	@Test
+	fun nativeWindowBackdropShowsThroughDesktopChromeButNotMainContent() = runComposeUiTest {
+		val sentinel = Color.Magenta
+		var expectedMain = Color.Unspecified
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				expectedMain = LocalVniDropColors.current.backgroundDashCanvas
+				Box(
+					Modifier
+						.size(width = 320.dp, height = 200.dp)
+						.background(sentinel)
+						.testTag("native-backdrop-shell"),
+				) {
+					AppShell(
+						selectedDestination = AppDestination.Send,
+						windowClass = WindowClass.Desktop,
+						uiPlatform = UiPlatform.Windows,
+						mainContentTopStartRadius = 20.dp,
+						useNativeWindowBackdrop = true,
+						onDestinationSelected = {},
+					) {
+						Text("Content")
+					}
+				}
+			}
+		}
+
+		val pixels = onNodeWithTag("native-backdrop-shell").captureToImage().toPixelMap()
+		assertEquals(sentinel.toArgb(), pixels[pixels.width / 20, pixels.height * 9 / 10].toArgb())
+		assertEquals(expectedMain.toArgb(), pixels[pixels.width * 19 / 20, pixels.height * 9 / 10].toArgb())
+	}
+
+	@Test
+	fun desktopChromeKeepsSolidFallbackWithoutNativeBackdrop() = runComposeUiTest {
+		var expectedSidebar = Color.Unspecified
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				expectedSidebar = LocalVniDropColors.current.backgroundSurface200
+				Box(
+					Modifier
+						.size(width = 320.dp, height = 200.dp)
+						.background(Color.Magenta)
+						.testTag("solid-backdrop-shell"),
+				) {
+					AppShell(
+						selectedDestination = AppDestination.Send,
+						windowClass = WindowClass.Desktop,
+						uiPlatform = UiPlatform.Windows,
+						mainContentTopStartRadius = 20.dp,
+						useNativeWindowBackdrop = false,
+						onDestinationSelected = {},
+					) {
+						Text("Content")
+					}
+				}
+			}
+		}
+
+		val pixels = onNodeWithTag("solid-backdrop-shell").captureToImage().toPixelMap()
+		assertEquals(expectedSidebar.toArgb(), pixels[pixels.width / 20, pixels.height * 9 / 10].toArgb())
 	}
 
 	@Test

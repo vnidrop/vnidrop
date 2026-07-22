@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.UiPlatform
@@ -33,6 +34,7 @@ fun AppShell(
 	windowClass: WindowClass,
 	uiPlatform: UiPlatform,
 	mainContentTopStartRadius: Dp = 0.dp,
+	useNativeWindowBackdrop: Boolean = false,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit = {},
 	floatingAction: (@Composable BoxScope.() -> Unit)? = null,
@@ -40,11 +42,13 @@ fun AppShell(
 ) {
 	val colors = LocalVniDropColors.current
 	val navigationStyle = navigationStyleFor(uiPlatform, windowClass)
+	val windowSurface = if (useNativeWindowBackdrop) Color.Transparent else colors.backgroundDashCanvas
 	Surface(
 		modifier = modifier
 			.fillMaxSize()
-			.background(colors.backgroundDashCanvas),
-		color = colors.backgroundDashCanvas,
+			.background(windowSurface),
+		color = windowSurface,
+		contentColor = colors.foregroundDefault,
 	) {
 		if (navigationStyle == NavigationStyle.AndroidBottomBar) {
 			PhoneShell(
@@ -59,6 +63,7 @@ fun AppShell(
 				selectedDestination = selectedDestination,
 				navigationStyle = navigationStyle,
 				mainContentTopStartRadius = mainContentTopStartRadius,
+				useNativeWindowBackdrop = useNativeWindowBackdrop,
 				onDestinationSelected = onDestinationSelected,
 				overlay = overlay,
 				floatingAction = floatingAction,
@@ -73,6 +78,7 @@ private fun WideShell(
 	selectedDestination: AppDestination,
 	navigationStyle: NavigationStyle,
 	mainContentTopStartRadius: Dp,
+	useNativeWindowBackdrop: Boolean,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit,
 	floatingAction: (@Composable BoxScope.() -> Unit)?,
@@ -83,11 +89,18 @@ private fun WideShell(
 	Row(
 		modifier = Modifier
 			.fillMaxSize()
-			.then(if (roundedContent) Modifier.background(colors.backgroundSurface200) else Modifier),
+			.then(
+				if (roundedContent && !useNativeWindowBackdrop) {
+					Modifier.background(colors.backgroundSurface200)
+				} else {
+					Modifier
+				},
+			),
 	) {
 		AppSidebarNavigation(
 			selected = selectedDestination,
 			style = navigationStyle,
+			useNativeWindowBackdrop = useNativeWindowBackdrop,
 			onDestinationSelected = onDestinationSelected,
 		)
 		Box(
@@ -96,13 +109,12 @@ private fun WideShell(
 				.fillMaxSize()
 				.then(
 					if (roundedContent) {
-						Modifier
-							.clip(RoundedCornerShape(topStart = mainContentTopStartRadius))
-							.background(colors.backgroundDashCanvas)
+						Modifier.clip(RoundedCornerShape(topStart = mainContentTopStartRadius))
 					} else {
 						Modifier
 					},
-				),
+				)
+				.background(colors.backgroundDashCanvas),
 		) {
 			content()
 			floatingAction?.invoke(this)

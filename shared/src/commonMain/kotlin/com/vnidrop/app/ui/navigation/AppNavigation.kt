@@ -55,6 +55,7 @@ fun AppSidebarNavigation(
 	style: NavigationStyle,
 	onDestinationSelected: (AppDestination) -> Unit,
 	modifier: Modifier = Modifier,
+	useNativeWindowBackdrop: Boolean = false,
 ) {
 	when (style) {
 		NavigationStyle.AndroidRail -> AndroidNavigationRail(selected, onDestinationSelected, modifier)
@@ -62,6 +63,7 @@ fun AppSidebarNavigation(
 			selected = selected,
 			onDestinationSelected = onDestinationSelected,
 			modifier = modifier,
+			useNativeWindowBackdrop = useNativeWindowBackdrop,
 		)
 		NavigationStyle.AndroidBottomBar -> error("Bottom navigation is rendered by the phone shell")
 	}
@@ -103,13 +105,14 @@ private fun DesktopSidebarNavigation(
 	selected: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
 	modifier: Modifier = Modifier,
+	useNativeWindowBackdrop: Boolean = false,
 ) {
 	val colors = LocalVniDropColors.current
 	Column(
 		modifier = modifier
 			.width(DesktopNavigationWidthDp.dp)
 			.fillMaxHeight()
-			.background(colors.backgroundSurface200)
+			.background(if (useNativeWindowBackdrop) Color.Transparent else colors.backgroundSurface200)
 			.padding(horizontal = 12.dp, vertical = 14.dp),
 		verticalArrangement = Arrangement.spacedBy(4.dp),
 	) {
