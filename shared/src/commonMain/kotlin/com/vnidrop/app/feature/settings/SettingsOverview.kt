@@ -35,13 +35,6 @@ internal fun SettingsOverview(
 		)
 		SettingsGroup {
 			SettingsRow(
-				icon = AppIcon.Storage,
-				title = stringResource(Res.string.storage_title),
-				selected = state.selectedSection == SettingsSection.Storage,
-				onClick = { onSectionSelected(SettingsSection.Storage) },
-			)
-			SettingsDivider()
-			SettingsRow(
 				icon = AppIcon.User,
 				title = stringResource(Res.string.preferences_title),
 				value = state.username,
@@ -63,6 +56,13 @@ internal fun SettingsOverview(
 				title = stringResource(Res.string.notifications_title),
 				selected = state.selectedSection == SettingsSection.Notifications,
 				onClick = { onSectionSelected(SettingsSection.Notifications) },
+			)
+			SettingsDivider()
+			SettingsRow(
+				icon = AppIcon.Storage,
+				title = stringResource(Res.string.storage_title),
+				selected = state.selectedSection == SettingsSection.Storage,
+				onClick = { onSectionSelected(SettingsSection.Storage) },
 			)
 			SettingsDivider()
 			SettingsRow(

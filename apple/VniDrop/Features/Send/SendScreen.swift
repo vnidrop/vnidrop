@@ -127,11 +127,14 @@ struct SendScreen: View {
 	private func sharingProgress(for transfer: Transfer) -> TransferProgress? {
 		let active = (model.receiversByTransfer[transfer.transferId] ?? []).filter { $0.status == .accepted }
 		if active.isEmpty { return nil }
-		let fractions = active.compactMap {
-			progressForReceiver(events: model.coreState.events, transferId: transfer.transferId,
-								 remoteEndpointId: $0.remoteEndpointId, totalSizeHint: transfer.totalSize)?.progress
+		let fractions: [Double] = active.compactMap { receiver -> Double? in
+			let progress = progressForReceiver(events: model.coreState.events, transferId: transfer.transferId,
+									remoteEndpointId: receiver.remoteEndpointId, totalSizeHint: transfer.totalSize)
+			guard progress?.kind == "started" || progress?.kind == "progress" else { return nil }
+			return progress?.progress
 		}
-		let combined = fractions.isEmpty ? nil : fractions.reduce(0, +) / Double(fractions.count)
+		guard !fractions.isEmpty else { return nil }
+		let combined = fractions.reduce(0, +) / Double(fractions.count)
 		if active.count == 1 {
 			return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
 									labelKey: "progress_sending", progress: combined)

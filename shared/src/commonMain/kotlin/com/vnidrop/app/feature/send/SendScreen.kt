@@ -69,6 +69,7 @@ fun SendScreen(
 			TransferCatalog(
 				transfers = outgoingTransfers,
 				transferThumbnails = state.transferThumbnails,
+				receiversByTransfer = state.receiversByTransfer,
 				events = coreState.events,
 				windowClass = windowClass,
 				onOpenComposer = onOpenComposer,
