@@ -129,6 +129,9 @@ kotlin {
 			implementation(libs.google.code.scanner)
 			implementation(libs.compose.uiToolingPreview)
 		}
+		jvmMain.dependencies {
+			implementation(libs.filekit.dialogs)
+		}
 		commonMain.dependencies {
 			implementation(libs.compose.runtime)
 			implementation(libs.compose.foundation)

@@ -7,6 +7,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.isDesktop
+import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.theme.ThemeMode
 import org.jetbrains.compose.resources.stringResource
 import com.vnidrop.app.ui.theme.LocalVniDropColors
@@ -34,11 +36,13 @@ internal fun SettingsOverview(
 				style = if (largeTitle) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
 				fontWeight = FontWeight.Bold,
 			)
-			Text(
-				stringResource(Res.string.settings_subtitle),
-				color = LocalVniDropColors.current.foregroundLighter,
-				style = MaterialTheme.typography.bodyMedium,
-			)
+			if (!LocalUiPlatform.current.isDesktop) {
+				Text(
+					stringResource(Res.string.settings_subtitle),
+					color = LocalVniDropColors.current.foregroundLighter,
+					style = MaterialTheme.typography.bodyMedium,
+				)
+			}
 		}
 		SettingsGroup {
 			SettingsRow(

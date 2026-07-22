@@ -88,7 +88,6 @@ private fun WideShell(
 		AppSidebarNavigation(
 			selected = selectedDestination,
 			style = navigationStyle,
-			dividerTopInset = mainContentTopStartRadius,
 			onDestinationSelected = onDestinationSelected,
 		)
 		Box(

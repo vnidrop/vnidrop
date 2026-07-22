@@ -2,7 +2,6 @@ package com.vnidrop.app.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.UiPlatform
 import com.vnidrop.app.isDesktop
@@ -56,7 +54,6 @@ fun AppSidebarNavigation(
 	selected: AppDestination,
 	style: NavigationStyle,
 	onDestinationSelected: (AppDestination) -> Unit,
-	dividerTopInset: Dp = 0.dp,
 	modifier: Modifier = Modifier,
 ) {
 	when (style) {
@@ -64,7 +61,6 @@ fun AppSidebarNavigation(
 		NavigationStyle.DesktopSidebar -> DesktopSidebarNavigation(
 			selected = selected,
 			onDestinationSelected = onDestinationSelected,
-			dividerTopInset = dividerTopInset,
 			modifier = modifier,
 		)
 		NavigationStyle.AndroidBottomBar -> error("Bottom navigation is rendered by the phone shell")
@@ -106,43 +102,31 @@ private fun AndroidNavigationRail(
 private fun DesktopSidebarNavigation(
 	selected: AppDestination,
 	onDestinationSelected: (AppDestination) -> Unit,
-	dividerTopInset: Dp,
 	modifier: Modifier = Modifier,
 ) {
 	val colors = LocalVniDropColors.current
-	Box(
+	Column(
 		modifier = modifier
 			.width(DesktopNavigationWidthDp.dp)
 			.fillMaxHeight()
-			.background(colors.backgroundSurface200),
+			.background(colors.backgroundSurface200)
+			.padding(horizontal = 12.dp, vertical = 14.dp),
+		verticalArrangement = Arrangement.spacedBy(4.dp),
 	) {
-		Column(
-			modifier = Modifier.fillMaxHeight().padding(horizontal = 12.dp, vertical = 14.dp),
-			verticalArrangement = Arrangement.spacedBy(4.dp),
-		) {
-			Text(
-				text = "VniDrop",
-				modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-				style = MaterialTheme.typography.titleMedium,
-				fontWeight = FontWeight.SemiBold,
-			)
-			Spacer(Modifier.height(4.dp))
-			primaryNavigationItems.forEach { item ->
-				DesktopNavigationItem(
-					item = item,
-					selected = item.destination == selected,
-					onClick = { onDestinationSelected(item.destination) },
-				)
-			}
-		}
-		Box(
-			modifier = Modifier
-				.align(Alignment.TopEnd)
-				.padding(top = dividerTopInset)
-				.width(1.dp)
-				.fillMaxHeight()
-				.background(colors.borderDefault),
+		Text(
+			text = "VniDrop",
+			modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+			style = MaterialTheme.typography.titleMedium,
+			fontWeight = FontWeight.SemiBold,
 		)
+		Spacer(Modifier.height(4.dp))
+		primaryNavigationItems.forEach { item ->
+			DesktopNavigationItem(
+				item = item,
+				selected = item.destination == selected,
+				onClick = { onDestinationSelected(item.destination) },
+			)
+		}
 	}
 }
 

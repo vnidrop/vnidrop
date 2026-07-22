@@ -24,6 +24,7 @@ dependencies {
 	implementation(projects.shared)
 
 	implementation(compose.desktop.currentOs)
+	implementation(libs.filekit.dialogs)
 	implementation(libs.kotlinx.coroutinesSwing)
 
 	implementation(libs.compose.uiToolingPreview)
@@ -48,6 +49,7 @@ compose.desktop {
 			linux {
 				packageName = "vnidrop"
 				iconFile.set(project.file("../assets/linux/app-icon.png"))
+				modules("jdk.security.auth")
 				debMaintainer = "support@sudosy.fr"
 				appRelease = "1"
 				rpmLicenseType = "Apache-2.0"
