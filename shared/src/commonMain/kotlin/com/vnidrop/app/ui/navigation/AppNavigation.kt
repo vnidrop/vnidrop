@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.UiPlatform
 import com.vnidrop.app.isDesktop
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.platform.DesktopNavigationWidthDp
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.theme.LocalVniDropColors
@@ -86,7 +86,7 @@ private fun AndroidNavigationRail(
 			NavigationRailItem(
 				selected = item.destination == selected,
 				onClick = { onDestinationSelected(item.destination) },
-				icon = { Icon(item.icon, contentDescription = label) },
+				icon = { PlatformIcon(item.icon, contentDescription = label) },
 				label = { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
 				colors = NavigationRailItemDefaults.colors(
 					selectedIconColor = colors.brandLink,
@@ -152,7 +152,7 @@ private fun DesktopNavigationItem(
 		verticalAlignment = Alignment.CenterVertically,
 		horizontalArrangement = Arrangement.spacedBy(12.dp),
 	) {
-		Icon(item.icon, contentDescription = label, tint = if (selected) colors.brandLink else foreground, modifier = Modifier.size(20.dp))
+		PlatformIcon(item.icon, contentDescription = label, tint = if (selected) colors.brandLink else foreground, modifier = Modifier.size(20.dp))
 		Text(
 			text = label,
 			color = foreground,
@@ -180,7 +180,7 @@ fun AppBottomNavigation(
 			NavigationBarItem(
 				selected = item.destination == selected,
 				onClick = { onDestinationSelected(item.destination) },
-				icon = { Icon(item.icon, contentDescription = label, modifier = Modifier.size(24.dp)) },
+				icon = { PlatformIcon(item.icon, contentDescription = label, modifier = Modifier.size(24.dp)) },
 				label = { Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis) },
 				colors = NavigationBarItemDefaults.colors(
 					selectedIconColor = colors.brandLink,

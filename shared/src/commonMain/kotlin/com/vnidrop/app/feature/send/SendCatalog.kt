@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -42,9 +41,10 @@ import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.StatusPill
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.platform.usesMobilePresentation
-import com.vnidrop.app.ui.navigation.VniDropIcons
 import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.activeSendProgress
@@ -71,7 +71,7 @@ internal fun SendFloatingAction(onClick: () -> Unit, modifier: Modifier = Modifi
 		containerColor = LocalVniDropColors.current.brandButton,
 		contentColor = Color.White,
 	) {
-		Icon(SendIcons.Plus, contentDescription = stringResource(Res.string.send_new_transfer_description))
+		PlatformIcon(AppIcon.Add, contentDescription = stringResource(Res.string.send_new_transfer_description))
 	}
 }
 
@@ -144,8 +144,8 @@ private fun SendEmptyState(onOpenComposer: () -> Unit) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		Icon(
-			imageVector = VniDropIcons.Send,
+		PlatformIcon(
+			icon = AppIcon.Send,
 			contentDescription = null,
 			tint = colors.brandLink,
 			modifier = Modifier
@@ -216,7 +216,7 @@ private fun TransferListItem(
 				}
 			}
 			Spacer(Modifier.width(8.dp))
-			Icon(SendIcons.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
+			PlatformIcon(AppIcon.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
 		}
 	}
 }
@@ -233,7 +233,7 @@ internal fun FileArtwork(thumbnailBytes: ByteArray?, modifier: Modifier = Modifi
 		)
 	} else {
 		Box(modifier, contentAlignment = Alignment.Center) {
-			Icon(SendIcons.File, contentDescription = null, tint = LocalVniDropColors.current.foregroundLight, modifier = Modifier.size(22.dp))
+			PlatformIcon(AppIcon.File, contentDescription = null, tint = LocalVniDropColors.current.foregroundLight, modifier = Modifier.size(22.dp))
 		}
 	}
 }

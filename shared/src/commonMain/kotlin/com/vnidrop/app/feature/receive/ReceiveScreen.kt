@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -30,13 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathFillType
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.PathBuilder
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -55,9 +47,10 @@ import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.platform.usesMobilePresentation
-import com.vnidrop.app.ui.navigation.VniDropIcons
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
@@ -73,7 +66,7 @@ fun ReceiveFloatingAction(onClick: () -> Unit, modifier: Modifier = Modifier) {
 		modifier = modifier,
 		containerColor = LocalVniDropColors.current.brandButton,
 		contentColor = Color.White,
-	) { Icon(ReceiveIcons.Download, stringResource(Res.string.button_receive_files)) }
+	) { PlatformIcon(AppIcon.Download, stringResource(Res.string.button_receive_files)) }
 }
 
 @Composable
@@ -180,8 +173,8 @@ private fun ReceiveEmptyState(onOpen: () -> Unit) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		Icon(
-			imageVector = VniDropIcons.Receive,
+		PlatformIcon(
+			icon = AppIcon.Download,
 			contentDescription = null,
 			tint = colors.brandLink,
 			modifier = Modifier
@@ -210,15 +203,15 @@ private fun ReceiveMethodPanel(
 		Text(stringResource(Res.string.receive_choose_method_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
 		Text(stringResource(Res.string.receive_choose_method_body), color = LocalVniDropColors.current.foregroundLighter)
 		ReceiveMethodRow(
-			ReceiveIcons.File, stringResource(Res.string.receive_method_file), stringResource(Res.string.receive_method_file_description),
+			AppIcon.File, stringResource(Res.string.receive_method_file), stringResource(Res.string.receive_method_file_description),
 			actions.fileAvailability,
 		) { actions.pickInvitation { onResult(ReceiveMethod.InvitationFile, it) } }
 		if (actions.qrAvailability != ReceiveMethodAvailability.Hidden) ReceiveMethodRow(
-			ReceiveIcons.Scan, stringResource(Res.string.receive_method_scan), stringResource(Res.string.receive_method_scan_description),
+			AppIcon.Scan, stringResource(Res.string.receive_method_scan), stringResource(Res.string.receive_method_scan_description),
 			actions.qrAvailability,
 		) { actions.scanQrCode { onResult(ReceiveMethod.QrCode, it) } }
 		if (actions.nfcAvailability != ReceiveMethodAvailability.Hidden) ReceiveMethodRow(
-			ReceiveIcons.Nfc,
+			AppIcon.Nfc,
 			if (isWaitingForNfc) stringResource(Res.string.receive_nfc_waiting) else stringResource(Res.string.receive_method_nfc),
 			stringResource(Res.string.receive_method_nfc_description),
 			if (isWaitingForNfc) ReceiveMethodAvailability.Unavailable else actions.nfcAvailability,
@@ -230,7 +223,7 @@ private fun ReceiveMethodPanel(
 }
 
 @Composable
-private fun ReceiveMethodRow(icon: ImageVector, title: String, description: String, availability: ReceiveMethodAvailability, onClick: () -> Unit) {
+private fun ReceiveMethodRow(icon: AppIcon, title: String, description: String, availability: ReceiveMethodAvailability, onClick: () -> Unit) {
 	val enabled = availability == ReceiveMethodAvailability.Available
 	Surface(
 		modifier = Modifier.fillMaxWidth().clickable(enabled = enabled, onClick = onClick),
@@ -238,7 +231,7 @@ private fun ReceiveMethodRow(icon: ImageVector, title: String, description: Stri
 		color = LocalVniDropColors.current.backgroundSurface200,
 	) {
 		Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-			Icon(icon, null, tint = if (enabled) LocalVniDropColors.current.brandLink else LocalVniDropColors.current.foregroundLighter, modifier = Modifier.size(24.dp))
+			PlatformIcon(icon, null, tint = if (enabled) LocalVniDropColors.current.brandLink else LocalVniDropColors.current.foregroundLighter, modifier = Modifier.size(24.dp))
 			Spacer(Modifier.width(14.dp))
 			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
 				Text(title, fontWeight = FontWeight.SemiBold)
@@ -320,7 +313,7 @@ private fun ReceiveTransferRow(
 	Surface(Modifier.fillMaxWidth(), shape = RoundedCornerShape(14.dp), color = LocalVniDropColors.current.backgroundSurface200) {
 		Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
 			Box(Modifier.size(44.dp).background(LocalVniDropColors.current.backgroundSurface300, RoundedCornerShape(10.dp)), contentAlignment = Alignment.Center) {
-				Icon(ReceiveIcons.File, null, tint = LocalVniDropColors.current.foregroundLighter)
+				PlatformIcon(AppIcon.File, null, tint = LocalVniDropColors.current.foregroundLighter)
 			}
 			Spacer(Modifier.width(12.dp))
 			Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
@@ -332,7 +325,7 @@ private fun ReceiveTransferRow(
 			}
 			if (transfer.status.isTerminalReceiveHistory()) {
 				IconButton(onClick = onDelete) {
-					Icon(ReceiveIcons.Trash, stringResource(Res.string.receive_delete_history_item), tint = LocalVniDropColors.current.destructiveDefault)
+					PlatformIcon(AppIcon.Delete, stringResource(Res.string.receive_delete_history_item), tint = LocalVniDropColors.current.destructiveDefault)
 				}
 			}
 		}
@@ -369,15 +362,3 @@ private fun ReceiveHistoryDeletePanel(
 		}
 	}
 }
-
-private object ReceiveIcons {
-	val Download = lineIcon("Download") { moveTo(12f, 3f); lineTo(12f, 15f); moveTo(7f, 10f); lineTo(12f, 15f); lineTo(17f, 10f); moveTo(4f, 20f); lineTo(20f, 20f) }
-	val File = lineIcon("File") { moveTo(14f, 2f); lineTo(6f, 2f); lineTo(6f, 22f); lineTo(18f, 22f); lineTo(18f, 6f); close(); moveTo(14f, 2f); lineTo(14f, 6f); lineTo(18f, 6f) }
-	val Scan = lineIcon("Scan") { moveTo(3f, 8f); lineTo(3f, 3f); lineTo(8f, 3f); moveTo(16f, 3f); lineTo(21f, 3f); lineTo(21f, 8f); moveTo(21f, 16f); lineTo(21f, 21f); lineTo(16f, 21f); moveTo(8f, 21f); lineTo(3f, 21f); lineTo(3f, 16f); moveTo(7f, 12f); lineTo(17f, 12f) }
-	val Nfc = lineIcon("Nfc") { moveTo(6f, 8f); curveTo(10f, 12f, 10f, 12f, 6f, 16f); moveTo(10f, 5f); curveTo(17f, 12f, 17f, 12f, 10f, 19f); moveTo(14f, 2f); curveTo(24f, 12f, 24f, 12f, 14f, 22f) }
-	val Trash = lineIcon("Delete") { moveTo(4f, 7f); lineTo(20f, 7f); moveTo(9f, 3f); lineTo(15f, 3f); lineTo(16f, 7f); moveTo(7f, 7f); lineTo(8f, 21f); lineTo(16f, 21f); lineTo(17f, 7f); moveTo(10f, 11f); lineTo(10f, 17f); moveTo(14f, 11f); lineTo(14f, 17f) }
-}
-
-private fun lineIcon(name: String, block: PathBuilder.() -> Unit) = ImageVector.Builder(name, 24.dp, 24.dp, 24f, 24f).apply {
-	path(fill = SolidColor(Color.Transparent), stroke = SolidColor(Color.Black), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Round, strokeLineJoin = StrokeJoin.Round, pathFillType = PathFillType.NonZero, pathBuilder = block)
-}.build()

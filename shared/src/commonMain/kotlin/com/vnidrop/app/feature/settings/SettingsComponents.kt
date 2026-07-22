@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -30,12 +29,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -52,8 +52,8 @@ internal fun SettingsTopBar(title: String, onBack: () -> Unit, showBack: Boolean
 	) {
 		if (showBack) {
 			IconButton(onClick = onBack) {
-				Icon(
-					SettingsIcons.Back,
+				PlatformIcon(
+					AppIcon.ArrowBack,
 					contentDescription = stringResource(Res.string.button_back),
 					tint = LocalVniDropColors.current.foregroundDefault,
 				)
@@ -78,7 +78,7 @@ internal fun SettingsGroup(content: @Composable ColumnScope.() -> Unit) {
 
 @Composable
 internal fun SettingsRow(
-	icon: ImageVector,
+	icon: AppIcon,
 	title: String,
 	value: String? = null,
 	subtitle: String? = null,
@@ -135,7 +135,7 @@ internal fun SettingsRow(
 			}
 			onClick != null && showsDisclosure -> {
 				Spacer(Modifier.width(8.dp))
-				Icon(SettingsIcons.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
+				PlatformIcon(AppIcon.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
 			}
 		}
 	}
@@ -143,7 +143,7 @@ internal fun SettingsRow(
 
 @Composable
 internal fun SettingsToggleRow(
-	icon: ImageVector,
+	icon: AppIcon,
 	title: String,
 	description: String,
 	checked: Boolean,
@@ -203,7 +203,7 @@ internal fun InfoItem(title: String, value: String) {
 }
 
 @Composable
-private fun SettingsLeadingIcon(icon: ImageVector, tone: SettingsIconTone) {
+private fun SettingsLeadingIcon(icon: AppIcon, tone: SettingsIconTone) {
 	val colors = LocalVniDropColors.current
 	val foreground = if (tone == SettingsIconTone.Brand) colors.brandLink else colors.foregroundLight
 	val background = if (tone == SettingsIconTone.Brand) colors.brandLink.copy(alpha = 0.13f) else colors.backgroundSurface300
@@ -211,6 +211,6 @@ private fun SettingsLeadingIcon(icon: ImageVector, tone: SettingsIconTone) {
 		modifier = Modifier.size(34.dp).background(background, RoundedCornerShape(10.dp)),
 		contentAlignment = Alignment.Center,
 	) {
-		Icon(icon, contentDescription = null, tint = foreground, modifier = Modifier.size(19.dp))
+		PlatformIcon(icon, contentDescription = null, tint = foreground, modifier = Modifier.size(19.dp))
 	}
 }

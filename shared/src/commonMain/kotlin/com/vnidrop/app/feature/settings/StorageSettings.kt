@@ -9,6 +9,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.ui.icons.AppIcon
 import com.vnidrop.app.ui.state.formatBytes
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
@@ -37,26 +38,26 @@ internal fun StorageSettings(
 		if (storage == null || state.isCalculatingStorage) {
 			SettingsGroup {
 				SettingsRow(
-					icon = SettingsIcons.Drive,
+					icon = AppIcon.Storage,
 					title = stringResource(Res.string.storage_calculating),
 					trailing = { CircularProgressIndicator() },
 				)
 			}
 		} else {
 			SettingsGroup {
-				StorageRow(stringResource(Res.string.storage_transfer_data), storage.transferCacheBytes)
+				StorageRow(AppIcon.TransferData, stringResource(Res.string.storage_transfer_data), storage.transferCacheBytes)
 				SettingsDivider()
-				StorageRow(stringResource(Res.string.storage_app_data), storage.appDataBytes)
+				StorageRow(AppIcon.Storage, stringResource(Res.string.storage_app_data), storage.appDataBytes)
 				SettingsDivider()
-				StorageRow(stringResource(Res.string.storage_temporary), storage.temporaryBytes)
+				StorageRow(AppIcon.Temporary, stringResource(Res.string.storage_temporary), storage.temporaryBytes)
 				SettingsDivider()
 				SettingsRow(
-					icon = SettingsIcons.Folder,
+					icon = AppIcon.Folder,
 					title = stringResource(Res.string.storage_received_files),
 					value = formatBytes(storage.receivedBytes),
 				)
 				SettingsDivider()
-				StorageRow(stringResource(Res.string.storage_total), storage.deviceImpactBytes)
+				StorageRow(AppIcon.TotalStorage, stringResource(Res.string.storage_total), storage.deviceImpactBytes)
 			}
 		}
 		Button(
@@ -75,6 +76,6 @@ internal fun StorageSettings(
 }
 
 @Composable
-private fun StorageRow(title: String, bytes: ULong) {
-	SettingsRow(icon = SettingsIcons.Drive, title = title, value = formatBytes(bytes))
+private fun StorageRow(icon: AppIcon, title: String, bytes: ULong) {
+	SettingsRow(icon = icon, title = title, value = formatBytes(bytes))
 }

@@ -12,21 +12,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -66,8 +65,8 @@ fun ApprovalModalHost(
 		) {
 			Column(Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
 				Surface(shape = RoundedCornerShape(14.dp), color = colors.backgroundSelection) {
-					Icon(
-						ApprovalIcon,
+					PlatformIcon(
+						AppIcon.ShieldCheck,
 						contentDescription = null,
 						tint = colors.brandLink,
 						modifier = Modifier.padding(11.dp).size(24.dp),
@@ -116,18 +115,3 @@ fun ApprovalModalHost(
 		}
 	}
 }
-
-private val ApprovalIcon: ImageVector = ImageVector.Builder(
-	name = "Approval",
-	defaultWidth = 24.dp,
-	defaultHeight = 24.dp,
-	viewportWidth = 24f,
-	viewportHeight = 24f,
-).apply {
-	path {
-		moveTo(12f, 2f); lineTo(20f, 5.5f); verticalLineTo(11f)
-		curveTo(20f, 16.1f, 16.6f, 20.7f, 12f, 22f)
-		curveTo(7.4f, 20.7f, 4f, 16.1f, 4f, 11f); verticalLineTo(5.5f); close()
-		moveTo(8.2f, 11.8f); lineTo(10.7f, 14.3f); lineTo(15.9f, 9.1f)
-	}
-}.build()

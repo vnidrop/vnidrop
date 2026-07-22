@@ -8,22 +8,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.vnidrop.app.isDesktop
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.platform.usesMobilePresentation
 import com.vnidrop.app.ui.state.WindowClass
@@ -75,14 +71,7 @@ private fun ClosableModalContent(
 			onClick = onClose,
 			modifier = Modifier.align(androidx.compose.ui.Alignment.TopEnd).padding(8.dp).size(40.dp),
 		) {
-			Icon(CloseIcon, stringResource(Res.string.button_close), tint = LocalVniDropColors.current.foregroundLight)
+			PlatformIcon(AppIcon.Close, stringResource(Res.string.button_close), tint = LocalVniDropColors.current.foregroundLight)
 		}
 	}
 }
-
-private val CloseIcon = ImageVector.Builder("Close", 24.dp, 24.dp, 24f, 24f).apply {
-	path(fill = SolidColor(Color.Transparent), stroke = SolidColor(Color.Black), strokeLineWidth = 2f, strokeLineCap = StrokeCap.Round) {
-		moveTo(6f, 6f); lineTo(18f, 18f)
-		moveTo(18f, 6f); lineTo(6f, 18f)
-	}
-}.build()

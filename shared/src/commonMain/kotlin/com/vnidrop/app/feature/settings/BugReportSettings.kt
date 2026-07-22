@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
+import com.vnidrop.app.ui.icons.AppIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -82,7 +83,7 @@ internal fun BugReportSettings(
 		)
 		SettingsGroup {
 			SettingsToggleRow(
-				icon = SettingsIcons.Document,
+				icon = AppIcon.Document,
 				title = stringResource(Res.string.bug_report_include_logs),
 				description = stringResource(Res.string.bug_report_include_logs_description),
 				checked = state.bugIncludeLogs,
