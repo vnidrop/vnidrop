@@ -25,6 +25,7 @@ dependencies {
 
 	implementation(compose.desktop.currentOs)
 	implementation(libs.filekit.dialogs)
+	implementation(libs.jna.platform)
 	implementation(libs.kotlinx.coroutinesSwing)
 
 	implementation(libs.compose.uiToolingPreview)
