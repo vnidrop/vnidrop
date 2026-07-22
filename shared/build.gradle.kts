@@ -131,6 +131,7 @@ kotlin {
 		}
 		jvmMain.dependencies {
 			implementation(libs.filekit.dialogs)
+			implementation(libs.jna.platform)
 		}
 		commonMain.dependencies {
 			implementation(libs.compose.runtime)
