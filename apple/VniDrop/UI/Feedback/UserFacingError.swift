@@ -13,10 +13,22 @@ extension Error {
 				return .resource("error_permission")
 			case .Filesystem:
 				return .resource("error_filesystem")
+			case .FilesystemPermission:
+				return .resource("error_filesystem")
+			case .DestinationExists:
+				return .resource("error_destination_exists")
+			case .StorageFull:
+				return .resource("error_storage_full")
+			case .Network:
+				return .resource("error_network")
 			case .Transfer(let reason):
 				return transferUiText(reason)
 			case .Repository:
 				return .resource("error_repository")
+			case .Cancelled:
+				return .resource("error_generic")
+			case .InvalidInput:
+				return .resource("error_invalid_input")
 			case .Initialization(let reason):
 				return initializationUiText(reason)
 			case .Internal(let reason):
@@ -28,6 +40,7 @@ extension Error {
 
 	/// True when the user intentionally backed out of a flow.
 	var isUserCancellation: Bool {
+		if let vni = self as? VnidropError, case .Cancelled = vni { return true }
 		let haystack = technicalDetail.lowercased()
 		if haystack.isEmpty {
 			// URLError / CocoaError cancellation without a message.
@@ -44,12 +57,22 @@ extension Error {
 	var technicalDetail: String {
 		if let vni = self as? VnidropError {
 			switch vni {
-			case .Initialization(let r), .Ticket(let r), .Filesystem(let r),
-				 .Transfer(let r), .Permission(let r), .Repository(let r), .Internal(let r):
+			case .Initialization(let r), .Ticket(let r), .Filesystem(let r), .FilesystemPermission(let r),
+				 .DestinationExists(let r), .StorageFull(let r), .Network(let r),
+				 .Transfer(let r), .Permission(let r), .Repository(let r), .Cancelled(let r),
+				 .InvalidInput(let r), .Internal(let r):
 				return r
 			}
 		}
 		return (self as? LocalizedError)?.errorDescription ?? (self as NSError).localizedDescription
+	}
+
+	var canRetryWithoutChangingInput: Bool {
+		guard let vni = self as? VnidropError else { return true }
+		switch vni {
+		case .FilesystemPermission, .DestinationExists, .InvalidInput: return false
+		default: return true
+		}
 	}
 }
 

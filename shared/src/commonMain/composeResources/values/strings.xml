@@ -84,12 +84,15 @@
     <string name="diagnostics_title">Share diagnostics</string>
     <string name="error_camera">Camera access is required to scan a QR code.</string>
     <string name="error_device_info">Could not load device information.</string>
+    <string name="error_destination_exists">A file with the same name already exists in the destination. Choose another folder or remove the existing file.</string>
     <string name="error_filesystem">VniDrop could not access the selected files or folder. Check permissions and try again.</string>
     <string name="error_generic">Something went wrong. Try again.</string>
     <string name="error_initialization">VniDrop could not finish starting up. Close the app and try again.</string>
+    <string name="error_invalid_input">Some transfer information is invalid. Review your selection or ask the sender to share again.</string>
     <string name="error_invalid_ticket">This invitation could not be read. Ask the sender for a new one.</string>
     <string name="error_invitation_empty">That invitation is empty. Try opening it again.</string>
     <string name="error_missing_native_library">The native VniDrop library is missing from this build.</string>
+    <string name="error_network">VniDrop could not reach the sender. Check the connection on both devices and try again.</string>
     <string name="error_nfc">This NFC tag could not be used. Try another tag.</string>
     <string name="error_permission">The sender has not approved this transfer, or it was refused.</string>
     <string name="error_repository">VniDrop could not save transfer data on this device.</string>
@@ -97,7 +100,8 @@
     <string name="error_share_empty">Select at least one item to share.</string>
     <string name="error_socket_bind">VniDrop could not open its network sockets on this device.</string>
     <string name="error_starting_up">VniDrop is still starting. Open the invitation again in a moment.</string>
-    <string name="error_transfer">The transfer could not be completed. Check your connection and try again.</string>
+    <string name="error_storage_full">There is not enough storage space to save this transfer. Free up space and try again.</string>
+    <string name="error_transfer">The transfer data could not be processed. Ask the sender to share it again.</string>
     <string name="field_receiver_name">Receiver name</string>
     <string name="field_sender_name">Sender name</string>
     <string name="field_transfer_name">Transfer name</string>

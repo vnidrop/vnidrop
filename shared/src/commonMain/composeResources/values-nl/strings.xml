@@ -84,12 +84,15 @@
     <string name="diagnostics_title">Diagnostische gegevens delen</string>
     <string name="error_camera">Voor het scannen van een QR-code is toegang tot de camera vereist.</string>
     <string name="error_device_info">Apparaatgegevens konden niet worden geladen.</string>
+    <string name="error_destination_exists">Er staat al een bestand met dezelfde naam in de doelmap. Kies een andere map of verwijder het bestaande bestand.</string>
     <string name="error_filesystem">VniDrop kon geen toegang krijgen tot de geselecteerde bestanden of map. Controleer de machtigingen en probeer het opnieuw.</string>
     <string name="error_generic">Er is iets misgegaan. Probeer het opnieuw.</string>
     <string name="error_initialization">VniDrop kon het opstarten niet voltooien. Sluit de app en probeer het opnieuw.</string>
+    <string name="error_invalid_input">Sommige overdrachtsgegevens zijn ongeldig. Controleer uw selectie of vraag de afzender opnieuw te delen.</string>
     <string name="error_invalid_ticket">Deze uitnodiging kon niet worden gelezen. Vraag de afzender om een nieuwe.</string>
     <string name="error_invitation_empty">Die uitnodiging is leeg. Probeer deze opnieuw te openen.</string>
     <string name="error_missing_native_library">De native VniDrop-bibliotheek ontbreekt in deze build.</string>
+    <string name="error_network">VniDrop kon de afzender niet bereiken. Controleer de verbinding op beide apparaten en probeer het opnieuw.</string>
     <string name="error_nfc">Deze NFC-tag kon niet worden gebruikt. Probeer een andere.</string>
     <string name="error_permission">De afzender heeft deze overdracht niet goedgekeurd, of deze is geweigerd.</string>
     <string name="error_repository">VniDrop kon de overdrachtsgegevens niet op dit apparaat bewaren.</string>
@@ -97,7 +100,8 @@
     <string name="error_share_empty">Selecteer minstens één item om te delen.</string>
     <string name="error_socket_bind">VniDrop kon zijn netwerksockets niet openen op dit apparaat.</string>
     <string name="error_starting_up">VniDrop is nog aan het opstarten. Open de uitnodiging zo meteen opnieuw.</string>
-    <string name="error_transfer">De overdracht kon niet worden voltooid. Controleer uw verbinding en probeer het opnieuw.</string>
+    <string name="error_storage_full">Er is onvoldoende opslagruimte om deze overdracht op te slaan. Maak ruimte vrij en probeer het opnieuw.</string>
+    <string name="error_transfer">De overdrachtsgegevens konden niet worden verwerkt. Vraag de afzender ze opnieuw te delen.</string>
     <string name="field_receiver_name">Naam van ontvanger</string>
     <string name="field_sender_name">Naam van afzender</string>
     <string name="field_transfer_name">Naam van overdracht</string>

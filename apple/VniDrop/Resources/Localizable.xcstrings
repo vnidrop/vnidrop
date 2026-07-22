@@ -5109,6 +5109,66 @@
         }
       }
     },
+    "error_destination_exists": {
+      "comment": "Error: a received file would overwrite an existing destination file.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Am Ziel ist bereits eine Datei mit demselben Namen vorhanden. Wählen Sie einen anderen Ordner oder entfernen Sie die vorhandene Datei."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A file with the same name already exists in the destination. Choose another folder or remove the existing file."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ya existe un archivo con el mismo nombre en el destino. Elija otra carpeta o elimine el archivo existente."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Un fichier portant le même nom existe déjà dans la destination. Choisissez un autre dossier ou supprimez le fichier existant."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nella destinazione esiste già un file con lo stesso nome. Scelga un’altra cartella o rimuova il file esistente."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Er staat al een bestand met dezelfde naam in de doelmap. Kies een andere map of verwijder het bestaande bestand."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "W miejscu docelowym istnieje już plik o tej samej nazwie. Wybierz inny folder lub usuń istniejący plik."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Já existe um ficheiro com o mesmo nome no destino. Escolha outra pasta ou remova o ficheiro existente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "В папке назначения уже есть файл с таким именем. Выберите другую папку или удалите существующий файл."
+          }
+        }
+      }
+    },
     "error_device_info": {
       "comment": "Error: device information could not be loaded.",
       "extractionState": "manual",
@@ -5349,6 +5409,66 @@
         }
       }
     },
+    "error_invalid_input": {
+      "comment": "Error: transfer input or metadata is invalid.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Einige Übertragungsinformationen sind ungültig. Prüfen Sie Ihre Auswahl oder bitten Sie den Absender, erneut zu teilen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some transfer information is invalid. Review your selection or ask the sender to share again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Parte de la información de la transferencia no es válida. Revise la selección o pida al remitente que vuelva a compartirla."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Certaines informations du transfert ne sont pas valides. Vérifiez votre sélection ou demandez à l’expéditeur de partager à nouveau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Alcune informazioni del trasferimento non sono valide. Controlli la selezione o chieda al mittente di condividere di nuovo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sommige overdrachtsgegevens zijn ongeldig. Controleer uw selectie of vraag de afzender opnieuw te delen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Niektóre informacje o transferze są nieprawidłowe. Sprawdź wybór lub poproś nadawcę o ponowne udostępnienie."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Algumas informações da transferência são inválidas. Reveja a seleção ou peça ao remetente para partilhar novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Некоторые данные передачи недействительны. Проверьте выбор или попросите отправителя поделиться снова."
+          }
+        }
+      }
+    },
     "error_invalid_ticket": {
       "comment": "Error: the invitation/ticket could not be parsed.",
       "extractionState": "manual",
@@ -5525,6 +5645,66 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "В этой сборке отсутствует нативная библиотека VniDrop."
+          }
+        }
+      }
+    },
+    "error_network": {
+      "comment": "Error: the sender could not be reached over the local network.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop konnte den Absender nicht erreichen. Prüfen Sie die Verbindung auf beiden Geräten und versuchen Sie es erneut."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "VniDrop could not reach the sender. Check the connection on both devices and try again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop no pudo contactar con el remitente. Compruebe la conexión en ambos dispositivos e inténtelo de nuevo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop n’a pas pu joindre l’expéditeur. Vérifiez la connexion sur les deux appareils et réessayez."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop non è riuscito a raggiungere il mittente. Controlli la connessione su entrambi i dispositivi e riprovi."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop kon de afzender niet bereiken. Controleer de verbinding op beide apparaten en probeer het opnieuw."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop nie mógł połączyć się z nadawcą. Sprawdź połączenie na obu urządzeniach i spróbuj ponownie."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O VniDrop não conseguiu contactar o remetente. Verifique a ligação nos dois dispositivos e tente novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "VniDrop не удалось связаться с отправителем. Проверьте подключение на обоих устройствах и повторите попытку."
           }
         }
       }
@@ -5949,62 +6129,122 @@
         }
       }
     },
-    "error_transfer": {
-      "comment": "Error: the transfer could not be completed.",
+    "error_storage_full": {
+      "comment": "Error: the destination does not have enough free storage.",
       "extractionState": "manual",
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Die Übertragung konnte nicht abgeschlossen werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+            "value": "Zum Speichern dieser Übertragung ist nicht genügend Speicherplatz vorhanden. Geben Sie Speicherplatz frei und versuchen Sie es erneut."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The transfer could not be completed. Check your connection and try again."
+            "value": "There is not enough storage space to save this transfer. Free up space and try again."
           }
         },
         "es": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "No se pudo completar la transferencia. Compruebe su conexión e inténtelo de nuevo."
+            "value": "No hay suficiente espacio de almacenamiento para guardar esta transferencia. Libere espacio e inténtelo de nuevo."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Le transfert n’a pas pu être terminé. Vérifiez votre connexion et réessayez."
+            "value": "L’espace de stockage est insuffisant pour enregistrer ce transfert. Libérez de l’espace et réessayez."
           }
         },
         "it": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Impossibile completare il trasferimento. Controlli la connessione e riprovi."
+            "value": "Lo spazio di archiviazione non è sufficiente per salvare il trasferimento. Liberi spazio e riprovi."
           }
         },
         "nl": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "De overdracht kon niet worden voltooid. Controleer uw verbinding en probeer het opnieuw."
+            "value": "Er is onvoldoende opslagruimte om deze overdracht op te slaan. Maak ruimte vrij en probeer het opnieuw."
           }
         },
         "pl": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Nie udało się ukończyć transferu. Sprawdź połączenie i spróbuj ponownie."
+            "value": "Brakuje miejsca na zapisanie tego transferu. Zwolnij miejsce i spróbuj ponownie."
           }
         },
         "pt": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Não foi possível concluir a transferência. Verifique a sua ligação e tente novamente."
+            "value": "Não existe espaço de armazenamento suficiente para guardar esta transferência. Liberte espaço e tente novamente."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "needs_review",
-            "value": "Не удалось завершить передачу. Проверьте подключение и повторите попытку."
+            "value": "Недостаточно места для сохранения этой передачи. Освободите место и повторите попытку."
+          }
+        }
+      }
+    },
+    "error_transfer": {
+      "comment": "Error: transfer data could not be processed; network failures use error_network.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Übertragungsdaten konnten nicht verarbeitet werden. Bitten Sie den Absender, sie erneut zu teilen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The transfer data could not be processed. Ask the sender to share it again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se pudieron procesar los datos de la transferencia. Pida al remitente que vuelva a compartirlos."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les données du transfert n’ont pas pu être traitées. Demandez à l’expéditeur de les partager à nouveau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Non è stato possibile elaborare i dati del trasferimento. Chieda al mittente di condividerli di nuovo."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De overdrachtsgegevens konden niet worden verwerkt. Vraag de afzender ze opnieuw te delen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nie udało się przetworzyć danych transferu. Poproś nadawcę o ponowne udostępnienie."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível processar os dados da transferência. Peça ao remetente para os partilhar novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Не удалось обработать данные передачи. Попросите отправителя поделиться ими снова."
           }
         }
       }

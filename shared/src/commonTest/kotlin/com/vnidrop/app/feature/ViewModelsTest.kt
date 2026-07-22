@@ -50,9 +50,11 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import uniffi.vnidrop.VnidropException
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_show_in_files
 import vnidrop.shared.generated.resources.error_permission
+import vnidrop.shared.generated.resources.error_destination_exists
 import vnidrop.shared.generated.resources.receive_open_files_failed
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -558,6 +560,29 @@ class ViewModelsTest {
 			UiText.Resource(Res.string.error_permission),
 			viewModel.state.value.lastReceiveError,
 		)
+	}
+
+	@Test
+	fun receiveViewModelDoesNotOfferBlindRetryForDestinationCollision() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(sampleTicketInspection())
+			receiveResult = Result.failure(VnidropException.DestinationExists("target exists"))
+		}
+		val messages = UiMessageController()
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), messages)
+		advanceUntilIdle()
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.QrCode, Result.success("ticket"))
+		advanceUntilIdle()
+
+		viewModel.receive()
+		advanceUntilIdle()
+		val message = messages.messages.first()
+
+		assertEquals(UiText.Resource(Res.string.error_destination_exists), message.text)
+		assertEquals(null, message.actionLabel)
+		assertEquals(null, message.onAction)
 	}
 
 	@Test

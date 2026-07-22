@@ -17,6 +17,7 @@ use crate::{
     access_policy::mode_to_storage,
     api::TransferMetadata,
     api::{ShareMetadataInput, ShareResult, ShareSource},
+    error::VnidropError,
     filesystem::{
         collect_import_files_with_limits, default_collection_name,
         read_stream_from_blocking_reader, TransferImport,
@@ -37,22 +38,29 @@ impl CoreInner {
             .transfer_slots
             .acquire()
             .await
-            .context("transfer limiter is closed")?;
+            .context("transfer limiter is closed")
+            .map_err(VnidropError::internal)?;
         let transfer_id = metadata.transfer_id;
         if sources.is_empty() {
-            anyhow::bail!("at least one source is required");
+            return Err(VnidropError::invalid_input(anyhow::anyhow!(
+                "at least one source is required"
+            ))
+            .into());
         }
         if sources.len() as u64 > self.limits.max_sources {
-            anyhow::bail!(
+            return Err(VnidropError::invalid_input(anyhow::anyhow!(
                 "source count {} exceeds limit {}",
                 sources.len(),
                 self.limits.max_sources
-            );
+            ))
+            .into());
         }
         self.limits
-            .validate_metadata_text("transfer name", metadata.transfer_name.as_deref())?;
+            .validate_metadata_text("transfer name", metadata.transfer_name.as_deref())
+            .map_err(VnidropError::invalid_input)?;
         self.limits
-            .validate_metadata_text("sender name", metadata.sender_name.as_deref())?;
+            .validate_metadata_text("sender name", metadata.sender_name.as_deref())
+            .map_err(VnidropError::invalid_input)?;
         self.repository
             .insert_transfer(TransferUpsert {
                 transfer_id,
@@ -66,7 +74,8 @@ impl CoreInner {
                 total_size: 0,
                 access_mode: mode_to_storage(&metadata.access_mode),
             })
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         let (cancel, mut cancelled) = oneshot::channel();
         self.active_transfers
             .lock()
@@ -79,8 +88,10 @@ impl CoreInner {
                 },
             );
         let (result, was_cancelled) = tokio::select! {
-            result = self.share_files_inner(sources, metadata) => (result, false),
-            _ = &mut cancelled => (Err(anyhow::anyhow!("transfer cancelled")), true),
+            result = self.share_files_inner(sources, metadata) => {
+                (result.map_err(VnidropError::transfer), false)
+            },
+            _ = &mut cancelled => (Err(VnidropError::cancelled("transfer cancelled")), true),
         };
         self.active_transfers
             .lock()
@@ -95,7 +106,7 @@ impl CoreInner {
                     "send",
                     "error",
                     "failed",
-                    json!({ "reason": error.to_string() }),
+                    json!({ "code": error.code(), "reason": error.reason() }),
                 );
                 let _ = self
                     .repository
@@ -107,7 +118,7 @@ impl CoreInner {
                     .await;
             }
         }
-        result
+        result.map_err(anyhow::Error::new)
     }
 
     pub(super) async fn share_files_inner(
@@ -145,7 +156,8 @@ impl CoreInner {
         let local_id = self
             .repository
             .transfer_local_id(metadata.transfer_id)
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         let tag_name = share_tag_name(&local_id);
         self.store
             .tags()
@@ -175,7 +187,7 @@ impl CoreInner {
             .await
         {
             let _ = self.store.tags().delete(&tag_name).await;
-            return Err(error);
+            return Err(VnidropError::repository(error).into());
         }
         // Map root + every collection member so provider ACL cannot fail-open
         // on child blob hashes that are not the collection root.

@@ -1,5 +1,7 @@
 #[path = "tests/access_policy.rs"]
 mod access_policy_tests;
+#[path = "tests/error.rs"]
+mod error_tests;
 #[path = "tests/filesystem.rs"]
 mod filesystem_tests;
 #[path = "tests/handshake.rs"]

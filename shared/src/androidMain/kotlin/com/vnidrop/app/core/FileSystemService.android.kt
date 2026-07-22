@@ -7,6 +7,8 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.system.ErrnoException
+import android.system.OsConstants
 import android.webkit.MimeTypeMap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -15,7 +17,9 @@ import androidx.core.net.toUri
 import uniffi.vnidrop.PublishedOutput
 import uniffi.vnidrop.ReceiveOutputSinkV2
 import uniffi.vnidrop.ReceivedLocatorKind
+import uniffi.vnidrop.VnidropException
 import java.io.File
+import java.io.IOException
 import java.io.OutputStream
 import java.net.URLConnection
 import java.util.UUID
@@ -248,6 +252,32 @@ private fun Context.expandShareDirectory(folder: PickedShareFile): List<PickedSh
 	return out
 }
 
+private inline fun <T> receiveSinkCall(block: () -> T): T =
+	try {
+		block()
+	} catch (error: VnidropException) {
+		throw error
+	} catch (error: Throwable) {
+		throw error.toReceiveSinkException()
+	}
+
+private fun Throwable.toReceiveSinkException(): VnidropException {
+	val reason = message ?: toString()
+	var current: Throwable? = this
+	while (current != null) {
+		if (current is ErrnoException && current.errno == OsConstants.ENOSPC) {
+			return VnidropException.StorageFull(reason)
+		}
+		current = current.cause
+	}
+	return when (this) {
+		is SecurityException -> VnidropException.FilesystemPermission(reason)
+		is IllegalArgumentException -> VnidropException.InvalidInput(reason)
+		is IOException, is IllegalStateException -> VnidropException.Filesystem(reason)
+		else -> VnidropException.Internal(reason)
+	}
+}
+
 /**
  * Writes into the shared system Downloads collection via MediaStore.
  *
@@ -266,42 +296,46 @@ private class AndroidMediaStoreDownloadsSink(
 	private val resolver = context.contentResolver
 
 	override fun startFile(relativePath: String) {
-		check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-			"MediaStore Downloads requires Android 10 or newer"
-		}
-		check(relativePath !in pending) { "Output stream is already open for $relativePath" }
-		val parts = requireSafeRelativePathParts(relativePath)
-		val finalName = parts.last()
-		val relativeDir = mediaStoreRelativePath(parts.dropLast(1))
-		check(!mediaStoreItemExists(finalName, relativeDir)) {
-			"Destination already exists: $relativePath"
-		}
-
-		val values = ContentValues().apply {
-			put(MediaStore.MediaColumns.DISPLAY_NAME, finalName)
-			put(MediaStore.MediaColumns.MIME_TYPE, mimeTypeFor(finalName))
-			put(MediaStore.MediaColumns.RELATIVE_PATH, relativeDir)
-			put(MediaStore.MediaColumns.IS_PENDING, 1)
-		}
-		val uri = resolver.insert(downloadsCollection(), values)
-			?: error("Could not create Downloads entry for $relativePath")
-		val stream = runCatching { resolver.openOutputStream(uri, "w") }
-			.getOrElse { error ->
-				resolver.delete(uri, null, null)
-				throw error
-			} ?: run {
-				resolver.delete(uri, null, null)
-				error("Could not open output stream for $relativePath")
+		receiveSinkCall {
+			check(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+				"MediaStore Downloads requires Android 10 or newer"
 			}
-		pending[relativePath] = PendingDocument(stream, uri)
+			check(relativePath !in pending) { "Output stream is already open for $relativePath" }
+			val parts = requireSafeRelativePathParts(relativePath)
+			val finalName = parts.last()
+			val relativeDir = mediaStoreRelativePath(parts.dropLast(1))
+			if (mediaStoreItemExists(finalName, relativeDir)) {
+				throw VnidropException.DestinationExists("Destination already exists: $relativePath")
+			}
+
+			val values = ContentValues().apply {
+				put(MediaStore.MediaColumns.DISPLAY_NAME, finalName)
+				put(MediaStore.MediaColumns.MIME_TYPE, mimeTypeFor(finalName))
+				put(MediaStore.MediaColumns.RELATIVE_PATH, relativeDir)
+				put(MediaStore.MediaColumns.IS_PENDING, 1)
+			}
+			val uri = resolver.insert(downloadsCollection(), values)
+				?: error("Could not create Downloads entry for $relativePath")
+			val stream = runCatching { resolver.openOutputStream(uri, "w") }
+				.getOrElse { error ->
+					resolver.delete(uri, null, null)
+					throw error
+				} ?: run {
+				resolver.delete(uri, null, null)
+					error("Could not open output stream for $relativePath")
+				}
+			pending[relativePath] = PendingDocument(stream, uri)
+		}
 	}
 
 	override fun writeChunk(relativePath: String, bytes: ByteArray) {
-		val document = pending[relativePath] ?: error("Output stream is not open for $relativePath")
-		document.stream.write(bytes)
+		receiveSinkCall {
+			val document = pending[relativePath] ?: error("Output stream is not open for $relativePath")
+			document.stream.write(bytes)
+		}
 	}
 
-	override fun finishFile(relativePath: String): PublishedOutput {
+	override fun finishFile(relativePath: String): PublishedOutput = receiveSinkCall {
 		val document = pending.remove(relativePath) ?: error("Output stream is not open for $relativePath")
 		try {
 			document.stream.flush()
@@ -316,13 +350,15 @@ private class AndroidMediaStoreDownloadsSink(
 			resolver.delete(document.uri, null, null)
 			throw error
 		}
-		return PublishedOutput(ReceivedLocatorKind.ANDROID_MEDIA_STORE, document.uri.toString())
+		PublishedOutput(ReceivedLocatorKind.ANDROID_MEDIA_STORE, document.uri.toString())
 	}
 
 	override fun abortFile(relativePath: String, reason: String) {
-		val document = pending.remove(relativePath) ?: return
-		runCatching { document.stream.close() }
-		resolver.delete(document.uri, null, null)
+		receiveSinkCall {
+			val document = pending.remove(relativePath) ?: return@receiveSinkCall
+			runCatching { document.stream.close() }
+			resolver.delete(document.uri, null, null)
+		}
 	}
 
 	private fun downloadsCollection(): Uri =
@@ -390,33 +426,41 @@ private class AndroidTreeReceiveOutputSink(
 	private val pending = mutableMapOf<String, PendingDocument>()
 
 	override fun startFile(relativePath: String) {
-		check(relativePath !in pending) { "Output stream is already open for $relativePath" }
-		// Defense in depth: Rust also validates, but sinks must reject traversal alone.
-		requireSafeRelativePathParts(relativePath)
-		val (parent, finalName) = resolveParent(relativePath)
-		check(findChild(parent, finalName) == null) { "Destination already exists: $relativePath" }
-		val temporaryName = ".$finalName.vnidrop-${UUID.randomUUID()}.part"
-		val temporaryUri = DocumentsContract.createDocument(
-			context.contentResolver,
-			parent,
-			"application/octet-stream",
-			temporaryName,
-		) ?: error("Could not create temporary file for $relativePath")
-		val stream = context.contentResolver.openOutputStream(temporaryUri, "w")
-			?: error("Could not open output stream for $relativePath")
-		pending[relativePath] = PendingDocument(stream, temporaryUri, parent, finalName)
+		receiveSinkCall {
+			check(relativePath !in pending) { "Output stream is already open for $relativePath" }
+			// Defense in depth: Rust also validates, but sinks must reject traversal alone.
+			requireSafeRelativePathParts(relativePath)
+			val (parent, finalName) = resolveParent(relativePath)
+			if (findChild(parent, finalName) != null) {
+				throw VnidropException.DestinationExists("Destination already exists: $relativePath")
+			}
+			val temporaryName = ".$finalName.vnidrop-${UUID.randomUUID()}.part"
+			val temporaryUri = DocumentsContract.createDocument(
+				context.contentResolver,
+				parent,
+				"application/octet-stream",
+				temporaryName,
+			) ?: error("Could not create temporary file for $relativePath")
+			val stream = context.contentResolver.openOutputStream(temporaryUri, "w")
+				?: error("Could not open output stream for $relativePath")
+			pending[relativePath] = PendingDocument(stream, temporaryUri, parent, finalName)
+		}
 	}
 
 	override fun writeChunk(relativePath: String, bytes: ByteArray) {
-		val document = pending[relativePath] ?: error("Output stream is not open for $relativePath")
-		document.stream.write(bytes)
+		receiveSinkCall {
+			val document = pending[relativePath] ?: error("Output stream is not open for $relativePath")
+			document.stream.write(bytes)
+		}
 	}
 
-	override fun finishFile(relativePath: String): PublishedOutput {
+	override fun finishFile(relativePath: String): PublishedOutput = receiveSinkCall {
 		val document = pending.remove(relativePath) ?: error("Output stream is not open for $relativePath")
 		try {
 			document.stream.close()
-			check(findChild(document.parentUri, document.finalName) == null) { "Destination already exists: $relativePath" }
+			if (findChild(document.parentUri, document.finalName) != null) {
+				throw VnidropException.DestinationExists("Destination already exists: $relativePath")
+			}
 			val finalUri = checkNotNull(
 				DocumentsContract.renameDocument(
 					context.contentResolver,
@@ -424,7 +468,7 @@ private class AndroidTreeReceiveOutputSink(
 					document.finalName,
 				),
 			) { "Could not commit received file $relativePath" }
-			return PublishedOutput(ReceivedLocatorKind.ANDROID_DOCUMENT, finalUri.toString())
+			PublishedOutput(ReceivedLocatorKind.ANDROID_DOCUMENT, finalUri.toString())
 		} catch (error: Throwable) {
 			runCatching { document.stream.close() }
 			DocumentsContract.deleteDocument(context.contentResolver, document.temporaryUri)
@@ -433,9 +477,11 @@ private class AndroidTreeReceiveOutputSink(
 	}
 
 	override fun abortFile(relativePath: String, reason: String) {
-		val document = pending.remove(relativePath) ?: return
-		runCatching { document.stream.close() }
-		DocumentsContract.deleteDocument(context.contentResolver, document.temporaryUri)
+		receiveSinkCall {
+			val document = pending.remove(relativePath) ?: return@receiveSinkCall
+			runCatching { document.stream.close() }
+			DocumentsContract.deleteDocument(context.contentResolver, document.temporaryUri)
+		}
 	}
 
 	private fun resolveParent(relativePath: String): Pair<Uri, String> {

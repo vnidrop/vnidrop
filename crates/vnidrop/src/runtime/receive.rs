@@ -21,6 +21,7 @@ use crate::{
         ReceiveOutputSink, ReceiveOutputSinkV2, ReceivedLocatorKind, TransferAccessMode,
         TransferMetadata,
     },
+    error::VnidropError,
     filesystem::{
         validated_relative_string, wait_for_writer, write_stream_to_blocking_writer,
         AtomicOutputFile,
@@ -52,7 +53,7 @@ pub(super) struct OutputSinkFile<'a> {
 impl<'a> OutputSinkFile<'a> {
     fn start(sink: &'a dyn ReceiveOutputSink, relative_path: String) -> Result<Self> {
         sink.start_file(relative_path.clone())
-            .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+            .map_err(anyhow::Error::new)?;
         Ok(Self {
             sink,
             relative_path,
@@ -63,7 +64,7 @@ impl<'a> OutputSinkFile<'a> {
     fn write(&self, bytes: Vec<u8>) -> Result<()> {
         self.sink
             .write_chunk(self.relative_path.clone(), bytes)
-            .map_err(|error| anyhow::anyhow!(error.to_string()))
+            .map_err(anyhow::Error::new)
     }
 
     fn finish(mut self) -> Result<()> {
@@ -73,7 +74,7 @@ impl<'a> OutputSinkFile<'a> {
         self.terminal = true;
         self.sink
             .finish_file(self.relative_path.clone())
-            .map_err(|error| anyhow::anyhow!(error.to_string()))
+            .map_err(anyhow::Error::new)
     }
 }
 
@@ -104,7 +105,7 @@ pub(super) struct OutputSinkFileV2<'a> {
 impl<'a> OutputSinkFileV2<'a> {
     fn start(sink: &'a dyn ReceiveOutputSinkV2, relative_path: String) -> Result<Self> {
         sink.start_file(relative_path.clone())
-            .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+            .map_err(anyhow::Error::new)?;
         Ok(Self {
             sink,
             relative_path,
@@ -115,14 +116,14 @@ impl<'a> OutputSinkFileV2<'a> {
     fn write(&self, bytes: Vec<u8>) -> Result<()> {
         self.sink
             .write_chunk(self.relative_path.clone(), bytes)
-            .map_err(|error| anyhow::anyhow!(error.to_string()))
+            .map_err(anyhow::Error::new)
     }
 
     fn finish(mut self) -> Result<crate::api::PublishedOutput> {
         self.terminal = true;
         self.sink
             .finish_file(self.relative_path.clone())
-            .map_err(|error| anyhow::anyhow!(error.to_string()))
+            .map_err(anyhow::Error::new)
     }
 }
 
@@ -189,7 +190,8 @@ impl CoreInner {
             .transfer_slots
             .acquire()
             .await
-            .context("transfer limiter is closed")?;
+            .context("transfer limiter is closed")
+            .map_err(VnidropError::internal)?;
         let parsed = match parse_transfer_ticket_with_limits(&ticket, &self.limits)
             .context("failed to parse transfer ticket")
         {
@@ -205,7 +207,8 @@ impl CoreInner {
         };
         let transfer_id = parsed.metadata.transfer_id;
         self.persist_receive_start(transfer_id, &parsed, receiver_name.as_deref())
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         // Cancellation is cooperative: it stops our receive future and marks
         // local state while lower-level Iroh work unwinds naturally.
         let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
@@ -221,8 +224,10 @@ impl CoreInner {
             );
 
         let (result, cancelled) = tokio::select! {
-            result = self.receive_inner(transfer_id, parsed, target, receiver_name) => (result, false),
-            _ = &mut shutdown_rx => (Err(anyhow::anyhow!("transfer cancelled")), true),
+            result = self.receive_inner(transfer_id, parsed, target, receiver_name) => {
+                (result.map_err(VnidropError::transfer), false)
+            },
+            _ = &mut shutdown_rx => (Err(VnidropError::cancelled("transfer cancelled")), true),
         };
 
         self.active_transfers
@@ -238,7 +243,7 @@ impl CoreInner {
                     "receive",
                     "error",
                     "failed",
-                    json!({ "reason": error.to_string() }),
+                    json!({ "code": error.code(), "reason": error.reason() }),
                 );
                 let _ = self
                     .repository
@@ -250,7 +255,7 @@ impl CoreInner {
                     .await;
             }
         }
-        result
+        result.map_err(anyhow::Error::new)
     }
 
     pub(super) async fn receive_inner(
@@ -261,7 +266,9 @@ impl CoreInner {
         receiver_name: Option<String>,
     ) -> Result<()> {
         if let ReceiveTarget::Directory(output_dir) = &target {
-            tokio::fs::create_dir_all(output_dir).await?;
+            tokio::fs::create_dir_all(output_dir)
+                .await
+                .map_err(VnidropError::filesystem)?;
         }
         let sender_addr = parsed.blob_ticket.addr().clone();
 
@@ -278,14 +285,16 @@ impl CoreInner {
         let connection = self
             .endpoint
             .connect(sender_addr.clone(), iroh_blobs::ALPN)
-            .await?;
+            .await
+            .map_err(VnidropError::network)?;
         self.emit_transfer(transfer_id, "receive", "network", "connected", json!({}));
 
         let hash_and_format = parsed.blob_ticket.hash_and_format();
         let (_hash_seq, sizes) =
             get_hash_seq_and_sizes(&connection, &hash_and_format.hash, 1024 * 1024 * 32, None)
                 .await
-                .context("failed to get file sizes")?;
+                .context("failed to get file sizes")
+                .map_err(VnidropError::network)?;
         let total_size = sizes
             .iter()
             .try_fold(0u64, |total, size| total.checked_add(*size))
@@ -331,7 +340,11 @@ impl CoreInner {
                     );
                 }
                 GetProgressItem::Done(_) => break,
-                GetProgressItem::Error(error) => anyhow::bail!("download failed: {error}"),
+                GetProgressItem::Error(error) => {
+                    return Err(
+                        VnidropError::network(anyhow::anyhow!("download failed: {error}")).into(),
+                    );
+                }
             }
         }
 
@@ -344,7 +357,8 @@ impl CoreInner {
                 TransferStatus::Receiving,
                 TransferStatus::Done,
             )
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         drop(download_tag);
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
         let sender_transfer_id = delivery_receipt.transfer_id;
@@ -395,7 +409,8 @@ impl CoreInner {
                 total_size: parsed.metadata.total_size,
                 access_mode: mode_to_storage(&TransferAccessMode::ApprovalRequired),
             })
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         let metadata_json =
             serde_json::to_value(&parsed.metadata).unwrap_or(serde_json::Value::Null);
         self.emit_transfer(
@@ -433,8 +448,9 @@ impl CoreInner {
         match client
             .request_transfer(metadata, receiver_name)
             .await
-            .map_err(|error| anyhow::anyhow!("handshake request failed: {error}"))?
-        {
+            .map_err(|error| {
+                VnidropError::network(anyhow::anyhow!("handshake request failed: {error}"))
+            })? {
             HandshakeResponse::Approved {
                 request_id,
                 token,
@@ -456,9 +472,10 @@ impl CoreInner {
                     token,
                 })
             }
-            HandshakeResponse::Denied { reason } => {
-                anyhow::bail!("transfer request was denied by sender: {reason}")
-            }
+            HandshakeResponse::Denied { reason } => Err(VnidropError::permission(anyhow::anyhow!(
+                "transfer request was denied by sender: {reason}"
+            ))
+            .into()),
         }
     }
 
@@ -469,7 +486,11 @@ impl CoreInner {
         target: ReceiveTarget,
         collection: Collection,
     ) -> Result<()> {
-        let transfer_local_id = self.repository.transfer_local_id(transfer_id).await?;
+        let transfer_local_id = self
+            .repository
+            .transfer_local_id(transfer_id)
+            .await
+            .map_err(VnidropError::repository)?;
         let received_transfer = ReceivedTransfer {
             protocol_id: transfer_id,
             local_id: &transfer_local_id,
@@ -529,7 +550,8 @@ impl CoreInner {
                 self.limits.max_path_bytes
             );
         }
-        let (pending_file, writer) = AtomicOutputFile::create(output_dir, relative_path)?;
+        let (pending_file, writer) = AtomicOutputFile::create(output_dir, relative_path)
+            .map_err(VnidropError::filesystem)?;
         let (tx, rx) = async_channel::bounded::<io::Result<Option<Bytes>>>(2);
         let writer_task = std::thread::spawn(move || write_stream_to_blocking_writer(writer, rx));
         let mut stream = self.store.export_ranges(hash, 0..u64::MAX).stream();
@@ -572,10 +594,16 @@ impl CoreInner {
         tx.send(Ok(None))
             .await
             .map_err(|_| anyhow::anyhow!("export writer closed for {relative_path}"))?;
-        let writer = wait_for_writer(writer_task).await??;
-        tokio::task::spawn_blocking(move || writer.sync_all()).await??;
+        let writer = wait_for_writer(writer_task)
+            .await
+            .map_err(VnidropError::internal)?
+            .map_err(VnidropError::filesystem)?;
+        tokio::task::spawn_blocking(move || writer.sync_all())
+            .await
+            .map_err(VnidropError::internal)?
+            .map_err(VnidropError::filesystem)?;
         let locator = pending_file.target().to_string_lossy().to_string();
-        pending_file.commit()?;
+        pending_file.commit().map_err(VnidropError::filesystem)?;
         self.repository
             .record_received_artifact(ReceivedArtifactInsert {
                 transfer_local_id: transfer.local_id,
@@ -585,7 +613,8 @@ impl CoreInner {
                 locator: &locator,
                 logical_size: exported,
             })
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         Ok(())
     }
 
@@ -712,7 +741,8 @@ impl CoreInner {
                 locator: &published.locator,
                 logical_size: exported,
             })
-            .await?;
+            .await
+            .map_err(VnidropError::repository)?;
         Ok(())
     }
 }

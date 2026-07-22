@@ -16,6 +16,7 @@ import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
 import com.vnidrop.app.ui.feedback.UiMessageTone
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.feedback.canRetryWithoutChangingInput
 import com.vnidrop.app.ui.feedback.isUserCancellation
 import com.vnidrop.app.ui.feedback.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -206,8 +207,12 @@ class ReceiveViewModel(
 						UiMessage(
 							text = uiText,
 							tone = UiMessageTone.Error,
-							actionLabel = UiText.Resource(Res.string.button_retry),
-							onAction = { receive() },
+							actionLabel = if (error.canRetryWithoutChangingInput()) {
+								UiText.Resource(Res.string.button_retry)
+							} else {
+								null
+							},
+							onAction = if (error.canRetryWithoutChangingInput()) ({ receive() }) else null,
 						),
 					)
 				},

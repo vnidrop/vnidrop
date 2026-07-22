@@ -84,12 +84,15 @@
     <string name="diagnostics_title">Делиться диагностикой</string>
     <string name="error_camera">Для сканирования QR-кода требуется доступ к камере.</string>
     <string name="error_device_info">Не удалось загрузить сведения об устройстве.</string>
+    <string name="error_destination_exists">В папке назначения уже есть файл с таким именем. Выберите другую папку или удалите существующий файл.</string>
     <string name="error_filesystem">VniDrop не удалось получить доступ к выбранным файлам или папке. Проверьте разрешения и повторите попытку.</string>
     <string name="error_generic">Что-то пошло не так. Повторите попытку.</string>
     <string name="error_initialization">VniDrop не удалось завершить запуск. Закройте приложение и повторите попытку.</string>
+    <string name="error_invalid_input">Некоторые данные передачи недействительны. Проверьте выбор или попросите отправителя поделиться снова.</string>
     <string name="error_invalid_ticket">Не удалось прочитать это приглашение. Попросите отправителя прислать новое.</string>
     <string name="error_invitation_empty">Это приглашение пустое. Попробуйте открыть его снова.</string>
     <string name="error_missing_native_library">В этой сборке отсутствует нативная библиотека VniDrop.</string>
+    <string name="error_network">VniDrop не удалось связаться с отправителем. Проверьте подключение на обоих устройствах и повторите попытку.</string>
     <string name="error_nfc">Не удалось использовать эту NFC-метку. Попробуйте другую.</string>
     <string name="error_permission">Отправитель не одобрил эту передачу, или она была отклонена.</string>
     <string name="error_repository">VniDrop не удалось сохранить данные передачи на этом устройстве.</string>
@@ -97,7 +100,8 @@
     <string name="error_share_empty">Выберите хотя бы один объект для отправки.</string>
     <string name="error_socket_bind">VniDrop не удалось открыть сетевые сокеты на этом устройстве.</string>
     <string name="error_starting_up">VniDrop ещё запускается. Откройте приглашение снова через мгновение.</string>
-    <string name="error_transfer">Не удалось завершить передачу. Проверьте подключение и повторите попытку.</string>
+    <string name="error_storage_full">Недостаточно места для сохранения этой передачи. Освободите место и повторите попытку.</string>
+    <string name="error_transfer">Не удалось обработать данные передачи. Попросите отправителя поделиться ими снова.</string>
     <string name="field_receiver_name">Имя получателя</string>
     <string name="field_sender_name">Имя отправителя</string>
     <string name="field_transfer_name">Название передачи</string>

@@ -84,12 +84,15 @@
     <string name="diagnostics_title">Diagnosedaten teilen</string>
     <string name="error_camera">Für das Scannen eines QR-Codes ist Kamerazugriff erforderlich.</string>
     <string name="error_device_info">Geräteinformationen konnten nicht geladen werden.</string>
+    <string name="error_destination_exists">Am Ziel ist bereits eine Datei mit demselben Namen vorhanden. Wählen Sie einen anderen Ordner oder entfernen Sie die vorhandene Datei.</string>
     <string name="error_filesystem">VniDrop konnte nicht auf die ausgewählten Dateien oder den Ordner zugreifen. Überprüfen Sie die Berechtigungen und versuchen Sie es erneut.</string>
     <string name="error_generic">Etwas ist schiefgelaufen. Versuchen Sie es erneut.</string>
     <string name="error_initialization">VniDrop konnte den Start nicht abschließen. Schließen Sie die App und versuchen Sie es erneut.</string>
+    <string name="error_invalid_input">Einige Übertragungsinformationen sind ungültig. Prüfen Sie Ihre Auswahl oder bitten Sie den Absender, erneut zu teilen.</string>
     <string name="error_invalid_ticket">Diese Einladung konnte nicht gelesen werden. Bitten Sie den Absender um eine neue.</string>
     <string name="error_invitation_empty">Diese Einladung ist leer. Versuchen Sie, sie erneut zu öffnen.</string>
     <string name="error_missing_native_library">Die native VniDrop-Bibliothek fehlt in diesem Build.</string>
+    <string name="error_network">VniDrop konnte den Absender nicht erreichen. Prüfen Sie die Verbindung auf beiden Geräten und versuchen Sie es erneut.</string>
     <string name="error_nfc">Dieses NFC-Tag konnte nicht verwendet werden. Versuchen Sie ein anderes.</string>
     <string name="error_permission">Der Absender hat diese Übertragung nicht genehmigt oder sie wurde abgelehnt.</string>
     <string name="error_repository">VniDrop konnte die Übertragungsdaten auf diesem Gerät nicht speichern.</string>
@@ -97,7 +100,8 @@
     <string name="error_share_empty">Wählen Sie mindestens ein Objekt zum Teilen aus.</string>
     <string name="error_socket_bind">VniDrop konnte seine Netzwerk-Sockets auf diesem Gerät nicht öffnen.</string>
     <string name="error_starting_up">VniDrop startet noch. Öffnen Sie die Einladung gleich erneut.</string>
-    <string name="error_transfer">Die Übertragung konnte nicht abgeschlossen werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.</string>
+    <string name="error_storage_full">Zum Speichern dieser Übertragung ist nicht genügend Speicherplatz vorhanden. Geben Sie Speicherplatz frei und versuchen Sie es erneut.</string>
+    <string name="error_transfer">Die Übertragungsdaten konnten nicht verarbeitet werden. Bitten Sie den Absender, sie erneut zu teilen.</string>
     <string name="field_receiver_name">Empfängername</string>
     <string name="field_sender_name">Absendername</string>
     <string name="field_transfer_name">Übertragungsname</string>
