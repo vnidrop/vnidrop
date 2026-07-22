@@ -23,6 +23,9 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.vnidrop.app.isDesktop
+import com.vnidrop.app.ui.platform.LocalUiPlatform
+import com.vnidrop.app.ui.platform.usesMobilePresentation
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
@@ -36,7 +39,8 @@ fun AdaptiveDrawer(
 	onDismissRequest: () -> Unit,
 	content: @Composable () -> Unit,
 ) {
-	if (windowClass == WindowClass.Phone) {
+	val uiPlatform = LocalUiPlatform.current
+	if (usesMobilePresentation(uiPlatform, windowClass)) {
 		ModalBottomSheet(
 			onDismissRequest = onDismissRequest,
 			sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -51,7 +55,7 @@ fun AdaptiveDrawer(
 		) {
 			Surface(
 				modifier = Modifier.fillMaxWidth(0.86f).widthIn(max = 560.dp),
-				shape = RoundedCornerShape(20.dp),
+				shape = RoundedCornerShape(if (uiPlatform.isDesktop) 10.dp else 24.dp),
 				color = LocalVniDropColors.current.backgroundDialog,
 				shadowElevation = 12.dp,
 			) { ClosableModalContent(onDismissRequest, content = content) }

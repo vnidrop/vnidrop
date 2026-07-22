@@ -42,6 +42,8 @@ import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.StatusPill
+import com.vnidrop.app.ui.platform.LocalUiPlatform
+import com.vnidrop.app.ui.platform.usesMobilePresentation
 import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.activeSendProgress
@@ -82,17 +84,18 @@ internal fun TransferCatalog(
 	onOpenComposer: () -> Unit,
 	onTransferSelected: (ULong) -> Unit,
 ) {
+	val usesFloatingAction = usesMobilePresentation(LocalUiPlatform.current, windowClass)
 	LazyColumn(
 		modifier = Modifier.fillMaxSize().statusBarsPadding(),
 		contentPadding = PaddingValues(
 			start = 16.dp,
 			top = 16.dp,
 			end = 16.dp,
-			bottom = if (windowClass == WindowClass.Phone && transfers.isNotEmpty()) 96.dp else 24.dp,
+			bottom = if (usesFloatingAction && transfers.isNotEmpty()) 96.dp else 24.dp,
 		),
 		verticalArrangement = Arrangement.spacedBy(12.dp),
 	) {
-		item { CatalogHeader(showAction = windowClass != WindowClass.Phone && transfers.isNotEmpty(), onOpenComposer) }
+		item { CatalogHeader(showAction = !usesFloatingAction && transfers.isNotEmpty(), onOpenComposer) }
 		if (transfers.isEmpty()) {
 			item { SendEmptyState(onOpenComposer) }
 		} else {

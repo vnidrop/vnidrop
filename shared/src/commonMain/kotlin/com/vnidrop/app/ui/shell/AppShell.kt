@@ -17,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.UiPlatform
 import com.vnidrop.app.ui.navigation.AppBottomNavigation
 import com.vnidrop.app.ui.navigation.AppDestination
 import com.vnidrop.app.ui.navigation.AppSidebarNavigation
+import com.vnidrop.app.ui.navigation.NavigationStyle
+import com.vnidrop.app.ui.navigation.navigationStyleFor
 import com.vnidrop.app.ui.state.WindowClass
-import com.vnidrop.app.ui.state.useBottomNavigation
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 
 @Composable
@@ -29,6 +31,7 @@ fun AppShell(
 	modifier: Modifier = Modifier,
 	selectedDestination: AppDestination,
 	windowClass: WindowClass,
+	uiPlatform: UiPlatform,
 	mainContentTopStartRadius: Dp = 0.dp,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit = {},
@@ -36,13 +39,14 @@ fun AppShell(
 	content: @Composable () -> Unit,
 ) {
 	val colors = LocalVniDropColors.current
+	val navigationStyle = navigationStyleFor(uiPlatform, windowClass)
 	Surface(
 		modifier = modifier
 			.fillMaxSize()
 			.background(colors.backgroundDashCanvas),
 		color = colors.backgroundDashCanvas,
 	) {
-		if (useBottomNavigation(windowClass)) {
+		if (navigationStyle == NavigationStyle.AndroidBottomBar) {
 			PhoneShell(
 				selectedDestination = selectedDestination,
 				onDestinationSelected = onDestinationSelected,
@@ -53,6 +57,7 @@ fun AppShell(
 		} else {
 			WideShell(
 				selectedDestination = selectedDestination,
+				navigationStyle = navigationStyle,
 				mainContentTopStartRadius = mainContentTopStartRadius,
 				onDestinationSelected = onDestinationSelected,
 				overlay = overlay,
@@ -66,6 +71,7 @@ fun AppShell(
 @Composable
 private fun WideShell(
 	selectedDestination: AppDestination,
+	navigationStyle: NavigationStyle,
 	mainContentTopStartRadius: Dp,
 	onDestinationSelected: (AppDestination) -> Unit,
 	overlay: @Composable BoxScope.() -> Unit,
@@ -81,6 +87,7 @@ private fun WideShell(
 	) {
 		AppSidebarNavigation(
 			selected = selectedDestination,
+			style = navigationStyle,
 			dividerTopInset = mainContentTopStartRadius,
 			onDestinationSelected = onDestinationSelected,
 		)

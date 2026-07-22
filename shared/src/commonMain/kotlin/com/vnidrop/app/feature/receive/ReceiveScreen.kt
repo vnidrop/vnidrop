@@ -55,6 +55,8 @@ import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.platform.LocalUiPlatform
+import com.vnidrop.app.ui.platform.usesMobilePresentation
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
@@ -93,12 +95,13 @@ fun ReceiveScreen(
 ) {
 	val transfers = coreState.transfers.filter { it.direction == TransferDirection.Receive }
 	val deletableTransfers = transfers.filter { it.status.isTerminalReceiveHistory() }
+	val usesFloatingAction = usesMobilePresentation(LocalUiPlatform.current, windowClass)
 	LazyColumn(
 		modifier = Modifier.fillMaxSize().statusBarsPadding(),
 		contentPadding = PaddingValues(16.dp),
 		verticalArrangement = Arrangement.spacedBy(14.dp),
 	) {
-		item { ReceiveHeader(transfers.isNotEmpty(), windowClass, onOpenAcquisition) }
+		item { ReceiveHeader(transfers.isNotEmpty() && !usesFloatingAction, onOpenAcquisition) }
 		if (transfers.isEmpty()) item { ReceiveEmptyState(onOpenAcquisition) }
 		else {
 			item {
@@ -156,13 +159,13 @@ fun ReceiveScreen(
 }
 
 @Composable
-private fun ReceiveHeader(showAction: Boolean, windowClass: WindowClass, onOpen: () -> Unit) {
+private fun ReceiveHeader(showAction: Boolean, onOpen: () -> Unit) {
 	Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 			Text(stringResource(Res.string.receive_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
 			Text(stringResource(Res.string.receive_new_subtitle), color = LocalVniDropColors.current.foregroundLighter)
 		}
-		if (showAction && windowClass != WindowClass.Phone) {
+		if (showAction) {
 			Spacer(Modifier.width(16.dp))
 			PrimaryButton(stringResource(Res.string.button_receive_files), onClick = onOpen)
 		}

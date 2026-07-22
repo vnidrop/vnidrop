@@ -34,6 +34,7 @@ import com.vnidrop.app.feature.settings.SettingsSection
 import com.vnidrop.app.feature.settings.SettingsState
 import com.vnidrop.app.feature.send.SendScreen
 import com.vnidrop.app.feature.send.SendState
+import com.vnidrop.app.UiPlatform
 import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ShareAccessPolicy
@@ -98,6 +99,44 @@ class FoundationComposeTest {
 		}
 		onNodeWithText("Notifications").performClick()
 		onNodeWithText("Get notified about new receive requests while VniDrop is in the background.").assertIsDisplayed()
+	}
+
+	@Test
+	fun aboutSettingsShowsTheSharedProductAndPrivacyContent() = runComposeUiTest {
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				Box(Modifier.width(393.dp)) {
+					SettingsScreen(
+						state = SettingsState(selectedSection = SettingsSection.About),
+						windowClass = WindowClass.Phone,
+						onSectionSelected = {},
+						onUsernameChanged = {},
+						onThemeModeChanged = {},
+						onChooseFolder = {},
+						onResetFolder = {},
+						onNotificationsChanged = {},
+						onOpenNotificationSettings = {},
+						onDiagnosticsChanged = {},
+						onBugWhatChanged = {},
+						onBugExpectedChanged = {},
+						onBugStepsChanged = {},
+						onBugContactChanged = {},
+						onBugIncludeLogsChanged = {},
+						onSubmitBugReport = {},
+					)
+				}
+			}
+		}
+
+		onNodeWithText("Send files directly. Stay in control of who receives them.").assertIsDisplayed()
+		onNodeWithText("What VniDrop is").assertIsDisplayed()
+		onNodeWithText("What VniDrop isn’t").assertIsDisplayed()
+		onAllNodesWithText("Privacy & security").assertCountEquals(1)
+		onAllNodesWithText("Apache 2.0").assertCountEquals(1)
+		val explanationBounds = onNodeWithText(
+			"A direct device-to-device transfer — your files go straight to the receiver.",
+		).getUnclippedBoundsInRoot()
+		assertTrue(explanationBounds.bottom - explanationBounds.top > 32.dp)
 	}
 
 	@Test
@@ -202,6 +241,7 @@ class FoundationComposeTest {
 				AppShell(
 					selectedDestination = AppDestination.Send,
 					windowClass = WindowClass.Phone,
+					uiPlatform = UiPlatform.Android,
 					onDestinationSelected = {},
 					overlay = {
 						Box(Modifier.align(Alignment.BottomCenter).size(20.dp).testTag("snackbar-overlay"))
@@ -220,6 +260,29 @@ class FoundationComposeTest {
 		val navigationLabelTop = onNodeWithText("Send").getUnclippedBoundsInRoot().top
 		assertTrue(overlayBottom <= floatingActionTop)
 		assertTrue(overlayBottom <= navigationLabelTop)
+	}
+
+	@Test
+	fun narrowDesktopWindowKeepsDesktopSourceListNavigation() = runComposeUiTest {
+		var selected = AppDestination.Send
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				Box(Modifier.size(width = 560.dp, height = 640.dp)) {
+					AppShell(
+						selectedDestination = selected,
+						windowClass = WindowClass.Phone,
+						uiPlatform = UiPlatform.Windows,
+						onDestinationSelected = { selected = it },
+					) {
+						Text("Content")
+					}
+				}
+			}
+		}
+
+		onNodeWithText("VniDrop").assertIsDisplayed()
+		onNodeWithText("Receive").performClick()
+		runOnIdle { assertEquals(AppDestination.Receive, selected) }
 	}
 
 	@Test
