@@ -38,8 +38,6 @@ import androidx.compose.ui.unit.dp
 import com.vnidrop.app.core.CoreEventModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
-import com.vnidrop.app.isDesktop
-import com.vnidrop.app.ui.components.EmptyStateAnimation
 import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
@@ -62,7 +60,6 @@ import vnidrop.shared.generated.resources.send_empty_body
 import vnidrop.shared.generated.resources.send_empty_title
 import vnidrop.shared.generated.resources.send_new_transfer_description
 import vnidrop.shared.generated.resources.send_new_transfer_title
-import vnidrop.shared.generated.resources.send_subtitle
 import vnidrop.shared.generated.resources.send_title
 import vnidrop.shared.generated.resources.send_transfers_title
 
@@ -131,13 +128,6 @@ private fun CatalogHeader(showAction: Boolean, onOpenComposer: () -> Unit) {
 	Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 			Text(stringResource(Res.string.send_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-			if (!LocalUiPlatform.current.isDesktop) {
-				Text(
-					stringResource(Res.string.send_subtitle),
-					color = LocalVniDropColors.current.foregroundLighter,
-					style = MaterialTheme.typography.bodyMedium,
-				)
-			}
 		}
 		if (showAction) {
 			Spacer(Modifier.width(16.dp))
@@ -149,27 +139,19 @@ private fun CatalogHeader(showAction: Boolean, onOpenComposer: () -> Unit) {
 @Composable
 private fun SendEmptyState(onOpenComposer: () -> Unit) {
 	val colors = LocalVniDropColors.current
-	val desktop = LocalUiPlatform.current.isDesktop
 	Column(
 		modifier = Modifier.fillMaxWidth().heightIn(min = 430.dp).padding(horizontal = 20.dp),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		if (desktop) {
-			Icon(
-				imageVector = VniDropIcons.Send,
-				contentDescription = null,
-				tint = colors.brandLink,
-				modifier = Modifier
-					.size(88.dp)
-					.testTag("send-empty-icon"),
-			)
-		} else {
-			EmptyStateAnimation(
-				assetPath = "files/animations/send_empty_state.json",
-				modifier = Modifier.size(168.dp),
-			)
-		}
+		Icon(
+			imageVector = VniDropIcons.Send,
+			contentDescription = null,
+			tint = colors.brandLink,
+			modifier = Modifier
+				.size(88.dp)
+				.testTag("send-empty-icon"),
+		)
 		Text(
 			stringResource(Res.string.send_empty_title),
 			modifier = Modifier.padding(top = 12.dp),

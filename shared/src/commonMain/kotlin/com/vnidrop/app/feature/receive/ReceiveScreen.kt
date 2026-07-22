@@ -47,11 +47,9 @@ import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferDirection
 import com.vnidrop.app.core.TransferStatus
-import com.vnidrop.app.isDesktop
 import com.vnidrop.app.ui.components.AdaptiveDrawer
 import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.DestructiveQuietButton
-import com.vnidrop.app.ui.components.EmptyStateAnimation
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
@@ -166,9 +164,6 @@ private fun ReceiveHeader(showAction: Boolean, onOpen: () -> Unit) {
 	Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 			Text(stringResource(Res.string.receive_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-			if (!LocalUiPlatform.current.isDesktop) {
-				Text(stringResource(Res.string.receive_new_subtitle), color = LocalVniDropColors.current.foregroundLighter)
-			}
 		}
 		if (showAction) {
 			Spacer(Modifier.width(16.dp))
@@ -180,27 +175,19 @@ private fun ReceiveHeader(showAction: Boolean, onOpen: () -> Unit) {
 @Composable
 private fun ReceiveEmptyState(onOpen: () -> Unit) {
 	val colors = LocalVniDropColors.current
-	val desktop = LocalUiPlatform.current.isDesktop
 	Column(
 		Modifier.fillMaxWidth().heightIn(min = 430.dp).padding(horizontal = 20.dp),
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		if (desktop) {
-			Icon(
-				imageVector = VniDropIcons.Receive,
-				contentDescription = null,
-				tint = colors.brandLink,
-				modifier = Modifier
-					.size(88.dp)
-					.testTag("receive-empty-icon"),
-			)
-		} else {
-			EmptyStateAnimation(
-				assetPath = "files/animations/receive_empty_state.json",
-				modifier = Modifier.size(168.dp),
-			)
-		}
+		Icon(
+			imageVector = VniDropIcons.Receive,
+			contentDescription = null,
+			tint = colors.brandLink,
+			modifier = Modifier
+				.size(88.dp)
+				.testTag("receive-empty-icon"),
+		)
 		Text(stringResource(Res.string.receive_empty_title), modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 		Text(
 			stringResource(Res.string.receive_empty_body),

@@ -291,7 +291,7 @@ class FoundationComposeTest {
 	}
 
 	@Test
-	fun desktopPagesUseStaticFeatureIconsWithoutTitleDescriptions() = runComposeUiTest {
+	fun androidPagesUseStaticFeatureIconsWithoutTitleDescriptions() = runComposeUiTest {
 		val actions = object : ReceiveInvitationActions {
 			override val fileAvailability = ReceiveMethodAvailability.Hidden
 			override val qrAvailability = ReceiveMethodAvailability.Hidden
@@ -302,14 +302,14 @@ class FoundationComposeTest {
 			override fun cancel() = Unit
 		}
 		setContent {
-			CompositionLocalProvider(LocalUiPlatform provides UiPlatform.Linux) {
+			CompositionLocalProvider(LocalUiPlatform provides UiPlatform.Android) {
 				VniDropTheme(isDarkTheme = false) {
 					Row {
 						Box(Modifier.size(500.dp)) {
 							TransferCatalog(
 								transfers = emptyList(),
 								transferThumbnails = emptyMap(),
-								windowClass = WindowClass.Desktop,
+								windowClass = WindowClass.Phone,
 								onOpenComposer = {},
 								onTransferSelected = {},
 							)
@@ -318,7 +318,7 @@ class FoundationComposeTest {
 							ReceiveScreen(
 								coreState = CoreState(isInitialized = true),
 								state = ReceiveState(),
-								windowClass = WindowClass.Desktop,
+								windowClass = WindowClass.Phone,
 								actions = actions,
 								onOpenAcquisition = {},
 								onDismissAcquisition = {},
