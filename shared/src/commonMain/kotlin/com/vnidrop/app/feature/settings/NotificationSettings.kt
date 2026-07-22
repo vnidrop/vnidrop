@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.icons.AppIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -32,7 +33,7 @@ internal fun NotificationSettings(
 		SettingsTopBar(stringResource(Res.string.notifications_title), onBack, showBack)
 		SettingsGroup {
 			SettingsToggleRow(
-				icon = SettingsIcons.Bell,
+				icon = AppIcon.Bell,
 				title = stringResource(Res.string.notifications_local_title),
 				description = stringResource(Res.string.notifications_description),
 				checked = state.notificationsEnabled,

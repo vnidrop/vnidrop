@@ -3,15 +3,15 @@ package com.vnidrop.app.feature.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import com.vnidrop.app.ui.theme.ThemeMode
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
+import com.vnidrop.app.ui.theme.ThemeMode
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.appearance_auto_description
@@ -30,15 +30,15 @@ internal fun AppearanceSettings(
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 		SettingsTopBar(stringResource(Res.string.appearance_title), onBack, showBack)
 		SettingsGroup {
-			ThemeSettingsRow(SettingsIcons.Device, stringResource(Res.string.appearance_system_mode), mode == ThemeMode.System) {
+			ThemeSettingsRow(AppIcon.SystemTheme, stringResource(Res.string.appearance_system_mode), mode == ThemeMode.System) {
 				onModeChanged(ThemeMode.System)
 			}
 			SettingsDivider()
-			ThemeSettingsRow(SettingsIcons.Moon, stringResource(Res.string.appearance_dark_mode), mode == ThemeMode.Dark) {
+			ThemeSettingsRow(AppIcon.Moon, stringResource(Res.string.appearance_dark_mode), mode == ThemeMode.Dark) {
 				onModeChanged(ThemeMode.Dark)
 			}
 			SettingsDivider()
-			ThemeSettingsRow(SettingsIcons.Sun, stringResource(Res.string.appearance_light_mode), mode == ThemeMode.Light) {
+			ThemeSettingsRow(AppIcon.Sun, stringResource(Res.string.appearance_light_mode), mode == ThemeMode.Light) {
 				onModeChanged(ThemeMode.Light)
 			}
 		}
@@ -53,7 +53,7 @@ internal fun AppearanceSettings(
 }
 
 @Composable
-private fun ThemeSettingsRow(icon: ImageVector, title: String, selected: Boolean, onClick: () -> Unit) {
+private fun ThemeSettingsRow(icon: AppIcon, title: String, selected: Boolean, onClick: () -> Unit) {
 	SettingsRow(
 		icon = icon,
 		title = title,
@@ -62,8 +62,8 @@ private fun ThemeSettingsRow(icon: ImageVector, title: String, selected: Boolean
 		showsDisclosure = false,
 		trailing = if (selected) {
 			{
-				Icon(
-					SettingsIcons.Check,
+				PlatformIcon(
+					AppIcon.Check,
 					contentDescription = null,
 					tint = LocalVniDropColors.current.brandLink,
 					modifier = Modifier.size(20.dp),

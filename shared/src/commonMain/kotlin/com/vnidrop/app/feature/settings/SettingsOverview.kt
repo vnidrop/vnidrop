@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.ui.icons.AppIcon
 import com.vnidrop.app.ui.theme.ThemeMode
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -34,14 +35,14 @@ internal fun SettingsOverview(
 		)
 		SettingsGroup {
 			SettingsRow(
-				icon = SettingsIcons.Drive,
+				icon = AppIcon.Storage,
 				title = stringResource(Res.string.storage_title),
 				selected = state.selectedSection == SettingsSection.Storage,
 				onClick = { onSectionSelected(SettingsSection.Storage) },
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Device,
+				icon = AppIcon.User,
 				title = stringResource(Res.string.preferences_title),
 				value = state.username,
 				selected = state.selectedSection == SettingsSection.Preferences,
@@ -49,7 +50,7 @@ internal fun SettingsOverview(
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Sun,
+				icon = AppIcon.Sun,
 				title = stringResource(Res.string.appearance_title),
 				value = themeModeLabel(state.themeMode),
 				selected = state.selectedSection == SettingsSection.Appearance,
@@ -58,14 +59,14 @@ internal fun SettingsOverview(
 		}
 		SettingsGroup {
 			SettingsRow(
-				icon = SettingsIcons.Bell,
+				icon = AppIcon.Bell,
 				title = stringResource(Res.string.notifications_title),
 				selected = state.selectedSection == SettingsSection.Notifications,
 				onClick = { onSectionSelected(SettingsSection.Notifications) },
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Info,
+				icon = AppIcon.Info,
 				title = stringResource(Res.string.about_title),
 				selected = state.selectedSection == SettingsSection.About,
 				iconTone = SettingsIconTone.Neutral,

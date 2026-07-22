@@ -9,6 +9,7 @@ import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.icons.AppIcon
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_choose_folder
@@ -35,14 +36,14 @@ internal fun PreferencesSettings(
 		Field(state.username, onUsernameChanged, stringResource(Res.string.field_username))
 		SettingsGroup {
 			SettingsRow(
-				icon = SettingsIcons.Folder,
+				icon = AppIcon.Folder,
 				title = stringResource(Res.string.preferences_receive_folder_title),
 				value = state.receiveFolder?.displayName?.ifBlank { state.receiveFolder.value },
 				iconTone = SettingsIconTone.Neutral,
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Check,
+				icon = AppIcon.Check,
 				title = state.folderStatusLabel(),
 				iconTone = SettingsIconTone.Neutral,
 			)

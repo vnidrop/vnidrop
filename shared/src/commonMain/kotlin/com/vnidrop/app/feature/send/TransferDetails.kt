@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -52,6 +51,8 @@ import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
@@ -84,7 +85,7 @@ internal fun TransferDetails(
 	) {
 		item {
 			Row(verticalAlignment = Alignment.CenterVertically) {
-				IconButton(onClick = onBack) { Icon(SendIcons.Back, stringResource(Res.string.button_back)) }
+				IconButton(onClick = onBack) { PlatformIcon(AppIcon.ArrowBack, stringResource(Res.string.button_back)) }
 				Text(
 					stringResource(Res.string.send_transfer_details_title),
 					modifier = Modifier.weight(1f),
@@ -92,7 +93,7 @@ internal fun TransferDetails(
 					fontWeight = FontWeight.Bold,
 				)
 				IconButton(onClick = onDelete) {
-					Icon(SendIcons.Delete, stringResource(Res.string.button_delete_transfer), tint = LocalVniDropColors.current.destructiveDefault)
+					PlatformIcon(AppIcon.Delete, stringResource(Res.string.button_delete_transfer), tint = LocalVniDropColors.current.destructiveDefault)
 				}
 			}
 		}
@@ -156,7 +157,7 @@ private fun DetailDestination(title: String, description: String, count: Int? = 
 			Text(count.toString(), modifier = Modifier.background(LocalVniDropColors.current.backgroundSelection, RoundedCornerShape(20.dp)).padding(horizontal = 9.dp, vertical = 3.dp))
 			Spacer(Modifier.width(8.dp))
 		}
-		Icon(SendIcons.ChevronRight, null, tint = LocalVniDropColors.current.foregroundLighter, modifier = Modifier.size(18.dp))
+		PlatformIcon(AppIcon.ChevronRight, null, tint = LocalVniDropColors.current.foregroundLighter, modifier = Modifier.size(18.dp))
 	}
 }
 

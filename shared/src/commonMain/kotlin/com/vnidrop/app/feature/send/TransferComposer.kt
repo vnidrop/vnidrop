@@ -15,7 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -25,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -35,6 +33,8 @@ import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.QuietButton
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.formatBytes
 import com.vnidrop.app.ui.theme.LocalVniDropColors
@@ -114,7 +114,7 @@ private fun ChooseFileStep(onSelectFile: () -> Unit, onSelectFolder: () -> Unit)
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.spacedBy(14.dp),
 		) {
-			Icon(SendIcons.File, contentDescription = null, tint = LocalVniDropColors.current.brandLink, modifier = Modifier.size(32.dp))
+			PlatformIcon(AppIcon.File, contentDescription = null, tint = LocalVniDropColors.current.brandLink, modifier = Modifier.size(32.dp))
 			PrimaryButton(stringResource(Res.string.button_choose_files), onClick = onSelectFile)
 			QuietButton(stringResource(Res.string.button_choose_folder), onClick = onSelectFolder)
 		}
@@ -154,14 +154,14 @@ private fun ReviewFileStep(
 	Field(state.senderName, onSenderNameChanged, stringResource(Res.string.field_sender_name))
 	Text(stringResource(Res.string.send_access_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
 	PolicyOption(
-		icon = SendIcons.Shield,
+		icon = AppIcon.Shield,
 		title = stringResource(Res.string.send_access_approval),
 		description = stringResource(Res.string.send_access_approval_description),
 		selected = state.accessPolicy == ShareAccessPolicy.RequireApproval,
 		onClick = { onAccessPolicyChanged(ShareAccessPolicy.RequireApproval) },
 	)
 	PolicyOption(
-		icon = SendIcons.Globe,
+		icon = AppIcon.Globe,
 		title = stringResource(Res.string.send_access_anyone),
 		description = stringResource(Res.string.send_access_anyone_description),
 		selected = state.accessPolicy == ShareAccessPolicy.AnyoneWithTransfer,
@@ -226,7 +226,7 @@ private fun SelectedFileCard(
 			}
 			if (canRemove) {
 				IconButton(onClick = onRemove) {
-					Icon(SendIcons.Delete, stringResource(Res.string.button_remove_file), tint = LocalVniDropColors.current.destructiveDefault)
+					PlatformIcon(AppIcon.Delete, stringResource(Res.string.button_remove_file), tint = LocalVniDropColors.current.destructiveDefault)
 				}
 			}
 		}
@@ -235,7 +235,7 @@ private fun SelectedFileCard(
 
 @Composable
 private fun PolicyOption(
-	icon: ImageVector,
+	icon: AppIcon,
 	title: String,
 	description: String,
 	selected: Boolean,
@@ -252,7 +252,7 @@ private fun PolicyOption(
 			.padding(14.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		Icon(icon, contentDescription = null, tint = if (selected) colors.brandLink else colors.foregroundLight, modifier = Modifier.size(22.dp))
+		PlatformIcon(icon, contentDescription = null, tint = if (selected) colors.brandLink else colors.foregroundLight, modifier = Modifier.size(22.dp))
 		Spacer(Modifier.width(12.dp))
 		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
 			Text(title, fontWeight = FontWeight.SemiBold)

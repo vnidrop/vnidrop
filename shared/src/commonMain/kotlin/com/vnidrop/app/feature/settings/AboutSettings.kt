@@ -9,18 +9,18 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.diagnostics.DiagnosticsBuildConfig
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -87,28 +87,28 @@ internal fun AboutSettings(
 		AboutSection(
 			title = stringResource(Res.string.about_is_title),
 			points = listOf(
-				SettingsIcons.PaperPlane to stringResource(Res.string.about_is_direct),
-				SettingsIcons.AccountOff to stringResource(Res.string.about_is_no_account),
-				SettingsIcons.ShieldCheck to stringResource(Res.string.about_is_in_control),
-				SettingsIcons.Lock to stringResource(Res.string.about_is_encrypted),
-				SettingsIcons.Code to stringResource(Res.string.about_is_open),
+				AppIcon.Send to stringResource(Res.string.about_is_direct),
+				AppIcon.UserOff to stringResource(Res.string.about_is_no_account),
+				AppIcon.ShieldCheck to stringResource(Res.string.about_is_in_control),
+				AppIcon.Lock to stringResource(Res.string.about_is_encrypted),
+				AppIcon.Code to stringResource(Res.string.about_is_open),
 			),
 		)
 		AboutSection(
 			title = stringResource(Res.string.about_isnt_title),
 			points = listOf(
-				SettingsIcons.CloudOff to stringResource(Res.string.about_isnt_cloud),
-				SettingsIcons.Sync to stringResource(Res.string.about_isnt_sync),
-				SettingsIcons.Megaphone to stringResource(Res.string.about_isnt_public),
+				AppIcon.CloudOff to stringResource(Res.string.about_isnt_cloud),
+				AppIcon.Sync to stringResource(Res.string.about_isnt_sync),
+				AppIcon.Megaphone to stringResource(Res.string.about_isnt_public),
 			),
 		)
 		AboutSection(
 			title = stringResource(Res.string.about_privacy_title),
 			points = listOf(
-				SettingsIcons.QrCode to stringResource(Res.string.about_privacy_capability),
-				SettingsIcons.Hand to stringResource(Res.string.about_privacy_deny),
-				SettingsIcons.Radio to stringResource(Res.string.about_privacy_relay),
-				SettingsIcons.Drive to stringResource(Res.string.about_privacy_local),
+				AppIcon.QrCode to stringResource(Res.string.about_privacy_capability),
+				AppIcon.Hand to stringResource(Res.string.about_privacy_deny),
+				AppIcon.Radio to stringResource(Res.string.about_privacy_relay),
+				AppIcon.Storage to stringResource(Res.string.about_privacy_local),
 			),
 		)
 
@@ -122,7 +122,7 @@ internal fun AboutSettings(
 			AboutInfoItem(stringResource(Res.string.about_license_label), "Apache 2.0")
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Shield,
+				icon = AppIcon.Shield,
 				title = stringResource(Res.string.about_privacy_policy_label),
 				iconTone = SettingsIconTone.Brand,
 				onClick = { uriHandler.openUri(PrivacyPolicyUrl) },
@@ -132,7 +132,7 @@ internal fun AboutSettings(
 		SettingsGroup {
 			if (DiagnosticsBuildConfig.INCLUDED) {
 				SettingsToggleRow(
-					icon = SettingsIcons.Info,
+					icon = AppIcon.Info,
 					title = stringResource(Res.string.diagnostics_title),
 					description = stringResource(Res.string.diagnostics_description),
 					checked = state.diagnosticsEnabled,
@@ -142,7 +142,7 @@ internal fun AboutSettings(
 				SettingsDivider()
 			}
 			SettingsRow(
-				icon = SettingsIcons.Bug,
+				icon = AppIcon.Bug,
 				title = stringResource(Res.string.about_bug_report),
 				iconTone = SettingsIconTone.Neutral,
 				onClick = onReportBug,
@@ -154,7 +154,7 @@ internal fun AboutSettings(
 @Composable
 private fun AboutSection(
 	title: String,
-	points: List<Pair<ImageVector, String>>,
+	points: List<Pair<AppIcon, String>>,
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 		Text(
@@ -173,7 +173,7 @@ private fun AboutSection(
 }
 
 @Composable
-private fun AboutPoint(icon: ImageVector, text: String) {
+private fun AboutPoint(icon: AppIcon, text: String) {
 	val colors = LocalVniDropColors.current
 	Row(
 		modifier = Modifier
@@ -182,7 +182,7 @@ private fun AboutPoint(icon: ImageVector, text: String) {
 			.padding(horizontal = 16.dp, vertical = 12.dp),
 		verticalAlignment = Alignment.CenterVertically,
 	) {
-		Icon(icon, contentDescription = null, tint = colors.brandLink, modifier = Modifier.size(24.dp))
+		PlatformIcon(icon, contentDescription = null, tint = colors.brandLink, modifier = Modifier.size(24.dp))
 		Spacer(Modifier.width(16.dp))
 		Text(
 			text,
