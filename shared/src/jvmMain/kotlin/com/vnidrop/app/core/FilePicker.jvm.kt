@@ -32,8 +32,8 @@ actual fun rememberShareFilePicker(
 	return remember(onFilesPicked, onError, scope) {
 		object : ShareFilePicker {
 			override fun pickFiles() {
-				if (jvmFilePickerBackend(System.getProperty("os.name")) == JvmFilePickerBackend.XdgPortal) {
-					scope.launch {
+				when (jvmFilePickerBackend(System.getProperty("os.name"))) {
+					JvmFilePickerBackend.XdgPortal -> scope.launch {
 						try {
 							val selected = withContext(Dispatchers.IO) { pickShareFilesWithPortal() }
 							if (selected.isNotEmpty()) onFilesPicked(selected)
@@ -43,8 +43,20 @@ actual fun rememberShareFilePicker(
 							onError(error.message ?: error.toString())
 						}
 					}
-				} else {
-					openPicker(onError) {
+					JvmFilePickerBackend.WindowsNative -> {
+						val owner = activeFrame()
+						scope.launch {
+							try {
+								val selected = withContext(Dispatchers.IO) { pickWindowsFiles(owner) }
+								if (selected.isNotEmpty()) onFilesPicked(selected)
+							} catch (error: CancellationException) {
+								throw error
+							} catch (error: Throwable) {
+								onError(error.message ?: error.toString())
+							}
+						}
+					}
+					JvmFilePickerBackend.AwtSwing -> openPicker(onError) {
 						val selected = pickShareFiles()
 						if (selected.isNotEmpty()) onFilesPicked(selected)
 					}
@@ -52,8 +64,8 @@ actual fun rememberShareFilePicker(
 			}
 
 			override fun pickFolder() {
-				if (jvmFilePickerBackend(System.getProperty("os.name")) == JvmFilePickerBackend.XdgPortal) {
-					scope.launch {
+				when (jvmFilePickerBackend(System.getProperty("os.name"))) {
+					JvmFilePickerBackend.XdgPortal -> scope.launch {
 						try {
 							val selected = withContext(Dispatchers.IO) {
 								pickDirectoryWithPortal("Select folder to share")?.toPickedShareFile(isDirectory = true)
@@ -65,8 +77,22 @@ actual fun rememberShareFilePicker(
 							onError(error.message ?: error.toString())
 						}
 					}
-				} else {
-					openPicker(onError) {
+					JvmFilePickerBackend.WindowsNative -> {
+						val owner = activeFrame()
+						scope.launch {
+							try {
+								val selected = withContext(Dispatchers.IO) {
+									pickWindowsFolder("Select folder to share", owner)
+								} ?: return@launch
+								onFilesPicked(listOf(selected.toPickedShareFile(isDirectory = true)))
+							} catch (error: CancellationException) {
+								throw error
+							} catch (error: Throwable) {
+								onError(error.message ?: error.toString())
+							}
+						}
+					}
+					JvmFilePickerBackend.AwtSwing -> openPicker(onError) {
 						val selected = pickDirectory(title = "Select folder to share") ?: return@openPicker
 						onFilesPicked(listOf(selected.toPickedShareFile(isDirectory = true)))
 					}
@@ -85,8 +111,8 @@ actual fun rememberReceiveFolderPicker(
 	return remember(onFolderPicked, onError, scope) {
 		object : ReceiveFolderPicker {
 			override fun pickFolder() {
-				if (jvmFilePickerBackend(System.getProperty("os.name")) == JvmFilePickerBackend.XdgPortal) {
-					scope.launch {
+				when (jvmFilePickerBackend(System.getProperty("os.name"))) {
+					JvmFilePickerBackend.XdgPortal -> scope.launch {
 						try {
 							val selected = withContext(Dispatchers.IO) {
 								pickDirectoryWithPortal("Select receive folder")
@@ -98,8 +124,22 @@ actual fun rememberReceiveFolderPicker(
 							onError(error.message ?: error.toString())
 						}
 					}
-				} else {
-					openPicker(onError) {
+					JvmFilePickerBackend.WindowsNative -> {
+						val owner = activeFrame()
+						scope.launch {
+							try {
+								val selected = withContext(Dispatchers.IO) {
+									pickWindowsFolder("Select receive folder", owner)
+								} ?: return@launch
+								onFolderPicked(selected.toReceiveFolder())
+							} catch (error: CancellationException) {
+								throw error
+							} catch (error: Throwable) {
+								onError(error.message ?: error.toString())
+							}
+						}
+					}
+					JvmFilePickerBackend.AwtSwing -> openPicker(onError) {
 						val selected = pickDirectory(title = "Select receive folder") ?: return@openPicker
 						onFolderPicked(selected.toReceiveFolder())
 					}
@@ -111,11 +151,16 @@ actual fun rememberReceiveFolderPicker(
 
 internal enum class JvmFilePickerBackend {
 	XdgPortal,
+	WindowsNative,
 	AwtSwing,
 }
 
 internal fun jvmFilePickerBackend(osName: String?): JvmFilePickerBackend =
-	if (osName.orEmpty().startsWith("Linux", ignoreCase = true)) JvmFilePickerBackend.XdgPortal else JvmFilePickerBackend.AwtSwing
+	when {
+		osName.orEmpty().startsWith("Linux", ignoreCase = true) -> JvmFilePickerBackend.XdgPortal
+		osName.orEmpty().startsWith("Windows", ignoreCase = true) -> JvmFilePickerBackend.WindowsNative
+		else -> JvmFilePickerBackend.AwtSwing
+	}
 
 private fun openPicker(
 	onError: (String) -> Unit,
@@ -167,7 +212,7 @@ private suspend fun pickDirectoryWithPortal(title: String): File? =
 		dialogSettings = FileKitDialogSettings(title = title, parentWindow = activeFrame()),
 	)?.file
 
-private fun File.toPickedShareFile(isDirectory: Boolean): PickedShareFile =
+internal fun File.toPickedShareFile(isDirectory: Boolean): PickedShareFile =
 	PickedShareFile(
 		value = absolutePath,
 		displayName = name.ifBlank { absolutePath },
