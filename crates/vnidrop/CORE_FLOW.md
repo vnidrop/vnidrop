@@ -82,10 +82,14 @@ bytes through Kotlin memory.
 ## Blob Retention Policy
 
 Stopping a share immediately removes its provider mapping and approval state,
-so outstanding VniDrop tickets can no longer download content. Physical blob chunks are
-not force-deleted at stop time because content-addressed chunks may be shared by
-another active collection. They remain eligible for the blob store's garbage
-collection. Restart reconciliation never restores a stopped share.
+so outstanding VniDrop tickets can no longer download content. Physical blob
+chunks are not force-deleted at stop time because content-addressed chunks may be
+shared by another active collection. Every active outgoing share has a persistent
+`vnidrop/share/<local-id>` tag; stopping or deleting it removes that tag, and the
+configured garbage collector later reclaims content with no remaining persistent
+or temporary tag. Receive downloads keep a temporary tag through export and become
+reclaimable after publication. Restart reconciliation repairs active-share tags,
+removes orphan share tags, and never restores a stopped share.
 
 ## Resource Limits
 

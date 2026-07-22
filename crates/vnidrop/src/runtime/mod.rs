@@ -12,6 +12,7 @@ mod lifecycle;
 mod provider;
 mod receive;
 mod share;
+mod storage;
 
 pub use facade::VnidropCore;
 
@@ -20,15 +21,19 @@ use std::{
     path::PathBuf,
     str::FromStr,
     sync::{atomic::AtomicBool, Arc},
+    time::Duration,
 };
 
 use anyhow::Result;
+use futures_lite::StreamExt as _;
 use iroh::{endpoint::presets, protocol::Router, Endpoint};
 use iroh_blobs::{
-    api::TempTag,
     format::collection::Collection,
     provider::events::{EventMask, EventSender},
-    store::fs::FsStore,
+    store::{
+        fs::{options::Options as FsStoreOptions, FsStore},
+        GcConfig,
+    },
     BlobsProtocol, Hash,
 };
 use serde_json::json;
@@ -52,6 +57,7 @@ use crate::{
 /// Owns the Iroh endpoint, blob store, transfer history, and byte streaming.
 /// Kotlin owns app lifecycle and platform file picking.
 pub(super) struct CoreInner {
+    pub(super) app_data_dir: PathBuf,
     pub(super) endpoint: Endpoint,
     pub(super) router: Router,
     pub(super) store: FsStore,
@@ -64,10 +70,8 @@ pub(super) struct CoreInner {
     /// Sync mutex so cancel can remove + signal without awaiting (and without
     /// holding a Tokio lock across repository I/O).
     pub(super) active_transfers: std::sync::Mutex<HashMap<u64, ActiveTransfer>>,
-    // Newly imported shares retain a TempTag for the lifetime of this process.
-    // Restored shares have no in-memory tag, but remain tracked so they can be
-    // counted and explicitly revoked after a restart.
-    pub(super) active_shares: TokioMutex<HashMap<u64, Option<TempTag>>>,
+    // Active shares are protected by persistent Iroh tags.
+    pub(super) active_shares: TokioMutex<HashMap<u64, ()>>,
     /// Content hash → active share transfer ids (root and collection members).
     /// Multiple transfers can share the same content-addressed hash.
     pub(super) hash_to_transfer: TokioMutex<HashMap<String, HashSet<u64>>>,
@@ -92,7 +96,12 @@ impl CoreInner {
         let secret_key = load_or_create_secret(&app_data_dir).await?;
         let repository = Repository::open(&app_data_dir).await?;
         let store_root = app_data_dir.join("blobs");
-        let store = FsStore::load(&store_root).await?;
+        let mut store_options = FsStoreOptions::new(&store_root);
+        store_options.gc = Some(GcConfig {
+            interval: Duration::from_secs(30 * 60),
+            add_protected: None,
+        });
+        let store = FsStore::load_with_opts(store_root.join("blobs.db"), store_options).await?;
         let endpoint = Endpoint::builder(presets::N0)
             .secret_key(secret_key)
             .bind()
@@ -135,6 +144,7 @@ impl CoreInner {
         // Register root + every collection member so child gets stay under ACL.
         let mut restored_hashes: HashMap<String, HashSet<u64>> = HashMap::new();
         let mut restored_active_shares = HashMap::new();
+        let mut active_tag_names = HashSet::new();
         for share in repository.list_active_shares().await? {
             let transfer_id = share.transfer_id;
             let Ok(root_hash) = Hash::from_str(&share.content_hash) else {
@@ -176,6 +186,12 @@ impl CoreInner {
                 );
                 continue;
             };
+            let tag_name = share_tag_name(&share.local_id);
+            store
+                .tags()
+                .set(&tag_name, (root_hash, iroh_blobs::BlobFormat::HashSeq))
+                .await?;
+            active_tag_names.insert(tag_name);
             restored_hashes
                 .entry(root_hash.to_string())
                 .or_default()
@@ -186,10 +202,18 @@ impl CoreInner {
                     .or_default()
                     .insert(transfer_id);
             }
-            restored_active_shares.insert(transfer_id, None);
+            restored_active_shares.insert(transfer_id, ());
             access_policy
                 .set_mode(transfer_id, mode_from_storage(&share.access_mode))
                 .await;
+        }
+        let mut share_tags = store.tags().list_prefix("vnidrop/share/").await?;
+        while let Some(tag) = share_tags.next().await {
+            let tag = tag?;
+            let name = String::from_utf8_lossy(tag.name.as_ref()).to_string();
+            if !active_tag_names.contains(&name) {
+                store.tags().delete(name).await?;
+            }
         }
         let approval = ApprovalService::new(
             repository.clone(),
@@ -205,6 +229,7 @@ impl CoreInner {
             .spawn();
 
         let inner = Arc::new(Self {
+            app_data_dir,
             endpoint,
             router,
             store,
@@ -276,4 +301,8 @@ impl CoreInner {
             .list_events(transfer_id, self.limits.max_events)
             .await
     }
+}
+
+pub(super) fn share_tag_name(local_id: &str) -> String {
+    format!("vnidrop/share/{local_id}")
 }

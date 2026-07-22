@@ -65,7 +65,8 @@ struct StorageSettings: View {
 		Section {
 			if let storage = model.state.storage {
 				LabeledContent(String(localized: "storage_received_files"), value: formatBytes(storage.receivedFiles))
-				LabeledContent(String(localized: "storage_transfer_data"), value: formatBytes(storage.transferData))
+				LabeledContent(String(localized: "storage_transfer_data"), value: formatBytes(storage.transferCache))
+				LabeledContent(String(localized: "storage_app_data"), value: formatBytes(storage.appData))
 				LabeledContent(String(localized: "storage_temporary"), value: formatBytes(storage.temporary))
 				LabeledContent(String(localized: "storage_total")) {
 					Text(formatBytes(storage.total)).fontWeight(.semibold)

@@ -14,7 +14,8 @@ mod transfer_state;
 mod util;
 
 pub use api::{
-    default_core_limits, CoreEvent, CoreEventSink, CoreLimits, ReceiveOutputSink, ReceiverRequest,
+    default_core_limits, CoreEvent, CoreEventSink, CoreLimits, CoreStorageUsage, PublishedOutput,
+    ReceiveOutputSink, ReceiveOutputSinkV2, ReceivedArtifact, ReceivedLocatorKind, ReceiverRequest,
     RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource, SourceKind, StoredTransfer,
     TicketInspection, TransferAccessMode, TransferMetadata,
 };

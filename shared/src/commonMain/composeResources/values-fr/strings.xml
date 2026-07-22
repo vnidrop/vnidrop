@@ -200,9 +200,10 @@
     <string name="status_stopped">Arrêté</string>
     <string name="storage_calculating">Calcul…</string>
     <string name="storage_delete_transfers">Supprimer tous les transferts</string>
-    <string name="storage_delete_transfers_description">Cela efface tous les enregistrements de transferts envoyés et reçus de votre historique. Vos fichiers reçus ne sont pas supprimés. Remarque : le moteur de transfert conserve son contenu stocké, donc les données de transfert peuvent ne pas diminuer. Cette action est irréversible.</string>
+    <string name="storage_delete_transfers_description">Cela efface de votre historique tous les enregistrements de transferts envoyés et reçus. Vos fichiers reçus ne sont pas supprimés. Le contenu partagé mis en cache qui n’est plus nécessaire est récupéré automatiquement, ce qui peut prendre un peu de temps. Cette action est irréversible.</string>
+    <string name="storage_app_data">Données de l’app</string>
     <string name="storage_deleting">Suppression…</string>
-    <string name="storage_footer">Les données de transfert sont gérées par le moteur de transfert — votre historique ainsi que le contenu des fichiers que vous avez partagés. Le bouton ci-dessous efface vos enregistrements de transferts ; le moteur conserve son contenu stocké, donc cette valeur peut ne pas baisser. Les fichiers reçus sont vos fichiers téléchargés et ne sont jamais supprimés ici.</string>
+    <string name="storage_footer">Les données de transfert comprennent votre historique et le contenu mis en cache pour les partages actifs. Le cache inutile est récupéré automatiquement après la suppression des enregistrements, ce qui peut prendre un peu de temps. Les fichiers reçus sont suivis pour ce récapitulatif, mais ne sont jamais supprimés ici.</string>
     <string name="storage_received_files">Fichiers reçus</string>
     <string name="storage_temporary">Fichiers temporaires</string>
     <string name="storage_title">Stockage</string>

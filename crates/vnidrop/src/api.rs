@@ -127,6 +127,60 @@ pub trait ReceiveOutputSink: Send + Sync {
     ) -> Result<(), crate::error::VnidropError>;
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, uniffi::Enum)]
+pub enum ReceivedLocatorKind {
+    FilesystemPath,
+    AndroidMediaStore,
+    AndroidDocument,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, uniffi::Record)]
+pub struct PublishedOutput {
+    pub locator_kind: ReceivedLocatorKind,
+    pub locator: String,
+}
+
+/// Versioned receive sink that reports the durable locator created at publish time.
+#[uniffi::export(with_foreign)]
+pub trait ReceiveOutputSinkV2: Send + Sync {
+    fn start_file(&self, relative_path: String) -> Result<(), crate::error::VnidropError>;
+    fn write_chunk(
+        &self,
+        relative_path: String,
+        bytes: Vec<u8>,
+    ) -> Result<(), crate::error::VnidropError>;
+    fn finish_file(
+        &self,
+        relative_path: String,
+    ) -> Result<PublishedOutput, crate::error::VnidropError>;
+    fn abort_file(
+        &self,
+        relative_path: String,
+        reason: String,
+    ) -> Result<(), crate::error::VnidropError>;
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, uniffi::Record)]
+pub struct ReceivedArtifact {
+    pub id: String,
+    pub transfer_local_id: String,
+    pub protocol_transfer_id: u64,
+    pub relative_path: String,
+    pub locator_kind: ReceivedLocatorKind,
+    pub locator: String,
+    pub logical_size: u64,
+    pub published_at: i64,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, uniffi::Record)]
+pub struct CoreStorageUsage {
+    pub blob_store_bytes: u64,
+    pub database_bytes: u64,
+    pub logs_bytes: u64,
+    pub previews_bytes: u64,
+    pub other_core_bytes: u64,
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]
 pub struct RuntimeStatus {
     pub endpoint_id: String,

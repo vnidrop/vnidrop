@@ -12,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
-import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.PublishedOutput
+import uniffi.vnidrop.ReceiveOutputSinkV2
+import uniffi.vnidrop.ReceivedLocatorKind
 import java.io.File
 import java.io.OutputStream
 import java.net.URLConnection
@@ -54,7 +56,52 @@ private class AndroidFileSystemService(
 			ReceiveFolderKind.AndroidTreeUri -> validateTreeUri(folder.value)
 		}
 
-	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? =
+	override suspend fun inspectReceivedArtifacts(artifacts: List<ReceivedArtifactModel>): ReceivedStorageInspection {
+		var bytes = 0UL
+		var existing = 0
+		var missing = 0
+		var inaccessible = 0
+		for (artifact in artifacts) {
+			when (artifact.locatorKind) {
+				ReceivedLocatorKind.FILESYSTEM_PATH -> {
+					val file = File(artifact.locator)
+					if (file.isFile) {
+						bytes += file.length().toULong()
+						existing += 1
+					} else {
+						missing += 1
+					}
+				}
+				ReceivedLocatorKind.ANDROID_MEDIA_STORE, ReceivedLocatorKind.ANDROID_DOCUMENT -> {
+					val result = runCatching {
+						context.contentResolver.query(
+							artifact.locator.toUri(),
+							arrayOf(android.provider.OpenableColumns.SIZE),
+							null,
+							null,
+							null,
+						)?.use { cursor ->
+							if (!cursor.moveToFirst()) null else cursor.getLong(0).coerceAtLeast(0L).toULong()
+						}
+					}
+					result.fold(
+						onSuccess = { size ->
+							if (size == null) missing += 1 else {
+								bytes += size
+								existing += 1
+							}
+						},
+						onFailure = { inaccessible += 1 },
+					)
+				}
+			}
+		}
+		return ReceivedStorageInspection(bytes, existing, missing, inaccessible)
+	}
+
+	override suspend fun temporaryUsage(): ULong = directorySize(context.cacheDir)
+
+	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSinkV2? =
 		when (folder.kind) {
 			ReceiveFolderKind.AndroidPublicDownloads -> AndroidMediaStoreDownloadsSink(context)
 			ReceiveFolderKind.AndroidTreeUri -> AndroidTreeReceiveOutputSink(context, folder.value.toUri())
@@ -209,7 +256,7 @@ private fun Context.expandShareDirectory(folder: PickedShareFile): List<PickedSh
  */
 private class AndroidMediaStoreDownloadsSink(
 	private val context: Context,
-) : ReceiveOutputSink {
+) : ReceiveOutputSinkV2 {
 	private data class PendingDocument(
 		val stream: OutputStream,
 		val uri: Uri,
@@ -254,7 +301,7 @@ private class AndroidMediaStoreDownloadsSink(
 		document.stream.write(bytes)
 	}
 
-	override fun finishFile(relativePath: String) {
+	override fun finishFile(relativePath: String): PublishedOutput {
 		val document = pending.remove(relativePath) ?: error("Output stream is not open for $relativePath")
 		try {
 			document.stream.flush()
@@ -269,6 +316,7 @@ private class AndroidMediaStoreDownloadsSink(
 			resolver.delete(document.uri, null, null)
 			throw error
 		}
+		return PublishedOutput(ReceivedLocatorKind.ANDROID_MEDIA_STORE, document.uri.toString())
 	}
 
 	override fun abortFile(relativePath: String, reason: String) {
@@ -331,7 +379,7 @@ private class AndroidMediaStoreDownloadsSink(
 private class AndroidTreeReceiveOutputSink(
 	private val context: Context,
 	private val treeUri: Uri,
-) : ReceiveOutputSink {
+) : ReceiveOutputSinkV2 {
 	private data class PendingDocument(
 		val stream: OutputStream,
 		val temporaryUri: Uri,
@@ -364,18 +412,19 @@ private class AndroidTreeReceiveOutputSink(
 		document.stream.write(bytes)
 	}
 
-	override fun finishFile(relativePath: String) {
+	override fun finishFile(relativePath: String): PublishedOutput {
 		val document = pending.remove(relativePath) ?: error("Output stream is not open for $relativePath")
 		try {
 			document.stream.close()
 			check(findChild(document.parentUri, document.finalName) == null) { "Destination already exists: $relativePath" }
-			checkNotNull(
+			val finalUri = checkNotNull(
 				DocumentsContract.renameDocument(
 					context.contentResolver,
 					document.temporaryUri,
 					document.finalName,
 				),
 			) { "Could not commit received file $relativePath" }
+			return PublishedOutput(ReceivedLocatorKind.ANDROID_DOCUMENT, finalUri.toString())
 		} catch (error: Throwable) {
 			runCatching { document.stream.close() }
 			DocumentsContract.deleteDocument(context.contentResolver, document.temporaryUri)
@@ -441,3 +490,8 @@ private fun requireSafeRelativePathParts(relativePath: String): List<String> {
 	}
 	return parts
 }
+
+private fun directorySize(directory: File): ULong =
+	if (!directory.exists()) 0UL else directory.walkTopDown()
+		.filter(File::isFile)
+		.fold(0UL) { total, file -> total + file.length().toULong() }

@@ -109,6 +109,10 @@ impl AtomicOutputFile {
         self.committed = true;
         Ok(())
     }
+
+    pub(crate) fn target(&self) -> &Path {
+        &self.target
+    }
 }
 
 /// Publish a fully written temporary file as the final destination without

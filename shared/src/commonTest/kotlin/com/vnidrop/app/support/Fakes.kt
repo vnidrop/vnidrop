@@ -1,12 +1,15 @@
 package com.vnidrop.app.support
 
 import com.vnidrop.app.core.CoreGateway
+import com.vnidrop.app.core.CoreStorageUsageModel
 import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
+import com.vnidrop.app.core.ReceivedArtifactModel
+import com.vnidrop.app.core.ReceivedStorageInspection
 import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Share
 import com.vnidrop.app.core.ShareAccessPolicy
@@ -27,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiveOutputSinkV2
 
 class FakeCoreGateway : CoreGateway {
 	val mutableState = MutableStateFlow(CoreState())
@@ -135,6 +139,17 @@ class FakeCoreGateway : CoreGateway {
 		awaitReceiveIfNeeded()
 		return receiveResult
 	}
+	override suspend fun receiveWithOutputSinkV2(ticket: String, outputSink: ReceiveOutputSinkV2, receiverName: String): Result<Unit> {
+		receiveCount += 1
+		lastReceiveTicket = ticket
+		lastReceiveReceiverName = receiverName
+		awaitReceiveIfNeeded()
+		return receiveResult
+	}
+	override suspend fun storageUsage(): Result<CoreStorageUsageModel> = Result.success(
+		CoreStorageUsageModel(0UL, 0UL, 0UL, 0UL, 0UL),
+	)
+	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = Result.success(emptyList())
 	override suspend fun cancel(transferId: ULong): Result<Unit> {
 		cancelledTransfers += transferId
 		return Result.success(Unit)
@@ -227,7 +242,10 @@ class FakeFileSystemService(
 	override fun effectiveReceiveFolder(configuredFolder: ReceiveFolder) =
 		effectiveFolder ?: super.effectiveReceiveFolder(configuredFolder)
 	override suspend fun validateReceiveFolder(folder: ReceiveFolder) = FolderAccessStatus.Writable
-	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
+	override suspend fun inspectReceivedArtifacts(artifacts: List<ReceivedArtifactModel>) =
+		ReceivedStorageInspection(artifacts.fold(0UL) { total, item -> total + item.logicalSize }, artifacts.size, 0, 0)
+	override suspend fun temporaryUsage(): ULong = 0UL
+	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSinkV2? = null
 	override fun canRevealReceiveFolder(folder: ReceiveFolder) = canRevealFolder
 	override suspend fun revealReceiveFolder(folder: ReceiveFolder): Result<Unit> {
 		revealedFolders += folder

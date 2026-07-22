@@ -6,6 +6,7 @@ import com.vnidrop.app.DeviceInfo
 import com.vnidrop.app.DeviceInfoProvider
 import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.FileSystemService
+import com.vnidrop.app.core.CoreGateway
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.diagnostics.BugReportDraft
@@ -48,8 +49,21 @@ enum class SettingsSection {
 	Preferences,
 	Appearance,
 	Notifications,
+	Storage,
 	About,
 	BugReport,
+}
+
+data class StorageBreakdown(
+	val transferCacheBytes: ULong,
+	val appDataBytes: ULong,
+	val temporaryBytes: ULong,
+	val receivedBytes: ULong,
+	val receivedFileCount: Int,
+	val missingReceivedFileCount: Int,
+	val inaccessibleReceivedFileCount: Int,
+) {
+	val deviceImpactBytes: ULong get() = transferCacheBytes + appDataBytes + temporaryBytes + receivedBytes
 }
 
 data class SettingsState(
@@ -73,6 +87,9 @@ data class SettingsState(
 	val bugIncludeLogs: Boolean = true,
 	val isSubmittingBugReport: Boolean = false,
 	val bugLogPreviewBytes: Int = 0,
+	val storage: StorageBreakdown? = null,
+	val isCalculatingStorage: Boolean = false,
+	val isDeletingTransfers: Boolean = false,
 )
 
 sealed interface SettingsEffect {
@@ -83,6 +100,7 @@ class SettingsViewModel(
 	private val environment: PlatformEnvironment,
 	private val deviceInfoProvider: DeviceInfoProvider,
 	private val fileSystemService: FileSystemService,
+	private val repository: CoreGateway,
 	private val preferencesRepository: PreferencesRepository,
 	private val notifications: LocalNotificationService,
 	private val messages: UiMessageController,
@@ -130,11 +148,59 @@ class SettingsViewModel(
 	fun selectSection(section: SettingsSection) {
 		_state.update { it.copy(selectedSection = section) }
 		when (section) {
+			SettingsSection.Storage -> loadStorageUsage()
 			SettingsSection.About, SettingsSection.BugReport -> {
 				loadDeviceInfo()
 				if (section == SettingsSection.BugReport) refreshBugLogPreview()
 			}
 			else -> Unit
+		}
+	}
+
+	fun loadStorageUsage() {
+		if (_state.value.isCalculatingStorage) return
+		viewModelScope.launch {
+			_state.update { it.copy(isCalculatingStorage = true) }
+			try {
+				val coreUsage = repository.storageUsage().getOrThrow()
+				val artifacts = repository.receivedArtifacts().getOrThrow()
+				val received = fileSystemService.inspectReceivedArtifacts(artifacts)
+				_state.update {
+					it.copy(
+						storage = StorageBreakdown(
+							transferCacheBytes = coreUsage.blobStoreBytes,
+							appDataBytes = coreUsage.appDataBytes,
+							temporaryBytes = fileSystemService.temporaryUsage(),
+							receivedBytes = received.existingBytes,
+							receivedFileCount = received.existingCount,
+							missingReceivedFileCount = received.missingCount,
+							inaccessibleReceivedFileCount = received.inaccessibleCount,
+						),
+						isCalculatingStorage = false,
+					)
+				}
+			} catch (error: CancellationException) {
+				throw error
+			} catch (error: Throwable) {
+				_state.update { it.copy(isCalculatingStorage = false) }
+				messages.error(error)
+			}
+		}
+	}
+
+	fun deleteAllTransfers() {
+		if (_state.value.isDeletingTransfers) return
+		viewModelScope.launch {
+			_state.update { it.copy(isDeletingTransfers = true) }
+			val failures = repository.state.value.transfers
+				.map { repository.delete(it.transferId) }
+				.count { it.isFailure }
+			_state.update { it.copy(isDeletingTransfers = false) }
+			if (failures == 0) {
+				loadStorageUsage()
+			} else {
+				messages.error(IllegalStateException("Could not delete $failures transfer records"))
+			}
 		}
 	}
 

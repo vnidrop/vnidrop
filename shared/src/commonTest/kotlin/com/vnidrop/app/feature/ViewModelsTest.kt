@@ -666,6 +666,7 @@ class ViewModelsTest {
 		environment(),
 		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
 		fileSystem,
+		FakeCoreGateway(),
 		preferences,
 		notifications,
 		UiMessageController(),

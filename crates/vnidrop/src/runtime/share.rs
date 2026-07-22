@@ -12,7 +12,7 @@ use n0_future::BufferedStreamExt;
 use serde_json::json;
 use tokio::sync::oneshot;
 
-use super::{ActiveTransfer, CoreInner};
+use super::{share_tag_name, ActiveTransfer, CoreInner};
 use crate::{
     access_policy::mode_to_storage,
     api::TransferMetadata,
@@ -142,11 +142,24 @@ impl CoreInner {
             .encode()
             .context("failed to encode VniDrop transfer ticket")?;
         let content_hash = import.root_hash.to_string();
+        let local_id = self
+            .repository
+            .transfer_local_id(metadata.transfer_id)
+            .await?;
+        let tag_name = share_tag_name(&local_id);
+        self.store
+            .tags()
+            .set(
+                &tag_name,
+                (import.root_hash, iroh_blobs::BlobFormat::HashSeq),
+            )
+            .await?;
 
         // Persist the completed share before exposing it through the provider.
         // The remaining in-memory registrations are infallible and can be
         // reconstructed from SQLite if the process exits immediately after.
-        self.repository
+        if let Err(error) = self
+            .repository
             .complete_share_import(TransferUpsert {
                 transfer_id: metadata.transfer_id,
                 peer_id: None,
@@ -159,7 +172,11 @@ impl CoreInner {
                 total_size: import.total_size,
                 access_mode: mode_to_storage(&access_mode),
             })
-            .await?;
+            .await
+        {
+            let _ = self.store.tags().delete(&tag_name).await;
+            return Err(error);
+        }
         // Map root + every collection member so provider ACL cannot fail-open
         // on child blob hashes that are not the collection root.
         self.register_share_hashes(
@@ -173,7 +190,8 @@ impl CoreInner {
         self.active_shares
             .lock()
             .await
-            .insert(metadata.transfer_id, Some(import.tag));
+            .insert(metadata.transfer_id, ());
+        drop(import.tag);
 
         // Tickets are capabilities: never persist the full string in events.
         self.emit_transfer(

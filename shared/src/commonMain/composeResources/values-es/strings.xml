@@ -200,9 +200,10 @@
     <string name="status_stopped">Detenido</string>
     <string name="storage_calculating">Calculando…</string>
     <string name="storage_delete_transfers">Eliminar todas las transferencias</string>
-    <string name="storage_delete_transfers_description">Esto borra todos los registros de transferencias enviadas y recibidas de su historial. Sus archivos recibidos no se eliminan. Nota: el motor de transferencia conserva su contenido almacenado, por lo que los datos de transferencia pueden no disminuir. Esto no se puede deshacer.</string>
+    <string name="storage_delete_transfers_description">Esto borra de su historial todos los registros de transferencias enviadas y recibidas. Sus archivos recibidos no se eliminan. El contenido compartido en caché que ya no se necesita se recupera automáticamente, lo que puede tardar un poco. Esto no se puede deshacer.</string>
+    <string name="storage_app_data">Datos de la aplicación</string>
     <string name="storage_deleting">Eliminando…</string>
-    <string name="storage_footer">Los datos de transferencia los gestiona el motor de transferencia: su historial más el contenido de los archivos que ha compartido. El botón de abajo borra sus registros de transferencias; el motor conserva su contenido almacenado, por lo que este valor puede no bajar. Los archivos recibidos son los archivos que ha descargado y nunca se eliminan aquí.</string>
+    <string name="storage_footer">Los datos de transferencia incluyen su historial y el contenido en caché de los recursos compartidos activos. La caché innecesaria se recupera automáticamente tras eliminar los registros, lo que puede tardar un poco. Los archivos recibidos se registran para este resumen, pero nunca se eliminan aquí.</string>
     <string name="storage_received_files">Archivos recibidos</string>
     <string name="storage_temporary">Archivos temporales</string>
     <string name="storage_title">Almacenamiento</string>

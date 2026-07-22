@@ -5,8 +5,35 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use support::{
-    receive_with_sink_response, share_path, wait_for_receiver_request, MemoryOutputSink, TestNode,
+    receive_with_sink_response, receive_with_sink_v2_response, share_path,
+    wait_for_receiver_request, MemoryOutputSink, TestNode,
 };
+
+#[test]
+fn versioned_sink_records_published_locator() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("tracked.txt");
+    std::fs::write(&source_path, b"tracked").unwrap();
+    let sender = TestNode::new();
+    let receiver = TestNode::new();
+    let share = share_path(&sender.core, &source_path, 38, "tracked.txt", false);
+    let output_sink = Arc::new(MemoryOutputSink::default());
+
+    receive_with_sink_v2_response(
+        &sender.core,
+        share.transfer_id,
+        receiver.core.arc(),
+        share.ticket,
+        output_sink,
+        true,
+    )
+    .unwrap();
+
+    let artifacts = receiver.core.list_received_artifacts().unwrap();
+    assert_eq!(artifacts.len(), 1);
+    assert_eq!(artifacts[0].locator, "content://test/tracked.txt");
+    assert_eq!(artifacts[0].logical_size, 7);
+}
 
 #[test]
 fn exports_nested_files_to_output_sink() {

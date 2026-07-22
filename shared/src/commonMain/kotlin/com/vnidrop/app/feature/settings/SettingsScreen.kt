@@ -29,6 +29,7 @@ fun SettingsScreen(
 	onBugContactChanged: (String) -> Unit,
 	onBugIncludeLogsChanged: (Boolean) -> Unit,
 	onSubmitBugReport: () -> Unit,
+	onDeleteAllTransfers: () -> Unit = {},
 ) {
 	if (windowClass == WindowClass.Desktop) {
 		Row(
@@ -58,6 +59,7 @@ fun SettingsScreen(
 					onBugContactChanged = onBugContactChanged,
 					onBugIncludeLogsChanged = onBugIncludeLogsChanged,
 					onSubmitBugReport = onSubmitBugReport,
+					onDeleteAllTransfers = onDeleteAllTransfers,
 				)
 			}
 		}
@@ -91,6 +93,7 @@ fun SettingsScreen(
 				onBugContactChanged = onBugContactChanged,
 				onBugIncludeLogsChanged = onBugIncludeLogsChanged,
 				onSubmitBugReport = onSubmitBugReport,
+				onDeleteAllTransfers = onDeleteAllTransfers,
 			)
 		}
 	}
@@ -116,12 +119,14 @@ private fun SettingsSectionContent(
 	onBugContactChanged: (String) -> Unit,
 	onBugIncludeLogsChanged: (Boolean) -> Unit,
 	onSubmitBugReport: () -> Unit,
+	onDeleteAllTransfers: () -> Unit,
 ) {
 	when (section) {
 		SettingsSection.Overview -> Unit
 		SettingsSection.Preferences -> PreferencesSettings(state, onUsernameChanged, onChooseFolder, onResetFolder, onBack, showBack)
 		SettingsSection.Appearance -> AppearanceSettings(state.themeMode, onThemeModeChanged, onBack, showBack)
 		SettingsSection.Notifications -> NotificationSettings(state, onNotificationsChanged, onOpenNotificationSettings, onBack, showBack)
+		SettingsSection.Storage -> StorageSettings(state, onDeleteAllTransfers, onBack, showBack)
 		SettingsSection.About -> AboutSettings(
 			state = state,
 			onDiagnosticsChanged = onDiagnosticsChanged,

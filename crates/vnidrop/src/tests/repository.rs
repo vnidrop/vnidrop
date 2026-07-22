@@ -1,6 +1,6 @@
 use crate::{
-    api::CoreEvent,
-    repository::{ReceiverRequestInsert, Repository, TransferUpsert},
+    api::{CoreEvent, ReceivedLocatorKind},
+    repository::{ReceivedArtifactInsert, ReceiverRequestInsert, Repository, TransferUpsert},
     transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
 };
 
@@ -24,10 +24,46 @@ fn transfer(
 }
 
 #[tokio::test]
+async fn received_artifacts_survive_history_deletion() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    repository
+        .start_receive(transfer(
+            91,
+            TransferDirection::Receive,
+            TransferStatus::Receiving,
+        ))
+        .await
+        .unwrap();
+    let local_id = repository.transfer_local_id(91).await.unwrap();
+    repository
+        .record_received_artifact(ReceivedArtifactInsert {
+            transfer_local_id: &local_id,
+            protocol_transfer_id: 91,
+            relative_path: "folder/file.txt",
+            locator_kind: ReceivedLocatorKind::FilesystemPath,
+            locator: "/tmp/folder/file.txt",
+            logical_size: 12,
+        })
+        .await
+        .unwrap();
+    repository
+        .transition_transfer_status(91, TransferStatus::Receiving, TransferStatus::Done)
+        .await
+        .unwrap();
+
+    assert_eq!(repository.delete_receive_history().await.unwrap(), 1);
+    let artifacts = repository.list_received_artifacts().await.unwrap();
+    assert_eq!(artifacts.len(), 1);
+    assert_eq!(artifacts[0].transfer_local_id, local_id);
+    assert_eq!(artifacts[0].logical_size, 12);
+}
+
+#[tokio::test]
 async fn persists_transfers_and_events_across_reopen() {
     let temp = tempfile::tempdir().unwrap();
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 4);
+    assert_eq!(repository.schema_version().await.unwrap(), 5);
     repository
         .insert_transfer(transfer(
             7,
@@ -491,7 +527,7 @@ async fn migrates_schema_v2_identity_without_losing_transfer() {
     pool.close().await;
 
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 4);
+    assert_eq!(repository.schema_version().await.unwrap(), 5);
     let stored = repository.list_transfers().await.unwrap().remove(0);
     assert_eq!(stored.transfer_id, 7);
     assert_eq!(stored.local_id, "legacy-7-send");

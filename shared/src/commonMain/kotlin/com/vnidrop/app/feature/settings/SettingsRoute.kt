@@ -35,5 +35,6 @@ fun SettingsRoute(viewModel: SettingsViewModel, windowClass: WindowClass) {
 		onBugContactChanged = viewModel::setBugContact,
 		onBugIncludeLogsChanged = viewModel::setBugIncludeLogs,
 		onSubmitBugReport = viewModel::submitBugReport,
+		onDeleteAllTransfers = viewModel::deleteAllTransfers,
 	)
 }

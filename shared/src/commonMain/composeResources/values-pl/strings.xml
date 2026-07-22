@@ -200,9 +200,10 @@
     <string name="status_stopped">Zatrzymany</string>
     <string name="storage_calculating">Obliczanie…</string>
     <string name="storage_delete_transfers">Usuń wszystkie transfery</string>
-    <string name="storage_delete_transfers_description">To usuwa z historii wszystkie rekordy wysłanych i odebranych transferów. Twoje odebrane pliki nie są usuwane. Uwaga: silnik transferu zachowuje przechowywaną zawartość, więc dane transferu mogą się nie zmniejszyć. Tej operacji nie można cofnąć.</string>
+    <string name="storage_delete_transfers_description">Spowoduje to usunięcie z historii wszystkich rekordów wysłanych i odebranych transferów. Odebrane pliki nie zostaną usunięte. Niepotrzebna już zawartość udostępniona w pamięci podręcznej jest odzyskiwana automatycznie, co może chwilę potrwać. Tej operacji nie można cofnąć.</string>
+    <string name="storage_app_data">Dane aplikacji</string>
     <string name="storage_deleting">Usuwanie…</string>
-    <string name="storage_footer">Danymi transferu zarządza silnik transferu — Twoja historia oraz zawartość udostępnionych plików. Przycisk poniżej usuwa rekordy transferów; silnik zachowuje przechowywaną zawartość, więc ta wartość może się nie zmniejszyć. Odebrane pliki to Twoje pobrane pliki i nigdy nie są tu usuwane.</string>
+    <string name="storage_footer">Dane transferu obejmują historię oraz zawartość w pamięci podręcznej dla aktywnych udostępnień. Niepotrzebna pamięć podręczna jest odzyskiwana automatycznie po usunięciu rekordów, co może chwilę potrwać. Odebrane pliki są śledzone na potrzeby tego podsumowania, ale nigdy nie są tu usuwane.</string>
     <string name="storage_received_files">Odebrane pliki</string>
     <string name="storage_temporary">Pliki tymczasowe</string>
     <string name="storage_title">Pamięć</string>
