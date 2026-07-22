@@ -187,6 +187,10 @@ impl CoreInner {
         // Flush before stopping the router so the app can show the shutdown
         // event even if the process exits soon after Compose disposes the core.
         self.event_hub.flush().await;
+        if let Some(task) = self.delivery_receipt_task.lock().await.take() {
+            task.abort();
+            let _ = task.await;
+        }
         if let Err(error) = self.router.shutdown().await {
             self.emit_endpoint(
                 "shutdown",

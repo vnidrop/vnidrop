@@ -26,8 +26,8 @@ use crate::{
         validated_relative_string, wait_for_writer, write_stream_to_blocking_writer,
         AtomicOutputFile,
     },
-    handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeResponse, HandshakeService},
-    repository::{ReceivedArtifactInsert, TransferUpsert},
+    handshake::{DeliveryReceipt, HandshakeResponse, HandshakeService},
+    repository::{PendingDeliveryReceiptInsert, ReceivedArtifactInsert, TransferUpsert},
     ticket::{parse_transfer_ticket_with_limits, ParsedTransferTicket},
     transfer_state::{TransferDirection, TransferStatus},
 };
@@ -271,6 +271,7 @@ impl CoreInner {
                 .map_err(VnidropError::filesystem)?;
         }
         let sender_addr = parsed.blob_ticket.addr().clone();
+        let sender_blob_ticket = parsed.blob_ticket.to_string();
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
         // Every VniDrop ticket carries metadata and must complete the handshake.
@@ -352,40 +353,18 @@ impl CoreInner {
         self.export_collection(transfer_id, total_files, target, collection)
             .await?;
         self.repository
-            .transition_transfer_status(
-                transfer_id,
-                TransferStatus::Receiving,
-                TransferStatus::Done,
-            )
+            .complete_receive_with_pending_receipt(PendingDeliveryReceiptInsert {
+                local_transfer_id: transfer_id,
+                sender_blob_ticket: &sender_blob_ticket,
+                request_id: &delivery_receipt.request_id,
+                sender_transfer_id: delivery_receipt.transfer_id,
+                token: &delivery_receipt.token,
+            })
             .await
             .map_err(VnidropError::repository)?;
         drop(download_tag);
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
-        let sender_transfer_id = delivery_receipt.transfer_id;
-        let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
-        match client.report_delivery(delivery_receipt).await {
-            Ok(DeliveryReceiptResponse::Recorded) => self.emit_transfer(
-                transfer_id,
-                "receive",
-                "delivery",
-                "receipt-recorded",
-                json!({ "sender_transfer_id": sender_transfer_id }),
-            ),
-            Ok(DeliveryReceiptResponse::Rejected { reason }) => self.emit_transfer(
-                transfer_id,
-                "receive",
-                "delivery",
-                "receipt-rejected",
-                json!({ "reason": reason }),
-            ),
-            Err(error) => self.emit_transfer(
-                transfer_id,
-                "receive",
-                "delivery",
-                "receipt-failed",
-                json!({ "reason": error.to_string() }),
-            ),
-        }
+        self.delivery_receipt_notify.notify_one();
         Ok(())
     }
 

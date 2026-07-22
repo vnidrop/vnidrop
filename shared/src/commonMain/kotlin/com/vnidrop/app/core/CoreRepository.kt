@@ -50,7 +50,7 @@ class CoreRepository(
 			val transferId = model.transferId
 			if (transferId != null) {
 				when (model.phase) {
-					"approval" -> _signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
+					"approval", "access" -> _signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
 					"delivery" -> _signals.tryEmit(CoreSignal.ReceiverHistoryChanged(transferId))
 				}
 				if (model.shouldRefreshTransfers()) {

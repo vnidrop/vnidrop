@@ -3,7 +3,7 @@ use std::sync::Arc;
 use iroh_blobs::Hash;
 
 use crate::{
-    repository::{Repository, TransferUpsert},
+    repository::{PendingDeliveryReceiptInsert, Repository, TransferUpsert},
     transfer_state::{TransferDirection, TransferStatus},
     CoreEvent, CoreEventSink, VnidropCore, VnidropError,
 };
@@ -95,6 +95,63 @@ fn startup_recovers_interrupted_transfer_and_persists_event() {
             && event.kind == "interrupted-transfer-failed"
             && event.data_json.contains("receiving")
     }));
+    core.shutdown();
+}
+
+#[test]
+fn startup_processes_persisted_delivery_receipts() {
+    let temp = tempfile::tempdir().unwrap();
+    let preparation_runtime = tokio::runtime::Runtime::new().unwrap();
+    preparation_runtime.block_on(async {
+        let repository = Repository::open(temp.path()).await.unwrap();
+        repository
+            .start_receive(TransferUpsert {
+                transfer_id: 94,
+                peer_id: None,
+                direction: TransferDirection::Receive,
+                status: TransferStatus::Receiving,
+                transfer_name: Some("completed receive"),
+                content_hash: Some("hash"),
+                ticket: None,
+                file_count: 1,
+                total_size: 5,
+                access_mode: "approval_required",
+            })
+            .await
+            .unwrap();
+        repository
+            .complete_receive_with_pending_receipt(PendingDeliveryReceiptInsert {
+                local_transfer_id: 94,
+                sender_blob_ticket: "invalid-ticket",
+                request_id: "request-94",
+                sender_transfer_id: 49,
+                token: "receipt-token",
+            })
+            .await
+            .unwrap();
+    });
+    drop(preparation_runtime);
+
+    let core = VnidropCore::initialize(
+        temp.path().to_string_lossy().to_string(),
+        Arc::new(TestSink),
+    )
+    .unwrap();
+    let started = std::time::Instant::now();
+    loop {
+        if core.list_events(Some(94)).unwrap().iter().any(|event| {
+            event.phase == "delivery"
+                && event.kind == "receipt-rejected"
+                && event.data_json.contains("invalid-sender-ticket")
+        }) {
+            break;
+        }
+        assert!(
+            started.elapsed() < std::time::Duration::from_secs(2),
+            "startup did not process the persisted delivery receipt"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
     core.shutdown();
 }
 

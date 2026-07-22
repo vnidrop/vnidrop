@@ -8,6 +8,8 @@ import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.ReceiverRequestModel
+import com.vnidrop.app.core.TransferDirection
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.preferences.PreferencesRepository
 import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
@@ -39,6 +41,7 @@ data class SendState(
 	val transferThumbnails: Map<ULong, ByteArray> = emptyMap(),
 	val detailPanel: TransferDetailPanel? = null,
 	val receiverHistory: List<ReceiverRequestModel> = emptyList(),
+	val receiversByTransfer: Map<ULong, List<ReceiverRequestModel>> = emptyMap(),
 	val isLoadingReceivers: Boolean = false,
 	val isDeleteConfirmationOpen: Boolean = false,
 	val isDeleting: Boolean = false,
@@ -82,14 +85,23 @@ class SendViewModel(
 						if (signal.transferId == _state.value.selectedTransferId) {
 							refreshReceivers(signal.transferId)
 						}
+						refreshReceiverStatuses(signal.transferId)
 					}
 					is CoreSignal.ApprovalChanged -> {
 						if (signal.transferId == _state.value.selectedTransferId) {
 							refreshReceivers(signal.transferId)
 						}
+						refreshReceiverStatuses(signal.transferId)
 					}
 				}
 			}
+		}
+		viewModelScope.launch {
+			coreState.map { core ->
+				core.transfers
+					.filter { it.direction == TransferDirection.Send && it.status in setOf(TransferStatus.Importing, TransferStatus.Sharing) }
+					.mapTo(mutableSetOf()) { it.transferId }
+			}.distinctUntilChanged().collect(::syncSharingReceivers)
 		}
 		viewModelScope.launch {
 			filePreviewRepository.previews.collect { previews ->
@@ -314,6 +326,23 @@ class SendViewModel(
 					messages.error(error)
 				},
 			)
+		}
+	}
+
+	private fun syncSharingReceivers(transferIds: Set<ULong>) {
+		_state.update { current ->
+			current.copy(receiversByTransfer = current.receiversByTransfer.filterKeys { it in transferIds })
+		}
+		transferIds.forEach(::refreshReceiverStatuses)
+	}
+
+	private fun refreshReceiverStatuses(transferId: ULong) {
+		viewModelScope.launch {
+			repository.receiverRequests(transferId).onSuccess { requests ->
+				_state.update { current ->
+					current.copy(receiversByTransfer = current.receiversByTransfer + (transferId to requests))
+				}
+			}
 		}
 	}
 }

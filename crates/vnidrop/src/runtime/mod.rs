@@ -7,6 +7,7 @@
 //! - [`lifecycle`] — cancel/delete/shutdown/status/access
 //! - [`provider`] — blob provider events and per-connection send progress
 
+mod delivery;
 mod facade;
 mod lifecycle;
 mod provider;
@@ -38,7 +39,7 @@ use iroh_blobs::{
 };
 use serde_json::json;
 use tokio::{
-    sync::{oneshot, Mutex as TokioMutex, Semaphore},
+    sync::{oneshot, Mutex as TokioMutex, Notify, Semaphore},
     task::JoinHandle,
 };
 
@@ -77,6 +78,8 @@ pub(super) struct CoreInner {
     pub(super) hash_to_transfer: TokioMutex<HashMap<String, HashSet<u64>>>,
     pub(super) connection_endpoints: TokioMutex<HashMap<u64, String>>,
     pub(super) provider_task: TokioMutex<Option<JoinHandle<()>>>,
+    pub(super) delivery_receipt_notify: Notify,
+    pub(super) delivery_receipt_task: TokioMutex<Option<JoinHandle<()>>>,
     pub(super) shutdown_started: AtomicBool,
 }
 
@@ -244,6 +247,8 @@ impl CoreInner {
             hash_to_transfer: TokioMutex::new(restored_hashes),
             connection_endpoints: TokioMutex::new(HashMap::new()),
             provider_task: TokioMutex::new(None),
+            delivery_receipt_notify: Notify::new(),
+            delivery_receipt_task: TokioMutex::new(None),
             shutdown_started: AtomicBool::new(false),
         });
 
@@ -257,6 +262,7 @@ impl CoreInner {
             }),
         );
         inner.spawn_provider_event_task(event_rx).await;
+        inner.spawn_delivery_receipt_task().await;
         Ok(inner)
     }
 

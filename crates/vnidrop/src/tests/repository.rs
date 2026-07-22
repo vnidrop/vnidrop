@@ -1,6 +1,9 @@
 use crate::{
     api::{CoreEvent, ReceivedLocatorKind},
-    repository::{ReceivedArtifactInsert, ReceiverRequestInsert, Repository, TransferUpsert},
+    repository::{
+        PendingDeliveryReceiptInsert, ReceivedArtifactInsert, ReceiverRequestInsert, Repository,
+        TransferUpsert,
+    },
     transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
 };
 
@@ -63,7 +66,7 @@ async fn received_artifacts_survive_history_deletion() {
 async fn persists_transfers_and_events_across_reopen() {
     let temp = tempfile::tempdir().unwrap();
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 5);
+    assert_eq!(repository.schema_version().await.unwrap(), 6);
     repository
         .insert_transfer(transfer(
             7,
@@ -110,6 +113,57 @@ async fn persists_transfers_and_events_across_reopen() {
     assert_eq!(transfers.len(), 1);
     let events = reopened.list_events(Some(7), 500).await.unwrap();
     assert_eq!(events[0].id, "event-1");
+}
+
+#[tokio::test]
+async fn receive_completion_persists_delivery_receipt_until_recorded() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    repository
+        .start_receive(transfer(
+            93,
+            TransferDirection::Receive,
+            TransferStatus::Receiving,
+        ))
+        .await
+        .unwrap();
+    repository
+        .complete_receive_with_pending_receipt(PendingDeliveryReceiptInsert {
+            local_transfer_id: 93,
+            sender_blob_ticket: "blob-ticket",
+            request_id: "request-93",
+            sender_transfer_id: 39,
+            token: "receipt-token",
+        })
+        .await
+        .unwrap();
+
+    let transfer = repository
+        .list_transfers()
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|transfer| transfer.transfer_id == 93)
+        .unwrap();
+    assert_eq!(transfer.status, "done");
+    drop(repository);
+
+    let reopened = Repository::open(temp.path()).await.unwrap();
+    let pending = reopened.list_pending_delivery_receipts().await.unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].local_transfer_id, 93);
+    assert_eq!(pending[0].sender_transfer_id, 39);
+    assert_eq!(pending[0].request_id, "request-93");
+    assert_eq!(pending[0].token, "receipt-token");
+    reopened
+        .delete_pending_delivery_receipt("request-93")
+        .await
+        .unwrap();
+    assert!(reopened
+        .list_pending_delivery_receipts()
+        .await
+        .unwrap()
+        .is_empty());
 }
 
 #[tokio::test]
@@ -527,7 +581,7 @@ async fn migrates_schema_v2_identity_without_losing_transfer() {
     pool.close().await;
 
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 5);
+    assert_eq!(repository.schema_version().await.unwrap(), 6);
     let stored = repository.list_transfers().await.unwrap().remove(0);
     assert_eq!(stored.transfer_id, 7);
     assert_eq!(stored.local_id, "legacy-7-send");

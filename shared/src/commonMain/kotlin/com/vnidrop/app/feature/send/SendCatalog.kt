@@ -35,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.core.CoreEventModel
+import com.vnidrop.app.core.ReceiverDeliveryStatus
+import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.ui.components.PillTone
@@ -79,6 +81,7 @@ internal fun SendFloatingAction(onClick: () -> Unit, modifier: Modifier = Modifi
 internal fun TransferCatalog(
 	transfers: List<Transfer>,
 	transferThumbnails: Map<ULong, ByteArray>,
+	receiversByTransfer: Map<ULong, List<ReceiverRequestModel>> = emptyMap(),
 	events: List<CoreEventModel> = emptyList(),
 	windowClass: WindowClass,
 	onOpenComposer: () -> Unit,
@@ -107,9 +110,18 @@ internal fun TransferCatalog(
 				)
 			}
 			items(transfers, key = Transfer::localId) { transfer ->
+				val activeReceiverEndpointIds = receiversByTransfer[transfer.transferId]
+					.orEmpty()
+					.filter { it.status == ReceiverDeliveryStatus.Accepted }
+					.mapTo(mutableSetOf()) { it.remoteEndpointId }
 				val progress = when (transfer.status) {
 					TransferStatus.Importing -> progressForTransfer(events, transfer.transferId)
-					TransferStatus.Sharing -> activeSendProgress(events, transfer.transferId, transfer.totalSize)
+					TransferStatus.Sharing -> activeSendProgress(
+						events,
+						transfer.transferId,
+						activeReceiverEndpointIds,
+						transfer.totalSize,
+					)
 					else -> null
 				}
 				TransferListItem(

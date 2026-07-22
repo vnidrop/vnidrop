@@ -44,6 +44,24 @@ final class ProgressDerivationTests: XCTestCase {
 		XCTAssertEqual(progress?.progress, 0.3)
 	}
 
+	func testReceiverCompletionAfterProgressIsTerminal() {
+		let events = [
+			receiverEvent(kind: "completed", json: "{\"connection_id\":1,\"request_id\":1,\"endpoint_id\":\"peer-a\"}"),
+			receiverEvent(kind: "progress", json: "{\"connection_id\":1,\"request_id\":1,\"endpoint_id\":\"peer-a\",\"end_offset\":100}"),
+			receiverEvent(kind: "started", json: "{\"connection_id\":1,\"request_id\":1,\"endpoint_id\":\"peer-a\",\"size\":100}"),
+		]
+
+		let progress = progressForReceiver(
+			events: events,
+			transferId: 1,
+			remoteEndpointId: "peer-a",
+			totalSizeHint: 100
+		)
+		XCTAssertEqual(progress?.kind, "completed")
+		XCTAssertEqual(progress?.labelKey, "progress_completed")
+		XCTAssertEqual(progress?.progress, 1)
+	}
+
 	func testStatusLabelKeys() {
 		XCTAssertEqual(statusLabelKey(.sharing), "status_available")
 		XCTAssertEqual(statusLabelKey(.receiving), "status_receiving")
@@ -55,5 +73,9 @@ final class ProgressDerivationTests: XCTestCase {
 			id: UUID().uuidString, timestamp: 0, scope: "transfer", transferId: 1,
 			direction: "send", phase: phase, kind: kind, dataJson: json
 		)
+	}
+
+	private func receiverEvent(kind: String, json: String) -> CoreEventModel {
+		event(phase: "transfer", kind: kind, json: json)
 	}
 }

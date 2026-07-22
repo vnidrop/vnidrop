@@ -138,7 +138,8 @@ fun progressForReceiver(
 			detail = null,
 		)
 	}
-	if (latest.kind == "completed" && transferEvents.none { it.kind == "progress" || it.kind == "started" }) {
+	val progress = aggregateReceiverProgress(transferEvents, totalSizeHint)
+	if (latest.kind == "completed" && (progress == null || progress >= 0.999f)) {
 		return TransferProgress(
 			transferId = transferId,
 			phase = "transfer",
@@ -149,7 +150,6 @@ fun progressForReceiver(
 		)
 	}
 
-	val progress = aggregateReceiverProgress(transferEvents, totalSizeHint)
 	return TransferProgress(
 		transferId = transferId,
 		phase = "transfer",
@@ -167,36 +167,21 @@ fun progressForReceiver(
 fun activeSendProgress(
 	events: List<CoreEventModel>,
 	transferId: ULong,
+	activeReceiverEndpointIds: Set<String>,
 	totalSizeHint: ULong? = null,
 ): TransferProgress? {
+	if (activeReceiverEndpointIds.isEmpty()) return null
 	val endpointIds = events
 		.asSequence()
 		.filter { it.transferId == transferId && it.direction == "send" && it.phase == "transfer" }
 		.mapNotNull { findString(it.dataJson, "endpoint_id") }
+		.filter { it in activeReceiverEndpointIds }
 		.distinct()
 		.toList()
-	if (endpointIds.isEmpty()) {
-		// Fall back to connection-scoped events without endpoint attribution.
-		val relevant = events.filter {
-			it.transferId == transferId &&
-				it.direction == "send" &&
-				it.phase == "transfer" &&
-				it.kind in setOf("started", "progress")
-		}
-		if (relevant.isEmpty()) return null
-		return TransferProgress(
-			transferId = transferId,
-			phase = "transfer",
-			kind = relevant.first().kind,
-			label = Res.string.progress_sending,
-			progress = aggregateReceiverProgress(relevant, totalSizeHint),
-			detail = progressDetail(relevant.first()),
-		)
-	}
+	if (endpointIds.isEmpty()) return null
 	return endpointIds
 		.mapNotNull { progressForReceiver(events, transferId, it, totalSizeHint) }
 		.firstOrNull { it.kind == "progress" || it.kind == "started" }
-		?: endpointIds.mapNotNull { progressForReceiver(events, transferId, it, totalSizeHint) }.firstOrNull()
 }
 
 fun summarizeProgress(events: List<CoreEventModel>): List<TransferProgress> =

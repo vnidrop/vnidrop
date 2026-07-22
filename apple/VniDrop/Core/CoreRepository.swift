@@ -197,7 +197,7 @@ final class CoreRepository: ObservableObject, CoreGateway {
 
 		guard let transferId = model.transferId else { return }
 		switch model.phase {
-		case "approval": signalsSubject.send(.approvalChanged(transferId: transferId))
+		case "approval", "access": signalsSubject.send(.approvalChanged(transferId: transferId))
 		case "delivery": signalsSubject.send(.receiverHistoryChanged(transferId: transferId))
 		default: break
 		}

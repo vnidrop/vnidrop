@@ -3,9 +3,12 @@ package com.vnidrop.app.feature
 import com.vnidrop.app.DeviceInfo
 import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.CoreState
+import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
+import com.vnidrop.app.core.ReceiverDeliveryStatus
+import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Share
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.Transfer
@@ -249,6 +252,38 @@ class ViewModelsTest {
 		advanceUntilIdle()
 		assertEquals(null, viewModel.state.value.selectedFile)
 		assertEquals(listOf(selected), fileSystem.discardedPickedFiles)
+	}
+
+	@Test
+	fun sendViewModelTracksReceiverCompletionForCatalogProgress() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val accepted = ReceiverRequestModel(
+			id = "request-7",
+			transferId = 7UL,
+			remoteEndpointId = "peer-a",
+			transferName = "Photo",
+			receiverName = "Receiver",
+			receiverDeviceName = null,
+			appVersion = "1.0",
+			status = ReceiverDeliveryStatus.Accepted,
+			reason = null,
+			requestedAt = 1L,
+			respondedAt = 2L,
+			completedAt = null,
+		)
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(isInitialized = true, transfers = listOf(sentTransfer(7UL)))
+			requests[7UL] = listOf(accepted)
+		}
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
+		advanceUntilIdle()
+		assertEquals(ReceiverDeliveryStatus.Accepted, viewModel.state.value.receiversByTransfer.getValue(7UL).single().status)
+
+		core.requests[7UL] = listOf(accepted.copy(status = ReceiverDeliveryStatus.Completed, completedAt = 3L))
+		core.mutableSignals.emit(CoreSignal.ReceiverHistoryChanged(7UL))
+		advanceUntilIdle()
+
+		assertEquals(ReceiverDeliveryStatus.Completed, viewModel.state.value.receiversByTransfer.getValue(7UL).single().status)
 	}
 
 	@Test
@@ -717,6 +752,22 @@ class ViewModelsTest {
 		fileCount = 1UL,
 		totalSize = 42UL,
 		ticket = null,
+		accessPolicy = ShareAccessPolicy.RequireApproval,
+		createdAt = 1L,
+		updatedAt = 1L,
+	)
+
+	private fun sentTransfer(id: ULong) = Transfer(
+		localId = "send-$id",
+		transferId = id,
+		direction = TransferDirection.Send,
+		status = TransferStatus.Sharing,
+		peerId = null,
+		transferName = "Sent $id",
+		contentHash = "hash-$id",
+		fileCount = 1UL,
+		totalSize = 42UL,
+		ticket = "ticket-$id",
 		accessPolicy = ShareAccessPolicy.RequireApproval,
 		createdAt = 1L,
 		updatedAt = 1L,
