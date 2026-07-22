@@ -84,12 +84,15 @@
     <string name="diagnostics_title">Condividi dati diagnostici</string>
     <string name="error_camera">Per scansionare un codice QR è necessario l’accesso alla fotocamera.</string>
     <string name="error_device_info">Impossibile caricare le informazioni sul dispositivo.</string>
+    <string name="error_destination_exists">Nella destinazione esiste già un file con lo stesso nome. Scelga un’altra cartella o rimuova il file esistente.</string>
     <string name="error_filesystem">VniDrop non ha potuto accedere ai file o alla cartella selezionati. Controlli le autorizzazioni e riprovi.</string>
     <string name="error_generic">Qualcosa è andato storto. Riprovi.</string>
     <string name="error_initialization">VniDrop non ha potuto completare l’avvio. Chiuda l’app e riprovi.</string>
+    <string name="error_invalid_input">Alcune informazioni del trasferimento non sono valide. Controlli la selezione o chieda al mittente di condividere di nuovo.</string>
     <string name="error_invalid_ticket">Impossibile leggere questo invito. Ne chieda uno nuovo al mittente.</string>
     <string name="error_invitation_empty">Questo invito è vuoto. Provi ad aprirlo di nuovo.</string>
     <string name="error_missing_native_library">La libreria nativa di VniDrop non è presente in questa build.</string>
+    <string name="error_network">VniDrop non è riuscito a raggiungere il mittente. Controlli la connessione su entrambi i dispositivi e riprovi.</string>
     <string name="error_nfc">Impossibile usare questo tag NFC. Ne provi un altro.</string>
     <string name="error_permission">Il mittente non ha approvato questo trasferimento, oppure è stato rifiutato.</string>
     <string name="error_repository">VniDrop non ha potuto salvare i dati del trasferimento su questo dispositivo.</string>
@@ -97,7 +100,8 @@
     <string name="error_share_empty">Selezioni almeno un elemento da condividere.</string>
     <string name="error_socket_bind">VniDrop non ha potuto aprire i suoi socket di rete su questo dispositivo.</string>
     <string name="error_starting_up">VniDrop è ancora in fase di avvio. Riapra l’invito tra un momento.</string>
-    <string name="error_transfer">Impossibile completare il trasferimento. Controlli la connessione e riprovi.</string>
+    <string name="error_storage_full">Lo spazio di archiviazione non è sufficiente per salvare il trasferimento. Liberi spazio e riprovi.</string>
+    <string name="error_transfer">Non è stato possibile elaborare i dati del trasferimento. Chieda al mittente di condividerli di nuovo.</string>
     <string name="field_receiver_name">Nome del destinatario</string>
     <string name="field_sender_name">Nome del mittente</string>
     <string name="field_transfer_name">Nome del trasferimento</string>

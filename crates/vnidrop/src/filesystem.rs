@@ -69,7 +69,11 @@ impl AtomicOutputFile {
         }
         cleanup_stale_temporary_files(parent, STALE_PART_AGE)?;
         if std::fs::symlink_metadata(&target).is_ok() {
-            anyhow::bail!("destination already exists: {}", target.display());
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                format!("destination already exists: {}", target.display()),
+            )
+            .into());
         }
 
         let final_name = target

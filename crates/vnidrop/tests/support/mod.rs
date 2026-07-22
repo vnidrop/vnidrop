@@ -292,12 +292,10 @@ pub fn receive_with_response(
     ticket: String,
     output_dir: &Path,
     accepted: bool,
-) -> Result<(), String> {
+) -> Result<(), VnidropError> {
     let output_dir = output_dir.to_string_lossy().to_string();
     let handle = std::thread::spawn(move || {
-        receiver
-            .receive(ticket, output_dir, Some("receiver".to_string()))
-            .map_err(|error| error.to_string())
+        receiver.receive(ticket, output_dir, Some("receiver".to_string()))
     });
     respond_to_pending_request(sender, transfer_id, accepted);
     handle.join().unwrap()
@@ -310,11 +308,9 @@ pub fn receive_with_sink_response(
     ticket: String,
     output_sink: Arc<dyn ReceiveOutputSink>,
     accepted: bool,
-) -> Result<(), String> {
+) -> Result<(), VnidropError> {
     let handle = std::thread::spawn(move || {
-        receiver
-            .receive_with_output_sink(ticket, output_sink, Some("receiver".to_string()))
-            .map_err(|error| error.to_string())
+        receiver.receive_with_output_sink(ticket, output_sink, Some("receiver".to_string()))
     });
     respond_to_pending_request(sender, transfer_id, accepted);
     handle.join().unwrap()
@@ -327,11 +323,9 @@ pub fn receive_with_sink_v2_response(
     ticket: String,
     output_sink: Arc<dyn ReceiveOutputSinkV2>,
     accepted: bool,
-) -> Result<(), String> {
+) -> Result<(), VnidropError> {
     let handle = std::thread::spawn(move || {
-        receiver
-            .receive_with_output_sink_v2(ticket, output_sink, Some("receiver".to_string()))
-            .map_err(|error| error.to_string())
+        receiver.receive_with_output_sink_v2(ticket, output_sink, Some("receiver".to_string()))
     });
     respond_to_pending_request(sender, transfer_id, accepted);
     handle.join().unwrap()
