@@ -15,6 +15,14 @@ class DesktopAppearanceBridgeTest {
 	}
 
 	@Test
+	fun nativeWindowsChromeIsLimitedToWindows() {
+		assertFalse(DesktopAppearanceBridge.isWindows("Mac OS X"))
+		assertFalse(DesktopAppearanceBridge.isWindows("Linux"))
+		assertTrue(DesktopAppearanceBridge.isWindows("Windows 10"))
+		assertTrue(DesktopAppearanceBridge.isWindows("Windows 11"))
+	}
+
+	@Test
 	fun titlebarDoubleClickTogglesMaximizedWindowState() {
 		assertEquals(Frame.MAXIMIZED_BOTH, DesktopAppearanceBridge.toggledWindowState(Frame.NORMAL))
 		assertEquals(Frame.NORMAL, DesktopAppearanceBridge.toggledWindowState(Frame.MAXIMIZED_BOTH))

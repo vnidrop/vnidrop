@@ -61,6 +61,7 @@ fun main(args: Array<String>) {
 	FileKit.init(appId = "vnidrop")
 	val externalInvitations = ExternalInvitationController()
 	val linux = DesktopAppearanceBridge.isLinux()
+	val windows = DesktopAppearanceBridge.isWindows()
 	configureInvitationOpenHandler(externalInvitations)
 	args.asSequence()
 		.map(::File)
@@ -75,25 +76,39 @@ fun main(args: Array<String>) {
 			// Compose keeps edge resizers active for this client-decorated Linux window.
 			undecorated = linux,
 		) {
-			App(
-				dependencies = rememberJvmAppDependencies(externalInvitations),
-				windowChromeTopInset = if (linux) LinuxTitleBarHeight else 0.dp,
-				windowContentTopStartRadius = if (linux) DesktopContentCornerRadius else 0.dp,
-				windowChrome = if (linux) {
-					{
-						LinuxTitleBar(
-							isMaximized = windowState.placement == WindowPlacement.Maximized,
-							onMinimize = { windowState.isMinimized = true },
-							onToggleMaximize = {
-								windowState.placement = toggledWindowPlacement(windowState.placement)
-							},
-							onClose = ::exitApplication,
-						)
-					}
-				} else {
-					null
-				},
-			)
+			val dependencies = rememberJvmAppDependencies(externalInvitations)
+			if (windows) {
+				WindowsWindowFrame(windowState) { chrome ->
+					App(
+						dependencies = dependencies,
+						windowChromeTopInset = chrome.topInset,
+						windowContentTopStartRadius = chrome.contentTopStartRadius,
+						useNativeWindowBackdrop = chrome.useNativeBackdrop,
+						onResolvedDarkThemeChanged = chrome.onDarkThemeChanged,
+						windowChrome = chrome.chrome,
+					)
+				}
+			} else {
+				App(
+					dependencies = dependencies,
+					windowChromeTopInset = if (linux) LinuxTitleBarHeight else 0.dp,
+					windowContentTopStartRadius = if (linux) DesktopContentCornerRadius else 0.dp,
+					windowChrome = if (linux) {
+						{
+							LinuxTitleBar(
+								isMaximized = windowState.placement == WindowPlacement.Maximized,
+								onMinimize = { windowState.isMinimized = true },
+								onToggleMaximize = {
+									windowState.placement = toggledWindowPlacement(windowState.placement)
+								},
+								onClose = ::exitApplication,
+							)
+						}
+					} else {
+						null
+					},
+				)
+			}
 		}
 	}
 }
@@ -120,7 +135,7 @@ private val LinuxTitleBarHeight = 48.dp
 private val LinuxWindowControlHitTargetSize = 34.dp
 private val LinuxWindowControlVisualSize = 28.dp
 private val LinuxWindowControlsWidth = 120.dp
-private val DesktopContentCornerRadius = 20.dp
+internal val DesktopContentCornerRadius = 20.dp
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
