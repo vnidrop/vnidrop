@@ -4,11 +4,22 @@ import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.notifications.LocalNotificationService
 import com.vnidrop.app.feature.receive.ExternalInvitationController
 
+enum class UiPlatform {
+	Android,
+	Windows,
+	Linux,
+	Desktop,
+}
+
+val UiPlatform.isDesktop: Boolean
+	get() = this != UiPlatform.Android
+
 data class PlatformEnvironment(
 	val name: String,
 	val appVersion: String,
 	val defaultCoreDataDir: String,
 	val defaultUsername: String = "Receiver",
+	val uiPlatform: UiPlatform = UiPlatform.Android,
 )
 
 data class DeviceInfo(

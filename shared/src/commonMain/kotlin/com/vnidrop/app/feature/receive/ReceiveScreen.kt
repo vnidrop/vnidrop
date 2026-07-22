@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.path
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -49,12 +50,14 @@ import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.ui.components.AdaptiveDrawer
 import com.vnidrop.app.ui.components.DestructiveButton
 import com.vnidrop.app.ui.components.DestructiveQuietButton
-import com.vnidrop.app.ui.components.EmptyStateAnimation
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.SecondaryButton
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.platform.LocalUiPlatform
+import com.vnidrop.app.ui.platform.usesMobilePresentation
+import com.vnidrop.app.ui.navigation.VniDropIcons
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.displayNameForStatus
 import com.vnidrop.app.ui.state.formatBytes
@@ -93,12 +96,13 @@ fun ReceiveScreen(
 ) {
 	val transfers = coreState.transfers.filter { it.direction == TransferDirection.Receive }
 	val deletableTransfers = transfers.filter { it.status.isTerminalReceiveHistory() }
+	val usesFloatingAction = usesMobilePresentation(LocalUiPlatform.current, windowClass)
 	LazyColumn(
 		modifier = Modifier.fillMaxSize().statusBarsPadding(),
 		contentPadding = PaddingValues(16.dp),
 		verticalArrangement = Arrangement.spacedBy(14.dp),
 	) {
-		item { ReceiveHeader(transfers.isNotEmpty(), windowClass, onOpenAcquisition) }
+		item { ReceiveHeader(transfers.isNotEmpty() && !usesFloatingAction, onOpenAcquisition) }
 		if (transfers.isEmpty()) item { ReceiveEmptyState(onOpenAcquisition) }
 		else {
 			item {
@@ -156,13 +160,12 @@ fun ReceiveScreen(
 }
 
 @Composable
-private fun ReceiveHeader(showAction: Boolean, windowClass: WindowClass, onOpen: () -> Unit) {
+private fun ReceiveHeader(showAction: Boolean, onOpen: () -> Unit) {
 	Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 			Text(stringResource(Res.string.receive_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-			Text(stringResource(Res.string.receive_new_subtitle), color = LocalVniDropColors.current.foregroundLighter)
 		}
-		if (showAction && windowClass != WindowClass.Phone) {
+		if (showAction) {
 			Spacer(Modifier.width(16.dp))
 			PrimaryButton(stringResource(Res.string.button_receive_files), onClick = onOpen)
 		}
@@ -177,9 +180,13 @@ private fun ReceiveEmptyState(onOpen: () -> Unit) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		EmptyStateAnimation(
-			assetPath = "files/animations/receive_empty_state.json",
-			modifier = Modifier.size(168.dp),
+		Icon(
+			imageVector = VniDropIcons.Receive,
+			contentDescription = null,
+			tint = colors.brandLink,
+			modifier = Modifier
+				.size(88.dp)
+				.testTag("receive-empty-icon"),
 		)
 		Text(stringResource(Res.string.receive_empty_title), modifier = Modifier.padding(top = 12.dp), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
 		Text(

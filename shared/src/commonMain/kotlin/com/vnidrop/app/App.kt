@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -34,11 +36,13 @@ import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.platform.PlatformSystemAppearance
 import com.vnidrop.app.ui.feedback.VniDropSnackbarHost
 import com.vnidrop.app.ui.navigation.AppDestination
+import com.vnidrop.app.ui.platform.LocalUiPlatform
+import com.vnidrop.app.ui.platform.contentWindowClassFor
+import com.vnidrop.app.ui.platform.usesMobilePresentation
 import com.vnidrop.app.ui.shell.AppShell
 import com.vnidrop.app.ui.shell.ScreenScrollContainer
 import com.vnidrop.app.core.TransferDirection
 import com.vnidrop.app.ui.state.WindowClass
-import com.vnidrop.app.ui.state.windowClassFor
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import com.vnidrop.app.ui.theme.VniDropTheme
 import com.vnidrop.app.ui.theme.rememberResolvedDarkTheme
@@ -51,6 +55,8 @@ fun App(
 	dependencies: AppDependencies,
 	windowChromeTopInset: Dp = 0.dp,
 	windowContentTopStartRadius: Dp = 0.dp,
+	useNativeWindowBackdrop: Boolean = false,
+	onResolvedDarkThemeChanged: (Boolean) -> Unit = {},
 	windowChrome: (@Composable () -> Unit)? = null,
 ) {
 	val graphHolder = viewModel { AppGraphViewModel(dependencies) }
@@ -137,69 +143,80 @@ fun App(
 	}
 
 	val darkTheme = rememberResolvedDarkTheme(appState.themeMode)
+	LaunchedEffect(darkTheme, onResolvedDarkThemeChanged) {
+		onResolvedDarkThemeChanged(darkTheme)
+	}
 	PlatformSystemAppearance(darkTheme)
-	VniDropTheme(isDarkTheme = darkTheme) {
-		Box(
-			modifier = Modifier
-				.fillMaxSize()
-				.background(LocalVniDropColors.current.backgroundSurface200),
-		) {
-			BoxWithConstraints(
+	CompositionLocalProvider(LocalUiPlatform provides dependencies.environment.uiPlatform) {
+		VniDropTheme(isDarkTheme = darkTheme) {
+			Box(
 				modifier = Modifier
 					.fillMaxSize()
-					.padding(top = windowChromeTopInset),
+					.background(
+						if (useNativeWindowBackdrop) Color.Transparent
+						else LocalVniDropColors.current.backgroundSurface200,
+					),
 			) {
-				val windowClass = windowClassFor(maxWidth.value)
-				val showSendAction = appState.destination == AppDestination.Send &&
-					windowClass == WindowClass.Phone &&
-					sendState.selectedTransferId?.let { selectedId ->
-						sendCoreState.transfers.any { it.transferId == selectedId }
-					} != true &&
-					sendCoreState.transfers.any { it.direction == TransferDirection.Send }
-				val showReceiveAction = appState.destination == AppDestination.Receive &&
-					windowClass == WindowClass.Phone &&
-					!receiveState.isAcquisitionOpen &&
-					receiveCoreState.transfers.any { it.direction == TransferDirection.Receive }
-				AppShell(
-					modifier = Modifier.fillMaxSize(),
-					selectedDestination = appState.destination,
-					windowClass = windowClass,
-					mainContentTopStartRadius = windowContentTopStartRadius,
-					onDestinationSelected = appViewModel::selectDestination,
-					overlay = {
-						VniDropSnackbarHost(graph.messages, Modifier.align(Alignment.BottomCenter))
-					},
-					floatingAction = if (showSendAction) {
-						{
-							SendFloatingAction(
-								onClick = sendViewModel::openComposer,
-								modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-							)
-						}
-					} else if (showReceiveAction) {
-						{
-							ReceiveFloatingAction(
-								onClick = receiveViewModel::openAcquisition,
-								modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
-							)
-						}
-					} else {
-						null
-					},
+				BoxWithConstraints(
+					modifier = Modifier
+						.fillMaxSize()
+						.padding(top = windowChromeTopInset),
 				) {
-					when (appState.destination) {
-						AppDestination.Send -> SendRoute(sendViewModel, windowClass)
-						AppDestination.Receive -> ReceiveRoute(receiveViewModel, windowClass)
-						AppDestination.Settings -> ScreenScrollContainer { SettingsRoute(settingsViewModel, windowClass) }
+					val windowClass = contentWindowClassFor(dependencies.environment.uiPlatform, maxWidth.value)
+					val usesFloatingActions = usesMobilePresentation(dependencies.environment.uiPlatform, windowClass)
+					val showSendAction = appState.destination == AppDestination.Send &&
+						usesFloatingActions &&
+						sendState.selectedTransferId?.let { selectedId ->
+							sendCoreState.transfers.any { it.transferId == selectedId }
+						} != true &&
+						sendCoreState.transfers.any { it.direction == TransferDirection.Send }
+					val showReceiveAction = appState.destination == AppDestination.Receive &&
+						usesFloatingActions &&
+						!receiveState.isAcquisitionOpen &&
+						receiveCoreState.transfers.any { it.direction == TransferDirection.Receive }
+					AppShell(
+						modifier = Modifier.fillMaxSize(),
+						selectedDestination = appState.destination,
+						windowClass = windowClass,
+						uiPlatform = dependencies.environment.uiPlatform,
+						mainContentTopStartRadius = windowContentTopStartRadius,
+						useNativeWindowBackdrop = useNativeWindowBackdrop,
+						onDestinationSelected = appViewModel::selectDestination,
+						overlay = {
+							VniDropSnackbarHost(graph.messages, Modifier.align(Alignment.BottomCenter))
+						},
+						floatingAction = if (showSendAction) {
+							{
+								SendFloatingAction(
+									onClick = sendViewModel::openComposer,
+									modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+								)
+							}
+						} else if (showReceiveAction) {
+							{
+								ReceiveFloatingAction(
+									onClick = receiveViewModel::openAcquisition,
+									modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp),
+								)
+							}
+						} else {
+							null
+						},
+					) {
+						when (appState.destination) {
+							AppDestination.Send -> SendRoute(sendViewModel, windowClass)
+							AppDestination.Receive -> ReceiveRoute(receiveViewModel, windowClass)
+							AppDestination.Settings -> ScreenScrollContainer { SettingsRoute(settingsViewModel, windowClass) }
+						}
 					}
+					ApprovalModalHost(
+						state = approvalState,
+						onAccept = graph.approvalCoordinator::accept,
+						onRefuse = graph.approvalCoordinator::refuse,
+					)
 				}
-				ApprovalModalHost(
-					state = approvalState,
-					onAccept = graph.approvalCoordinator::accept,
-					onRefuse = graph.approvalCoordinator::refuse,
-				)
+				windowChrome?.invoke()
 			}
-			windowChrome?.invoke()
 		}
 	}
 }

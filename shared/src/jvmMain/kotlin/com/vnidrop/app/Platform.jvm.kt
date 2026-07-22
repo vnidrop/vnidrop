@@ -17,6 +17,7 @@ fun rememberJvmAppDependencies(externalInvitations: ExternalInvitationController
 				appVersion = AppDependencies::class.java.`package`.implementationVersion ?: "0.1.0",
 				defaultCoreDataDir = System.getProperty("user.home") + "/.vnidrop",
 				defaultUsername = System.getenv("COMPUTERNAME") ?: System.getenv("HOSTNAME") ?: System.getProperty("user.name") ?: "Receiver",
+				uiPlatform = uiPlatformForJvm(System.getProperty("os.name")),
 			),
 			deviceInfoProvider = JvmDeviceInfoProvider,
 			fileSystemService = fileSystemService,
@@ -24,6 +25,12 @@ fun rememberJvmAppDependencies(externalInvitations: ExternalInvitationController
 			externalInvitations = externalInvitations,
 		)
 	}
+}
+
+internal fun uiPlatformForJvm(osName: String?): UiPlatform = when {
+	osName.orEmpty().contains("windows", ignoreCase = true) -> UiPlatform.Windows
+	osName.orEmpty().contains("linux", ignoreCase = true) -> UiPlatform.Linux
+	else -> UiPlatform.Desktop
 }
 
 private object JvmDeviceInfoProvider : DeviceInfoProvider {

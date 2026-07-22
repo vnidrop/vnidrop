@@ -2,23 +2,57 @@ package com.vnidrop.app.feature.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.diagnostics.DiagnosticsBuildConfig
+import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.about_bug_report
-import vnidrop.shared.generated.resources.about_privacy
+import vnidrop.shared.generated.resources.about_description
+import vnidrop.shared.generated.resources.about_is_direct
+import vnidrop.shared.generated.resources.about_is_encrypted
+import vnidrop.shared.generated.resources.about_is_in_control
+import vnidrop.shared.generated.resources.about_is_no_account
+import vnidrop.shared.generated.resources.about_is_open
+import vnidrop.shared.generated.resources.about_is_title
+import vnidrop.shared.generated.resources.about_isnt_cloud
+import vnidrop.shared.generated.resources.about_isnt_public
+import vnidrop.shared.generated.resources.about_isnt_sync
+import vnidrop.shared.generated.resources.about_isnt_title
+import vnidrop.shared.generated.resources.about_license_label
+import vnidrop.shared.generated.resources.about_privacy_capability
+import vnidrop.shared.generated.resources.about_privacy_deny
+import vnidrop.shared.generated.resources.about_privacy_local
+import vnidrop.shared.generated.resources.about_privacy_policy_label
+import vnidrop.shared.generated.resources.about_privacy_relay
+import vnidrop.shared.generated.resources.about_privacy_title
+import vnidrop.shared.generated.resources.about_tagline
 import vnidrop.shared.generated.resources.about_title
-import vnidrop.shared.generated.resources.battery_level_title
 import vnidrop.shared.generated.resources.device_model_title
-import vnidrop.shared.generated.resources.device_name_title
 import vnidrop.shared.generated.resources.diagnostics_description
 import vnidrop.shared.generated.resources.diagnostics_title
-import vnidrop.shared.generated.resources.network_title
 import vnidrop.shared.generated.resources.os_version_title
 import vnidrop.shared.generated.resources.value_unavailable
 import vnidrop.shared.generated.resources.version_title
+
+private const val PrivacyPolicyUrl = "https://github.com/vnidrop/vnidrop"
 
 @Composable
 internal fun AboutSettings(
@@ -28,18 +62,75 @@ internal fun AboutSettings(
 	onBack: () -> Unit,
 	showBack: Boolean,
 ) {
+	val colors = LocalVniDropColors.current
 	val unavailable = stringResource(Res.string.value_unavailable)
 	val info = state.deviceInfo
+	val uriHandler = LocalUriHandler.current
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 		SettingsTopBar(stringResource(Res.string.about_title), onBack, showBack)
 		SettingsGroup {
-			SettingsRow(
-				icon = SettingsIcons.Document,
-				title = stringResource(Res.string.about_privacy),
-				iconTone = SettingsIconTone.Neutral,
+			Text(
+				stringResource(Res.string.about_tagline),
+				modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+				style = MaterialTheme.typography.titleMedium,
+				fontWeight = FontWeight.SemiBold,
 			)
+			SettingsDivider(startPadding = 16.dp)
+			Text(
+				stringResource(Res.string.about_description),
+				modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+				color = colors.foregroundLighter,
+				style = MaterialTheme.typography.bodyMedium,
+			)
+		}
+
+		AboutSection(
+			title = stringResource(Res.string.about_is_title),
+			points = listOf(
+				SettingsIcons.PaperPlane to stringResource(Res.string.about_is_direct),
+				SettingsIcons.AccountOff to stringResource(Res.string.about_is_no_account),
+				SettingsIcons.ShieldCheck to stringResource(Res.string.about_is_in_control),
+				SettingsIcons.Lock to stringResource(Res.string.about_is_encrypted),
+				SettingsIcons.Code to stringResource(Res.string.about_is_open),
+			),
+		)
+		AboutSection(
+			title = stringResource(Res.string.about_isnt_title),
+			points = listOf(
+				SettingsIcons.CloudOff to stringResource(Res.string.about_isnt_cloud),
+				SettingsIcons.Sync to stringResource(Res.string.about_isnt_sync),
+				SettingsIcons.Megaphone to stringResource(Res.string.about_isnt_public),
+			),
+		)
+		AboutSection(
+			title = stringResource(Res.string.about_privacy_title),
+			points = listOf(
+				SettingsIcons.QrCode to stringResource(Res.string.about_privacy_capability),
+				SettingsIcons.Hand to stringResource(Res.string.about_privacy_deny),
+				SettingsIcons.Radio to stringResource(Res.string.about_privacy_relay),
+				SettingsIcons.Drive to stringResource(Res.string.about_privacy_local),
+			),
+		)
+
+		SettingsGroup {
+			AboutInfoItem(stringResource(Res.string.version_title), state.appVersion)
+			SettingsDivider(startPadding = 16.dp)
+			AboutInfoItem(stringResource(Res.string.device_model_title), info?.deviceModel.orUnavailable(unavailable))
+			SettingsDivider(startPadding = 16.dp)
+			AboutInfoItem(stringResource(Res.string.os_version_title), info?.operatingSystem ?: unavailable)
+			SettingsDivider(startPadding = 16.dp)
+			AboutInfoItem(stringResource(Res.string.about_license_label), "Apache 2.0")
+			SettingsDivider()
+			SettingsRow(
+				icon = SettingsIcons.Shield,
+				title = stringResource(Res.string.about_privacy_policy_label),
+				iconTone = SettingsIconTone.Brand,
+				onClick = { uriHandler.openUri(PrivacyPolicyUrl) },
+			)
+		}
+
+		SettingsGroup {
 			if (DiagnosticsBuildConfig.INCLUDED) {
-				SettingsDivider()
 				SettingsToggleRow(
 					icon = SettingsIcons.Info,
 					title = stringResource(Res.string.diagnostics_title),
@@ -48,8 +139,8 @@ internal fun AboutSettings(
 					enabled = true,
 					onCheckedChange = onDiagnosticsChanged,
 				)
+				SettingsDivider()
 			}
-			SettingsDivider()
 			SettingsRow(
 				icon = SettingsIcons.Bug,
 				title = stringResource(Res.string.about_bug_report),
@@ -57,19 +148,69 @@ internal fun AboutSettings(
 				onClick = onReportBug,
 			)
 		}
+	}
+}
+
+@Composable
+private fun AboutSection(
+	title: String,
+	points: List<Pair<ImageVector, String>>,
+) {
+	Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+		Text(
+			title,
+			color = LocalVniDropColors.current.foregroundLighter,
+			style = MaterialTheme.typography.titleSmall,
+			fontWeight = FontWeight.SemiBold,
+		)
 		SettingsGroup {
-			InfoItem(stringResource(Res.string.version_title), state.appVersion)
-			SettingsDivider(startPadding = 16.dp)
-			InfoItem(stringResource(Res.string.device_name_title), info?.deviceName.orUnavailable(unavailable))
-			SettingsDivider(startPadding = 16.dp)
-			InfoItem(stringResource(Res.string.device_model_title), info?.deviceModel.orUnavailable(unavailable))
-			SettingsDivider(startPadding = 16.dp)
-			InfoItem(stringResource(Res.string.os_version_title), info?.operatingSystem ?: unavailable)
-			SettingsDivider(startPadding = 16.dp)
-			InfoItem(stringResource(Res.string.network_title), info?.network.orUnavailable(unavailable))
-			SettingsDivider(startPadding = 16.dp)
-			InfoItem(stringResource(Res.string.battery_level_title), info?.batteryLevel.orUnavailable(unavailable))
+			points.forEachIndexed { index, (icon, text) ->
+				if (index > 0) SettingsDivider(startPadding = 54.dp)
+				AboutPoint(icon, text)
+			}
 		}
+	}
+}
+
+@Composable
+private fun AboutPoint(icon: ImageVector, text: String) {
+	val colors = LocalVniDropColors.current
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.heightIn(min = 64.dp)
+			.padding(horizontal = 16.dp, vertical = 12.dp),
+		verticalAlignment = Alignment.CenterVertically,
+	) {
+		Icon(icon, contentDescription = null, tint = colors.brandLink, modifier = Modifier.size(24.dp))
+		Spacer(Modifier.width(16.dp))
+		Text(
+			text,
+			modifier = Modifier.weight(1f),
+			style = MaterialTheme.typography.bodyLarge,
+			fontWeight = FontWeight.Normal,
+		)
+	}
+}
+
+@Composable
+private fun AboutInfoItem(title: String, value: String) {
+	val colors = LocalVniDropColors.current
+	Row(
+		modifier = Modifier
+			.fillMaxWidth()
+			.heightIn(min = 56.dp)
+			.padding(horizontal = 16.dp, vertical = 12.dp),
+		verticalAlignment = Alignment.CenterVertically,
+	) {
+		Text(title, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+		Spacer(Modifier.width(16.dp))
+		Text(
+			value,
+			color = colors.foregroundLighter,
+			style = MaterialTheme.typography.bodyLarge,
+			textAlign = TextAlign.End,
+		)
 	}
 }
 

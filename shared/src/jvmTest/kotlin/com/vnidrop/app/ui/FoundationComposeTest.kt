@@ -1,8 +1,10 @@
 package com.vnidrop.app.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.background
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,9 +19,15 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import com.vnidrop.app.feature.approvals.ApprovalModalHost
 import com.vnidrop.app.feature.approvals.ApprovalState
@@ -32,8 +40,11 @@ import com.vnidrop.app.feature.receive.ReceiveState
 import com.vnidrop.app.feature.settings.SettingsScreen
 import com.vnidrop.app.feature.settings.SettingsSection
 import com.vnidrop.app.feature.settings.SettingsState
+import com.vnidrop.app.feature.settings.SettingsOverview
 import com.vnidrop.app.feature.send.SendScreen
 import com.vnidrop.app.feature.send.SendState
+import com.vnidrop.app.feature.send.TransferCatalog
+import com.vnidrop.app.UiPlatform
 import com.vnidrop.app.core.CoreState
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ShareAccessPolicy
@@ -47,8 +58,10 @@ import com.vnidrop.app.ui.feedback.UiText
 import com.vnidrop.app.ui.feedback.VniDropSnackbarHost
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.navigation.AppDestination
+import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.shell.AppShell
 import com.vnidrop.app.ui.theme.VniDropTheme
+import com.vnidrop.app.ui.theme.LocalVniDropColors
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -98,6 +111,44 @@ class FoundationComposeTest {
 		}
 		onNodeWithText("Notifications").performClick()
 		onNodeWithText("Get notified about new receive requests while VniDrop is in the background.").assertIsDisplayed()
+	}
+
+	@Test
+	fun aboutSettingsShowsTheSharedProductAndPrivacyContent() = runComposeUiTest {
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				Box(Modifier.width(393.dp)) {
+					SettingsScreen(
+						state = SettingsState(selectedSection = SettingsSection.About),
+						windowClass = WindowClass.Phone,
+						onSectionSelected = {},
+						onUsernameChanged = {},
+						onThemeModeChanged = {},
+						onChooseFolder = {},
+						onResetFolder = {},
+						onNotificationsChanged = {},
+						onOpenNotificationSettings = {},
+						onDiagnosticsChanged = {},
+						onBugWhatChanged = {},
+						onBugExpectedChanged = {},
+						onBugStepsChanged = {},
+						onBugContactChanged = {},
+						onBugIncludeLogsChanged = {},
+						onSubmitBugReport = {},
+					)
+				}
+			}
+		}
+
+		onNodeWithText("Send files directly. Stay in control of who receives them.").assertIsDisplayed()
+		onNodeWithText("What VniDrop is").assertIsDisplayed()
+		onNodeWithText("What VniDrop isn’t").assertIsDisplayed()
+		onAllNodesWithText("Privacy & security").assertCountEquals(1)
+		onAllNodesWithText("Apache 2.0").assertCountEquals(1)
+		val explanationBounds = onNodeWithText(
+			"A direct device-to-device transfer — your files go straight to the receiver.",
+		).getUnclippedBoundsInRoot()
+		assertTrue(explanationBounds.bottom - explanationBounds.top > 32.dp)
 	}
 
 	@Test
@@ -202,6 +253,7 @@ class FoundationComposeTest {
 				AppShell(
 					selectedDestination = AppDestination.Send,
 					windowClass = WindowClass.Phone,
+					uiPlatform = UiPlatform.Android,
 					onDestinationSelected = {},
 					overlay = {
 						Box(Modifier.align(Alignment.BottomCenter).size(20.dp).testTag("snackbar-overlay"))
@@ -220,6 +272,148 @@ class FoundationComposeTest {
 		val navigationLabelTop = onNodeWithText("Send").getUnclippedBoundsInRoot().top
 		assertTrue(overlayBottom <= floatingActionTop)
 		assertTrue(overlayBottom <= navigationLabelTop)
+	}
+
+	@Test
+	fun narrowDesktopWindowKeepsDesktopSourceListNavigation() = runComposeUiTest {
+		var selected = AppDestination.Send
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				Box(Modifier.size(width = 560.dp, height = 640.dp)) {
+					AppShell(
+						selectedDestination = selected,
+						windowClass = WindowClass.Phone,
+						uiPlatform = UiPlatform.Windows,
+						onDestinationSelected = { selected = it },
+					) {
+						Text("Content")
+					}
+				}
+			}
+		}
+
+		onNodeWithText("VniDrop").assertIsDisplayed()
+		onNodeWithText("Receive").performClick()
+		runOnIdle { assertEquals(AppDestination.Receive, selected) }
+	}
+
+	@Test
+	fun nativeWindowBackdropShowsThroughDesktopChromeButNotMainContent() = runComposeUiTest {
+		val sentinel = Color.Magenta
+		var expectedMain = Color.Unspecified
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				expectedMain = LocalVniDropColors.current.backgroundDashCanvas
+				Box(
+					Modifier
+						.size(width = 320.dp, height = 200.dp)
+						.background(sentinel)
+						.testTag("native-backdrop-shell"),
+				) {
+					AppShell(
+						selectedDestination = AppDestination.Send,
+						windowClass = WindowClass.Desktop,
+						uiPlatform = UiPlatform.Windows,
+						mainContentTopStartRadius = 20.dp,
+						useNativeWindowBackdrop = true,
+						onDestinationSelected = {},
+					) {
+						Text("Content")
+					}
+				}
+			}
+		}
+
+		val pixels = onNodeWithTag("native-backdrop-shell").captureToImage().toPixelMap()
+		assertEquals(sentinel.toArgb(), pixels[pixels.width / 20, pixels.height * 9 / 10].toArgb())
+		assertEquals(expectedMain.toArgb(), pixels[pixels.width * 19 / 20, pixels.height * 9 / 10].toArgb())
+	}
+
+	@Test
+	fun desktopChromeKeepsSolidFallbackWithoutNativeBackdrop() = runComposeUiTest {
+		var expectedSidebar = Color.Unspecified
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				expectedSidebar = LocalVniDropColors.current.backgroundSurface200
+				Box(
+					Modifier
+						.size(width = 320.dp, height = 200.dp)
+						.background(Color.Magenta)
+						.testTag("solid-backdrop-shell"),
+				) {
+					AppShell(
+						selectedDestination = AppDestination.Send,
+						windowClass = WindowClass.Desktop,
+						uiPlatform = UiPlatform.Windows,
+						mainContentTopStartRadius = 20.dp,
+						useNativeWindowBackdrop = false,
+						onDestinationSelected = {},
+					) {
+						Text("Content")
+					}
+				}
+			}
+		}
+
+		val pixels = onNodeWithTag("solid-backdrop-shell").captureToImage().toPixelMap()
+		assertEquals(expectedSidebar.toArgb(), pixels[pixels.width / 20, pixels.height * 9 / 10].toArgb())
+	}
+
+	@Test
+	fun androidPagesUseStaticFeatureIconsWithoutTitleDescriptions() = runComposeUiTest {
+		val actions = object : ReceiveInvitationActions {
+			override val fileAvailability = ReceiveMethodAvailability.Hidden
+			override val qrAvailability = ReceiveMethodAvailability.Hidden
+			override val nfcAvailability = ReceiveMethodAvailability.Hidden
+			override fun pickInvitation(onResult: (Result<String>) -> Unit) = Unit
+			override fun scanQrCode(onResult: (Result<String>) -> Unit) = Unit
+			override fun readNfcInvitation(onResult: (Result<String>) -> Unit) = Unit
+			override fun cancel() = Unit
+		}
+		setContent {
+			CompositionLocalProvider(LocalUiPlatform provides UiPlatform.Android) {
+				VniDropTheme(isDarkTheme = false) {
+					Row {
+						Box(Modifier.size(500.dp)) {
+							TransferCatalog(
+								transfers = emptyList(),
+								transferThumbnails = emptyMap(),
+								windowClass = WindowClass.Phone,
+								onOpenComposer = {},
+								onTransferSelected = {},
+							)
+						}
+						Box(Modifier.size(500.dp)) {
+							ReceiveScreen(
+								coreState = CoreState(isInitialized = true),
+								state = ReceiveState(),
+								windowClass = WindowClass.Phone,
+								actions = actions,
+								onOpenAcquisition = {},
+								onDismissAcquisition = {},
+								onReceiverNameChanged = {},
+								onInvitationResult = { _, _ -> },
+								onWaitingForNfc = {},
+								onReceive = {},
+								onRequestDeleteHistoryItem = {},
+								onRequestClearHistory = {},
+								onDismissHistoryDelete = {},
+								onConfirmHistoryDelete = {},
+							)
+						}
+						Box(Modifier.size(500.dp)) {
+							SettingsOverview(SettingsState(), onSectionSelected = {}, largeTitle = false)
+						}
+					}
+				}
+			}
+		}
+
+		onNodeWithTag("send-empty-icon").assertIsDisplayed()
+		onNodeWithTag("receive-empty-icon").assertIsDisplayed()
+		onAllNodesWithText("Transfers you’re sharing from this device.").assertCountEquals(0)
+		onAllNodesWithText("Transfers you’ve received on this device.").assertCountEquals(0)
+		onAllNodesWithText("Your name, where transfers are saved, appearance, and notifications.").assertCountEquals(0)
 	}
 
 	@Test
