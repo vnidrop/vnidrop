@@ -200,9 +200,10 @@
     <string name="status_stopped">Parada</string>
     <string name="storage_calculating">A calcular…</string>
     <string name="storage_delete_transfers">Eliminar todas as transferências</string>
-    <string name="storage_delete_transfers_description">Isto elimina do seu histórico todos os registos de transferências enviadas e recebidas. Os seus ficheiros recebidos não são eliminados. Nota: o motor de transferência mantém o conteúdo armazenado, pelo que os dados de transferência podem não diminuir. Isto não pode ser anulado.</string>
+    <string name="storage_delete_transfers_description">Isto elimina do histórico todos os registos de transferências enviadas e recebidas. Os ficheiros recebidos não são eliminados. O conteúdo partilhado em cache que já não é necessário é recuperado automaticamente, o que pode demorar algum tempo. Esta ação não pode ser anulada.</string>
+    <string name="storage_app_data">Dados da aplicação</string>
     <string name="storage_deleting">A eliminar…</string>
-    <string name="storage_footer">Os dados de transferência são geridos pelo motor de transferência — o seu histórico mais o conteúdo dos ficheiros que partilhou. O botão abaixo elimina os seus registos de transferências; o motor mantém o conteúdo armazenado, pelo que este valor pode não descer. Os ficheiros recebidos são os ficheiros que descarregou e nunca são eliminados aqui.</string>
+    <string name="storage_footer">Os dados de transferência incluem o histórico e o conteúdo em cache das partilhas ativas. A cache desnecessária é recuperada automaticamente após a remoção dos registos, o que pode demorar algum tempo. Os ficheiros recebidos são acompanhados para este resumo, mas nunca são eliminados aqui.</string>
     <string name="storage_received_files">Ficheiros recebidos</string>
     <string name="storage_temporary">Ficheiros temporários</string>
     <string name="storage_title">Armazenamento</string>

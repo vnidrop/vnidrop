@@ -85,6 +85,7 @@ fun App(
 			dependencies.environment,
 			dependencies.deviceInfoProvider,
 			dependencies.fileSystemService,
+			graph.coreRepository,
 			graph.preferencesRepository,
 			dependencies.localNotificationService,
 			graph.messages,

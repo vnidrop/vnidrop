@@ -1,7 +1,7 @@
 package com.vnidrop.app.core
 
 import androidx.compose.runtime.Composable
-import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiveOutputSinkV2
 
 enum class ReceiveFolderKind {
 	FileSystemPath,
@@ -19,6 +19,13 @@ data class ReceiveFolder(
 	val displayName: String,
 )
 
+data class ReceivedStorageInspection(
+	val existingBytes: ULong,
+	val existingCount: Int,
+	val missingCount: Int,
+	val inaccessibleCount: Int,
+)
+
 enum class FolderAccessStatus {
 	Writable,
 	PermissionRequired,
@@ -32,7 +39,9 @@ interface FileSystemService {
 	fun effectiveReceiveFolder(configuredFolder: ReceiveFolder): ReceiveFolder =
 		if (supportsCustomReceiveFolders) configuredFolder else defaultReceiveFolder()
 	suspend fun validateReceiveFolder(folder: ReceiveFolder): FolderAccessStatus
-	fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink?
+	suspend fun inspectReceivedArtifacts(artifacts: List<ReceivedArtifactModel>): ReceivedStorageInspection
+	suspend fun temporaryUsage(): ULong
+	fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSinkV2?
 	fun canRevealReceiveFolder(folder: ReceiveFolder): Boolean = false
 	suspend fun revealReceiveFolder(folder: ReceiveFolder): Result<Unit> =
 		Result.failure(UnsupportedOperationException("Revealing the receive folder is not supported"))

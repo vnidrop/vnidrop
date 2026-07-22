@@ -38,6 +38,20 @@ fn transfers_file_between_two_cores() {
         received.peer_id.as_deref(),
         Some(sender.core.status().endpoint_id.as_str())
     );
+    let artifacts = receiver.core.list_received_artifacts().unwrap();
+    assert_eq!(artifacts.len(), 1);
+    assert_eq!(artifacts[0].relative_path, "hello.txt");
+    assert_eq!(
+        artifacts[0].logical_size,
+        b"hello from vnidrop".len() as u64
+    );
+    assert_eq!(
+        artifacts[0].locator,
+        output_dir.path().join("hello.txt").to_string_lossy()
+    );
+
+    receiver.core.delete_receive_history().unwrap();
+    assert_eq!(receiver.core.list_received_artifacts().unwrap(), artifacts);
 }
 
 #[test]

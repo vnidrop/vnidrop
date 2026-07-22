@@ -17,13 +17,16 @@ use tokio::sync::oneshot;
 use super::{ActiveTransfer, CoreInner};
 use crate::{
     access_policy::mode_to_storage,
-    api::{ReceiveOutputSink, TransferAccessMode, TransferMetadata},
+    api::{
+        ReceiveOutputSink, ReceiveOutputSinkV2, ReceivedLocatorKind, TransferAccessMode,
+        TransferMetadata,
+    },
     filesystem::{
         validated_relative_string, wait_for_writer, write_stream_to_blocking_writer,
         AtomicOutputFile,
     },
     handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeResponse, HandshakeService},
-    repository::TransferUpsert,
+    repository::{ReceivedArtifactInsert, TransferUpsert},
     ticket::{parse_transfer_ticket_with_limits, ParsedTransferTicket},
     transfer_state::{TransferDirection, TransferStatus},
 };
@@ -31,6 +34,13 @@ use crate::{
 pub(super) enum ReceiveTarget {
     Directory(PathBuf),
     OutputSink(Arc<dyn ReceiveOutputSink>),
+    OutputSinkV2(Arc<dyn ReceiveOutputSinkV2>),
+}
+
+#[derive(Clone, Copy)]
+struct ReceivedTransfer<'a> {
+    protocol_id: u64,
+    local_id: &'a str,
 }
 
 pub(super) struct OutputSinkFile<'a> {
@@ -85,6 +95,51 @@ impl Drop for OutputSinkFile<'_> {
     }
 }
 
+pub(super) struct OutputSinkFileV2<'a> {
+    sink: &'a dyn ReceiveOutputSinkV2,
+    relative_path: String,
+    terminal: bool,
+}
+
+impl<'a> OutputSinkFileV2<'a> {
+    fn start(sink: &'a dyn ReceiveOutputSinkV2, relative_path: String) -> Result<Self> {
+        sink.start_file(relative_path.clone())
+            .map_err(|error| anyhow::anyhow!(error.to_string()))?;
+        Ok(Self {
+            sink,
+            relative_path,
+            terminal: false,
+        })
+    }
+
+    fn write(&self, bytes: Vec<u8>) -> Result<()> {
+        self.sink
+            .write_chunk(self.relative_path.clone(), bytes)
+            .map_err(|error| anyhow::anyhow!(error.to_string()))
+    }
+
+    fn finish(mut self) -> Result<crate::api::PublishedOutput> {
+        self.terminal = true;
+        self.sink
+            .finish_file(self.relative_path.clone())
+            .map_err(|error| anyhow::anyhow!(error.to_string()))
+    }
+}
+
+impl Drop for OutputSinkFileV2<'_> {
+    fn drop(&mut self) {
+        if !self.terminal {
+            self.terminal = true;
+            if let Err(error) = self.sink.abort_file(
+                self.relative_path.clone(),
+                "transfer interrupted before file completion".to_string(),
+            ) {
+                tracing::warn!(%error, relative_path = %self.relative_path, "failed to abort receive output sink file");
+            }
+        }
+    }
+}
+
 impl CoreInner {
     pub(super) async fn receive(
         self: &Arc<Self>,
@@ -105,6 +160,20 @@ impl CoreInner {
         self.receive_to_target(
             ticket,
             ReceiveTarget::OutputSink(output_sink),
+            receiver_name,
+        )
+        .await
+    }
+
+    pub(super) async fn receive_with_output_sink_v2(
+        self: &Arc<Self>,
+        ticket: String,
+        output_sink: Arc<dyn ReceiveOutputSinkV2>,
+        receiver_name: Option<String>,
+    ) -> Result<()> {
+        self.receive_to_target(
+            ticket,
+            ReceiveTarget::OutputSinkV2(output_sink),
             receiver_name,
         )
         .await
@@ -242,9 +311,15 @@ impl CoreInner {
             json!({ "total_files": total_files, "total_size": total_size }),
         );
 
+        // Protect both partial download state and the completed collection until
+        // every output has been published and recorded.
+        let download_tag = self.store.tags().temp_tag(hash_and_format).await?;
         let get = self.store.remote().fetch(connection, hash_and_format);
         let mut stream = get.stream();
-        while let Some(item) = stream.next().await {
+        loop {
+            let Some(item) = stream.next().await else {
+                anyhow::bail!("download ended without completion");
+            };
             match item {
                 GetProgressItem::Progress(downloaded) => {
                     self.emit_transfer(
@@ -270,6 +345,7 @@ impl CoreInner {
                 TransferStatus::Done,
             )
             .await?;
+        drop(download_tag);
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
         let sender_transfer_id = delivery_receipt.transfer_id;
         let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
@@ -393,11 +469,16 @@ impl CoreInner {
         target: ReceiveTarget,
         collection: Collection,
     ) -> Result<()> {
+        let transfer_local_id = self.repository.transfer_local_id(transfer_id).await?;
+        let received_transfer = ReceivedTransfer {
+            protocol_id: transfer_id,
+            local_id: &transfer_local_id,
+        };
         for (i, (name, hash)) in collection.iter().enumerate() {
             match &target {
                 ReceiveTarget::Directory(output_dir) => {
                     self.export_blob_to_directory(
-                        transfer_id,
+                        received_transfer,
                         total_files,
                         i as u64,
                         output_dir,
@@ -417,14 +498,25 @@ impl CoreInner {
                     )
                     .await?;
                 }
+                ReceiveTarget::OutputSinkV2(output_sink) => {
+                    self.export_blob_to_sink_v2(
+                        received_transfer,
+                        total_files,
+                        i as u64,
+                        output_sink.as_ref(),
+                        name.as_ref(),
+                        *hash,
+                    )
+                    .await?;
+                }
             }
         }
         Ok(())
     }
 
-    pub(super) async fn export_blob_to_directory(
+    async fn export_blob_to_directory(
         &self,
-        transfer_id: u64,
+        transfer: ReceivedTransfer<'_>,
         total_files: u64,
         current_file_index: u64,
         output_dir: &Path,
@@ -458,7 +550,7 @@ impl CoreInner {
                         .await
                         .map_err(|_| anyhow::anyhow!("export writer closed for {relative_path}"))?;
                     self.emit_transfer(
-                        transfer_id,
+                        transfer.protocol_id,
                         "receive",
                         "export",
                         "progress",
@@ -482,7 +574,18 @@ impl CoreInner {
             .map_err(|_| anyhow::anyhow!("export writer closed for {relative_path}"))?;
         let writer = wait_for_writer(writer_task).await??;
         tokio::task::spawn_blocking(move || writer.sync_all()).await??;
+        let locator = pending_file.target().to_string_lossy().to_string();
         pending_file.commit()?;
+        self.repository
+            .record_received_artifact(ReceivedArtifactInsert {
+                transfer_local_id: transfer.local_id,
+                protocol_transfer_id: transfer.protocol_id,
+                relative_path,
+                locator_kind: ReceivedLocatorKind::FilesystemPath,
+                locator: &locator,
+                logical_size: exported,
+            })
+            .await?;
         Ok(())
     }
 
@@ -543,6 +646,73 @@ impl CoreInner {
         }
 
         output_file.finish()?;
+        Ok(())
+    }
+
+    async fn export_blob_to_sink_v2(
+        &self,
+        transfer: ReceivedTransfer<'_>,
+        total_files: u64,
+        current_file_index: u64,
+        output_sink: &dyn ReceiveOutputSinkV2,
+        relative_path: &str,
+        hash: Hash,
+    ) -> Result<()> {
+        if relative_path.len() as u64 > self.limits.max_path_bytes {
+            anyhow::bail!(
+                "output path exceeds {} bytes: {relative_path}",
+                self.limits.max_path_bytes
+            );
+        }
+        let relative_path = validated_relative_string(relative_path)?;
+        let output_file = OutputSinkFileV2::start(output_sink, relative_path.clone())?;
+        let mut stream = self.store.export_ranges(hash, 0..u64::MAX).stream();
+        let mut file_size = 0;
+        let mut exported = 0;
+
+        while let Some(item) = stream.next().await {
+            match item {
+                ExportRangesItem::Size(size) => file_size = size,
+                ExportRangesItem::Data(leaf) => {
+                    if leaf.offset != exported {
+                        anyhow::bail!(
+                            "export stream for {relative_path} yielded out-of-order data"
+                        );
+                    }
+                    exported += leaf.data.len() as u64;
+                    output_file.write(leaf.data.to_vec())?;
+                    self.emit_transfer(
+                        transfer.protocol_id,
+                        "receive",
+                        "export",
+                        "progress",
+                        json!({
+                            "total_files": total_files,
+                            "current_file_index": current_file_index,
+                            "file_name": relative_path,
+                            "file_size": file_size,
+                            "exported": exported,
+                        }),
+                    );
+                    tokio::task::yield_now().await;
+                }
+                ExportRangesItem::Error(error) => {
+                    anyhow::bail!("export failed for {relative_path}: {error}");
+                }
+            }
+        }
+
+        let published = output_file.finish()?;
+        self.repository
+            .record_received_artifact(ReceivedArtifactInsert {
+                transfer_local_id: transfer.local_id,
+                protocol_transfer_id: transfer.protocol_id,
+                relative_path: &relative_path,
+                locator_kind: published.locator_kind,
+                locator: &published.locator,
+                logical_size: exported,
+            })
+            .await?;
         Ok(())
     }
 }

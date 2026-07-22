@@ -2,7 +2,7 @@ package com.vnidrop.app.core
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiveOutputSinkV2
 import java.io.File
 
 @Composable
@@ -26,7 +26,25 @@ private class JvmFileSystemService : FileSystemService {
 		}.getOrDefault(FolderAccessStatus.Unavailable)
 	}
 
-	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSink? = null
+	override suspend fun inspectReceivedArtifacts(artifacts: List<ReceivedArtifactModel>): ReceivedStorageInspection {
+		var bytes = 0UL
+		var existing = 0
+		var missing = 0
+		for (artifact in artifacts) {
+			val file = File(artifact.locator)
+			if (file.isFile) {
+				bytes += file.length().toULong()
+				existing += 1
+			} else {
+				missing += 1
+			}
+		}
+		return ReceivedStorageInspection(bytes, existing, missing, 0)
+	}
+
+	override suspend fun temporaryUsage(): ULong = 0UL
+
+	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSinkV2? = null
 
 	override suspend fun sharePickedFiles(
 		repository: CoreGateway,

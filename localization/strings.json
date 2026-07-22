@@ -2926,15 +2926,29 @@
     "storage_delete_transfers_description": {
       "context": "Settings > Storage: confirmation body for deleting all transfer records.",
       "translations": {
-        "en": "This clears all sent and received transfer records from your history. Your received files are not deleted. Note: the transfer engine keeps its stored content, so Transfer data may not decrease. This can’t be undone.",
-        "fr": "Cela efface tous les enregistrements de transferts envoyés et reçus de votre historique. Vos fichiers reçus ne sont pas supprimés. Remarque : le moteur de transfert conserve son contenu stocké, donc les données de transfert peuvent ne pas diminuer. Cette action est irréversible.",
-        "es": "Esto borra todos los registros de transferencias enviadas y recibidas de su historial. Sus archivos recibidos no se eliminan. Nota: el motor de transferencia conserva su contenido almacenado, por lo que los datos de transferencia pueden no disminuir. Esto no se puede deshacer.",
-        "it": "Questo cancella dalla cronologia tutti i record dei trasferimenti inviati e ricevuti. I suoi file ricevuti non vengono eliminati. Nota: il motore di trasferimento conserva il contenuto memorizzato, quindi i dati di trasferimento potrebbero non diminuire. Questa operazione non può essere annullata.",
-        "de": "Dies löscht alle Datensätze gesendeter und empfangener Übertragungen aus Ihrem Verlauf. Ihre empfangenen Dateien werden nicht gelöscht. Hinweis: Die Übertragungs-Engine behält ihre gespeicherten Inhalte, sodass die Übertragungsdaten möglicherweise nicht abnehmen. Dies kann nicht rückgängig gemacht werden.",
-        "pt": "Isto elimina do seu histórico todos os registos de transferências enviadas e recebidas. Os seus ficheiros recebidos não são eliminados. Nota: o motor de transferência mantém o conteúdo armazenado, pelo que os dados de transferência podem não diminuir. Isto não pode ser anulado.",
-        "pl": "To usuwa z historii wszystkie rekordy wysłanych i odebranych transferów. Twoje odebrane pliki nie są usuwane. Uwaga: silnik transferu zachowuje przechowywaną zawartość, więc dane transferu mogą się nie zmniejszyć. Tej operacji nie można cofnąć.",
-        "nl": "Hiermee worden alle records van verzonden en ontvangen overdrachten uit uw geschiedenis gewist. Uw ontvangen bestanden worden niet verwijderd. Let op: de overdrachtsengine bewaart de opgeslagen inhoud, dus de overdrachtsgegevens nemen mogelijk niet af. Dit kan niet ongedaan worden gemaakt.",
-        "ru": "Это удалит из истории все записи об отправленных и полученных передачах. Ваши полученные файлы не удаляются. Примечание: механизм передачи сохраняет своё содержимое, поэтому объём данных передачи может не уменьшиться. Это действие нельзя отменить."
+        "en": "This clears all sent and received transfer records from your history. Your received files are not deleted. Cached shared content that is no longer needed is reclaimed automatically, which may take a little time. This can’t be undone.",
+        "fr": "Cela efface de votre historique tous les enregistrements de transferts envoyés et reçus. Vos fichiers reçus ne sont pas supprimés. Le contenu partagé mis en cache qui n’est plus nécessaire est récupéré automatiquement, ce qui peut prendre un peu de temps. Cette action est irréversible.",
+        "es": "Esto borra de su historial todos los registros de transferencias enviadas y recibidas. Sus archivos recibidos no se eliminan. El contenido compartido en caché que ya no se necesita se recupera automáticamente, lo que puede tardar un poco. Esto no se puede deshacer.",
+        "it": "Questo cancella dalla cronologia tutti i record dei trasferimenti inviati e ricevuti. I file ricevuti non vengono eliminati. Il contenuto condiviso nella cache che non serve più viene recuperato automaticamente, operazione che può richiedere un po’ di tempo. Questa azione non può essere annullata.",
+        "de": "Dadurch werden alle Datensätze gesendeter und empfangener Übertragungen aus Ihrem Verlauf gelöscht. Ihre empfangenen Dateien werden nicht gelöscht. Nicht mehr benötigte zwischengespeicherte freigegebene Inhalte werden automatisch bereinigt; dies kann etwas dauern. Dies kann nicht rückgängig gemacht werden.",
+        "pt": "Isto elimina do histórico todos os registos de transferências enviadas e recebidas. Os ficheiros recebidos não são eliminados. O conteúdo partilhado em cache que já não é necessário é recuperado automaticamente, o que pode demorar algum tempo. Esta ação não pode ser anulada.",
+        "pl": "Spowoduje to usunięcie z historii wszystkich rekordów wysłanych i odebranych transferów. Odebrane pliki nie zostaną usunięte. Niepotrzebna już zawartość udostępniona w pamięci podręcznej jest odzyskiwana automatycznie, co może chwilę potrwać. Tej operacji nie można cofnąć.",
+        "nl": "Hiermee worden alle records van verzonden en ontvangen overdrachten uit uw geschiedenis gewist. Uw ontvangen bestanden worden niet verwijderd. Gedeelde inhoud in de cache die niet meer nodig is, wordt automatisch opgeruimd; dit kan enige tijd duren. Dit kan niet ongedaan worden gemaakt.",
+        "ru": "Это удалит из истории все записи об отправленных и полученных передачах. Полученные файлы не удаляются. Кэшированное общее содержимое, которое больше не требуется, освобождается автоматически; это может занять некоторое время. Это действие нельзя отменить."
+      }
+    },
+    "storage_app_data": {
+      "context": "Settings > Storage: label for non-transfer application data.",
+      "translations": {
+        "en": "App data",
+        "fr": "Données de l’app",
+        "es": "Datos de la aplicación",
+        "it": "Dati dell’app",
+        "de": "App-Daten",
+        "pt": "Dados da aplicação",
+        "pl": "Dane aplikacji",
+        "nl": "Appgegevens",
+        "ru": "Данные приложения"
       }
     },
     "storage_deleting": {
@@ -2954,15 +2968,15 @@
     "storage_footer": {
       "context": "Settings > Storage: footer explaining how storage is managed.",
       "translations": {
-        "en": "Transfer data is managed by the transfer engine — your history plus the content of files you’ve shared. The button below clears your transfer records; the engine keeps its stored content, so this value may not drop. Received files are your downloaded files and are never deleted here.",
-        "fr": "Les données de transfert sont gérées par le moteur de transfert — votre historique ainsi que le contenu des fichiers que vous avez partagés. Le bouton ci-dessous efface vos enregistrements de transferts ; le moteur conserve son contenu stocké, donc cette valeur peut ne pas baisser. Les fichiers reçus sont vos fichiers téléchargés et ne sont jamais supprimés ici.",
-        "es": "Los datos de transferencia los gestiona el motor de transferencia: su historial más el contenido de los archivos que ha compartido. El botón de abajo borra sus registros de transferencias; el motor conserva su contenido almacenado, por lo que este valor puede no bajar. Los archivos recibidos son los archivos que ha descargado y nunca se eliminan aquí.",
-        "it": "I dati di trasferimento sono gestiti dal motore di trasferimento: la sua cronologia più il contenuto dei file che ha condiviso. Il pulsante qui sotto cancella i record dei trasferimenti; il motore conserva il contenuto memorizzato, quindi questo valore potrebbe non diminuire. I file ricevuti sono i file che ha scaricato e non vengono mai eliminati qui.",
-        "de": "Übertragungsdaten werden von der Übertragungs-Engine verwaltet – Ihr Verlauf sowie der Inhalt der von Ihnen geteilten Dateien. Die Schaltfläche unten löscht Ihre Übertragungsdatensätze; die Engine behält ihre gespeicherten Inhalte, sodass dieser Wert möglicherweise nicht sinkt. Empfangene Dateien sind Ihre heruntergeladenen Dateien und werden hier niemals gelöscht.",
-        "pt": "Os dados de transferência são geridos pelo motor de transferência — o seu histórico mais o conteúdo dos ficheiros que partilhou. O botão abaixo elimina os seus registos de transferências; o motor mantém o conteúdo armazenado, pelo que este valor pode não descer. Os ficheiros recebidos são os ficheiros que descarregou e nunca são eliminados aqui.",
-        "pl": "Danymi transferu zarządza silnik transferu — Twoja historia oraz zawartość udostępnionych plików. Przycisk poniżej usuwa rekordy transferów; silnik zachowuje przechowywaną zawartość, więc ta wartość może się nie zmniejszyć. Odebrane pliki to Twoje pobrane pliki i nigdy nie są tu usuwane.",
-        "nl": "Overdrachtsgegevens worden beheerd door de overdrachtsengine — uw geschiedenis plus de inhoud van de bestanden die u hebt gedeeld. De knop hieronder wist uw overdrachtsrecords; de engine bewaart de opgeslagen inhoud, dus deze waarde daalt mogelijk niet. Ontvangen bestanden zijn uw gedownloade bestanden en worden hier nooit verwijderd.",
-        "ru": "Данными передачи управляет механизм передачи — ваша история плюс содержимое файлов, которыми вы поделились. Кнопка ниже удаляет записи о передачах; механизм сохраняет своё содержимое, поэтому это значение может не уменьшиться. Полученные файлы — это загруженные вами файлы, и они никогда не удаляются здесь."
+        "en": "Transfer data includes your history and cached content for active shares. Unneeded cache is reclaimed automatically after transfer records are removed, which may take a little time. Received files are tracked for this summary but are never deleted here.",
+        "fr": "Les données de transfert comprennent votre historique et le contenu mis en cache pour les partages actifs. Le cache inutile est récupéré automatiquement après la suppression des enregistrements, ce qui peut prendre un peu de temps. Les fichiers reçus sont suivis pour ce récapitulatif, mais ne sont jamais supprimés ici.",
+        "es": "Los datos de transferencia incluyen su historial y el contenido en caché de los recursos compartidos activos. La caché innecesaria se recupera automáticamente tras eliminar los registros, lo que puede tardar un poco. Los archivos recibidos se registran para este resumen, pero nunca se eliminan aquí.",
+        "it": "I dati di trasferimento includono la cronologia e il contenuto nella cache per le condivisioni attive. La cache non necessaria viene recuperata automaticamente dopo la rimozione dei record, operazione che può richiedere un po’ di tempo. I file ricevuti vengono monitorati per questo riepilogo, ma non sono mai eliminati qui.",
+        "de": "Übertragungsdaten umfassen Ihren Verlauf und zwischengespeicherte Inhalte aktiver Freigaben. Nicht mehr benötigter Cache wird nach dem Löschen der Datensätze automatisch bereinigt; dies kann etwas dauern. Empfangene Dateien werden für diese Übersicht erfasst, aber hier niemals gelöscht.",
+        "pt": "Os dados de transferência incluem o histórico e o conteúdo em cache das partilhas ativas. A cache desnecessária é recuperada automaticamente após a remoção dos registos, o que pode demorar algum tempo. Os ficheiros recebidos são acompanhados para este resumo, mas nunca são eliminados aqui.",
+        "pl": "Dane transferu obejmują historię oraz zawartość w pamięci podręcznej dla aktywnych udostępnień. Niepotrzebna pamięć podręczna jest odzyskiwana automatycznie po usunięciu rekordów, co może chwilę potrwać. Odebrane pliki są śledzone na potrzeby tego podsumowania, ale nigdy nie są tu usuwane.",
+        "nl": "Overdrachtsgegevens omvatten uw geschiedenis en inhoud in de cache voor actieve shares. Onnodige cache wordt automatisch opgeruimd nadat overdrachtsrecords zijn verwijderd; dit kan enige tijd duren. Ontvangen bestanden worden voor dit overzicht bijgehouden, maar hier nooit verwijderd.",
+        "ru": "Данные передачи включают историю и кэшированное содержимое активных раздач. Ненужный кэш освобождается автоматически после удаления записей; это может занять некоторое время. Полученные файлы учитываются в этой сводке, но никогда не удаляются здесь."
       }
     },
     "storage_received_files": {

@@ -17,6 +17,7 @@ import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiveOutputSinkV2
 import uniffi.vnidrop.ReceiverRequest
 import uniffi.vnidrop.ShareMetadataInput
 import uniffi.vnidrop.ShareResult
@@ -131,6 +132,37 @@ class CoreRepository(
 	): Result<Unit> = runCore {
 		requireCore().receiveWithOutputSink(ticket, outputSink, receiverName.ifBlank { null })
 		refreshSnapshot()
+	}
+
+	override suspend fun receiveWithOutputSinkV2(
+		ticket: String,
+		outputSink: ReceiveOutputSinkV2,
+		receiverName: String,
+	): Result<Unit> = runCore {
+		requireCore().receiveWithOutputSinkV2(ticket, outputSink, receiverName.ifBlank { null })
+		refreshSnapshot()
+	}
+
+	override suspend fun storageUsage(): Result<CoreStorageUsageModel> = runCore {
+		val usage = requireCore().storageUsage()
+		CoreStorageUsageModel(
+			blobStoreBytes = usage.blobStoreBytes,
+			databaseBytes = usage.databaseBytes,
+			logsBytes = usage.logsBytes,
+			previewsBytes = usage.previewsBytes,
+			otherCoreBytes = usage.otherCoreBytes,
+		)
+	}
+
+	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = runCore {
+		requireCore().listReceivedArtifacts().map { artifact ->
+			ReceivedArtifactModel(
+				id = artifact.id,
+				locator = artifact.locator,
+				locatorKind = artifact.locatorKind,
+				logicalSize = artifact.logicalSize,
+			)
+		}
 	}
 
 	override suspend fun cancel(transferId: ULong): Result<Unit> = runCore {

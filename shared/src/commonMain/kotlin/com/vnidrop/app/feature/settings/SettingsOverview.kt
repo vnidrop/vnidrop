@@ -20,6 +20,7 @@ import vnidrop.shared.generated.resources.notifications_title
 import vnidrop.shared.generated.resources.preferences_title
 import vnidrop.shared.generated.resources.settings_subtitle
 import vnidrop.shared.generated.resources.settings_title
+import vnidrop.shared.generated.resources.storage_title
 
 @Composable
 internal fun SettingsOverview(
@@ -41,6 +42,13 @@ internal fun SettingsOverview(
 			)
 		}
 		SettingsGroup {
+			SettingsRow(
+				icon = SettingsIcons.Drive,
+				title = stringResource(Res.string.storage_title),
+				selected = state.selectedSection == SettingsSection.Storage,
+				onClick = { onSectionSelected(SettingsSection.Storage) },
+			)
+			SettingsDivider()
 			SettingsRow(
 				icon = SettingsIcons.Device,
 				title = stringResource(Res.string.preferences_title),

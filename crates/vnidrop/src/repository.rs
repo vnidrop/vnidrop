@@ -15,12 +15,12 @@ use uuid::Uuid;
 
 use crate::{
     access_policy::mode_from_storage,
-    api::{CoreEvent, ReceiverRequest, StoredTransfer},
+    api::{CoreEvent, ReceivedArtifact, ReceivedLocatorKind, ReceiverRequest, StoredTransfer},
     transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
     util::now_ms,
 };
 
-const SCHEMA_VERSION: i64 = 4;
+const SCHEMA_VERSION: i64 = 5;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Repository {
@@ -47,6 +47,7 @@ pub(crate) struct TransferUpsert<'a> {
 #[derive(Debug, Clone)]
 pub(crate) struct PersistedShare {
     pub(crate) transfer_id: u64,
+    pub(crate) local_id: String,
     pub(crate) content_hash: String,
     pub(crate) access_mode: String,
 }
@@ -56,6 +57,15 @@ pub(crate) struct RecoveredTransfer {
     pub(crate) transfer_id: u64,
     pub(crate) direction: TransferDirection,
     pub(crate) previous_status: TransferStatus,
+}
+
+pub(crate) struct ReceivedArtifactInsert<'a> {
+    pub(crate) transfer_local_id: &'a str,
+    pub(crate) protocol_transfer_id: u64,
+    pub(crate) relative_path: &'a str,
+    pub(crate) locator_kind: ReceivedLocatorKind,
+    pub(crate) locator: &'a str,
+    pub(crate) logical_size: u64,
 }
 
 pub(crate) struct ReceiverRequestInsert<'a> {
@@ -165,6 +175,24 @@ impl Repository {
         .await?;
         sqlx::query(
             "CREATE UNIQUE INDEX IF NOT EXISTS idx_transfers_local_id ON transfers(local_id)",
+        )
+        .execute(&self.pool)
+        .await?;
+
+        sqlx::query(
+            r#"
+            CREATE TABLE IF NOT EXISTS received_artifacts (
+                id TEXT PRIMARY KEY,
+                transfer_local_id TEXT NOT NULL,
+                protocol_transfer_id INTEGER NOT NULL,
+                relative_path TEXT NOT NULL,
+                locator_kind TEXT NOT NULL,
+                locator TEXT NOT NULL,
+                logical_size INTEGER NOT NULL,
+                published_at INTEGER NOT NULL,
+                UNIQUE(transfer_local_id, relative_path)
+            );
+            "#,
         )
         .execute(&self.pool)
         .await?;
@@ -328,6 +356,71 @@ impl Repository {
         .await?;
         require_one_changed(result.rows_affected(), "start receive")?;
         Ok(())
+    }
+
+    pub(crate) async fn transfer_local_id(&self, transfer_id: u64) -> Result<String> {
+        let row = sqlx::query("SELECT local_id FROM transfers WHERE transfer_id = ?1")
+            .bind(to_db_id(transfer_id)?)
+            .fetch_one(&self.pool)
+            .await?;
+        Ok(row.get(0))
+    }
+
+    pub(crate) async fn record_received_artifact(
+        &self,
+        artifact: ReceivedArtifactInsert<'_>,
+    ) -> Result<()> {
+        sqlx::query(
+            r#"
+            INSERT INTO received_artifacts (
+                id, transfer_local_id, protocol_transfer_id, relative_path,
+                locator_kind, locator, logical_size, published_at
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
+            ON CONFLICT(transfer_local_id, relative_path) DO UPDATE SET
+                locator_kind = excluded.locator_kind,
+                locator = excluded.locator,
+                logical_size = excluded.logical_size,
+                published_at = excluded.published_at
+            "#,
+        )
+        .bind(Uuid::new_v4().to_string())
+        .bind(artifact.transfer_local_id)
+        .bind(to_db_id(artifact.protocol_transfer_id)?)
+        .bind(artifact.relative_path)
+        .bind(locator_kind_to_storage(&artifact.locator_kind))
+        .bind(artifact.locator)
+        .bind(to_db_id(artifact.logical_size)?)
+        .bind(now_ms())
+        .execute(&self.pool)
+        .await?;
+        Ok(())
+    }
+
+    pub(crate) async fn list_received_artifacts(&self) -> Result<Vec<ReceivedArtifact>> {
+        let rows = sqlx::query(
+            r#"
+            SELECT id, transfer_local_id, protocol_transfer_id, relative_path,
+                   locator_kind, locator, logical_size, published_at
+            FROM received_artifacts
+            ORDER BY published_at DESC
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await?;
+        rows.into_iter()
+            .map(|row| {
+                Ok(ReceivedArtifact {
+                    id: row.get("id"),
+                    transfer_local_id: row.get("transfer_local_id"),
+                    protocol_transfer_id: row.get::<i64, _>("protocol_transfer_id") as u64,
+                    relative_path: row.get("relative_path"),
+                    locator_kind: locator_kind_from_storage(&row.get::<String, _>("locator_kind"))?,
+                    locator: row.get("locator"),
+                    logical_size: row.get::<i64, _>("logical_size") as u64,
+                    published_at: row.get("published_at"),
+                })
+            })
+            .collect()
     }
 
     pub(crate) async fn complete_share_import(&self, transfer: TransferUpsert<'_>) -> Result<()> {
@@ -508,7 +601,7 @@ impl Repository {
     pub(crate) async fn list_active_shares(&self) -> Result<Vec<PersistedShare>> {
         let rows = sqlx::query(
             r#"
-            SELECT transfer_id, content_hash, access_mode
+            SELECT transfer_id, local_id, content_hash, access_mode
             FROM transfers
             WHERE direction = 'send'
               AND status = 'sharing'
@@ -521,8 +614,9 @@ impl Repository {
             .into_iter()
             .map(|row| PersistedShare {
                 transfer_id: row.get::<i64, _>(0) as u64,
-                content_hash: row.get::<String, _>(1),
-                access_mode: row.get::<String, _>(2),
+                local_id: row.get::<String, _>(1),
+                content_hash: row.get::<String, _>(2),
+                access_mode: row.get::<String, _>(3),
             })
             .collect())
     }
@@ -868,6 +962,23 @@ fn require_one_changed(rows_affected: u64, operation: &str) -> Result<()> {
 
 fn to_db_id(value: u64) -> Result<i64> {
     i64::try_from(value).context("transfer id exceeds SQLite signed integer range")
+}
+
+fn locator_kind_to_storage(kind: &ReceivedLocatorKind) -> &'static str {
+    match kind {
+        ReceivedLocatorKind::FilesystemPath => "filesystem_path",
+        ReceivedLocatorKind::AndroidMediaStore => "android_media_store",
+        ReceivedLocatorKind::AndroidDocument => "android_document",
+    }
+}
+
+fn locator_kind_from_storage(value: &str) -> Result<ReceivedLocatorKind> {
+    match value {
+        "filesystem_path" => Ok(ReceivedLocatorKind::FilesystemPath),
+        "android_media_store" => Ok(ReceivedLocatorKind::AndroidMediaStore),
+        "android_document" => Ok(ReceivedLocatorKind::AndroidDocument),
+        _ => anyhow::bail!("unknown received artifact locator kind: {value}"),
+    }
 }
 
 fn row_to_transfer(row: sqlx::sqlite::SqliteRow) -> Result<StoredTransfer> {

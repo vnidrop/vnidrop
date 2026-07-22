@@ -162,7 +162,7 @@ class ReceiveViewModel(
 			}
 			val outputSink = fileSystemService.createReceiveOutputSink(folder)
 			val result = if (outputSink != null) {
-				repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
+				repository.receiveWithOutputSinkV2(current.ticket, outputSink, current.receiverName)
 			} else {
 				repository.receive(current.ticket, folder.value, current.receiverName)
 			}
