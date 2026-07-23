@@ -14,10 +14,20 @@ struct PreferencesSettings: View {
 		}
 		if model.state.supportsCustomReceiveFolders {
 			Section(String(localized: L10n.Preferences.receiveFolderTitle)) {
-				Text(model.state.receiveFolder?.displayName ?? String(localized: L10n.Value.unavailable))
-					.foregroundStyle(.secondary)
-				Button(String(localized: L10n.Button.chooseFolder), action: model.chooseReceiveFolder)
-				Button(String(localized: L10n.Button.resetDefault), action: model.resetReceiveFolder)
+				LabeledContent {
+					Button(String(localized: L10n.Button.chooseFolder), action: model.chooseReceiveFolder)
+				} label: {
+					Label {
+						Text(model.state.receiveFolder?.displayName ?? String(localized: L10n.Value.unavailable))
+							.lineLimit(1)
+							.truncationMode(.middle)
+					} icon: {
+						Image(systemSymbol: .folder)
+					}
+				}
+				if !model.isUsingDefaultReceiveFolder {
+					Button(String(localized: L10n.Button.resetDefault), role: .cancel, action: model.resetReceiveFolder)
+				}
 			}
 		}
 	}

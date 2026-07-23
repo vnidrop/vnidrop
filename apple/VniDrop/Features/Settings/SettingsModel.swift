@@ -168,6 +168,15 @@ final class SettingsModel: ObservableObject {
 	func onReceiveFolderPickFailed(_ reason: String) { messages.error(InvitationError.message(reason)) }
 	func resetReceiveFolder() { preferences.resetReceiveFolder() }
 
+	/// Whether the current receive folder is the platform default (so the reset
+	/// action can be hidden when it would be a no-op). Compared by location, not
+	/// display name, which can differ once resolved.
+	var isUsingDefaultReceiveFolder: Bool {
+		guard let folder = state.receiveFolder else { return true }
+		let fallback = fileSystemService.defaultReceiveFolder()
+		return folder.kind == fallback.kind && folder.value == fallback.value
+	}
+
 	/// Ask the OS for notification permission. This is the only time the app can
 	/// grant it; disabling or fine-tuning afterwards happens in the Settings app.
 	func requestNotifications() {
