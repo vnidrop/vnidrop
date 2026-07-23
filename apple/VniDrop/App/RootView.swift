@@ -1,3 +1,4 @@
+import SFSafeSymbols
 import SwiftUI
 
 /// App root, ported from `App.kt`. Owns the object graph and feature models, wires
@@ -111,7 +112,7 @@ struct RootView: View {
 		#if os(macOS)
 		NavigationSplitView {
 			List(AppDestination.allCases, selection: sidebarBinding) { destination in
-				Label(String(localized: destination.labelKey), systemImage: destination.systemImage)
+				Label(String(localized: destination.labelKey), systemSymbol: destination.systemSymbol)
 					.tag(destination)
 			}
 			.navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 260)
@@ -123,7 +124,7 @@ struct RootView: View {
 			ForEach(AppDestination.allCases) { destination in
 				screen(for: destination, windowClass: windowClass)
 					.tabItem {
-						Label(String(localized: destination.labelKey), systemImage: destination.systemImage)
+						Label(String(localized: destination.labelKey), systemSymbol: destination.systemSymbol)
 					}
 					.tag(destination)
 			}

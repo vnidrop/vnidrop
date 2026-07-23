@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 
 /// Settings section detail views, rebuilt as native `Form` content. Each view is
 /// placed inside a parent `Form`, so it returns `Section`s / rows directly.
@@ -126,24 +127,24 @@ struct AboutSettings: View {
 		}
 
 		Section(String(localized: L10n.About.isTitle)) {
-			AboutPoint(L10n.About.isDirect, "paperplane")
-			AboutPoint(L10n.About.isNoAccount, "person.crop.circle.badge.xmark")
-			AboutPoint(L10n.About.isInControl, "checkmark.shield")
-			AboutPoint(L10n.About.isEncrypted, "lock")
-			AboutPoint(L10n.About.isOpen, "chevron.left.forwardslash.chevron.right")
+			AboutPoint(L10n.About.isDirect, .paperplane)
+			AboutPoint(L10n.About.isNoAccount, .personCropCircleBadgeXmark)
+			AboutPoint(L10n.About.isInControl, .checkmarkShield)
+			AboutPoint(L10n.About.isEncrypted, .lock)
+			AboutPoint(L10n.About.isOpen, .chevronLeftForwardslashChevronRight)
 		}
 
 		Section(String(localized: L10n.About.isntTitle)) {
-			AboutPoint(L10n.About.isntCloud, "icloud.slash")
-			AboutPoint(L10n.About.isntSync, "arrow.triangle.2.circlepath")
-			AboutPoint(L10n.About.isntPublic, "megaphone")
+			AboutPoint(L10n.About.isntCloud, .icloudSlash)
+			AboutPoint(L10n.About.isntSync, .arrowTriangle2Circlepath)
+			AboutPoint(L10n.About.isntPublic, .megaphone)
 		}
 
 		Section(String(localized: L10n.About.privacyTitle)) {
-			AboutPoint(L10n.About.privacyCapability, "qrcode")
-			AboutPoint(L10n.About.privacyDeny, "hand.raised")
-			AboutPoint(L10n.About.privacyRelay, "antenna.radiowaves.left.and.right")
-			AboutPoint(L10n.About.privacyLocal, "internaldrive")
+			AboutPoint(L10n.About.privacyCapability, .qrcode)
+			AboutPoint(L10n.About.privacyDeny, .handRaised)
+			AboutPoint(L10n.About.privacyRelay, .antennaRadiowavesLeftAndRight)
+			AboutPoint(L10n.About.privacyLocal, .internaldrive)
 		}
 
 		Section(String(localized: L10n.About.title)) {
@@ -154,7 +155,7 @@ struct AboutSettings: View {
 			}
 			LabeledContent(String(localized: L10n.About.licenseLabel), value: "Apache 2.0")
 			Link(destination: Self.privacyPolicyURL) {
-				Label(String(localized: L10n.About.privacyPolicyLabel), systemImage: "hand.raised")
+				Label(String(localized: L10n.About.privacyPolicyLabel), systemSymbol: .handRaised)
 			}
 		}
 
@@ -205,9 +206,9 @@ struct BugReportSheet: View {
 /// A bullet-style informational row with an SF Symbol and wrapping localized text.
 private struct AboutPoint: View {
 	let key: String.LocalizationValue
-	let symbol: String
+	let symbol: SFSymbol
 
-	init(_ key: String.LocalizationValue, _ symbol: String) {
+	init(_ key: String.LocalizationValue, _ symbol: SFSymbol) {
 		self.key = key
 		self.symbol = symbol
 	}
@@ -218,7 +219,7 @@ private struct AboutPoint: View {
 				.font(.subheadline)
 				.fixedSize(horizontal: false, vertical: true)
 		} icon: {
-			Image(systemName: symbol).foregroundStyle(.tint)
+			Image(systemSymbol: symbol).foregroundStyle(.tint)
 		}
 	}
 }

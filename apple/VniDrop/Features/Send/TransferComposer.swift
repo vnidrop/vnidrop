@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 
 /// Transfer composer drawer, ported from `feature/send/TransferComposer.kt`.
 /// Two steps: choose files/folder, then review + name + access policy + share.
@@ -27,7 +28,7 @@ struct TransferComposer: View {
 			Text(String(localized: L10n.Send.chooseFileBody))
 				.font(.subheadline).foregroundStyle(.secondary)
 			VStack(spacing: 14) {
-				Image(systemName: "doc").font(.system(size: 30)).foregroundStyle(.tint)
+				Image(systemSymbol: .doc).font(.system(size: 30)).foregroundStyle(.tint)
 				PrimaryButton(title: String(localized: L10n.Button.chooseFiles), action: model.selectFile).fixedSize()
 				QuietButton(title: String(localized: L10n.Button.chooseFolder), action: model.selectFolder)
 			}
@@ -57,17 +58,17 @@ struct TransferComposer: View {
 				  value: Binding(get: { state.senderName }, set: { model.setSenderName($0) }))
 			Text(String(localized: L10n.Send.accessTitle)).font(.headline)
 			PolicyOption(
-				icon: "checkmark.shield", titleKey: L10n.Send.accessApproval, descKey: L10n.Send.accessApprovalDescription,
+				icon: .checkmarkShield, titleKey: L10n.Send.accessApproval, descKey: L10n.Send.accessApprovalDescription,
 				selected: state.accessPolicy == .requireApproval,
 				onTap: { model.setAccessPolicy(.requireApproval) }
 			)
 			PolicyOption(
-				icon: "globe", titleKey: L10n.Send.accessAnyone, descKey: L10n.Send.accessAnyoneDescription,
+				icon: .globe, titleKey: L10n.Send.accessAnyone, descKey: L10n.Send.accessAnyoneDescription,
 				selected: state.accessPolicy == .anyoneWithTransfer,
 				onTap: { model.setAccessPolicy(.anyoneWithTransfer) }
 			)
 			if state.accessPolicy == .anyoneWithTransfer {
-				Label(String(localized: L10n.Send.accessAnyoneWarning), systemImage: "exclamationmark.triangle.fill")
+				Label(String(localized: L10n.Send.accessAnyoneWarning), systemSymbol: .exclamationmarkTriangleFill)
 					.font(.caption).foregroundStyle(.orange)
 			}
 			actions
@@ -116,7 +117,7 @@ private struct SelectedFileCard: View {
 			Spacer()
 			if canRemove {
 				Button(role: .destructive, action: onRemove) {
-					Image(systemName: "trash")
+					Image(systemSymbol: .trash)
 				}
 				.buttonStyle(.borderless)
 				.tint(.red)
@@ -135,7 +136,7 @@ private struct SelectedFileCard: View {
 }
 
 private struct PolicyOption: View {
-	let icon: String
+	let icon: SFSymbol
 	let titleKey: String.LocalizationValue
 	let descKey: String.LocalizationValue
 	let selected: Bool
@@ -144,7 +145,7 @@ private struct PolicyOption: View {
 	var body: some View {
 		Button(action: onTap) {
 			HStack(spacing: 12) {
-				Image(systemName: icon)
+				Image(systemSymbol: icon)
 					.font(.system(size: 20))
 					.foregroundStyle(selected ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
 					.frame(width: 22)
@@ -153,7 +154,7 @@ private struct PolicyOption: View {
 					Text(String(localized: descKey)).font(.caption).foregroundStyle(.secondary)
 				}
 				Spacer()
-				Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+				Image(systemSymbol: selected ? .checkmarkCircleFill : .circle)
 					.foregroundStyle(selected ? AnyShapeStyle(.tint) : AnyShapeStyle(.tertiary))
 			}
 			.padding(14)

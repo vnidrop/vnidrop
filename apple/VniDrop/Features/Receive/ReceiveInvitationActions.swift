@@ -1,3 +1,4 @@
+import SFSafeSymbols
 import SwiftUI
 
 enum ReceiveMethodAvailability { case available, unavailable, hidden }
@@ -27,19 +28,19 @@ struct ReceiveMethodPanel: View {
 			Text(String(localized: L10n.Receive.chooseMethodBody)).foregroundStyle(colors.foregroundLighter)
 
 			MethodRow(
-				icon: "doc", titleKey: L10n.Receive.methodFile, descKey: L10n.Receive.methodFileDescription,
+				icon: .doc, titleKey: L10n.Receive.methodFile, descKey: L10n.Receive.methodFileDescription,
 				availability: actions.fileAvailability
 			) { actions.pickInvitation { model.onInvitationResult(.invitationFile, $0) } }
 
 			if actions.qrAvailability != .hidden {
 				MethodRow(
-					icon: "qrcode.viewfinder", titleKey: L10n.Receive.methodScan, descKey: L10n.Receive.methodScanDescription,
+					icon: .qrcodeViewfinder, titleKey: L10n.Receive.methodScan, descKey: L10n.Receive.methodScanDescription,
 					availability: actions.qrAvailability
 				) { actions.scanQrCode { model.onInvitationResult(.qrCode, $0) } }
 			}
 			if actions.nfcAvailability != .hidden {
 				MethodRow(
-					icon: "wave.3.right",
+					icon: .wave3Right,
 					titleOverride: model.state.isWaitingForNfc ? String(localized: L10n.Receive.nfcWaiting) : nil,
 					titleKey: L10n.Receive.methodNfc, descKey: L10n.Receive.methodNfcDescription,
 					availability: model.state.isWaitingForNfc ? .unavailable : actions.nfcAvailability
@@ -56,7 +57,7 @@ struct ReceiveMethodPanel: View {
 
 private struct MethodRow: View {
 	@Environment(\.vniColors) private var colors
-	let icon: String
+	let icon: SFSymbol
 	var titleOverride: String? = nil
 	let titleKey: String.LocalizationValue
 	let descKey: String.LocalizationValue
@@ -67,7 +68,7 @@ private struct MethodRow: View {
 		let enabled = availability == .available
 		Button(action: onTap) {
 			HStack(spacing: 14) {
-				Image(systemName: icon).font(.system(size: 22))
+				Image(systemSymbol: icon).font(.system(size: 22))
 					.foregroundStyle(enabled ? colors.brandLink : colors.foregroundLighter)
 					.frame(width: 24)
 				VStack(alignment: .leading, spacing: 3) {

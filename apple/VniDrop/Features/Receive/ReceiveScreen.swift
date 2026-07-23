@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 
 /// Receive screen, rebuilt on native SwiftUI. A grouped `List` of received
 /// transfers with swipe-to-delete, and the acquisition flow as a native sheet.
@@ -26,13 +27,13 @@ struct ReceiveScreen: View {
 			.toolbar {
 				ToolbarItem(placement: .primaryAction) {
 					Button(action: model.openAcquisition) {
-						Label(String(localized: L10n.Button.receiveFiles), systemImage: "plus")
+						Label(String(localized: L10n.Button.receiveFiles), systemSymbol: .plus)
 					}
 				}
 				if !deletable.isEmpty {
 					ToolbarItem(placement: .primaryAction) {
 						Button(role: .destructive, action: model.requestClearHistory) {
-							Label(String(localized: L10n.Receive.clearHistory), systemImage: "trash")
+							Label(String(localized: L10n.Receive.clearHistory), systemSymbol: .trash)
 						}
 					}
 				}
@@ -74,7 +75,7 @@ struct ReceiveScreen: View {
 							Button(role: .destructive) {
 								model.requestDeleteHistoryItem(transfer.transferId)
 							} label: {
-								Label(String(localized: L10n.Button.deleteTransfer), systemImage: "trash")
+								Label(String(localized: L10n.Button.deleteTransfer), systemSymbol: .trash)
 							}
 						}
 					}
@@ -89,12 +90,12 @@ struct ReceiveScreen: View {
 
 	private var emptyState: some View {
 		ContentUnavailableView {
-			Label(String(localized: L10n.Receive.emptyTitle), systemImage: "tray.and.arrow.down")
+			Label(String(localized: L10n.Receive.emptyTitle), systemSymbol: .trayAndArrowDown)
 		} description: {
 			Text(String(localized: L10n.Receive.emptyBody))
 		} actions: {
 			Button(action: model.openAcquisition) {
-				Label(String(localized: L10n.Button.receiveFiles), systemImage: "plus")
+				Label(String(localized: L10n.Button.receiveFiles), systemSymbol: .plus)
 			}
 			.buttonStyle(.borderedProminent)
 			.controlSize(.large)
@@ -129,7 +130,7 @@ private struct ReceiveTransferRow: View {
 
 	var body: some View {
 		HStack(spacing: 12) {
-			Image(systemName: "doc")
+			Image(systemSymbol: .doc)
 				.foregroundStyle(.secondary)
 				.frame(width: 40, height: 40)
 				.background(.quaternary, in: RoundedRectangle(cornerRadius: 9))

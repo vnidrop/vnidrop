@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 
 /// Non-dismissable receiver-approval modal, presented as a native sheet that can't
 /// be swiped away. The endpoint id is the trusted identity; display names are
@@ -40,7 +41,7 @@ private struct ApprovalSheet: View {
 		let busy = state.respondingIds.contains(request.id)
 		let receiver = request.receiverName ?? request.receiverDeviceName ?? String(localized: L10n.Approval.nearbyDevice)
 		VStack(spacing: 16) {
-			Image(systemName: "checkmark.shield.fill")
+			Image(systemSymbol: .checkmarkShieldFill)
 				.font(.system(size: 44))
 				.foregroundStyle(.tint)
 				.padding(.top, 12)

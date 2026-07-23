@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 
 /// Send screen, rebuilt on native SwiftUI. A grouped `List` of outgoing transfers,
 /// with the composer and detail panels as native sheets and delete as an alert.
@@ -31,7 +32,7 @@ struct SendScreen: View {
 			.toolbar {
 				ToolbarItem(placement: .primaryAction) {
 					Button(action: model.openComposer) {
-						Label(String(localized: L10n.Button.createNewTransfer), systemImage: "plus")
+						Label(String(localized: L10n.Button.createNewTransfer), systemSymbol: .plus)
 					}
 				}
 			}
@@ -101,12 +102,12 @@ struct SendScreen: View {
 
 	private var emptyState: some View {
 		ContentUnavailableView {
-			Label(String(localized: L10n.Send.emptyTitle), systemImage: "paperplane")
+			Label(String(localized: L10n.Send.emptyTitle), systemSymbol: .paperplane)
 		} description: {
 			Text(String(localized: L10n.Send.emptyBody))
 		} actions: {
 			Button(action: model.openComposer) {
-				Label(String(localized: L10n.Button.createNewTransfer), systemImage: "plus")
+				Label(String(localized: L10n.Button.createNewTransfer), systemSymbol: .plus)
 			}
 			.buttonStyle(.borderedProminent)
 			.controlSize(.large)
@@ -166,7 +167,7 @@ private struct TransferListItem: View {
 						.padding(.top, 2)
 				}
 			}
-			Image(systemName: "chevron.forward")
+			Image(systemSymbol: .chevronForward)
 				.font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
 		}
 		.contentShape(Rectangle())
@@ -181,7 +182,7 @@ struct FileArtwork: View {
 			image.resizable().aspectRatio(contentMode: .fill)
 				.clipShape(RoundedRectangle(cornerRadius: 8))
 		} else {
-			Image(systemName: "doc")
+			Image(systemSymbol: .doc)
 				.font(.system(size: 18))
 				.foregroundStyle(.secondary)
 		}

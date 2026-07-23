@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 import CoreImage.CIFilterBuiltins
 
 /// Transfer details + drawer panels, ported from `feature/send/TransferDetails.kt`.
@@ -56,7 +57,7 @@ struct TransferDetailsView: View {
 					Button(role: .destructive) {
 						showStopConfirmation = true
 					} label: {
-						Label(String(localized: L10n.Send.stopSharing), systemImage: "stop.circle")
+						Label(String(localized: L10n.Send.stopSharing), systemSymbol: .stopCircle)
 					}
 				}
 			}
@@ -69,7 +70,7 @@ struct TransferDetailsView: View {
 		.toolbar {
 			ToolbarItem(placement: .primaryAction) {
 				Button(role: .destructive, action: model.requestDeleteTransfer) {
-					Image(systemName: "trash")
+					Image(systemSymbol: .trash)
 				}
 			}
 		}
@@ -115,7 +116,7 @@ private struct DetailDestination: View {
 						.font(.footnote)
 						.foregroundStyle(.secondary)
 				}
-				Image(systemName: "chevron.forward")
+				Image(systemSymbol: .chevronForward)
 					.font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
 			}
 			.contentShape(Rectangle())

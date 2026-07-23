@@ -1,4 +1,5 @@
 import Foundation
+import SFSafeSymbols
 
 /// Top-level destinations, ported from `ui/navigation/AppDestination.kt`.
 enum AppDestination: String, CaseIterable, Identifiable {
@@ -17,11 +18,11 @@ enum AppDestination: String, CaseIterable, Identifiable {
 	}
 
 	/// SF Symbol approximating the Compose line icon.
-	var systemImage: String {
+	var systemSymbol: SFSymbol {
 		switch self {
-		case .send: return "paperplane"
-		case .receive: return "tray.and.arrow.down"
-		case .settings: return "gearshape"
+		case .send: return .paperplane
+		case .receive: return .trayAndArrowDown
+		case .settings: return .gearshape
 		}
 	}
 }
