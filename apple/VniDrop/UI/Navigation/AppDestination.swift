@@ -8,11 +8,11 @@ enum AppDestination: String, CaseIterable, Identifiable {
 
 	var id: String { rawValue }
 
-	var labelKey: String {
+	var labelKey: String.LocalizationValue {
 		switch self {
-		case .send: return "nav_send"
-		case .receive: return "nav_receive"
-		case .settings: return "nav_settings"
+		case .send: return L10n.Nav.send
+		case .receive: return L10n.Nav.receive
+		case .settings: return L10n.Nav.settings
 		}
 	}
 

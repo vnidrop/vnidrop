@@ -217,7 +217,7 @@ final class SendModel: ObservableObject {
 				state.receiverHistory = []
 				state.isDeleteConfirmationOpen = false
 				state.isDeleting = false
-				messages.tryShow(UiMessage(text: .resource("transfer_deleted"), tone: .success))
+				messages.tryShow(UiMessage(text: .resource(L10n.Transfer.deleted), tone: .success))
 			case .failure(let error):
 				state.isDeleting = false
 				messages.error(error)
@@ -249,7 +249,7 @@ final class SendModel: ObservableObject {
 			switch result {
 			case .success:
 				_ = await repository.refresh()
-				messages.tryShow(UiMessage(text: .resource("transfer_event_stopped"), tone: .info))
+				messages.tryShow(UiMessage(text: .resource(L10n.Transfer.eventStopped), tone: .info))
 			case .failure(let error):
 				messages.error(error)
 			}
@@ -261,10 +261,10 @@ final class SendModel: ObservableObject {
 	func onInvitationResult(_ action: InvitationAction, _ result: Result<Void, Error>) {
 		switch result {
 		case .success:
-			let key: String?
+			let key: String.LocalizationValue?
 			switch action {
-			case .export: key = "transfer_invitation_saved"
-			case .nfc: key = "transfer_nfc_written"
+			case .export: key = L10n.Transfer.invitationSaved
+			case .nfc: key = L10n.Transfer.nfcWritten
 			case .share: key = nil  // system share sheet already confirms
 			}
 			if let key { messages.tryShow(UiMessage(text: .resource(key), tone: .success)) }
@@ -297,7 +297,7 @@ final class SendModel: ObservableObject {
 				state.transferName = ""
 				state.accessPolicy = .requireApproval
 				state.isSharing = false
-				messages.show(UiMessage(text: .resource("send_transfer_created"), tone: .success))
+				messages.show(UiMessage(text: .resource(L10n.Send.transferCreated), tone: .success))
 			case .failure(let error):
 				state.isSharing = false
 				messages.error(error)

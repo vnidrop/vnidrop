@@ -6,6 +6,7 @@ A Bun CLI generates the platform-native files from it:
 | Target | Output | Notes |
 | --- | --- | --- |
 | `apple` | `apple/VniDrop/Resources/Localizable.xcstrings` | one catalog, all languages nested |
+| `apple` | `apple/VniDrop/Generated/L10n.swift` | compile-time-checked key accessors (`L10n.Group.member`) |
 | `kmp` | `shared/src/commonMain/composeResources/values[-lang]/strings.xml` | one file per language |
 
 ## Workflow
@@ -17,7 +18,7 @@ make localization            # regenerate .xcstrings + strings.xml from strings.
 make localization-migrate    # one-time: rebuild strings.json from platform files
 ```
 
-**Never edit the generated `.xcstrings` / `strings.xml` by hand** — edit `strings.json` and
+**Never edit the generated `.xcstrings` / `strings.xml` / `L10n.swift` by hand** — edit `strings.json` and
 regenerate. Regenerated output is deterministic (sorted keys), so diffs stay small.
 
 ## `strings.json` format
@@ -80,7 +81,9 @@ single catalog. `validate` warns about any key still missing that language.
 - Apple keys that were literal English strings (`"%@ · %@"`) were imported verbatim — rename
   them to semantic keys and update the Swift call sites.
 - Arg names default to `arg1`, `arg2`… (a lone int arg becomes `count`). Rename for clarity;
-  keep the `{token}` in text in sync.
+  keep the `{token}` in text in sync. **`migrate` re-infers `arg1`/`arg2` from the platform
+  files, so re-running it reverts semantic arg names** — treat those renames as owned by
+  `strings.json` and avoid a blind re-migrate.
 - Folding `transfer_file_count_one` / `_other` into the plural key `transfer_file_count`
   requires switching the KMP call site from `Res.string.transfer_file_count_one` to the
   Compose plural API (`pluralStringResource(Res.plurals.transfer_file_count, count, count)`),

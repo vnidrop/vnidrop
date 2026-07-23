@@ -476,23 +476,23 @@
       }
     },
     "approval_endpoint_id": {
-      "context": "Approval prompt: shows the requesting device's ID. {arg1} = device/endpoint identifier.",
+      "context": "Approval prompt: shows the requesting device's ID. {deviceId} = device/endpoint identifier.",
       "args": [
         {
-          "name": "arg1",
+          "name": "deviceId",
           "type": "string"
         }
       ],
       "translations": {
-        "en": "Device ID: {arg1}",
-        "fr": "Identifiant de l’appareil : {arg1}",
-        "es": "ID del dispositivo: {arg1}",
-        "it": "ID dispositivo: {arg1}",
-        "de": "Geräte-ID: {arg1}",
-        "pt": "ID do dispositivo: {arg1}",
-        "pl": "Identyfikator urządzenia: {arg1}",
-        "nl": "Apparaat-ID: {arg1}",
-        "ru": "Идентификатор устройства: {arg1}"
+        "en": "Device ID: {deviceId}",
+        "fr": "Identifiant de l’appareil : {deviceId}",
+        "es": "ID del dispositivo: {deviceId}",
+        "it": "ID dispositivo: {deviceId}",
+        "de": "Geräte-ID: {deviceId}",
+        "pt": "ID do dispositivo: {deviceId}",
+        "pl": "Identyfikator urządzenia: {deviceId}",
+        "nl": "Apparaat-ID: {deviceId}",
+        "ru": "Идентификатор устройства: {deviceId}"
       }
     },
     "approval_nearby_device": {
@@ -530,27 +530,27 @@
       }
     },
     "approval_request_body": {
-      "context": "Approval prompt body: '{arg1} wants to receive \"{arg2}\".' {arg1} = requester name, {arg2} = transfer name.",
+      "context": "Approval prompt body: '{receiver} wants to receive \"{transferName}\".' {receiver} = requester name, {transferName} = transfer name.",
       "args": [
         {
-          "name": "arg1",
+          "name": "receiver",
           "type": "string"
         },
         {
-          "name": "arg2",
+          "name": "transferName",
           "type": "string"
         }
       ],
       "translations": {
-        "en": "{arg1} wants to receive “{arg2}”.",
-        "fr": "{arg1} souhaite recevoir « {arg2} ».",
-        "es": "{arg1} quiere recibir «{arg2}».",
-        "it": "{arg1} vuole ricevere «{arg2}».",
-        "de": "{arg1} möchte „{arg2}“ empfangen.",
-        "pt": "{arg1} quer receber «{arg2}».",
-        "pl": "{arg1} chce odebrać „{arg2}”.",
-        "nl": "{arg1} wil ‘{arg2}’ ontvangen.",
-        "ru": "{arg1} хочет получить «{arg2}»."
+        "en": "{receiver} wants to receive “{transferName}”.",
+        "fr": "{receiver} souhaite recevoir « {transferName} ».",
+        "es": "{receiver} quiere recibir «{transferName}».",
+        "it": "{receiver} vuole ricevere «{transferName}».",
+        "de": "{receiver} möchte „{transferName}“ empfangen.",
+        "pt": "{receiver} quer receber «{transferName}».",
+        "pl": "{receiver} chce odebrać „{transferName}”.",
+        "nl": "{receiver} wil ‘{transferName}’ ontvangen.",
+        "ru": "{receiver} хочет получить «{transferName}»."
       }
     },
     "battery_level_title": {
@@ -2240,23 +2240,23 @@
       }
     },
     "receive_delete_history_description": {
-      "context": "Receive history: confirmation body for removing one item. {arg1} = transfer name.",
+      "context": "Receive history: confirmation body for removing one item. {transferName} = transfer name.",
       "args": [
         {
-          "name": "arg1",
+          "name": "transferName",
           "type": "string"
         }
       ],
       "translations": {
-        "en": "“{arg1}” will be removed from VniDrop’s history. The downloaded file will remain on this device.",
-        "fr": "« {arg1} » sera retiré de l’historique de VniDrop. Le fichier téléchargé restera sur cet appareil.",
-        "es": "«{arg1}» se eliminará del historial de VniDrop. El archivo descargado permanecerá en este dispositivo.",
-        "it": "«{arg1}» verrà rimosso dalla cronologia di VniDrop. Il file scaricato rimarrà su questo dispositivo.",
-        "de": "„{arg1}“ wird aus dem Verlauf von VniDrop entfernt. Die heruntergeladene Datei verbleibt auf diesem Gerät.",
-        "pt": "«{arg1}» será removido do histórico do VniDrop. O ficheiro descarregado permanecerá neste dispositivo.",
-        "pl": "„{arg1}” zostanie usunięty z historii VniDrop. Pobrany plik pozostanie na tym urządzeniu.",
-        "nl": "‘{arg1}’ wordt uit de geschiedenis van VniDrop verwijderd. Het gedownloade bestand blijft op dit apparaat.",
-        "ru": "«{arg1}» будет удалён из истории VniDrop. Загруженный файл останется на этом устройстве."
+        "en": "“{transferName}” will be removed from VniDrop’s history. The downloaded file will remain on this device.",
+        "fr": "« {transferName} » sera retiré de l’historique de VniDrop. Le fichier téléchargé restera sur cet appareil.",
+        "es": "«{transferName}» se eliminará del historial de VniDrop. El archivo descargado permanecerá en este dispositivo.",
+        "it": "«{transferName}» verrà rimosso dalla cronologia di VniDrop. Il file scaricato rimarrà su questo dispositivo.",
+        "de": "„{transferName}“ wird aus dem Verlauf von VniDrop entfernt. Die heruntergeladene Datei verbleibt auf diesem Gerät.",
+        "pt": "«{transferName}» será removido do histórico do VniDrop. O ficheiro descarregado permanecerá neste dispositivo.",
+        "pl": "„{transferName}” zostanie usunięty z historii VniDrop. Pobrany plik pozostanie na tym urządzeniu.",
+        "nl": "‘{transferName}’ wordt uit de geschiedenis van VniDrop verwijderd. Het gedownloade bestand blijft op dit apparaat.",
+        "ru": "«{transferName}» будет удалён из истории VniDrop. Загруженный файл останется на этом устройстве."
       }
     },
     "receive_delete_history_item": {
@@ -3358,23 +3358,23 @@
       }
     },
     "transfer_delete_description": {
-      "context": "Transfer details: confirmation body for deleting a transfer. {arg1} = transfer name.",
+      "context": "Transfer details: confirmation body for deleting a transfer. {transferName} = transfer name.",
       "args": [
         {
-          "name": "arg1",
+          "name": "transferName",
           "type": "string"
         }
       ],
       "translations": {
-        "en": "“{arg1}” will stop being shared and its transfer history will be removed from this device.",
-        "fr": "« {arg1} » cessera d’être partagé et son historique de transfert sera retiré de cet appareil.",
-        "es": "«{arg1}» dejará de compartirse y su historial de transferencia se eliminará de este dispositivo.",
-        "it": "«{arg1}» non verrà più condiviso e la sua cronologia di trasferimento verrà rimossa da questo dispositivo.",
-        "de": "„{arg1}“ wird nicht mehr geteilt und sein Übertragungsverlauf wird von diesem Gerät entfernt.",
-        "pt": "«{arg1}» deixará de ser partilhado e o seu histórico de transferência será removido deste dispositivo.",
-        "pl": "„{arg1}” przestanie być udostępniany, a jego historia transferu zostanie usunięta z tego urządzenia.",
-        "nl": "‘{arg1}’ wordt niet meer gedeeld en de overdrachtsgeschiedenis wordt van dit apparaat verwijderd.",
-        "ru": "Общий доступ к «{arg1}» будет остановлен, а история передачи будет удалена с этого устройства."
+        "en": "“{transferName}” will stop being shared and its transfer history will be removed from this device.",
+        "fr": "« {transferName} » cessera d’être partagé et son historique de transfert sera retiré de cet appareil.",
+        "es": "«{transferName}» dejará de compartirse y su historial de transferencia se eliminará de este dispositivo.",
+        "it": "«{transferName}» non verrà più condiviso e la sua cronologia di trasferimento verrà rimossa da questo dispositivo.",
+        "de": "„{transferName}“ wird nicht mehr geteilt und sein Übertragungsverlauf wird von diesem Gerät entfernt.",
+        "pt": "«{transferName}» deixará de ser partilhado e o seu histórico de transferência será removido deste dispositivo.",
+        "pl": "„{transferName}” przestanie być udostępniany, a jego historia transferu zostanie usunięta z tego urządzenia.",
+        "nl": "‘{transferName}’ wordt niet meer gedeeld en de overdrachtsgeschiedenis wordt van dit apparaat verwijderd.",
+        "ru": "Общий доступ к «{transferName}» будет остановлен, а история передачи будет удалена с этого устройства."
       }
     },
     "transfer_delete_title": {

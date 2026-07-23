@@ -149,12 +149,9 @@ final class ApprovalCoordinator: ObservableObject {
 		for request in pending where !publishedNotificationIds.contains(request.id) {
 			let receiver = request.receiverName
 				?? request.receiverDeviceName
-				?? String(localized: "approval_nearby_device")
-			let title = String(localized: "approval_connection_request")
-			let body = String(
-				format: String(localized: "approval_request_body"),
-				receiver, request.transferName
-			)
+				?? String(localized: L10n.Approval.nearbyDevice)
+			let title = String(localized: L10n.Approval.connectionRequest)
+			let body = L10n.Approval.requestBody(receiver: receiver, transferName: request.transferName)
 			let result = await notifications.publish(
 				LocalNotification(id: Self.notificationId(request.id), title: title, body: body)
 			)

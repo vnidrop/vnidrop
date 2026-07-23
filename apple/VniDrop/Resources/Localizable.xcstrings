@@ -1810,7 +1810,7 @@
       }
     },
     "approval_endpoint_id": {
-      "comment": "Approval prompt: shows the requesting device's ID. {arg1} = device/endpoint identifier.",
+      "comment": "Approval prompt: shows the requesting device's ID. {deviceId} = device/endpoint identifier.",
       "extractionState": "manual",
       "localizations": {
         "de": {
@@ -1990,7 +1990,7 @@
       }
     },
     "approval_request_body": {
-      "comment": "Approval prompt body: '{arg1} wants to receive \"{arg2}\".' {arg1} = requester name, {arg2} = transfer name.",
+      "comment": "Approval prompt body: '{receiver} wants to receive \"{transferName}\".' {receiver} = requester name, {transferName} = transfer name.",
       "extractionState": "manual",
       "localizations": {
         "de": {
@@ -9250,7 +9250,7 @@
       }
     },
     "receive_delete_history_description": {
-      "comment": "Receive history: confirmation body for removing one item. {arg1} = transfer name.",
+      "comment": "Receive history: confirmation body for removing one item. {transferName} = transfer name.",
       "extractionState": "manual",
       "localizations": {
         "de": {
@@ -13990,7 +13990,7 @@
       }
     },
     "transfer_delete_description": {
-      "comment": "Transfer details: confirmation body for deleting a transfer. {arg1} = transfer name.",
+      "comment": "Transfer details: confirmation body for deleting a transfer. {transferName} = transfer name.",
       "extractionState": "manual",
       "localizations": {
         "de": {

@@ -38,32 +38,32 @@ private struct ApprovalSheet: View {
 
 	var body: some View {
 		let busy = state.respondingIds.contains(request.id)
-		let receiver = request.receiverName ?? request.receiverDeviceName ?? String(localized: "approval_nearby_device")
+		let receiver = request.receiverName ?? request.receiverDeviceName ?? String(localized: L10n.Approval.nearbyDevice)
 		VStack(spacing: 16) {
 			Image(systemName: "checkmark.shield.fill")
 				.font(.system(size: 44))
 				.foregroundStyle(.tint)
 				.padding(.top, 12)
-			Text(LocalizedStringKey("approval_connection_request"))
+			Text(String(localized: L10n.Approval.connectionRequest))
 				.font(.title2).fontWeight(.semibold)
-			Text(String(format: String(localized: "approval_request_body"), receiver, request.transferName))
+			Text(L10n.Approval.requestBody(receiver: receiver, transferName: request.transferName))
 				.multilineTextAlignment(.center)
-			Text(String(format: String(localized: "approval_endpoint_id"), request.remoteEndpointId))
+			Text(L10n.Approval.endpointId(deviceId: request.remoteEndpointId))
 				.font(.caption).foregroundStyle(.secondary)
 				.multilineTextAlignment(.center)
 			if state.pending.count > 1 {
-				Text(String(format: String(localized: "approval_pending_count"), state.pending.count))
+				Text(L10n.Approval.pendingCount(count: state.pending.count))
 					.font(.caption).foregroundStyle(.secondary)
 			}
 			Spacer(minLength: 0)
 			if busy { ProgressView() }
 			VStack(spacing: 10) {
 				Button(action: { onAccept(request.id) }) {
-					Text(LocalizedStringKey("button_approve")).frame(maxWidth: .infinity)
+					Text(String(localized: L10n.Button.approve)).frame(maxWidth: .infinity)
 				}
 				.buttonStyle(.borderedProminent).controlSize(.large).disabled(busy)
 				Button(role: .destructive, action: { onRefuse(request.id) }) {
-					Text(LocalizedStringKey("button_refuse")).frame(maxWidth: .infinity)
+					Text(String(localized: L10n.Button.refuse)).frame(maxWidth: .infinity)
 				}
 				.buttonStyle(.bordered).controlSize(.large).disabled(busy)
 			}

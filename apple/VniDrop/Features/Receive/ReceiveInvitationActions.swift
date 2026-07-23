@@ -23,25 +23,25 @@ struct ReceiveMethodPanel: View {
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 12) {
-			Text(LocalizedStringKey("receive_choose_method_title")).font(VniType.titleLarge)
-			Text(LocalizedStringKey("receive_choose_method_body")).foregroundStyle(colors.foregroundLighter)
+			Text(String(localized: L10n.Receive.chooseMethodTitle)).font(VniType.titleLarge)
+			Text(String(localized: L10n.Receive.chooseMethodBody)).foregroundStyle(colors.foregroundLighter)
 
 			MethodRow(
-				icon: "doc", titleKey: "receive_method_file", descKey: "receive_method_file_description",
+				icon: "doc", titleKey: L10n.Receive.methodFile, descKey: L10n.Receive.methodFileDescription,
 				availability: actions.fileAvailability
 			) { actions.pickInvitation { model.onInvitationResult(.invitationFile, $0) } }
 
 			if actions.qrAvailability != .hidden {
 				MethodRow(
-					icon: "qrcode.viewfinder", titleKey: "receive_method_scan", descKey: "receive_method_scan_description",
+					icon: "qrcode.viewfinder", titleKey: L10n.Receive.methodScan, descKey: L10n.Receive.methodScanDescription,
 					availability: actions.qrAvailability
 				) { actions.scanQrCode { model.onInvitationResult(.qrCode, $0) } }
 			}
 			if actions.nfcAvailability != .hidden {
 				MethodRow(
 					icon: "wave.3.right",
-					titleOverride: model.state.isWaitingForNfc ? String(localized: "receive_nfc_waiting") : nil,
-					titleKey: "receive_method_nfc", descKey: "receive_method_nfc_description",
+					titleOverride: model.state.isWaitingForNfc ? String(localized: L10n.Receive.nfcWaiting) : nil,
+					titleKey: L10n.Receive.methodNfc, descKey: L10n.Receive.methodNfcDescription,
 					availability: model.state.isWaitingForNfc ? .unavailable : actions.nfcAvailability
 				) {
 					model.setWaitingForNfc(true)
@@ -58,8 +58,8 @@ private struct MethodRow: View {
 	@Environment(\.vniColors) private var colors
 	let icon: String
 	var titleOverride: String? = nil
-	let titleKey: String
-	let descKey: String
+	let titleKey: String.LocalizationValue
+	let descKey: String.LocalizationValue
 	let availability: ReceiveMethodAvailability
 	let onTap: () -> Void
 
@@ -74,13 +74,13 @@ private struct MethodRow: View {
 					if let titleOverride {
 						Text(titleOverride).font(VniType.bodyLarge)
 					} else {
-						Text(LocalizedStringKey(titleKey)).font(VniType.bodyLarge)
+						Text(String(localized: titleKey)).font(VniType.bodyLarge)
 					}
-					Text(LocalizedStringKey(descKey)).font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
+					Text(String(localized: descKey)).font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
 				}
 				Spacer()
 				if availability == .unavailable {
-					Text(LocalizedStringKey("value_unavailable")).font(VniType.labelSmall).foregroundStyle(colors.foregroundLighter)
+					Text(String(localized: L10n.Value.unavailable)).font(VniType.labelSmall).foregroundStyle(colors.foregroundLighter)
 				}
 			}
 			.padding(16)
@@ -102,7 +102,7 @@ struct InvitationReviewPanel: View {
 
 	var body: some View {
 		VStack(alignment: .leading, spacing: 14) {
-			Text(LocalizedStringKey("receive_review_title")).font(VniType.titleLarge)
+			Text(String(localized: L10n.Receive.reviewTitle)).font(VniType.titleLarge)
 			if state.isInspecting {
 				ProgressView().frame(maxWidth: .infinity).padding(40)
 			}
@@ -110,16 +110,16 @@ struct InvitationReviewPanel: View {
 				let metadata = inspection.metadata
 				VStack(alignment: .leading, spacing: 8) {
 					Text(metadata.transferName).font(VniType.bodyLarge).lineLimit(2)
-					Text("\(metadata.fileCount) \(String(localized: "metadata_files").lowercased()) · \(formatBytes(metadata.totalSize))")
+					Text("\(metadata.fileCount) \(String(localized: L10n.Metadata.files).lowercased()) · \(formatBytes(metadata.totalSize))")
 						.foregroundStyle(colors.foregroundLighter)
 				}
 				.padding(16)
 				.frame(maxWidth: .infinity, alignment: .leading)
 				.background(colors.backgroundSurface200, in: RoundedRectangle(cornerRadius: 14))
 
-				Field(label: String(localized: "field_receiver_name"),
+				Field(label: String(localized: L10n.Field.receiverName),
 					  value: Binding(get: { state.receiverName }, set: { model.setReceiverName($0) }))
-				Text(state.receiveFolder?.displayName ?? String(localized: "value_unavailable"))
+				Text(state.receiveFolder?.displayName ?? String(localized: L10n.Value.unavailable))
 					.font(VniType.bodySmall)
 					.foregroundStyle(state.folderAccessStatus == .writable ? colors.foregroundLight : colors.destructiveDefault)
 
@@ -127,11 +127,11 @@ struct InvitationReviewPanel: View {
 					let progressId = state.activeReceiveTransferId
 						?? model.coreState.events.first { $0.direction == "receive" && $0.transferId != nil }?.transferId
 					let progress = progressId.flatMap { progressForTransfer(events: model.coreState.events, transferId: $0) }
-					ProgressRow(labelKey: progress?.labelKey ?? "progress_receiving", progress: progress?.progress, detail: progress?.detail)
-					SecondaryButton(title: String(localized: "button_cancel_receive"), action: model.cancelActiveReceive)
+					ProgressRow(labelKey: progress?.labelKey ?? L10n.Progress.receiving, progress: progress?.progress, detail: progress?.detail)
+					SecondaryButton(title: String(localized: L10n.Button.cancelReceive), action: model.cancelActiveReceive)
 				} else {
 					PrimaryButton(
-						title: String(localized: "button_receive"), action: model.receive,
+						title: String(localized: L10n.Button.receive), action: model.receive,
 						enabled: state.canReceive(coreInitialized: model.coreState.isInitialized)
 					)
 				}

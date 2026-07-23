@@ -27,11 +27,11 @@ struct SendScreen: View {
 					catalog
 				}
 			}
-			.navigationTitle(Text(LocalizedStringKey("send_title")))
+			.navigationTitle(Text(String(localized: L10n.Send.title)))
 			.toolbar {
 				ToolbarItem(placement: .primaryAction) {
 					Button(action: model.openComposer) {
-						Label(String(localized: "button_create_new_transfer"), systemImage: "plus")
+						Label(String(localized: L10n.Button.createNewTransfer), systemImage: "plus")
 					}
 				}
 			}
@@ -65,14 +65,14 @@ struct SendScreen: View {
 				}
 			}
 			.alert(
-				Text(LocalizedStringKey("transfer_delete_title")),
+				Text(String(localized: L10n.Transfer.deleteTitle)),
 				isPresented: Binding(get: { model.state.isDeleteConfirmationOpen }, set: { if !$0 { Task { @MainActor in model.dismissDeleteTransfer() } } })
 			) {
-				Button(String(localized: "button_cancel"), role: .cancel, action: model.dismissDeleteTransfer)
-				Button(String(localized: "button_delete_transfer"), role: .destructive, action: model.confirmDeleteTransfer)
+				Button(String(localized: L10n.Button.cancel), role: .cancel, action: model.dismissDeleteTransfer)
+				Button(String(localized: L10n.Button.deleteTransfer), role: .destructive, action: model.confirmDeleteTransfer)
 			} message: {
-				Text(String(format: String(localized: "transfer_delete_description"),
-							 transfer.transferName ?? String(localized: "send_new_transfer_title")))
+				Text(L10n.Transfer.deleteDescription(
+					transferName: transfer.transferName ?? String(localized: L10n.Send.newTransferTitle)))
 			}
 	}
 
@@ -92,21 +92,21 @@ struct SendScreen: View {
 					.buttonStyle(.plain)
 				}
 			} header: {
-				Text(LocalizedStringKey("send_transfers_title"))
+				Text(String(localized: L10n.Send.transfersTitle))
 			} footer: {
-				Text(LocalizedStringKey("send_subtitle"))
+				Text(String(localized: L10n.Send.subtitle))
 			}
 		}
 	}
 
 	private var emptyState: some View {
 		ContentUnavailableView {
-			Label(String(localized: "send_empty_title"), systemImage: "paperplane")
+			Label(String(localized: L10n.Send.emptyTitle), systemImage: "paperplane")
 		} description: {
-			Text(LocalizedStringKey("send_empty_body"))
+			Text(String(localized: L10n.Send.emptyBody))
 		} actions: {
 			Button(action: model.openComposer) {
-				Label(String(localized: "button_create_new_transfer"), systemImage: "plus")
+				Label(String(localized: L10n.Button.createNewTransfer), systemImage: "plus")
 			}
 			.buttonStyle(.borderedProminent)
 			.controlSize(.large)
@@ -137,11 +137,11 @@ struct SendScreen: View {
 		let combined = fractions.reduce(0, +) / Double(fractions.count)
 		if active.count == 1 {
 			return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
-									labelKey: "progress_sending", progress: combined)
+									labelKey: L10n.Progress.sending, progress: combined)
 		}
 		return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
-								labelKey: "progress_sending", progress: combined,
-								label: String(format: String(localized: "progress_sending_to_count"), active.count))
+								labelKey: L10n.Progress.sending, progress: combined,
+								label: L10n.Progress.sendingToCount(count: active.count))
 	}
 }
 
@@ -157,7 +157,7 @@ private struct TransferListItem: View {
 				.background(.quaternary, in: RoundedRectangle(cornerRadius: 9))
 			VStack(alignment: .leading, spacing: 3) {
 				HStack {
-					Text(transfer.transferName ?? String(localized: "send_new_transfer_title"))
+					Text(transfer.transferName ?? String(localized: L10n.Send.newTransferTitle))
 						.font(.body).lineLimit(1)
 					Spacer()
 					StatusPill(label: statusLabel(transfer.status), tone: transfer.status.pillTone)
@@ -192,13 +192,13 @@ struct FileArtwork: View {
 }
 
 func statusLabel(_ status: TransferStatus) -> String {
-	String(localized: String.LocalizationValue(statusLabelKey(status)))
+	String(localized: statusLabelKey(status))
 }
 
 func accessPolicyLabel(_ policy: ShareAccessPolicy) -> String {
 	switch policy {
-	case .requireApproval: return String(localized: "send_access_approval")
-	case .anyoneWithTransfer: return String(localized: "send_access_anyone")
+	case .requireApproval: return String(localized: L10n.Send.accessApproval)
+	case .anyoneWithTransfer: return String(localized: L10n.Send.accessAnyone)
 	}
 }
 
