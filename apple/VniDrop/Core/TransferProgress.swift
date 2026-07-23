@@ -18,8 +18,8 @@ func windowClassFor(width: Double) -> WindowClass {
 /// resolved at the view layer.
 struct TransferProgress: Equatable {
 	let transferId: UInt64?
-	let phase: String
-	let kind: String
+	let phase: EventPhase
+	let kind: EventKind
 	let labelKey: String.LocalizationValue
 	let progress: Double?
 	var detail: String? = nil
@@ -40,32 +40,19 @@ func statusLabelKey(_ status: TransferStatus) -> String.LocalizationValue {
 	}
 }
 
-private let progressPhases: Set<String> = [
-	"import", "ticket", "access", "transfer", "download", "export",
-	"lifecycle", "network", "handshake", "error",
-]
-
-private let progressKinds: Set<String> = [
-	"started", "copy-progress", "copy-done", "outboard-progress", "done",
-	"created", "progress", "completed", "aborted", "failed",
-	"connecting", "connected", "found-collection",
-	"cancelled", "share-stopped",
-]
-
-/// Latest progress snapshot for a transfer. Events are newest-first.
+/// Latest progress snapshot for a transfer. Events are newest-first. Only events
+/// whose `phase` and `kind` map to known cases participate.
 func progressForTransfer(events: [CoreEventModel], transferId: UInt64) -> TransferProgress? {
 	let relevant = events.filter { event in
-		event.transferId == transferId
-			&& progressPhases.contains(event.phase)
-			&& progressKinds.contains(event.kind)
+		event.transferId == transferId && event.eventPhase != nil && event.eventKind != nil
 	}
-	guard let latest = relevant.first else { return nil }
+	guard let latest = relevant.first, let phase = latest.eventPhase, let kind = latest.eventKind else { return nil }
 	let sizeHint = findKnownSize(events: events, transferId: transferId)
 	return TransferProgress(
 		transferId: transferId,
-		phase: latest.phase,
-		kind: latest.kind,
-		labelKey: humanProgressLabel(latest),
+		phase: phase,
+		kind: kind,
+		labelKey: humanProgressLabel(phase: phase, kind: kind),
 		progress: parseProgress(latest.dataJson, sizeHint: sizeHint),
 		detail: progressDetail(latest)
 	)
@@ -80,32 +67,31 @@ func progressForReceiver(
 ) -> TransferProgress? {
 	if remoteEndpointId.isEmpty { return nil }
 	let connectionIds = connectionIdsForEndpoint(events: events, remoteEndpointId: remoteEndpointId)
+	let receiverKinds: Set<EventKind> = [.started, .progress, .completed, .aborted]
 	let transferEvents = events.filter { event in
 		event.transferId == transferId
-			&& event.direction == "send"
-			&& event.phase == "transfer"
-			&& ["started", "progress", "completed", "aborted"].contains(event.kind)
+			&& event.eventDirection == .send
+			&& event.eventPhase == .transfer
+			&& (event.eventKind.map(receiverKinds.contains) ?? false)
 			&& eventBelongsToReceiver(event, remoteEndpointId: remoteEndpointId, connectionIds: connectionIds)
 	}
-	if transferEvents.isEmpty { return nil }
-
-	let latest = transferEvents[0]
-	if latest.kind == "aborted" {
+	guard let latest = transferEvents.first, let latestKind = latest.eventKind else { return nil }
+	if latestKind == .aborted {
 		return TransferProgress(
-			transferId: transferId, phase: "transfer", kind: "aborted",
+			transferId: transferId, phase: .transfer, kind: .aborted,
 			labelKey: L10n.Progress.interrupted, progress: nil, detail: nil
 		)
 	}
-	if latest.kind == "completed" && !transferEvents.contains(where: { $0.kind == "progress" || $0.kind == "started" }) {
+	if latestKind == .completed && !transferEvents.contains(where: { $0.eventKind == .progress || $0.eventKind == .started }) {
 		return TransferProgress(
-			transferId: transferId, phase: "transfer", kind: "completed",
+			transferId: transferId, phase: .transfer, kind: .completed,
 			labelKey: L10n.Progress.completed, progress: 1, detail: nil
 		)
 	}
 	let progress = aggregateReceiverProgress(events: transferEvents, totalSizeHint: totalSizeHint)
 
 	return TransferProgress(
-		transferId: transferId, phase: "transfer", kind: latest.kind,
+		transferId: transferId, phase: .transfer, kind: latestKind,
 		labelKey: L10n.Progress.sending, progress: progress, detail: progressDetail(latest)
 	)
 }
@@ -127,25 +113,25 @@ func formatBytes(_ size: UInt64) -> String {
 
 // MARK: - Internals (ported literally from AppUiModels.kt)
 
-private func humanProgressLabel(_ event: CoreEventModel) -> String.LocalizationValue {
-	switch (event.phase, event.kind) {
-	case ("import", "copy-progress"), ("import", "outboard-progress"), ("import", "started"):
+private func humanProgressLabel(phase: EventPhase, kind: EventKind) -> String.LocalizationValue {
+	switch (phase, kind) {
+	case (.importing, .copyProgress), (.importing, .outboardProgress), (.importing, .started):
 		return L10n.Progress.preparing
-	case ("import", "done"): return L10n.Progress.ready
-	case ("ticket", "created"): return L10n.Progress.shareReady
-	case ("network", "connecting"): return L10n.Progress.connecting
-	case ("network", "connected"): return L10n.Progress.connected
-	case ("download", "found-collection"): return L10n.Progress.gettingReady
-	case ("download", "progress"): return L10n.Progress.downloading
-	case ("export", "progress"): return L10n.Progress.saving
-	case ("transfer", "progress"): return L10n.Progress.sending
-	case ("transfer", "started"): return L10n.Progress.connected
-	case ("transfer", "completed"): return L10n.Progress.completed
-	case ("lifecycle", "done"): return L10n.Progress.completed
-	case ("lifecycle", "cancelled"): return L10n.Progress.cancelled
+	case (.importing, .done): return L10n.Progress.ready
+	case (.ticket, .created): return L10n.Progress.shareReady
+	case (.network, .connecting): return L10n.Progress.connecting
+	case (.network, .connected): return L10n.Progress.connected
+	case (.download, .foundCollection): return L10n.Progress.gettingReady
+	case (.download, .progress): return L10n.Progress.downloading
+	case (.export, .progress): return L10n.Progress.saving
+	case (.transfer, .progress): return L10n.Progress.sending
+	case (.transfer, .started): return L10n.Progress.connected
+	case (.transfer, .completed): return L10n.Progress.completed
+	case (.lifecycle, .done): return L10n.Progress.completed
+	case (.lifecycle, .cancelled): return L10n.Progress.cancelled
 	default:
-		if event.phase == "handshake" { return L10n.Progress.requestingAccess }
-		if event.kind == "failed" { return L10n.Progress.failed }
+		if phase == .handshake { return L10n.Progress.requestingAccess }
+		if kind == .failed { return L10n.Progress.failed }
 		return L10n.Progress.working
 	}
 }
@@ -217,14 +203,14 @@ private func aggregateReceiverProgress(events: [CoreEventModel], totalSizeHint: 
 				order.append(requestKey)
 			}
 			if let size, size > 0 { state.size = size }
-			switch event.kind {
-			case "progress", "started":
+			switch event.eventKind {
+			case .progress, .started:
 				if let endOffset { state.offset = max(state.offset, endOffset) }
 				state.aborted = false
-			case "completed":
+			case .completed:
 				state.completed = true
 				if let s = state.size { state.offset = s }
-			case "aborted":
+			case .aborted:
 				state.aborted = true
 			default:
 				break

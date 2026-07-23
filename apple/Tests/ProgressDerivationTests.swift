@@ -57,7 +57,7 @@ final class ProgressDerivationTests: XCTestCase {
 			remoteEndpointId: "peer-a",
 			totalSizeHint: 100
 		)
-		XCTAssertEqual(progress?.kind, "completed")
+		XCTAssertEqual(progress?.kind, .completed)
 		XCTAssertEqual(progress?.labelKey, L10n.Progress.completed)
 		XCTAssertEqual(progress?.progress, 1)
 	}

@@ -134,10 +134,10 @@ struct SendScreen: View {
 		}
 		let combined = fractions.isEmpty ? nil : fractions.reduce(0, +) / Double(fractions.count)
 		if active.count == 1 {
-			return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
+			return TransferProgress(transferId: transfer.transferId, phase: .transfer, kind: .progress,
 									labelKey: L10n.Progress.sending, progress: combined)
 		}
-		return TransferProgress(transferId: transfer.transferId, phase: "transfer", kind: "progress",
+		return TransferProgress(transferId: transfer.transferId, phase: .transfer, kind: .progress,
 								labelKey: L10n.Progress.sending, progress: combined,
 								label: L10n.Progress.sendingToCount(count: active.count))
 	}

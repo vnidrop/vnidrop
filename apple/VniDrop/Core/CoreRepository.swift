@@ -298,14 +298,15 @@ private extension CoreEvent {
 	}
 }
 
-private let refreshPhases: Set<String> = ["lifecycle", "error", "ticket", "import", "download", "export", "handshake"]
-private let refreshKinds: Set<String> = [
-	"started", "done", "created", "failed", "cancelled", "share-stopped", "found-collection", "connected",
+private let refreshPhases: Set<EventPhase> = [.lifecycle, .error, .ticket, .importing, .download, .export, .handshake]
+private let refreshKinds: Set<EventKind> = [
+	.started, .done, .created, .failed, .cancelled, .shareStopped, .foundCollection, .connected,
 ]
 
 private extension CoreEventModel {
 	var shouldRefreshTransfers: Bool {
-		refreshPhases.contains(phase) && refreshKinds.contains(kind)
+		guard let eventPhase, let eventKind else { return false }
+		return refreshPhases.contains(eventPhase) && refreshKinds.contains(eventKind)
 	}
 }
 

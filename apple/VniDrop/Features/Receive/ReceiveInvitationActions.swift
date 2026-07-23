@@ -129,7 +129,7 @@ struct InvitationReviewPanel: View {
 
 				if state.isReceiving {
 					let progressId = state.activeReceiveTransferId
-						?? model.coreState.events.first { $0.direction == "receive" && $0.transferId != nil }?.transferId
+						?? model.coreState.events.first { $0.eventDirection == .receive && $0.transferId != nil }?.transferId
 					let progress = progressId.flatMap { progressForTransfer(events: model.coreState.events, transferId: $0) }
 					ProgressRow(labelKey: progress?.labelKey ?? L10n.Progress.receiving, progress: progress?.progress, detail: progress?.detail)
 					SecondaryButton(title: String(localized: L10n.Button.cancelReceive), action: model.cancelActiveReceive)

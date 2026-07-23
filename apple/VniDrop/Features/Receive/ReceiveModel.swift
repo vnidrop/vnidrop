@@ -202,7 +202,7 @@ final class ReceiveModel: ObservableObject {
 	func cancelActiveReceive() {
 		let transferId = state.activeReceiveTransferId
 			?? coreState.transfers.first { $0.direction == .receive && $0.status == .receiving }?.transferId
-			?? coreState.events.first { $0.direction == "receive" && $0.transferId != nil }?.transferId
+			?? coreState.events.first { $0.eventDirection == .receive && $0.transferId != nil }?.transferId
 		guard let transferId else { return }
 		Task {
 			let result = await repository.cancel(transferId: transferId)
