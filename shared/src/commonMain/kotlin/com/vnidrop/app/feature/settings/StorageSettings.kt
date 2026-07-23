@@ -13,17 +13,28 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.ui.components.AdaptiveDrawer
+import com.vnidrop.app.ui.components.DestructiveButton
+import com.vnidrop.app.ui.components.SecondaryButton
 import com.vnidrop.app.ui.state.formatBytes
+import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
+import vnidrop.shared.generated.resources.button_cancel
 import vnidrop.shared.generated.resources.storage_app_data
 import vnidrop.shared.generated.resources.storage_calculating
 import vnidrop.shared.generated.resources.storage_delete_transfers
+import vnidrop.shared.generated.resources.storage_delete_transfers_description
 import vnidrop.shared.generated.resources.storage_deleting
 import vnidrop.shared.generated.resources.storage_total
 import vnidrop.shared.generated.resources.storage_received_files
@@ -35,10 +46,12 @@ import vnidrop.shared.generated.resources.storage_footer
 @Composable
 internal fun StorageSettings(
 	state: SettingsState,
+	windowClass: WindowClass,
 	onDeleteAllTransfers: () -> Unit,
 	onBack: () -> Unit,
 	showBack: Boolean,
 ) {
+	var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 		SettingsTopBar(stringResource(Res.string.storage_title), onBack, showBack)
 		val storage = state.storage
@@ -67,7 +80,7 @@ internal fun StorageSettings(
 			}
 		}
 		Button(
-			onClick = onDeleteAllTransfers,
+			onClick = { showDeleteConfirmation = true },
 			enabled = !state.isDeletingTransfers,
 			colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
 		) {
@@ -78,6 +91,50 @@ internal fun StorageSettings(
 			style = MaterialTheme.typography.bodySmall,
 			color = LocalVniDropColors.current.foregroundLighter,
 		)
+	}
+	if (showDeleteConfirmation) {
+		AdaptiveDrawer(
+			windowClass = windowClass,
+			onDismissRequest = { showDeleteConfirmation = false },
+		) {
+			DeleteAllTransfersPanel(
+				onCancel = { showDeleteConfirmation = false },
+				onConfirm = {
+					showDeleteConfirmation = false
+					onDeleteAllTransfers()
+				},
+			)
+		}
+	}
+}
+
+@Composable
+private fun DeleteAllTransfersPanel(
+	onCancel: () -> Unit,
+	onConfirm: () -> Unit,
+) {
+	Column(
+		Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp),
+		verticalArrangement = Arrangement.spacedBy(14.dp),
+	) {
+		Text(
+			stringResource(Res.string.storage_delete_transfers),
+			style = MaterialTheme.typography.titleLarge,
+			fontWeight = FontWeight.Bold,
+		)
+		Text(
+			stringResource(Res.string.storage_delete_transfers_description),
+			color = LocalVniDropColors.current.foregroundLighter,
+			style = MaterialTheme.typography.bodyMedium,
+		)
+		Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End)) {
+			SecondaryButton(stringResource(Res.string.button_cancel), onClick = onCancel)
+			DestructiveButton(
+				stringResource(Res.string.storage_delete_transfers),
+				onClick = onConfirm,
+				modifier = Modifier.testTag("confirm-delete-all-transfers"),
+			)
+		}
 	}
 }
 

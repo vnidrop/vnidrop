@@ -64,6 +64,7 @@ import com.vnidrop.app.ui.theme.VniDropTheme
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalTestApi::class)
@@ -170,6 +171,45 @@ class FoundationComposeTest {
 		onNodeWithText("Add relay server").assertIsDisplayed()
 		onNodeWithText("Apply network settings").performClick()
 		runOnIdle { assertTrue(applied) }
+	}
+
+	@Test
+	fun storageDeleteAllTransfersRequiresConfirmation() = runComposeUiTest {
+		var deleteRequested = false
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				SettingsScreen(
+					state = SettingsState(selectedSection = SettingsSection.Storage),
+					windowClass = WindowClass.Desktop,
+					onSectionSelected = {},
+					onUsernameChanged = {},
+					onThemeModeChanged = {},
+					onChooseFolder = {},
+					onResetFolder = {},
+					onNotificationsChanged = {},
+					onOpenNotificationSettings = {},
+					onDiagnosticsChanged = {},
+					onBugWhatChanged = {},
+					onBugExpectedChanged = {},
+					onBugStepsChanged = {},
+					onBugContactChanged = {},
+					onBugIncludeLogsChanged = {},
+					onSubmitBugReport = {},
+					onDeleteAllTransfers = { deleteRequested = true },
+				)
+			}
+		}
+
+		onNodeWithText("Delete all transfers").performClick()
+		onNodeWithText(
+			"This clears all sent and received transfer records from your history. Your received files are not deleted. " +
+				"Cached shared content that is no longer needed is reclaimed automatically, which may take a little time. " +
+				"This can’t be undone.",
+		).assertIsDisplayed()
+		runOnIdle { assertFalse(deleteRequested) }
+
+		onNodeWithTag("confirm-delete-all-transfers").performClick()
+		runOnIdle { assertTrue(deleteRequested) }
 	}
 
 	@Test

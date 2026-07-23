@@ -48,6 +48,7 @@ fun SettingsScreen(
 			Column(Modifier.weight(1f)) {
 				SettingsSectionContent(
 					state = state,
+					windowClass = windowClass,
 					section = state.selectedSection.takeUnless { it == SettingsSection.Overview } ?: SettingsSection.Preferences,
 					onBack = {},
 					showBack = false,
@@ -79,6 +80,7 @@ fun SettingsScreen(
 			SettingsSection.Overview -> SettingsOverview(state, onSectionSelected, largeTitle = true)
 			else -> SettingsSectionContent(
 				state = state,
+				windowClass = windowClass,
 				section = state.selectedSection,
 				onBack = {
 					onSectionSelected(
@@ -118,6 +120,7 @@ fun SettingsScreen(
 @Composable
 private fun SettingsSectionContent(
 	state: SettingsState,
+	windowClass: WindowClass,
 	section: SettingsSection,
 	onBack: () -> Unit,
 	showBack: Boolean,
@@ -157,7 +160,7 @@ private fun SettingsSectionContent(
 			showBack = showBack,
 		)
 		SettingsSection.Notifications -> NotificationSettings(state, onNotificationsChanged, onOpenNotificationSettings, onBack, showBack)
-		SettingsSection.Storage -> StorageSettings(state, onDeleteAllTransfers, onBack, showBack)
+		SettingsSection.Storage -> StorageSettings(state, windowClass, onDeleteAllTransfers, onBack, showBack)
 		SettingsSection.About -> AboutSettings(
 			state = state,
 			onDiagnosticsChanged = onDiagnosticsChanged,
