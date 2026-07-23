@@ -248,7 +248,7 @@ final class SettingsModel: ObservableObject {
 	func setRelayMode(_ mode: RelayPreferenceMode) {
 		hasRelayConfigurationDraft = true
 		state.relayMode = mode
-		if mode == .custom && state.relayURLs.isEmpty { state.relayURLs = [""] }
+		if mode.usesCustomRelayURLs && state.relayURLs.isEmpty { state.relayURLs = [""] }
 		updateRelayConfigurationDraft()
 	}
 
@@ -351,7 +351,7 @@ final class SettingsModel: ObservableObject {
 		state.relayValidationError = nil
 		state.relayApplyErrorKey = nil
 		let saved = preferences.preferences.relayConfiguration
-		let draftURLs = state.relayMode == .automatic ? saved.relayURLs : state.relayURLs
+		let draftURLs = state.relayMode.usesCustomRelayURLs ? state.relayURLs : saved.relayURLs
 		state.relayConfigurationIsDirty = saved != RelayConfiguration(mode: state.relayMode, relayURLs: draftURLs)
 		hasRelayConfigurationDraft = state.relayConfigurationIsDirty
 	}

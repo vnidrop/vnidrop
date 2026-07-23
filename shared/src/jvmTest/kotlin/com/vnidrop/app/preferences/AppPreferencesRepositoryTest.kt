@@ -33,13 +33,36 @@ class AppPreferencesRepositoryTest {
 	fun customRelaySettingsArePersisted() = runBlocking {
 		val repository = repositoryForTest()
 		val custom = RelaySettings(
-			mode = RelayMode.Custom,
+			mode = RelayMode.StrictCustom,
 			relayUrls = listOf("https://relay.example.com", "https://backup.example.com:443"),
 		)
 
 		repository.setRelaySettings(custom)
 
 		assertEquals(custom, repository.preferences.first().relaySettings)
+	}
+
+	@Test
+	fun legacyCustomRelayModeMigratesToStrictCustom() = runBlocking {
+		val directory = Files.createTempDirectory("vnidrop-preferences-test").toString()
+		val dataStore = createAppPreferencesDataStore(directory)
+		dataStore.edit { preferences ->
+			preferences[stringPreferencesKey("relay_mode")] = "Custom"
+			preferences[stringPreferencesKey("relay_urls")] = "https://relay.example.com"
+		}
+		val repository = AppPreferencesRepository(
+			dataStore = dataStore,
+			defaults = AppPreferencesDefaults(
+				username = "Device Name",
+				receiveFolder = defaultFolder,
+				themeMode = ThemeMode.System,
+			),
+		)
+
+		assertEquals(
+			RelaySettings(RelayMode.StrictCustom, listOf("https://relay.example.com")),
+			repository.preferences.first().relaySettings,
+		)
 	}
 
 	@Test
@@ -59,7 +82,7 @@ class AppPreferencesRepositoryTest {
 			),
 		)
 
-		assertEquals(RelaySettings(RelayMode.Custom), repository.preferences.first().relaySettings)
+		assertEquals(RelaySettings(RelayMode.StrictCustom), repository.preferences.first().relaySettings)
 
 		repository.setRelaySettings(RelaySettings())
 		assertEquals(RelaySettings(), repository.preferences.first().relaySettings)
@@ -85,7 +108,7 @@ class AppPreferencesRepositoryTest {
 			),
 		)
 
-		assertEquals(RelaySettings(RelayMode.Custom), repository.preferences.first().relaySettings)
+		assertEquals(RelaySettings(RelayMode.StrictCustom), repository.preferences.first().relaySettings)
 	}
 
 	@Test

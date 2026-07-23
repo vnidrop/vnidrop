@@ -120,14 +120,21 @@ fn saved_ticket_relay_profile_matching_is_mode_aware_and_order_insensitive() {
     assert!(ticket_matches_relay_profile(
         &custom_ticket,
         &limits,
-        CoreRelayMode::Custom,
+        CoreRelayMode::StrictCustom,
+        &[relay_b.clone(), relay_a.clone()],
+    )
+    .unwrap());
+    assert!(ticket_matches_relay_profile(
+        &custom_ticket,
+        &limits,
+        CoreRelayMode::CustomWithDirectFallback,
         &[relay_b.clone(), relay_a.clone()],
     )
     .unwrap());
     assert!(!ticket_matches_relay_profile(
         &custom_ticket,
         &limits,
-        CoreRelayMode::Custom,
+        CoreRelayMode::StrictCustom,
         &[relay_a.clone(), relay_c],
     )
     .unwrap());
@@ -145,10 +152,21 @@ fn saved_ticket_relay_profile_matching_is_mode_aware_and_order_insensitive() {
     assert!(!ticket_matches_relay_profile(
         &automatic_ticket,
         &limits,
-        CoreRelayMode::Custom,
+        CoreRelayMode::StrictCustom,
         &[relay_a],
     )
     .unwrap());
+    assert!(ticket_matches_relay_profile(
+        &automatic_ticket,
+        &limits,
+        CoreRelayMode::LocalOnly,
+        &[],
+    )
+    .unwrap());
+    assert!(
+        !ticket_matches_relay_profile(&custom_ticket, &limits, CoreRelayMode::LocalOnly, &[],)
+            .unwrap()
+    );
 }
 
 #[test]

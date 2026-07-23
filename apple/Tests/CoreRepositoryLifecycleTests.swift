@@ -94,7 +94,7 @@ final class CoreRepositoryLifecycleTests: XCTestCase {
 
 		let concurrentInitialization = await repository.initialize(
 			appDataDir: "/tmp/second",
-			networkConfiguration: RelayConfiguration(mode: .custom, relayURLs: ["https://relay.example"])
+			networkConfiguration: RelayConfiguration(mode: .strictCustom, relayURLs: ["https://relay.example"])
 		)
 		assertLifecycleFailure(concurrentInitialization, equals: .transitionInProgress)
 

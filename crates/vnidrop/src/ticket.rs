@@ -142,7 +142,7 @@ pub(crate) fn parse_transfer_ticket_with_limits(
         Vec::new()
     } else {
         CoreNetworkConfig {
-            mode: CoreRelayMode::Custom,
+            mode: CoreRelayMode::StrictCustom,
             relay_urls: ticket.relay_urls,
         }
         .validated_relay_urls()
@@ -171,7 +171,7 @@ pub(crate) fn ticket_matches_relay_profile(
     let parsed = parse_transfer_ticket_with_limits(value, limits)?;
     match relay_mode {
         CoreRelayMode::Automatic => Ok(parsed.advertised_custom_relay_urls.is_empty()),
-        CoreRelayMode::Custom => {
+        CoreRelayMode::StrictCustom | CoreRelayMode::CustomWithDirectFallback => {
             let advertised = parsed
                 .advertised_custom_relay_urls
                 .into_iter()
@@ -179,6 +179,8 @@ pub(crate) fn ticket_matches_relay_profile(
             let configured = custom_relay_urls.iter().cloned().collect::<BTreeSet<_>>();
             Ok(advertised == configured)
         }
+        CoreRelayMode::LocalOnly => Ok(parsed.advertised_custom_relay_urls.is_empty()
+            && parsed.blob_ticket.addr().relay_urls().next().is_none()),
     }
 }
 

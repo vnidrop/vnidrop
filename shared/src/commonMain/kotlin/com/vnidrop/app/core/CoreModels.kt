@@ -29,13 +29,18 @@ enum class ShareAccessPolicy {
 
 enum class RelayMode {
 	Automatic,
-	Custom,
+	StrictCustom,
+	CustomWithDirectFallback,
+	LocalOnly,
 }
 
 data class RelaySettings(
 	val mode: RelayMode = RelayMode.Automatic,
 	val relayUrls: List<String> = emptyList(),
 )
+
+val RelayMode.usesCustomRelayUrls: Boolean
+	get() = this == RelayMode.StrictCustom || this == RelayMode.CustomWithDirectFallback
 
 enum class TransferDirection {
 	Send,

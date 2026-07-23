@@ -145,10 +145,10 @@ class FoundationComposeTest {
 
 		onNodeWithText("Network").performClick()
 		onNodeWithText("Device ID: endpoint-for-allowlist").assertIsDisplayed()
-		onNodeWithText("Custom").performClick()
+		onNodeWithText("Strict custom").performClick()
 		onNodeWithText(
-			"Custom mode is strict: VniDrop will not fall back to public relays or public discovery. " +
-				"Other devices must be able to reach your configured relays.",
+			"Strict custom mode will not start unless at least one configured relay is reachable. " +
+				"VniDrop never uses public relays or public discovery in this mode.",
 		).assertIsDisplayed()
 		onNodeWithText("Apply network settings").performClick()
 		runOnIdle { assertTrue(applied) }

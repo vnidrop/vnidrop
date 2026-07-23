@@ -2598,15 +2598,15 @@
     "relay_mode_automatic": {
       "context": "Network settings label for VniDrop's automatic public relay mode.",
       "translations": {
-        "en": "Automatic",
-        "fr": "Automatique",
-        "es": "Automático",
-        "it": "Automatica",
-        "de": "Automatisch",
-        "pt": "Automático",
-        "pl": "Automatyczny",
-        "nl": "Automatisch",
-        "ru": "Автоматически"
+        "en": "Automatic (recommended)",
+        "fr": "Automatique (recommandé)",
+        "es": "Automático (recomendado)",
+        "it": "Automatica (consigliata)",
+        "de": "Automatisch (empfohlen)",
+        "pt": "Automático (recomendado)",
+        "pl": "Automatyczny (zalecany)",
+        "nl": "Automatisch (aanbevolen)",
+        "ru": "Автоматически (рекомендуется)"
       }
     },
     "relay_mode_automatic_description": {
@@ -2626,29 +2626,85 @@
     "relay_mode_custom": {
       "context": "Network settings label for strict custom relay mode.",
       "translations": {
-        "en": "Custom",
-        "fr": "Personnalisé",
-        "es": "Personalizado",
-        "it": "Personalizzata",
-        "de": "Benutzerdefiniert",
-        "pt": "Personalizado",
-        "pl": "Niestandardowy",
-        "nl": "Aangepast",
-        "ru": "Пользовательский"
+        "en": "Strict custom",
+        "fr": "Personnalisé strict",
+        "es": "Personalizado estricto",
+        "it": "Personalizzata rigorosa",
+        "de": "Strikt benutzerdefiniert",
+        "pt": "Personalizado estrito",
+        "pl": "Ścisły niestandardowy",
+        "nl": "Strikt aangepast",
+        "ru": "Строго пользовательский"
       }
     },
     "relay_mode_custom_description": {
       "context": "Network settings description of strict custom relay behavior.",
       "translations": {
-        "en": "Use only the relay servers below.",
-        "fr": "Utiliser uniquement les serveurs relais ci-dessous.",
-        "es": "Usa únicamente los servidores de retransmisión indicados a continuación.",
-        "it": "Usa solo i server relay indicati di seguito.",
-        "de": "Verwendet ausschließlich die unten aufgeführten Relay-Server.",
-        "pt": "Utiliza apenas os servidores de retransmissão abaixo.",
-        "pl": "Używa wyłącznie poniższych serwerów przekaźnikowych.",
-        "nl": "Gebruikt alleen de onderstaande relayservers.",
-        "ru": "Использовать только указанные ниже серверы-ретрансляторы."
+        "en": "Use only the configured custom relays or direct connections. Report an error if no custom relay can be established.",
+        "fr": "Utilise uniquement les relais personnalisés configurés ou les connexions directes. Signale une erreur si aucun relais personnalisé ne peut être établi.",
+        "es": "Usa solo los relés personalizados configurados o conexiones directas. Informa de un error si no se puede establecer ningún relé personalizado.",
+        "it": "Usa solo i relay personalizzati configurati o connessioni dirette. Segnala un errore se non è possibile stabilire alcun relay personalizzato.",
+        "de": "Verwendet nur die konfigurierten eigenen Relays oder Direktverbindungen. Meldet einen Fehler, wenn kein eigenes Relay erreichbar ist.",
+        "pt": "Utiliza apenas os retransmissores personalizados configurados ou ligações diretas. Apresenta um erro se não for possível estabelecer nenhum retransmissor personalizado.",
+        "pl": "Używa tylko skonfigurowanych własnych przekaźników lub połączeń bezpośrednich. Zgłasza błąd, jeśli nie można połączyć się z żadnym własnym przekaźnikiem.",
+        "nl": "Gebruikt alleen de ingestelde aangepaste relays of rechtstreekse verbindingen. Meldt een fout als geen aangepaste relay bereikbaar is.",
+        "ru": "Использует только настроенные пользовательские ретрансляторы или прямые соединения. Сообщает об ошибке, если ни один пользовательский ретранслятор недоступен."
+      }
+    },
+    "relay_mode_custom_direct_fallback": {
+      "context": "Network settings label for custom relays that allow direct-only startup fallback.",
+      "translations": {
+        "en": "Custom with direct fallback",
+        "fr": "Personnalisé avec repli direct",
+        "es": "Personalizado con conexión directa de reserva",
+        "it": "Personalizzata con ripiego diretto",
+        "de": "Benutzerdefiniert mit direktem Rückfall",
+        "pt": "Personalizado com alternativa direta",
+        "pl": "Niestandardowy z trybem bezpośrednim",
+        "nl": "Aangepast met directe terugval",
+        "ru": "Пользовательский с прямым резервом"
+      }
+    },
+    "relay_mode_custom_direct_fallback_description": {
+      "context": "Network settings description of custom relays with direct-only startup fallback.",
+      "translations": {
+        "en": "Prefer the configured custom relays. If unavailable, continue with direct connections only. Never use public relays.",
+        "fr": "Préfère les relais personnalisés configurés. S’ils sont indisponibles, continue uniquement avec des connexions directes. N’utilise jamais les relais publics.",
+        "es": "Prefiere los relés personalizados configurados. Si no están disponibles, continúa solo con conexiones directas. Nunca usa relés públicos.",
+        "it": "Preferisce i relay personalizzati configurati. Se non sono disponibili, continua solo con connessioni dirette. Non usa mai relay pubblici.",
+        "de": "Bevorzugt die konfigurierten eigenen Relays. Sind sie nicht verfügbar, werden nur Direktverbindungen verwendet. Öffentliche Relays werden nie genutzt.",
+        "pt": "Prefere os retransmissores personalizados configurados. Se não estiverem disponíveis, continua apenas com ligações diretas. Nunca utiliza retransmissores públicos.",
+        "pl": "Preferuje skonfigurowane własne przekaźniki. Jeśli są niedostępne, kontynuuje tylko przez połączenia bezpośrednie. Nigdy nie używa publicznych przekaźników.",
+        "nl": "Geeft de voorkeur aan de ingestelde aangepaste relays. Als die niet beschikbaar zijn, worden alleen rechtstreekse verbindingen gebruikt. Openbare relays worden nooit gebruikt.",
+        "ru": "Предпочитает настроенные пользовательские ретрансляторы. Если они недоступны, продолжает работу только через прямые соединения. Публичные ретрансляторы не используются."
+      }
+    },
+    "relay_mode_local_only": {
+      "context": "Network settings label for direct connections without any relay.",
+      "translations": {
+        "en": "Local only",
+        "fr": "Réseau local uniquement",
+        "es": "Solo red local",
+        "it": "Solo rete locale",
+        "de": "Nur lokales Netzwerk",
+        "pt": "Apenas rede local",
+        "pl": "Tylko sieć lokalna",
+        "nl": "Alleen lokaal netwerk",
+        "ru": "Только локальная сеть"
+      }
+    },
+    "relay_mode_local_only_description": {
+      "context": "Network settings description of direct-only local-network mode.",
+      "translations": {
+        "en": "Disable all relays and allow only direct connections, primarily for devices on the same network.",
+        "fr": "Désactive tous les relais et autorise uniquement les connexions directes, principalement pour les appareils sur le même réseau.",
+        "es": "Desactiva todos los relés y permite solo conexiones directas, principalmente para dispositivos de la misma red.",
+        "it": "Disattiva tutti i relay e consente solo connessioni dirette, soprattutto per dispositivi sulla stessa rete.",
+        "de": "Deaktiviert alle Relays und erlaubt nur Direktverbindungen, hauptsächlich für Geräte im selben Netzwerk.",
+        "pt": "Desativa todos os retransmissores e permite apenas ligações diretas, principalmente para dispositivos na mesma rede.",
+        "pl": "Wyłącza wszystkie przekaźniki i zezwala tylko na połączenia bezpośrednie, głównie dla urządzeń w tej samej sieci.",
+        "nl": "Schakelt alle relays uit en staat alleen rechtstreekse verbindingen toe, vooral voor apparaten in hetzelfde netwerk.",
+        "ru": "Отключает все ретрансляторы и разрешает только прямые соединения, прежде всего для устройств в одной сети."
       }
     },
     "relay_privacy_description": {
@@ -2710,15 +2766,15 @@
     "relay_strict_warning": {
       "context": "Network settings warning that custom relay mode has no public fallback or discovery.",
       "translations": {
-        "en": "Custom mode is strict: VniDrop will not fall back to public relays or public discovery. Other devices must be able to reach your configured relays.",
-        "fr": "Le mode personnalisé est strict : VniDrop n’utilisera ni les relais publics ni la découverte publique comme solution de repli. Les autres appareils doivent pouvoir accéder aux relais configurés.",
-        "es": "El modo personalizado es estricto: VniDrop no recurrirá a relés públicos ni al descubrimiento público. Los demás dispositivos deben poder acceder a los relés configurados.",
-        "it": "La modalità personalizzata è rigorosa: VniDrop non userà relay pubblici o il rilevamento pubblico come ripiego. Gli altri dispositivi devono poter raggiungere i relay configurati.",
-        "de": "Der benutzerdefinierte Modus ist strikt: VniDrop greift weder auf öffentliche Relays noch auf öffentliche Erkennung zurück. Andere Geräte müssen Ihre konfigurierten Relays erreichen können.",
-        "pt": "O modo personalizado é estrito: o VniDrop não recorrerá a retransmissores públicos nem à descoberta pública. Os outros dispositivos têm de conseguir aceder aos retransmissores configurados.",
-        "pl": "Tryb niestandardowy jest rygorystyczny: VniDrop nie użyje awaryjnie publicznych przekaźników ani publicznego wykrywania. Inne urządzenia muszą mieć dostęp do skonfigurowanych przekaźników.",
-        "nl": "De aangepaste modus is strikt: VniDrop valt niet terug op openbare relays of openbare detectie. Andere apparaten moeten uw ingestelde relays kunnen bereiken.",
-        "ru": "Пользовательский режим работает строго: VniDrop не будет переключаться на публичные ретрансляторы или публичное обнаружение. Другие устройства должны иметь доступ к настроенным ретрансляторам."
+        "en": "Strict custom mode will not start unless at least one configured relay is reachable. VniDrop never uses public relays or public discovery in this mode.",
+        "fr": "Le mode personnalisé strict ne démarre que si au moins un relais configuré est accessible. VniDrop n’utilise jamais de relais ni de découverte publics dans ce mode.",
+        "es": "El modo personalizado estricto no se inicia a menos que se pueda acceder al menos a un relé configurado. VniDrop nunca usa relés ni descubrimiento públicos en este modo.",
+        "it": "La modalità personalizzata rigorosa si avvia solo se almeno un relay configurato è raggiungibile. In questa modalità VniDrop non usa mai relay o rilevamento pubblici.",
+        "de": "Der strikt benutzerdefinierte Modus startet nur, wenn mindestens ein konfiguriertes Relay erreichbar ist. VniDrop verwendet in diesem Modus nie öffentliche Relays oder öffentliche Erkennung.",
+        "pt": "O modo personalizado estrito só inicia se pelo menos um retransmissor configurado estiver acessível. Neste modo, o VniDrop nunca utiliza retransmissores nem descoberta públicos.",
+        "pl": "Ścisły tryb niestandardowy uruchamia się tylko wtedy, gdy co najmniej jeden skonfigurowany przekaźnik jest dostępny. VniDrop nigdy nie używa w tym trybie publicznych przekaźników ani publicznego wykrywania.",
+        "nl": "De strikt aangepaste modus start alleen als minstens één ingestelde relay bereikbaar is. VniDrop gebruikt in deze modus nooit openbare relays of openbare detectie.",
+        "ru": "Строго пользовательский режим запускается, только если доступен хотя бы один настроенный ретранслятор. В этом режиме VniDrop никогда не использует публичные ретрансляторы или публичное обнаружение."
       }
     },
     "relay_validation_duplicate_url": {

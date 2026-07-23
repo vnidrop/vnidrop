@@ -61,6 +61,23 @@ use crate::{
 
 const RELAY_CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum RelayStatus {
+    Disabled,
+    Connected,
+    Unreachable,
+}
+
+impl RelayStatus {
+    fn as_str(self) -> &'static str {
+        match self {
+            Self::Disabled => "disabled",
+            Self::Connected => "connected",
+            Self::Unreachable => "unreachable",
+        }
+    }
+}
+
 /// Owns the Iroh endpoint, blob store, transfer history, and byte streaming.
 /// Kotlin owns app lifecycle and platform file picking.
 pub(super) struct CoreInner {
@@ -122,7 +139,7 @@ impl CoreInner {
                     .bind()
                     .await?
             }
-            CoreRelayMode::Custom => {
+            CoreRelayMode::StrictCustom | CoreRelayMode::CustomWithDirectFallback => {
                 let relay_map = RelayMap::from_iter(relay_urls.iter().cloned().map(|url| {
                     // Loopback HTTP is a development escape hatch. Without TLS the
                     // relay cannot serve Iroh's QUIC address-discovery endpoint.
@@ -141,13 +158,22 @@ impl CoreInner {
                     .bind()
                     .await?
             }
+            CoreRelayMode::LocalOnly => {
+                Endpoint::builder(presets::Minimal)
+                    .relay_mode(RelayMode::Disabled)
+                    .secret_key(secret_key)
+                    .bind()
+                    .await?
+            }
         };
-        if let Err(error) =
-            wait_for_relay(&endpoint, relay_mode, &relay_urls, RELAY_CONNECT_TIMEOUT).await
-        {
-            endpoint.close().await;
-            return Err(error);
-        }
+        let relay_status =
+            match wait_for_relay(&endpoint, relay_mode, &relay_urls, RELAY_CONNECT_TIMEOUT).await {
+                Ok(status) => status,
+                Err(error) => {
+                    endpoint.close().await;
+                    return Err(error);
+                }
+            };
 
         // Provider events are where the sender sees remote readers.  The core
         // uses them for send progress and for the current approval gate.
@@ -160,6 +186,14 @@ impl CoreInner {
             limits.event_queue_capacity as usize,
             limits.max_events,
         ));
+        event_hub.emit_endpoint(
+            "network",
+            "relay-status",
+            json!({
+                "mode": relay_mode_label(relay_mode),
+                "status": relay_status.as_str(),
+            }),
+        );
         for recovered in recovered_transfers {
             event_hub.emit_transfer(
                 recovered.transfer_id,
@@ -377,7 +411,7 @@ pub(crate) fn filter_peer_addr_for_relay_mode(
 ) -> Result<EndpointAddr> {
     match relay_mode {
         CoreRelayMode::Automatic => Ok(addr.clone()),
-        CoreRelayMode::Custom => {
+        CoreRelayMode::StrictCustom | CoreRelayMode::CustomWithDirectFallback => {
             let mut filtered = EndpointAddr::new(addr.id);
             for ip_addr in addr.ip_addrs().copied() {
                 filtered = filtered.with_ip_addr(ip_addr);
@@ -396,6 +430,16 @@ pub(crate) fn filter_peer_addr_for_relay_mode(
             }
             Ok(filtered)
         }
+        CoreRelayMode::LocalOnly => {
+            let mut filtered = EndpointAddr::new(addr.id);
+            for ip_addr in addr.ip_addrs().copied() {
+                filtered = filtered.with_ip_addr(ip_addr);
+            }
+            if filtered.is_empty() {
+                anyhow::bail!("invitation has no direct address allowed by local-only mode");
+            }
+            Ok(filtered)
+        }
     }
 }
 
@@ -404,17 +448,16 @@ pub(crate) async fn wait_for_relay(
     relay_mode: CoreRelayMode,
     relay_urls: &[RelayUrl],
     timeout: Duration,
-) -> Result<()> {
+) -> Result<RelayStatus> {
+    if relay_mode == CoreRelayMode::LocalOnly {
+        return Ok(RelayStatus::Disabled);
+    }
     if tokio::time::timeout(timeout, endpoint.online())
         .await
         .is_err()
     {
         match relay_mode {
-            CoreRelayMode::Automatic => anyhow::bail!(
-                "timed out after {} seconds while connecting to automatic relays; verify network access and relay availability",
-                timeout.as_secs_f32(),
-            ),
-            CoreRelayMode::Custom => {
+            CoreRelayMode::StrictCustom => {
                 let configured_relays = relay_urls
                     .iter()
                     .map(ToString::to_string)
@@ -425,9 +468,22 @@ pub(crate) async fn wait_for_relay(
                     timeout.as_secs_f32(),
                 );
             }
+            CoreRelayMode::Automatic | CoreRelayMode::CustomWithDirectFallback => {
+                return Ok(RelayStatus::Unreachable);
+            }
+            CoreRelayMode::LocalOnly => unreachable!(),
         }
     }
-    Ok(())
+    Ok(RelayStatus::Connected)
+}
+
+fn relay_mode_label(relay_mode: CoreRelayMode) -> &'static str {
+    match relay_mode {
+        CoreRelayMode::Automatic => "automatic",
+        CoreRelayMode::StrictCustom => "strict-custom",
+        CoreRelayMode::CustomWithDirectFallback => "custom-with-direct-fallback",
+        CoreRelayMode::LocalOnly => "local-only",
+    }
 }
 
 pub(super) fn share_tag_name(local_id: &str) -> String {

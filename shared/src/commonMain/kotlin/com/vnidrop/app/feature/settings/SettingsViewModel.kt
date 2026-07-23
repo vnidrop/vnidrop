@@ -13,6 +13,7 @@ import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.RelayMode
 import com.vnidrop.app.core.RelaySettings
 import com.vnidrop.app.core.TransferStatus
+import com.vnidrop.app.core.usesCustomRelayUrls
 import com.vnidrop.app.diagnostics.BugReportDraft
 import com.vnidrop.app.diagnostics.BugReportService
 import com.vnidrop.app.diagnostics.DiagnosticsBuildConfig
@@ -113,7 +114,7 @@ data class SettingsState(
 ) {
 	val hasRelaySettingsChanges: Boolean
 		get() = relayMode != savedRelaySettings.mode ||
-			(relayMode == RelayMode.Custom && relayUrlsText != savedRelaySettings.relayUrls.joinToString("\n"))
+			(relayMode.usesCustomRelayUrls && relayUrlsText != savedRelaySettings.relayUrls.joinToString("\n"))
 }
 
 sealed interface SettingsEffect {

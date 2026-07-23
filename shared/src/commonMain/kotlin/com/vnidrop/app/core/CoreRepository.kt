@@ -293,9 +293,17 @@ class CoreRepository(
 
 private fun RelaySettings.toNative(): CoreNetworkConfig = when (mode) {
 	RelayMode.Automatic -> defaultCoreNetworkConfig()
-	RelayMode.Custom -> CoreNetworkConfig(
-		mode = CoreRelayMode.CUSTOM,
+	RelayMode.StrictCustom -> CoreNetworkConfig(
+		mode = CoreRelayMode.STRICT_CUSTOM,
 		relayUrls = relayUrls,
+	)
+	RelayMode.CustomWithDirectFallback -> CoreNetworkConfig(
+		mode = CoreRelayMode.CUSTOM_WITH_DIRECT_FALLBACK,
+		relayUrls = relayUrls,
+	)
+	RelayMode.LocalOnly -> CoreNetworkConfig(
+		mode = CoreRelayMode.LOCAL_ONLY,
+		relayUrls = emptyList(),
 	)
 }
 

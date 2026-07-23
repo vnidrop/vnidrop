@@ -2,6 +2,7 @@ package com.vnidrop.app.feature.settings
 
 import com.vnidrop.app.core.RelayMode
 import com.vnidrop.app.core.RelaySettings
+import com.vnidrop.app.core.usesCustomRelayUrls
 
 sealed interface RelaySettingsInputError {
 	data object MissingUrl : RelaySettingsInputError
@@ -21,7 +22,7 @@ fun validateRelaySettings(
 	urlsText: String,
 	retainedUrls: List<String> = emptyList(),
 ): RelaySettingsValidation {
-	if (mode == RelayMode.Automatic) {
+	if (!mode.usesCustomRelayUrls) {
 		return RelaySettingsValidation(RelaySettings(mode, retainedUrls))
 	}
 	val lines = urlsText.lineSequence()
@@ -49,7 +50,7 @@ fun validateRelaySettings(
 			}
 		}
 	}
-	return RelaySettingsValidation(RelaySettings(RelayMode.Custom, normalized))
+	return RelaySettingsValidation(RelaySettings(mode, normalized))
 }
 
 private sealed interface RelayUrlResult {

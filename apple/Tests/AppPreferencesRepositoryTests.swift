@@ -32,7 +32,7 @@ final class AppPreferencesRepositoryTests: XCTestCase {
 		repo.setNotificationsEnabled(true)
 		repo.setReceiveFolder(ReceiveFolder(kind: .iosSecurityScopedUrl, value: "file:///x", displayName: "Custom"))
 		repo.setRelayConfiguration(RelayConfiguration(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["https://relay-one.example", "https://relay-two.example:443"]
 		))
 
@@ -44,7 +44,7 @@ final class AppPreferencesRepositoryTests: XCTestCase {
 		XCTAssertEqual(reloaded.preferences.receiveFolder.displayName, "Custom")
 		XCTAssertEqual(reloaded.preferences.receiveFolder.kind, .iosSecurityScopedUrl)
 		XCTAssertEqual(reloaded.preferences.relayConfiguration, RelayConfiguration(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["https://relay-one.example", "https://relay-two.example:443"]
 		))
 		XCTAssertNotNil(store.data(forKey: "relay_configuration"))
@@ -60,7 +60,7 @@ final class AppPreferencesRepositoryTests: XCTestCase {
 
 		XCTAssertEqual(
 			repo.preferences.relayConfiguration,
-			RelayConfiguration(mode: .custom, relayURLs: [])
+			RelayConfiguration(mode: .strictCustom, relayURLs: [])
 		)
 	}
 
@@ -75,7 +75,7 @@ final class AppPreferencesRepositoryTests: XCTestCase {
 
 		XCTAssertEqual(
 			repo.preferences.relayConfiguration,
-			RelayConfiguration(mode: .custom, relayURLs: [])
+			RelayConfiguration(mode: .strictCustom, relayURLs: [])
 		)
 	}
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.core.RelayMode
+import com.vnidrop.app.core.usesCustomRelayUrls
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.icons.AppIcon
@@ -30,7 +31,11 @@ import vnidrop.shared.generated.resources.relay_custom_urls_label
 import vnidrop.shared.generated.resources.relay_mode_automatic
 import vnidrop.shared.generated.resources.relay_mode_automatic_description
 import vnidrop.shared.generated.resources.relay_mode_custom
+import vnidrop.shared.generated.resources.relay_mode_custom_direct_fallback
+import vnidrop.shared.generated.resources.relay_mode_custom_direct_fallback_description
 import vnidrop.shared.generated.resources.relay_mode_custom_description
+import vnidrop.shared.generated.resources.relay_mode_local_only
+import vnidrop.shared.generated.resources.relay_mode_local_only_description
 import vnidrop.shared.generated.resources.relay_privacy_description
 import vnidrop.shared.generated.resources.relay_restore_failed
 import vnidrop.shared.generated.resources.relay_strict_warning
@@ -73,15 +78,33 @@ internal fun NetworkSettings(
 			)
 			SettingsDivider()
 			RelayModeRow(
-				icon = AppIcon.Radio,
+				icon = AppIcon.Shield,
 				title = stringResource(Res.string.relay_mode_custom),
 				description = stringResource(Res.string.relay_mode_custom_description),
-				selected = state.relayMode == RelayMode.Custom,
+				selected = state.relayMode == RelayMode.StrictCustom,
 				enabled = !state.isApplyingRelaySettings,
-				onClick = { onModeChanged(RelayMode.Custom) },
+				onClick = { onModeChanged(RelayMode.StrictCustom) },
+			)
+			SettingsDivider()
+			RelayModeRow(
+				icon = AppIcon.Radio,
+				title = stringResource(Res.string.relay_mode_custom_direct_fallback),
+				description = stringResource(Res.string.relay_mode_custom_direct_fallback_description),
+				selected = state.relayMode == RelayMode.CustomWithDirectFallback,
+				enabled = !state.isApplyingRelaySettings,
+				onClick = { onModeChanged(RelayMode.CustomWithDirectFallback) },
+			)
+			SettingsDivider()
+			RelayModeRow(
+				icon = AppIcon.CloudOff,
+				title = stringResource(Res.string.relay_mode_local_only),
+				description = stringResource(Res.string.relay_mode_local_only_description),
+				selected = state.relayMode == RelayMode.LocalOnly,
+				enabled = !state.isApplyingRelaySettings,
+				onClick = { onModeChanged(RelayMode.LocalOnly) },
 			)
 		}
-		if (state.relayMode == RelayMode.Custom) {
+		if (state.relayMode.usesCustomRelayUrls) {
 			Field(
 				value = state.relayUrlsText,
 				onValueChange = onUrlsChanged,
@@ -94,12 +117,14 @@ internal fun NetworkSettings(
 				color = colors.foregroundLighter,
 				style = MaterialTheme.typography.bodySmall,
 			)
-			Text(
-				stringResource(Res.string.relay_strict_warning),
-				color = colors.foregroundLight,
-				style = MaterialTheme.typography.bodySmall,
-				fontWeight = FontWeight.Medium,
-			)
+			if (state.relayMode == RelayMode.StrictCustom) {
+				Text(
+					stringResource(Res.string.relay_strict_warning),
+					color = colors.foregroundLight,
+					style = MaterialTheme.typography.bodySmall,
+					fontWeight = FontWeight.Medium,
+				)
+			}
 			Text(
 				stringResource(Res.string.relay_privacy_description),
 				color = colors.foregroundLighter,

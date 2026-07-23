@@ -26,7 +26,7 @@ final class AppModelTests: XCTestCase {
 	func testInitializesCoreWithSavedCustomRelayConfiguration() async {
 		let core = FakeCoreGateway()
 		let preferences = Fixtures.preferences()
-		let configuration = RelayConfiguration(mode: .custom, relayURLs: ["https://relay.example"])
+		let configuration = RelayConfiguration(mode: .strictCustom, relayURLs: ["https://relay.example"])
 		preferences.setRelayConfiguration(configuration)
 		_ = makeModel(core, preferences: preferences)
 

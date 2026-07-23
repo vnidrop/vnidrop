@@ -53,10 +53,21 @@ encrypted packets; it is not a VniDrop file store.
 ### Custom relay servers
 
 VniDrop uses Iroh's public relay and discovery infrastructure by default. In
-**Settings → Network**, advanced users can instead configure up to eight custom
-HTTPS servers that implement Iroh's relay protocol. Custom mode is strict: the
-app uses only those relays and does not silently fall back to public relays or
-public discovery. Direct peer-to-peer paths remain available.
+**Settings → Network**, users can select one of four policies:
+
+- **Automatic (recommended):** use Iroh's public relays, with direct P2P/LAN
+  connections whenever possible.
+- **Strict custom:** use only up to eight configured custom HTTPS relays or
+  direct connections. Startup reports an error if none of the custom relays can
+  be established.
+- **Custom with direct fallback:** prefer the configured custom relays, but
+  continue with direct connections if they are unavailable.
+- **Local only:** disable every relay and allow direct connections only,
+  primarily for devices on the same network.
+
+Strict custom, custom with direct fallback, and local only never use public
+relays or public discovery, including relay addresses advertised by incoming
+invitations.
 
 Applying a relay change restarts VniDrop's network engine, so active transfers
 and shares must be stopped first. The app tests the new configuration and

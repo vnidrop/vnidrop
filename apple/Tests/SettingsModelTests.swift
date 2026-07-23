@@ -59,13 +59,13 @@ final class SettingsModelTests: XCTestCase {
 		let core = FakeCoreGateway()
 		let preferences = Fixtures.preferences()
 		let model = makeModel(core, preferences: preferences)
-		model.setRelayMode(.custom)
+		model.setRelayMode(.strictCustom)
 		model.setRelayURL("  https://relay.example/  ", at: 0)
 
 		model.applyRelayConfiguration()
 
-		await waitUntil { preferences.preferences.relayConfiguration.mode == .custom }
-		let expected = RelayConfiguration(mode: .custom, relayURLs: ["https://relay.example"])
+		await waitUntil { preferences.preferences.relayConfiguration.mode == .strictCustom }
+		let expected = RelayConfiguration(mode: .strictCustom, relayURLs: ["https://relay.example"])
 		XCTAssertEqual(preferences.preferences.relayConfiguration, expected)
 		XCTAssertEqual(core.initializedNetworkConfigurations, [expected])
 		XCTAssertFalse(model.state.relayConfigurationIsDirty)
@@ -75,7 +75,7 @@ final class SettingsModelTests: XCTestCase {
 		let core = FakeCoreGateway()
 		let preferences = Fixtures.preferences()
 		let relayURLs = ["https://relay.example", "https://backup.example"]
-		preferences.setRelayConfiguration(RelayConfiguration(mode: .custom, relayURLs: relayURLs))
+		preferences.setRelayConfiguration(RelayConfiguration(mode: .strictCustom, relayURLs: relayURLs))
 		let model = makeModel(core, preferences: preferences)
 
 		model.setRelayMode(.automatic)
@@ -86,7 +86,7 @@ final class SettingsModelTests: XCTestCase {
 		XCTAssertEqual(core.initializedNetworkConfigurations, [
 			RelayConfiguration(mode: .automatic, relayURLs: relayURLs),
 		])
-		model.setRelayMode(.custom)
+		model.setRelayMode(.strictCustom)
 		XCTAssertEqual(model.state.relayURLs, relayURLs)
 	}
 
@@ -98,7 +98,7 @@ final class SettingsModelTests: XCTestCase {
 			isInitialized: true,
 			status: CoreStatus(endpointId: "endpoint", activeTransfers: 0, activeShares: 1)
 		))
-		model.setRelayMode(.custom)
+		model.setRelayMode(.strictCustom)
 		model.setRelayURL("https://relay.example", at: 0)
 
 		model.applyRelayConfiguration()
@@ -114,8 +114,8 @@ final class SettingsModelTests: XCTestCase {
 		core.initializeResult = .failure(CoreNetworkLifecycleError.activeNetworkWork)
 		let preferences = Fixtures.preferences()
 		let model = makeModel(core, preferences: preferences)
-		let attempted = RelayConfiguration(mode: .custom, relayURLs: ["https://relay.example"])
-		model.setRelayMode(.custom)
+		let attempted = RelayConfiguration(mode: .strictCustom, relayURLs: ["https://relay.example"])
+		model.setRelayMode(.strictCustom)
 		model.setRelayURL(attempted.relayURLs[0], at: 0)
 
 		model.applyRelayConfiguration()
@@ -134,8 +134,8 @@ final class SettingsModelTests: XCTestCase {
 		core.initializeResults = [.failure(TestError.unimplemented), .success(())]
 		let preferences = Fixtures.preferences()
 		let model = makeModel(core, preferences: preferences)
-		let attempted = RelayConfiguration(mode: .custom, relayURLs: ["https://relay.example"])
-		model.setRelayMode(.custom)
+		let attempted = RelayConfiguration(mode: .strictCustom, relayURLs: ["https://relay.example"])
+		model.setRelayMode(.strictCustom)
 		model.setRelayURL(attempted.relayURLs[0], at: 0)
 
 		model.applyRelayConfiguration()

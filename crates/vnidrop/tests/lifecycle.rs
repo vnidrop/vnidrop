@@ -151,7 +151,7 @@ fn persisted_share_is_revoked_when_restarted_with_a_different_relay_profile() {
         core_dir.path(),
         Arc::new(RecordingSink::default()),
         CoreNetworkConfig {
-            mode: CoreRelayMode::Custom,
+            mode: CoreRelayMode::StrictCustom,
             relay_urls: vec![relay_a.url.clone()],
         },
     );
@@ -163,7 +163,7 @@ fn persisted_share_is_revoked_when_restarted_with_a_different_relay_profile() {
         core_dir.path(),
         Arc::new(RecordingSink::default()),
         CoreNetworkConfig {
-            mode: CoreRelayMode::Custom,
+            mode: CoreRelayMode::StrictCustom,
             relay_urls: vec![relay_b.url.clone()],
         },
     );

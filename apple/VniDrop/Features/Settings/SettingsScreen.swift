@@ -125,7 +125,18 @@ private struct SettingsSectionContent: View {
 func relayModeLabel(_ mode: RelayPreferenceMode) -> String {
 	switch mode {
 	case .automatic: return String(localized: "relay_mode_automatic")
-	case .custom: return String(localized: "relay_mode_custom")
+	case .strictCustom: return String(localized: "relay_mode_custom")
+	case .customWithDirectFallback: return String(localized: "relay_mode_custom_direct_fallback")
+	case .localOnly: return String(localized: "relay_mode_local_only")
+	}
+}
+
+func relayModeDescriptionKey(_ mode: RelayPreferenceMode) -> String {
+	switch mode {
+	case .automatic: return "relay_mode_automatic_description"
+	case .strictCustom: return "relay_mode_custom_description"
+	case .customWithDirectFallback: return "relay_mode_custom_direct_fallback_description"
+	case .localOnly: return "relay_mode_local_only_description"
 	}
 }
 

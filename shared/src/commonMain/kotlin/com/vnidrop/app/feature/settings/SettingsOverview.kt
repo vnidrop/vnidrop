@@ -21,6 +21,8 @@ import vnidrop.shared.generated.resources.notifications_title
 import vnidrop.shared.generated.resources.preferences_title
 import vnidrop.shared.generated.resources.relay_mode_automatic
 import vnidrop.shared.generated.resources.relay_mode_custom
+import vnidrop.shared.generated.resources.relay_mode_custom_direct_fallback
+import vnidrop.shared.generated.resources.relay_mode_local_only
 import vnidrop.shared.generated.resources.settings_title
 import vnidrop.shared.generated.resources.settings_network_title
 import vnidrop.shared.generated.resources.storage_title
@@ -91,7 +93,9 @@ internal fun SettingsOverview(
 @Composable
 private fun relayModeLabel(mode: RelayMode): String = when (mode) {
 	RelayMode.Automatic -> stringResource(Res.string.relay_mode_automatic)
-	RelayMode.Custom -> stringResource(Res.string.relay_mode_custom)
+	RelayMode.StrictCustom -> stringResource(Res.string.relay_mode_custom)
+	RelayMode.CustomWithDirectFallback -> stringResource(Res.string.relay_mode_custom_direct_fallback)
+	RelayMode.LocalOnly -> stringResource(Res.string.relay_mode_local_only)
 }
 
 @Composable

@@ -21,7 +21,13 @@ enum FolderAccessStatus {
 
 enum RelayPreferenceMode: String, Codable, CaseIterable, Sendable {
 	case automatic
-	case custom
+	case strictCustom = "custom"
+	case customWithDirectFallback = "custom-with-direct-fallback"
+	case localOnly = "local-only"
+
+	var usesCustomRelayURLs: Bool {
+		self == .strictCustom || self == .customWithDirectFallback
+	}
 }
 
 struct RelayConfiguration: Equatable, Codable, Sendable {
@@ -55,8 +61,8 @@ enum RelayConfigurationValidator {
 		relayURLs: [String],
 		retainedRelayURLs: [String] = []
 	) throws -> RelayConfiguration {
-		guard mode == .custom else {
-			return RelayConfiguration(mode: .automatic, relayURLs: retainedRelayURLs)
+		guard mode.usesCustomRelayURLs else {
+			return RelayConfiguration(mode: mode, relayURLs: retainedRelayURLs)
 		}
 
 		let relayEntries = relayURLs.enumerated().compactMap { index, value -> (Int, String)? in
@@ -104,7 +110,7 @@ enum RelayConfigurationValidator {
 			normalizedURLs.append(canonicalURL)
 		}
 
-		return RelayConfiguration(mode: .custom, relayURLs: normalizedURLs)
+		return RelayConfiguration(mode: mode, relayURLs: normalizedURLs)
 	}
 }
 
@@ -177,10 +183,9 @@ final class AppPreferencesRepository: ObservableObject {
 			let data = defaults.data(forKey: Key.relayConfiguration),
 			let configuration = try? JSONDecoder().decode(RelayConfiguration.self, from: data)
 		else {
-			// A stored profile must never silently fall back to public relays. Keeping
-			// Custom selected with no URLs makes startup fail closed and lets Settings
-			// offer an explicit repair or reset to Automatic.
-			return RelayConfiguration(mode: .custom, relayURLs: [])
+			// A stored profile must never silently fall back to public relays. Strict
+			// custom with no URLs makes startup fail closed until Settings repairs it.
+			return RelayConfiguration(mode: .strictCustom, relayURLs: [])
 		}
 		return configuration
 	}

@@ -86,7 +86,7 @@ class ViewModelsTest {
 	@Test
 	fun appViewModelInitializesCoreWithSavedRelaySettings() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
-		val custom = RelaySettings(RelayMode.Custom, listOf("https://relay.example.com"))
+		val custom = RelaySettings(RelayMode.StrictCustom, listOf("https://relay.example.com"))
 		val preferences = preferences().apply {
 			mutablePreferences.value = mutablePreferences.value.copy(relaySettings = custom)
 		}
@@ -144,18 +144,47 @@ class ViewModelsTest {
 		val viewModel = settingsViewModel(preferences = preferences, repository = core)
 		advanceUntilIdle()
 
-		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayMode(RelayMode.StrictCustom)
 		viewModel.setRelayUrlsText(" HTTPS://Relay.Example.com/ \nhttps://backup.example.com:443")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
 
 		val expected = RelaySettings(
-			RelayMode.Custom,
+			RelayMode.StrictCustom,
 			listOf("https://relay.example.com", "https://backup.example.com"),
 		)
 		assertEquals(expected, preferences.mutablePreferences.value.relaySettings)
 		assertEquals(listOf(expected), core.initializedRelaySettings)
 		assertEquals(expected, viewModel.state.value.savedRelaySettings)
+		assertFalse(viewModel.state.value.hasRelaySettingsChanges)
+	}
+
+	@Test
+	fun settingsAppliesCustomFallbackAndLocalOnlyWhileRetainingRelayDrafts() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val core = FakeCoreGateway()
+		val viewModel = settingsViewModel(preferences = preferences, repository = core)
+		advanceUntilIdle()
+
+		viewModel.setRelayMode(RelayMode.CustomWithDirectFallback)
+		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.applyRelaySettings()
+		advanceUntilIdle()
+		viewModel.setRelayMode(RelayMode.LocalOnly)
+		viewModel.applyRelaySettings()
+		advanceUntilIdle()
+
+		val fallback = RelaySettings(
+			RelayMode.CustomWithDirectFallback,
+			listOf("https://relay.example.com"),
+		)
+		val localOnly = RelaySettings(
+			RelayMode.LocalOnly,
+			listOf("https://relay.example.com"),
+		)
+		assertEquals(listOf(fallback, localOnly), core.initializedRelaySettings)
+		assertEquals(localOnly, preferences.mutablePreferences.value.relaySettings)
 		assertFalse(viewModel.state.value.hasRelaySettingsChanges)
 	}
 
@@ -166,7 +195,7 @@ class ViewModelsTest {
 		val viewModel = settingsViewModel(repository = core)
 		advanceUntilIdle()
 
-		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayMode(RelayMode.StrictCustom)
 		viewModel.setRelayUrlsText("https://relay.example.com")
 		viewModel.applyRelaySettings()
 		viewModel.applyRelaySettings()
@@ -186,7 +215,7 @@ class ViewModelsTest {
 		advanceUntilIdle()
 		assertEquals("endpoint", viewModel.state.value.endpointId)
 
-		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayMode(RelayMode.StrictCustom)
 		viewModel.setRelayUrlsText("https://relay.example.com")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
@@ -200,7 +229,7 @@ class ViewModelsTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {
 			initializeHandler = { settings ->
-				if (settings.mode == RelayMode.Custom) Result.failure(IllegalStateException("unreachable"))
+				if (settings.mode == RelayMode.StrictCustom) Result.failure(IllegalStateException("unreachable"))
 				else Result.success(Unit)
 			}
 		}
@@ -208,14 +237,14 @@ class ViewModelsTest {
 		val viewModel = settingsViewModel(preferences = preferences, repository = core)
 		advanceUntilIdle()
 
-		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayMode(RelayMode.StrictCustom)
 		viewModel.setRelayUrlsText("https://relay.example.com")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
 
 		assertEquals(
 			listOf(
-				RelaySettings(RelayMode.Custom, listOf("https://relay.example.com")),
+				RelaySettings(RelayMode.StrictCustom, listOf("https://relay.example.com")),
 				RelaySettings(),
 			),
 			core.initializedRelaySettings,

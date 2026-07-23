@@ -12,7 +12,9 @@ pub(crate) const MAX_RELAY_URL_BYTES: usize = 2_048;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, uniffi::Enum)]
 pub enum CoreRelayMode {
     Automatic,
-    Custom,
+    StrictCustom,
+    CustomWithDirectFallback,
+    LocalOnly,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, uniffi::Record)]
@@ -33,13 +35,21 @@ impl Default for CoreNetworkConfig {
 impl CoreNetworkConfig {
     pub(crate) fn validated_relay_urls(&self) -> anyhow::Result<Vec<RelayUrl>> {
         match self.mode {
-            CoreRelayMode::Automatic => {
+            CoreRelayMode::Automatic | CoreRelayMode::LocalOnly => {
                 if !self.relay_urls.is_empty() {
-                    anyhow::bail!("automatic relay mode must not include custom relay URLs");
+                    anyhow::bail!(
+                        "{} relay mode must not include custom relay URLs",
+                        match self.mode {
+                            CoreRelayMode::Automatic => "automatic",
+                            CoreRelayMode::LocalOnly => "local-only",
+                            CoreRelayMode::StrictCustom
+                            | CoreRelayMode::CustomWithDirectFallback => unreachable!(),
+                        }
+                    );
                 }
                 Ok(Vec::new())
             }
-            CoreRelayMode::Custom => {
+            CoreRelayMode::StrictCustom | CoreRelayMode::CustomWithDirectFallback => {
                 if self.relay_urls.is_empty() {
                     anyhow::bail!("custom relay mode requires at least one relay URL");
                 }

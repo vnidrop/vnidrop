@@ -70,15 +70,10 @@ struct NetworkSettings: View {
 					Text(relayModeLabel(mode)).tag(mode)
 				}
 			}
-			.pickerStyle(.segmented)
-			.labelsHidden()
+			.pickerStyle(.inline)
 			.disabled(model.state.isApplyingRelayConfiguration)
 		} footer: {
-			Text(LocalizedStringKey(
-				model.state.relayMode == .automatic
-					? "relay_mode_automatic_description"
-					: "relay_mode_custom_description"
-			))
+			Text(LocalizedStringKey(relayModeDescriptionKey(model.state.relayMode)))
 		}
 
 		Section {
@@ -99,15 +94,17 @@ struct NetworkSettings: View {
 			}
 		}
 
-		if model.state.relayMode == .custom {
+		if model.state.relayMode.usesCustomRelayURLs {
 			Section {
-				Label {
-					Text(LocalizedStringKey("relay_strict_warning"))
-						.fixedSize(horizontal: false, vertical: true)
-				} icon: {
-					Image(systemName: "exclamationmark.shield.fill")
+				if model.state.relayMode == .strictCustom {
+					Label {
+						Text(LocalizedStringKey("relay_strict_warning"))
+							.fixedSize(horizontal: false, vertical: true)
+					} icon: {
+						Image(systemName: "exclamationmark.shield.fill")
+					}
+					.foregroundStyle(.orange)
 				}
-				.foregroundStyle(.orange)
 
 				ForEach(Array(model.state.relayURLs.indices), id: \.self) { index in
 					VStack(alignment: .leading, spacing: 6) {

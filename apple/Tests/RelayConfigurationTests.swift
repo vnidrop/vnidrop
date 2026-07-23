@@ -2,6 +2,32 @@ import XCTest
 @testable import VniDrop
 
 final class RelayConfigurationTests: XCTestCase {
+	func testCustomFallbackValidatesAndPreservesItsMode() throws {
+		let result = try RelayConfigurationValidator.validate(
+			mode: .customWithDirectFallback,
+			relayURLs: ["https://relay.example/"]
+		)
+
+		XCTAssertEqual(
+			result,
+			RelayConfiguration(
+				mode: .customWithDirectFallback,
+				relayURLs: ["https://relay.example"]
+			)
+		)
+	}
+
+	func testLocalOnlyRetainsPreviouslySavedRelayURLs() throws {
+		let retained = ["https://relay.example"]
+		let result = try RelayConfigurationValidator.validate(
+			mode: .localOnly,
+			relayURLs: ["not a URL"],
+			retainedRelayURLs: retained
+		)
+
+		XCTAssertEqual(result, RelayConfiguration(mode: .localOnly, relayURLs: retained))
+	}
+
 	func testAutomaticModeIgnoresRelayDrafts() throws {
 		let result = try RelayConfigurationValidator.validate(
 			mode: .automatic,
@@ -24,32 +50,32 @@ final class RelayConfigurationTests: XCTestCase {
 
 	func testCustomModeTrimsValidHTTPSRelayURLs() throws {
 		let result = try RelayConfigurationValidator.validate(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["  https://relay.example/  ", "https://backup.example:443"]
 		)
 		XCTAssertEqual(result, RelayConfiguration(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["https://relay.example", "https://backup.example"]
 		))
 	}
 
 	func testCustomModeIgnoresEmptyURLRows() throws {
 		let result = try RelayConfigurationValidator.validate(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["", "  ", "https://relay.example"]
 		)
 		XCTAssertEqual(result.relayURLs, ["https://relay.example"])
 	}
 
 	func testCustomModeRequiresAtLeastOneRelay() {
-		XCTAssertThrowsError(try RelayConfigurationValidator.validate(mode: .custom, relayURLs: [])) { error in
+		XCTAssertThrowsError(try RelayConfigurationValidator.validate(mode: .strictCustom, relayURLs: [])) { error in
 			XCTAssertEqual(error as? RelayConfigurationValidationError, .missingURL)
 		}
 	}
 
 	func testCustomModeRequiresHTTPS() {
 		XCTAssertThrowsError(try RelayConfigurationValidator.validate(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["http://relay.example"]
 		)) { error in
 			XCTAssertEqual(error as? RelayConfigurationValidationError, .httpsRequired(index: 0))
@@ -67,7 +93,7 @@ final class RelayConfigurationTests: XCTestCase {
 		]
 		for relayURL in invalidURLs {
 			XCTAssertThrowsError(
-				try RelayConfigurationValidator.validate(mode: .custom, relayURLs: [relayURL]),
+				try RelayConfigurationValidator.validate(mode: .strictCustom, relayURLs: [relayURL]),
 				"Expected \(relayURL) to be rejected"
 			) { error in
 				XCTAssertEqual(error as? RelayConfigurationValidationError, .invalidURL(index: 0))
@@ -77,7 +103,7 @@ final class RelayConfigurationTests: XCTestCase {
 
 	func testCustomModeRejectsNormalizedDuplicate() {
 		XCTAssertThrowsError(try RelayConfigurationValidator.validate(
-			mode: .custom,
+			mode: .strictCustom,
 			relayURLs: ["https://relay.example", "https://RELAY.example:443/"]
 		)) { error in
 			XCTAssertEqual(error as? RelayConfigurationValidationError, .duplicateURL(index: 1))
@@ -88,7 +114,7 @@ final class RelayConfigurationTests: XCTestCase {
 		let relayURLs = (0...RelayConfigurationValidator.maximumRelayCount).map {
 			"https://relay-\($0).example"
 		}
-		XCTAssertThrowsError(try RelayConfigurationValidator.validate(mode: .custom, relayURLs: relayURLs)) { error in
+		XCTAssertThrowsError(try RelayConfigurationValidator.validate(mode: .strictCustom, relayURLs: relayURLs)) { error in
 			XCTAssertEqual(error as? RelayConfigurationValidationError, .tooManyURLs)
 		}
 	}

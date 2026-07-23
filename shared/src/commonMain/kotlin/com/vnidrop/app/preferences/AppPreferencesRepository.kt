@@ -58,14 +58,14 @@ class AppPreferencesRepository(
 ) : PreferencesRepository {
 	override val preferences: Flow<AppPreferences> = dataStore.data
 		.catch {
-			emit(preferencesOf(PreferenceKeys.RelayMode to RelayMode.Custom.name))
+			emit(preferencesOf(PreferenceKeys.RelayMode to RelayMode.StrictCustom.name))
 		}
 		.map { prefs ->
 			val storedRelayMode = prefs[PreferenceKeys.RelayMode]
 			val parsedRelayMode = storedRelayMode?.let(::relayModeOrNull)
 			val relayMode = when (storedRelayMode) {
 				null -> RelayMode.Automatic
-				else -> parsedRelayMode ?: RelayMode.Custom
+				else -> parsedRelayMode ?: RelayMode.StrictCustom
 			}
 			val relayUrls = if (storedRelayMode != null && parsedRelayMode == null) {
 				emptyList()
@@ -199,6 +199,7 @@ private fun themeModeOrNull(raw: String): ThemeMode? =
 	runCatching { ThemeMode.valueOf(raw) }.getOrNull()
 
 private fun relayModeOrNull(raw: String): RelayMode? =
-	runCatching { RelayMode.valueOf(raw) }.getOrNull()
+	if (raw == "Custom") RelayMode.StrictCustom
+	else runCatching { RelayMode.valueOf(raw) }.getOrNull()
 
 private const val AppPreferencesFileName = "app_preferences.preferences_pb"

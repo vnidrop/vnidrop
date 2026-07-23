@@ -40,11 +40,18 @@ struct NativeCoreBindingFactory: CoreBindingFactory {
 		switch networkConfiguration.mode {
 		case .automatic:
 			nativeConfiguration = defaultCoreNetworkConfig()
-		case .custom:
+		case .strictCustom:
 			nativeConfiguration = CoreNetworkConfig(
-				mode: .custom,
+				mode: .strictCustom,
 				relayUrls: networkConfiguration.relayURLs
 			)
+		case .customWithDirectFallback:
+			nativeConfiguration = CoreNetworkConfig(
+				mode: .customWithDirectFallback,
+				relayUrls: networkConfiguration.relayURLs
+			)
+		case .localOnly:
+			nativeConfiguration = CoreNetworkConfig(mode: .localOnly, relayUrls: [])
 		}
 		return try VnidropCore.initializeWithNetworkConfig(
 			appDataDir: appDataDir,
