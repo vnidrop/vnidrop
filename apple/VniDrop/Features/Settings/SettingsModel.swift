@@ -41,7 +41,6 @@ struct SettingsState: Equatable {
 	var isValidatingFolder = false
 	var supportsCustomReceiveFolders = true
 	var themeMode: ThemeMode = .system
-	var notificationsEnabled = false
 	var notificationPermission: NotificationPermission = .notDetermined
 	var diagnosticsEnabled = false
 	var deviceInfo: DeviceInfo?
@@ -63,7 +62,7 @@ struct SettingsState: Equatable {
 			&& lhs.receiveFolder == rhs.receiveFolder && lhs.folderAccessStatus == rhs.folderAccessStatus
 			&& lhs.isValidatingFolder == rhs.isValidatingFolder
 			&& lhs.supportsCustomReceiveFolders == rhs.supportsCustomReceiveFolders
-			&& lhs.themeMode == rhs.themeMode && lhs.notificationsEnabled == rhs.notificationsEnabled
+			&& lhs.themeMode == rhs.themeMode
 			&& lhs.notificationPermission == rhs.notificationPermission
 			&& lhs.diagnosticsEnabled == rhs.diagnosticsEnabled && lhs.appVersion == rhs.appVersion
 			&& lhs.isLoadingDeviceInfo == rhs.isLoadingDeviceInfo
@@ -93,7 +92,6 @@ final class SettingsModel: ObservableObject {
 	private let bugReports: BugReportService
 	private let diagnosticsIncluded: Bool
 
-	private var enableNotificationsAfterSettings = false
 	private var usernamePersistTask: Task<Void, Never>?
 	private var hasLocalUsernameDraft = false
 	private var cancellables = Set<AnyCancellable>()
@@ -131,7 +129,6 @@ final class SettingsModel: ObservableObject {
 				self.state.username = self.hasLocalUsernameDraft ? self.state.username : prefs.username
 				self.state.receiveFolder = folder
 				self.state.themeMode = prefs.themeMode
-				self.state.notificationsEnabled = prefs.notificationsEnabled
 				self.state.diagnosticsEnabled = prefs.diagnosticsEnabled
 				if folder != previousFolder { Task { await self.validateFolder(folder) } }
 			}
@@ -171,26 +168,14 @@ final class SettingsModel: ObservableObject {
 	func onReceiveFolderPickFailed(_ reason: String) { messages.error(InvitationError.message(reason)) }
 	func resetReceiveFolder() { preferences.resetReceiveFolder() }
 
-	func setNotificationsEnabled(_ enabled: Bool) {
+	/// Ask the OS for notification permission. This is the only time the app can
+	/// grant it; disabling or fine-tuning afterwards happens in the Settings app.
+	func requestNotifications() {
 		Task {
-			if !enabled {
-				preferences.setNotificationsEnabled(false)
-				notifications.cancelAll()
-				return
-			}
 			let permission = await notifications.requestPermission()
 			state.notificationPermission = permission
-			if permission == .granted {
-				await enableNotifications()
-			} else {
-				preferences.setNotificationsEnabled(false)
-				let key = permission == .unsupported ? L10n.Notifications.unsupported : L10n.Notifications.permissionDenied
-				messages.show(UiMessage(
-					text: .resource(key),
-					tone: .warning,
-					actionLabel: permission == .denied ? .resource(L10n.Button.openSettings) : nil,
-					onAction: permission == .denied ? { self.openNotificationSettings() } : nil
-				))
+			if permission == .unsupported {
+				messages.show(UiMessage(text: .resource(L10n.Notifications.unsupported), tone: .warning))
 			}
 		}
 	}
@@ -253,32 +238,18 @@ final class SettingsModel: ObservableObject {
 
 	func openNotificationSettings() {
 		Task {
-			enableNotificationsAfterSettings = true
-			let result = await notifications.openSettings()
-			if case .failure = result {
-				enableNotificationsAfterSettings = false
+			if case .failure = await notifications.openSettings() {
 				messages.show(UiMessage(text: .resource(L10n.Notifications.settingsOpenFailed), tone: .error))
 			}
 		}
 	}
 
+	/// Re-read the OS permission (called on appear and when returning to the
+	/// foreground, e.g. after a trip to Settings) so the toggle stays in sync.
 	func refreshNotificationPermission() {
 		Task {
-			let permission = await notifications.refreshPermission()
-			state.notificationPermission = permission
-			if enableNotificationsAfterSettings {
-				enableNotificationsAfterSettings = false
-				if permission == .granted { await enableNotifications() }
-			} else if permission != .granted && state.notificationsEnabled {
-				preferences.setNotificationsEnabled(false)
-				notifications.cancelAll()
-			}
+			state.notificationPermission = await notifications.refreshPermission()
 		}
-	}
-
-	private func enableNotifications() async {
-		preferences.setNotificationsEnabled(true)
-		messages.show(UiMessage(text: .resource(L10n.Notifications.enabledMessage), tone: .success))
 	}
 
 	// MARK: - Storage

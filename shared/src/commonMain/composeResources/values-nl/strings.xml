@@ -117,7 +117,7 @@
     <string name="nav_send">Versturen</string>
     <string name="nav_settings">Instellingen</string>
     <string name="network_title">Netwerk</string>
-    <string name="notifications_description">Ontvang meldingen over nieuwe ontvangstverzoeken terwijl VniDrop op de achtergrond draait.</string>
+    <string name="notifications_description">Ontvang meldingen over overdrachtsactiviteit terwijl VniDrop op de achtergrond draait.</string>
     <string name="notifications_enabled_message">Meldingen ingeschakeld.</string>
     <string name="notifications_local_title">Meldingen toestaan</string>
     <string name="notifications_permission_denied">Meldingen zijn uitgeschakeld voor VniDrop. U kunt ze inschakelen in Instellingen.</string>

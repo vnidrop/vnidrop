@@ -19,7 +19,6 @@ final class AppPreferencesRepositoryTests: XCTestCase {
 		let repo = AppPreferencesRepository(defaults: defaults(), fallback: fallback())
 		XCTAssertEqual(repo.preferences.username, "Default")
 		XCTAssertEqual(repo.preferences.themeMode, .system)
-		XCTAssertFalse(repo.preferences.notificationsEnabled)
 	}
 
 	func testValuesPersistAndReload() {
@@ -28,14 +27,12 @@ final class AppPreferencesRepositoryTests: XCTestCase {
 		let repo = AppPreferencesRepository(defaults: store, fallback: fb)
 		repo.setUsername("Bob")
 		repo.setThemeMode(.dark)
-		repo.setNotificationsEnabled(true)
 		repo.setReceiveFolder(ReceiveFolder(kind: .iosSecurityScopedUrl, value: "file:///x", displayName: "Custom"))
 
 		// A fresh repository over the same store reflects the persisted values.
 		let reloaded = AppPreferencesRepository(defaults: store, fallback: fb)
 		XCTAssertEqual(reloaded.preferences.username, "Bob")
 		XCTAssertEqual(reloaded.preferences.themeMode, .dark)
-		XCTAssertTrue(reloaded.preferences.notificationsEnabled)
 		XCTAssertEqual(reloaded.preferences.receiveFolder.displayName, "Custom")
 		XCTAssertEqual(reloaded.preferences.receiveFolder.kind, .iosSecurityScopedUrl)
 	}

@@ -117,7 +117,7 @@
     <string name="nav_send">Enviar</string>
     <string name="nav_settings">Definições</string>
     <string name="network_title">Rede</string>
-    <string name="notifications_description">Seja notificado sobre novos pedidos de receção enquanto o VniDrop está em segundo plano.</string>
+    <string name="notifications_description">Seja notificado sobre a atividade das transferências enquanto o VniDrop está em segundo plano.</string>
     <string name="notifications_enabled_message">Notificações ativadas.</string>
     <string name="notifications_local_title">Permitir notificações</string>
     <string name="notifications_permission_denied">As notificações estão desativadas para o VniDrop. Pode ativá-las nas Definições.</string>

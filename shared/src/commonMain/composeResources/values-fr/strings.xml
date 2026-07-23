@@ -117,7 +117,7 @@
     <string name="nav_send">Envoyer</string>
     <string name="nav_settings">Réglages</string>
     <string name="network_title">Réseau</string>
-    <string name="notifications_description">Soyez averti des nouvelles demandes de réception lorsque VniDrop est en arrière-plan.</string>
+    <string name="notifications_description">Soyez averti de l’activité des transferts lorsque VniDrop est en arrière-plan.</string>
     <string name="notifications_enabled_message">Notifications activées.</string>
     <string name="notifications_local_title">Autoriser les notifications</string>
     <string name="notifications_permission_denied">Les notifications sont désactivées pour VniDrop. Vous pouvez les activer dans les Réglages.</string>

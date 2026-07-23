@@ -16,12 +16,32 @@ struct LocalNotification {
 	let body: String
 }
 
+/// Presents notifications even while the app is active. Without a delegate the
+/// system drops the banner when the app is frontmost — very visible on macOS,
+/// where the app window is usually open when a transfer completes.
+private final class NotificationPresenter: NSObject, UNUserNotificationCenterDelegate {
+	func userNotificationCenter(
+		_ center: UNUserNotificationCenter,
+		willPresent notification: UNNotification
+	) async -> UNNotificationPresentationOptions {
+		[.banner, .sound, .list]
+	}
+}
+
 /// Local notification service backed by `UNUserNotificationCenter`.
 @MainActor
 final class LocalNotificationService: ObservableObject {
 	@Published private(set) var permission: NotificationPermission = .notDetermined
 
 	private let center = UNUserNotificationCenter.current()
+	private let presenter = NotificationPresenter()
+
+	init() {
+		center.delegate = presenter
+		// Seed the permission immediately so gating (approval/lifecycle
+		// notifications) never races a not-yet-refreshed `.notDetermined`.
+		Task { _ = await refreshPermission() }
+	}
 
 	func refreshPermission() async -> NotificationPermission {
 		let settings = await center.notificationSettings()
@@ -73,11 +93,6 @@ final class LocalNotificationService: ObservableObject {
 	func cancel(id: String) {
 		center.removePendingNotificationRequests(withIdentifiers: [id])
 		center.removeDeliveredNotifications(withIdentifiers: [id])
-	}
-
-	func cancelAll() {
-		center.removeAllPendingNotificationRequests()
-		center.removeAllDeliveredNotifications()
 	}
 
 	private static func map(_ status: UNAuthorizationStatus) -> NotificationPermission {

@@ -45,16 +45,22 @@ struct NotificationSettings: View {
 
 	var body: some View {
 		Section {
-			Toggle(isOn: Binding(
-				get: { model.state.notificationsEnabled },
-				set: { model.setNotificationsEnabled($0) }
-			)) {
-				Text(String(localized: L10n.Notifications.localTitle))
-			}
-			if model.state.notificationPermission == .denied {
+			Text(String(localized: L10n.Notifications.description)).foregroundStyle(.secondary)
+			switch model.state.notificationPermission {
+			case .notDetermined:
+				Button(String(localized: L10n.Notifications.localTitle), action: model.requestNotifications)
+			case .granted:
+				// Allowed — the OS Settings app is where you disable or fine-tune.
+				Text(String(localized: L10n.Notifications.enabledMessage)).foregroundStyle(.secondary)
 				Button(String(localized: L10n.Button.openSettings), action: model.openNotificationSettings)
+			case .denied:
+				Text(String(localized: L10n.Notifications.permissionDenied)).foregroundStyle(.secondary)
+				Button(String(localized: L10n.Button.openSettings), action: model.openNotificationSettings)
+			case .unsupported:
+				Text(String(localized: L10n.Notifications.unsupported)).foregroundStyle(.secondary)
 			}
 		}
+		.onAppear { model.refreshNotificationPermission() }
 	}
 }
 
