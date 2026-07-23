@@ -1,6 +1,9 @@
 # XcodeGen spec for the native SwiftUI VniDrop app (iOS/iPadOS/macOS).
 # Regenerate the project with:  xcodegen generate  (run from apple/)
-# Requires the Rust core first:  apple/scripts/build-core.sh debug
+# Requires two generated inputs first (both gitignored), before xcodegen:
+#   - Rust core:      apple/scripts/build-core.sh debug
+#   - Localization:   (cd localization && bun run src/cli.ts generate)
+#                     -> VniDrop/Resources/Localizable.xcstrings, VniDrop/Generated/L10n.swift
 name: VniDrop
 options:
   bundleIdPrefix: com.vnidrop
