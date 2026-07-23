@@ -12,6 +12,14 @@ options:
     macOS: "15.0"
   createIntermediateGroups: true
 
+# Project-wide build settings (applied to every target/config).
+settings:
+  base:
+    # Strip unreachable code from release binaries.
+    DEAD_CODE_STRIPPING: YES
+    # Flag user-facing strings that aren't localized (the app ships 9 languages).
+    CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED: YES
+
 packages:
   VnidropCore:
     path: VnidropCore
