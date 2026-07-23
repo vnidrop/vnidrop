@@ -58,6 +58,9 @@ extension Error {
 
 private func transferUiText(_ reason: String) -> UiText {
 	let detail = reason.lowercased()
+	if detail.contains("relays disabled") {
+		return .resource("error_relay_direct_failed")
+	}
 	if detail.contains("refused") || detail.contains("denied") || detail.contains("not approved") {
 		return .resource("error_permission")
 	}
@@ -79,6 +82,9 @@ private func reasonHints(_ detailRaw: String) -> UiText? {
 	let detail = detailRaw.lowercased()
 	if detail.isEmpty { return nil }
 
+	if detail.contains("relays disabled") {
+		return .resource("error_relay_direct_failed")
+	}
 	if detail.contains("still starting") || detail.contains("starting up") {
 		return .resource("error_starting_up")
 	}

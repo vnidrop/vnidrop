@@ -86,6 +86,20 @@ impl Drop for OutputSinkFile<'_> {
 }
 
 impl CoreInner {
+    /// Adds a mode-aware hint to a connection failure. With relays disabled
+    /// there is no fallback path, so the actionable advice is to use the same
+    /// network or turn relays on — the platform layer matches on this text.
+    fn annotate_connect_failure(&self, error: anyhow::Error) -> anyhow::Error {
+        if self.relays_disabled {
+            error.context(
+                "could not connect directly with relays disabled; \
+                 use the same network or enable relays in settings",
+            )
+        } else {
+            error
+        }
+    }
+
     pub(super) async fn receive(
         self: &Arc<Self>,
         ticket: String,
@@ -209,7 +223,8 @@ impl CoreInner {
         let connection = self
             .endpoint
             .connect(sender_addr.clone(), iroh_blobs::ALPN)
-            .await?;
+            .await
+            .map_err(|error| self.annotate_connect_failure(error.into()))?;
         self.emit_transfer(transfer_id, "receive", "network", "connected", json!({}));
         self.emit_active_path(transfer_id, "receive", sender_addr.id, "connected")
             .await;

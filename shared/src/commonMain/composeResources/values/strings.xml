@@ -93,6 +93,7 @@
     <string name="error_nfc">This NFC tag could not be used. Try another tag.</string>
     <string name="error_permission">The sender has not approved this transfer, or it was refused.</string>
     <string name="error_relay_configuration">The relay settings are not valid. Check the relay addresses in Settings.</string>
+    <string name="error_relay_direct_failed">Couldn\'t connect directly. Use the same network as the other device, or enable relays in Settings.</string>
     <string name="error_repository">VniDrop could not save transfer data on this device.</string>
     <string name="error_selection_failed">Could not open the selected item. Try choosing it again.</string>
     <string name="error_share_empty">Select at least one item to share.</string>

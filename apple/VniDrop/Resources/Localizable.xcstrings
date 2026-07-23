@@ -5709,6 +5709,66 @@
         }
       }
     },
+    "error_relay_direct_failed": {
+      "comment": "Error: a direct connection failed while relays are disabled (local-network only).",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Direkte Verbindung nicht möglich. Verwenden Sie dasselbe Netzwerk wie das andere Gerät oder aktivieren Sie Relays in den Einstellungen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn't connect directly. Use the same network as the other device, or enable relays in Settings."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se pudo conectar directamente. Use la misma red que el otro dispositivo o active los relés en Ajustes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Connexion directe impossible. Utilisez le même réseau que l’autre appareil, ou activez les relais dans les Réglages."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossibile connettersi direttamente. Usi la stessa rete dell’altro dispositivo o attivi i relay nelle Impostazioni."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kon niet rechtstreeks verbinden. Gebruik hetzelfde netwerk als het andere apparaat of schakel relays in bij Instellingen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nie można połączyć się bezpośrednio. Użyj tej samej sieci co drugie urządzenie lub włącz przekaźniki w Ustawieniach."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível ligar diretamente. Utilize a mesma rede que o outro dispositivo ou ative os retransmissores nas Definições."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Не удалось подключиться напрямую. Используйте ту же сеть, что и другое устройство, или включите ретрансляторы в «Настройках»."
+          }
+        }
+      }
+    },
     "error_repository": {
       "comment": "Error: transfer data could not be saved locally.",
       "extractionState": "manual",

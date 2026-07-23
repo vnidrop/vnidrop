@@ -93,6 +93,7 @@
     <string name="error_nfc">Deze NFC-tag kon niet worden gebruikt. Probeer een andere.</string>
     <string name="error_permission">De afzender heeft deze overdracht niet goedgekeurd, of deze is geweigerd.</string>
     <string name="error_relay_configuration">De relay-instellingen zijn ongeldig. Controleer de relayadressen in Instellingen.</string>
+    <string name="error_relay_direct_failed">Kon niet rechtstreeks verbinden. Gebruik hetzelfde netwerk als het andere apparaat of schakel relays in bij Instellingen.</string>
     <string name="error_repository">VniDrop kon de overdrachtsgegevens niet op dit apparaat bewaren.</string>
     <string name="error_selection_failed">Het geselecteerde item kon niet worden geopend. Probeer het opnieuw te kiezen.</string>
     <string name="error_share_empty">Selecteer minstens één item om te delen.</string>

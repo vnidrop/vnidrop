@@ -93,6 +93,7 @@
     <string name="error_nfc">Não foi possível utilizar esta etiqueta NFC. Tente outra.</string>
     <string name="error_permission">O remetente não aprovou esta transferência, ou foi recusada.</string>
     <string name="error_relay_configuration">As definições dos retransmissores não são válidas. Verifique os endereços dos retransmissores nas Definições.</string>
+    <string name="error_relay_direct_failed">Não foi possível ligar diretamente. Utilize a mesma rede que o outro dispositivo ou ative os retransmissores nas Definições.</string>
     <string name="error_repository">O VniDrop não conseguiu guardar os dados da transferência neste dispositivo.</string>
     <string name="error_selection_failed">Não foi possível abrir o item selecionado. Tente escolhê-lo novamente.</string>
     <string name="error_share_empty">Selecione pelo menos um item para partilhar.</string>

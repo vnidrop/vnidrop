@@ -1407,6 +1407,20 @@
         "ru": "Настройки ретрансляторов недействительны. Проверьте адреса ретрансляторов в «Настройках»."
       }
     },
+    "error_relay_direct_failed": {
+      "context": "Error: a direct connection failed while relays are disabled (local-network only).",
+      "translations": {
+        "en": "Couldn't connect directly. Use the same network as the other device, or enable relays in Settings.",
+        "fr": "Connexion directe impossible. Utilisez le même réseau que l’autre appareil, ou activez les relais dans les Réglages.",
+        "es": "No se pudo conectar directamente. Use la misma red que el otro dispositivo o active los relés en Ajustes.",
+        "it": "Impossibile connettersi direttamente. Usi la stessa rete dell’altro dispositivo o attivi i relay nelle Impostazioni.",
+        "de": "Direkte Verbindung nicht möglich. Verwenden Sie dasselbe Netzwerk wie das andere Gerät oder aktivieren Sie Relays in den Einstellungen.",
+        "pt": "Não foi possível ligar diretamente. Utilize a mesma rede que o outro dispositivo ou ative os retransmissores nas Definições.",
+        "pl": "Nie można połączyć się bezpośrednio. Użyj tej samej sieci co drugie urządzenie lub włącz przekaźniki w Ustawieniach.",
+        "nl": "Kon niet rechtstreeks verbinden. Gebruik hetzelfde netwerk als het andere apparaat of schakel relays in bij Instellingen.",
+        "ru": "Не удалось подключиться напрямую. Используйте ту же сеть, что и другое устройство, или включите ретрансляторы в «Настройках»."
+      }
+    },
     "error_repository": {
       "context": "Error: transfer data could not be saved locally.",
       "translations": {

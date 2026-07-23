@@ -10,6 +10,7 @@ import vnidrop.shared.generated.resources.error_invalid_ticket
 import vnidrop.shared.generated.resources.error_invitation_empty
 import vnidrop.shared.generated.resources.error_missing_native_library
 import vnidrop.shared.generated.resources.error_permission
+import vnidrop.shared.generated.resources.error_relay_direct_failed
 import vnidrop.shared.generated.resources.error_relay_configuration
 import vnidrop.shared.generated.resources.error_repository
 import vnidrop.shared.generated.resources.error_selection_failed
@@ -65,6 +66,8 @@ fun Throwable.technicalDetail(): String =
 private fun transferUiText(reason: String): UiText {
 	val detail = reason.lowercase()
 	return when {
+		detail.contains("relays disabled") ->
+			UiText.Resource(Res.string.error_relay_direct_failed)
 		detail.contains("refused") || detail.contains("denied") || detail.contains("not approved") ->
 			UiText.Resource(Res.string.error_permission)
 		else -> UiText.Resource(Res.string.error_transfer)
@@ -87,6 +90,8 @@ private fun reasonHints(detailRaw: String): UiText? {
 	if (detail.isBlank()) return null
 
 	return when {
+		detail.contains("relays disabled") ->
+			UiText.Resource(Res.string.error_relay_direct_failed)
 		detail.contains("still starting") || detail.contains("starting up") ->
 			UiText.Resource(Res.string.error_starting_up)
 		detail.contains("empty") && (detail.contains("invitation") || detail.contains("ticket") || detail.contains("qr")) ->

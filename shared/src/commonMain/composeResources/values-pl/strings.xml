@@ -93,6 +93,7 @@
     <string name="error_nfc">Nie udało się użyć tego tagu NFC. Spróbuj innego.</string>
     <string name="error_permission">Nadawca nie zatwierdził tego transferu lub został on odrzucony.</string>
     <string name="error_relay_configuration">Ustawienia przekaźników są nieprawidłowe. Sprawdź adresy przekaźników w Ustawieniach.</string>
+    <string name="error_relay_direct_failed">Nie można połączyć się bezpośrednio. Użyj tej samej sieci co drugie urządzenie lub włącz przekaźniki w Ustawieniach.</string>
     <string name="error_repository">VniDrop nie mógł zapisać danych transferu na tym urządzeniu.</string>
     <string name="error_selection_failed">Nie udało się otworzyć wybranego elementu. Spróbuj wybrać go ponownie.</string>
     <string name="error_share_empty">Wybierz co najmniej jeden element do udostępnienia.</string>

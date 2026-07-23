@@ -45,6 +45,11 @@ final class UserFacingErrorTests: XCTestCase {
 		XCTAssertEqual(InvitationError.message("invalid ticket").toUiText(), .resource("error_invalid_ticket"))
 		XCTAssertEqual(InvitationError.message("Select at least one file to share").toUiText(), .resource("error_share_empty"))
 		XCTAssertEqual(InvitationError.message("Camera access is required").toUiText(), .resource("error_camera"))
+		// Couples to the core's connect-failure annotation phrase; keep in sync.
+		XCTAssertEqual(
+			InvitationError.message("could not connect directly with relays disabled").toUiText(),
+			.resource("error_relay_direct_failed")
+		)
 	}
 
 	func testToUiTextFallsBackToGeneric() {

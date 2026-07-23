@@ -93,6 +93,7 @@
     <string name="error_nfc">Не удалось использовать эту NFC-метку. Попробуйте другую.</string>
     <string name="error_permission">Отправитель не одобрил эту передачу, или она была отклонена.</string>
     <string name="error_relay_configuration">Настройки ретрансляторов недействительны. Проверьте адреса ретрансляторов в «Настройках».</string>
+    <string name="error_relay_direct_failed">Не удалось подключиться напрямую. Используйте ту же сеть, что и другое устройство, или включите ретрансляторы в «Настройках».</string>
     <string name="error_repository">VniDrop не удалось сохранить данные передачи на этом устройстве.</string>
     <string name="error_selection_failed">Не удалось открыть выбранный объект. Попробуйте выбрать его снова.</string>
     <string name="error_share_empty">Выберите хотя бы один объект для отправки.</string>

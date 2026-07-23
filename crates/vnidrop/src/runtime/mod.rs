@@ -66,6 +66,9 @@ pub(super) struct CoreInner {
     pub(super) limits: CoreLimits,
     pub(super) transfer_slots: Semaphore,
     pub(super) access_policy: Arc<AccessPolicy>,
+    /// Relays disabled means direct-only: a failed connection cannot fall back,
+    /// so a receive failure gets an actionable, mode-aware hint.
+    pub(super) relays_disabled: bool,
     /// Sync mutex so cancel can remove + signal without awaiting (and without
     /// holding a Tokio lock across repository I/O).
     pub(super) active_transfers: std::sync::Mutex<HashMap<u64, ActiveTransfer>>,
@@ -296,6 +299,7 @@ impl CoreInner {
             transfer_slots: Semaphore::new(limits.max_concurrent_transfers as usize),
             limits,
             access_policy,
+            relays_disabled: matches!(relay_mode, RelayMode::Disabled),
             active_transfers: std::sync::Mutex::new(HashMap::new()),
             active_shares: TokioMutex::new(restored_active_shares),
             hash_to_transfer: TokioMutex::new(restored_hashes),

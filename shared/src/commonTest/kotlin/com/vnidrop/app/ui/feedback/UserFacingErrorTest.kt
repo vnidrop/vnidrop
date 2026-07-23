@@ -13,6 +13,7 @@ import vnidrop.shared.generated.resources.error_invalid_ticket
 import vnidrop.shared.generated.resources.error_invitation_empty
 import vnidrop.shared.generated.resources.error_missing_native_library
 import vnidrop.shared.generated.resources.error_permission
+import vnidrop.shared.generated.resources.error_relay_direct_failed
 import vnidrop.shared.generated.resources.error_repository
 import vnidrop.shared.generated.resources.error_selection_failed
 import vnidrop.shared.generated.resources.error_socket_bind
@@ -40,6 +41,11 @@ class UserFacingErrorTest {
 		assertEquals(
 			UiText.Resource(Res.string.error_transfer),
 			VnidropException.Transfer("connection reset").toUiText(),
+		)
+		// Couples to the core's connect-failure annotation phrase; keep in sync.
+		assertEquals(
+			UiText.Resource(Res.string.error_relay_direct_failed),
+			VnidropException.Transfer("could not connect directly with relays disabled").toUiText(),
 		)
 		assertEquals(
 			UiText.Resource(Res.string.error_repository),
