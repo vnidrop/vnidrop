@@ -16,6 +16,8 @@ mod share;
 mod storage;
 
 pub use facade::VnidropCore;
+#[cfg(test)]
+pub(crate) use provider::{consume_request_updates, RequestStreamOutcome};
 
 use std::{
     collections::{HashMap, HashSet},

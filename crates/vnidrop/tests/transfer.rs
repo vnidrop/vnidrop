@@ -1,7 +1,28 @@
 mod support;
 
+use std::time::{Duration, Instant};
+
 use support::{receive_with_response, share_path, TestNode};
-use vnidrop::VnidropError;
+use vnidrop::{CoreEvent, VnidropError};
+
+fn wait_for_sender_transfer_event(sender: &TestNode, transfer_id: u64, kind: &str) -> CoreEvent {
+    let started = Instant::now();
+    loop {
+        if let Some(event) = sender.sink.events().into_iter().find(|event| {
+            event.transfer_id == Some(transfer_id)
+                && event.direction.as_deref() == Some("send")
+                && event.phase == "transfer"
+                && event.kind == kind
+        }) {
+            return event;
+        }
+        assert!(
+            started.elapsed() < Duration::from_secs(5),
+            "timed out waiting for sender transfer event {kind}"
+        );
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}
 
 #[test]
 fn transfers_file_between_two_cores() {
@@ -50,6 +71,12 @@ fn transfers_file_between_two_cores() {
         artifacts[0].locator,
         output_dir.path().join("hello.txt").to_string_lossy()
     );
+    let completed = wait_for_sender_transfer_event(&sender, share.transfer_id, "completed");
+    assert!(completed.data_json.contains("\"connection_id\":"));
+    assert!(completed.data_json.contains("\"request_id\":"));
+    assert!(completed
+        .data_json
+        .contains(receiver.core.status().endpoint_id.as_str()));
 
     receiver.core.delete_receive_history().unwrap();
     assert_eq!(receiver.core.list_received_artifacts().unwrap(), artifacts);
