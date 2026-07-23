@@ -20,7 +20,7 @@ struct TransferProgress: Equatable {
 	let transferId: UInt64?
 	let phase: String
 	let kind: String
-	let labelKey: String
+	let labelKey: String.LocalizationValue
 	let progress: Double?
 	var detail: String? = nil
 	/// Pre-resolved label that overrides `labelKey` when set (e.g. "Sending to 2",
@@ -28,15 +28,15 @@ struct TransferProgress: Equatable {
 	var label: String? = nil
 }
 
-func statusLabelKey(_ status: TransferStatus) -> String {
+func statusLabelKey(_ status: TransferStatus) -> String.LocalizationValue {
 	switch status {
-	case .importing: return "status_preparing"
-	case .sharing: return "status_available"
-	case .receiving: return "status_receiving"
-	case .done: return "status_completed"
-	case .cancelled: return "status_cancelled"
-	case .stopped: return "status_stopped"
-	case .failed: return "status_failed"
+	case .importing: return L10n.Status.preparing
+	case .sharing: return L10n.Status.available
+	case .receiving: return L10n.Status.receiving
+	case .done: return L10n.Status.completed
+	case .cancelled: return L10n.Status.cancelled
+	case .stopped: return L10n.Status.stopped
+	case .failed: return L10n.Status.failed
 	}
 }
 
@@ -93,20 +93,20 @@ func progressForReceiver(
 	if latest.kind == "aborted" {
 		return TransferProgress(
 			transferId: transferId, phase: "transfer", kind: "aborted",
-			labelKey: "progress_interrupted", progress: nil, detail: nil
+			labelKey: L10n.Progress.interrupted, progress: nil, detail: nil
+		)
+	}
+	if latest.kind == "completed" && !transferEvents.contains(where: { $0.kind == "progress" || $0.kind == "started" }) {
+		return TransferProgress(
+			transferId: transferId, phase: "transfer", kind: "completed",
+			labelKey: L10n.Progress.completed, progress: 1, detail: nil
 		)
 	}
 	let progress = aggregateReceiverProgress(events: transferEvents, totalSizeHint: totalSizeHint)
-	if latest.kind == "completed" && (progress.map { $0 >= 0.999 } ?? true) {
-		return TransferProgress(
-			transferId: transferId, phase: "transfer", kind: "completed",
-			labelKey: "progress_completed", progress: 1, detail: nil
-		)
-	}
 
 	return TransferProgress(
 		transferId: transferId, phase: "transfer", kind: latest.kind,
-		labelKey: "progress_sending", progress: progress, detail: progressDetail(latest)
+		labelKey: L10n.Progress.sending, progress: progress, detail: progressDetail(latest)
 	)
 }
 
@@ -127,26 +127,26 @@ func formatBytes(_ size: UInt64) -> String {
 
 // MARK: - Internals (ported literally from AppUiModels.kt)
 
-private func humanProgressLabel(_ event: CoreEventModel) -> String {
+private func humanProgressLabel(_ event: CoreEventModel) -> String.LocalizationValue {
 	switch (event.phase, event.kind) {
 	case ("import", "copy-progress"), ("import", "outboard-progress"), ("import", "started"):
-		return "progress_preparing"
-	case ("import", "done"): return "progress_ready"
-	case ("ticket", "created"): return "progress_share_ready"
-	case ("network", "connecting"): return "progress_connecting"
-	case ("network", "connected"): return "progress_connected"
-	case ("download", "found-collection"): return "progress_getting_ready"
-	case ("download", "progress"): return "progress_downloading"
-	case ("export", "progress"): return "progress_saving"
-	case ("transfer", "progress"): return "progress_sending"
-	case ("transfer", "started"): return "progress_connected"
-	case ("transfer", "completed"): return "progress_completed"
-	case ("lifecycle", "done"): return "progress_completed"
-	case ("lifecycle", "cancelled"): return "progress_cancelled"
+		return L10n.Progress.preparing
+	case ("import", "done"): return L10n.Progress.ready
+	case ("ticket", "created"): return L10n.Progress.shareReady
+	case ("network", "connecting"): return L10n.Progress.connecting
+	case ("network", "connected"): return L10n.Progress.connected
+	case ("download", "found-collection"): return L10n.Progress.gettingReady
+	case ("download", "progress"): return L10n.Progress.downloading
+	case ("export", "progress"): return L10n.Progress.saving
+	case ("transfer", "progress"): return L10n.Progress.sending
+	case ("transfer", "started"): return L10n.Progress.connected
+	case ("transfer", "completed"): return L10n.Progress.completed
+	case ("lifecycle", "done"): return L10n.Progress.completed
+	case ("lifecycle", "cancelled"): return L10n.Progress.cancelled
 	default:
-		if event.phase == "handshake" { return "progress_requesting_access" }
-		if event.kind == "failed" { return "progress_failed" }
-		return "progress_working"
+		if event.phase == "handshake" { return L10n.Progress.requestingAccess }
+		if event.kind == "failed" { return L10n.Progress.failed }
+		return L10n.Progress.working
 	}
 }
 

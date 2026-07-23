@@ -7,16 +7,16 @@ struct PreferencesSettings: View {
 	@ObservedObject var model: SettingsModel
 
 	var body: some View {
-		Section(String(localized: "field_username")) {
-			TextField(String(localized: "field_username"),
+		Section(String(localized: L10n.Field.username)) {
+			TextField(String(localized: L10n.Field.username),
 					  text: Binding(get: { model.state.username }, set: { model.setUsername($0) }))
 		}
 		if model.state.supportsCustomReceiveFolders {
-			Section(String(localized: "preferences_receive_folder_title")) {
-				Text(model.state.receiveFolder?.displayName ?? String(localized: "value_unavailable"))
+			Section(String(localized: L10n.Preferences.receiveFolderTitle)) {
+				Text(model.state.receiveFolder?.displayName ?? String(localized: L10n.Value.unavailable))
 					.foregroundStyle(.secondary)
-				Button(String(localized: "button_choose_folder"), action: model.chooseReceiveFolder)
-				Button(String(localized: "button_reset_default"), action: model.resetReceiveFolder)
+				Button(String(localized: L10n.Button.chooseFolder), action: model.chooseReceiveFolder)
+				Button(String(localized: L10n.Button.resetDefault), action: model.resetReceiveFolder)
 			}
 		}
 	}
@@ -27,7 +27,7 @@ struct AppearanceSettings: View {
 
 	var body: some View {
 		Section {
-			Picker(String(localized: "appearance_title"),
+			Picker(String(localized: L10n.Appearance.title),
 				   selection: Binding(get: { model.state.themeMode }, set: { model.setThemeMode($0) })) {
 				ForEach(ThemeMode.allCases, id: \.self) { mode in
 					Text(themeModeLabel(mode)).tag(mode)
@@ -48,10 +48,10 @@ struct NotificationSettings: View {
 				get: { model.state.notificationsEnabled },
 				set: { model.setNotificationsEnabled($0) }
 			)) {
-				Text(LocalizedStringKey("notifications_local_title"))
+				Text(String(localized: L10n.Notifications.localTitle))
 			}
 			if model.state.notificationPermission == .denied {
-				Button(String(localized: "button_open_settings"), action: model.openNotificationSettings)
+				Button(String(localized: L10n.Button.openSettings), action: model.openNotificationSettings)
 			}
 		}
 	}
@@ -64,22 +64,22 @@ struct StorageSettings: View {
 	var body: some View {
 		Section {
 			if let storage = model.state.storage {
-				LabeledContent(String(localized: "storage_received_files"), value: formatBytes(storage.receivedFiles))
-				LabeledContent(String(localized: "storage_transfer_data"), value: formatBytes(storage.transferCache))
-				LabeledContent(String(localized: "storage_app_data"), value: formatBytes(storage.appData))
-				LabeledContent(String(localized: "storage_temporary"), value: formatBytes(storage.temporary))
-				LabeledContent(String(localized: "storage_total")) {
+				LabeledContent(String(localized: L10n.Storage.receivedFiles), value: formatBytes(storage.receivedFiles))
+				LabeledContent(String(localized: L10n.Storage.transferData), value: formatBytes(storage.transferCache))
+				LabeledContent(String(localized: L10n.Storage.appData), value: formatBytes(storage.appData))
+				LabeledContent(String(localized: L10n.Storage.temporary), value: formatBytes(storage.temporary))
+				LabeledContent(String(localized: L10n.Storage.total)) {
 					Text(formatBytes(storage.total)).fontWeight(.semibold)
 				}
 			} else {
 				HStack {
-					Text(LocalizedStringKey("storage_calculating")).foregroundStyle(.secondary)
+					Text(String(localized: L10n.Storage.calculating)).foregroundStyle(.secondary)
 					Spacer()
 					ProgressView()
 				}
 			}
 		} footer: {
-			Text(LocalizedStringKey("storage_footer"))
+			Text(String(localized: L10n.Storage.footer))
 		}
 
 		Section {
@@ -88,8 +88,8 @@ struct StorageSettings: View {
 			} label: {
 				HStack {
 					Text(model.state.isDeletingTransfers
-						 ? String(localized: "storage_deleting")
-						 : String(localized: "storage_delete_transfers"))
+						 ? String(localized: L10n.Storage.deleting)
+						 : String(localized: L10n.Storage.deleteTransfers))
 					if model.state.isDeletingTransfers {
 						Spacer()
 						ProgressView()
@@ -100,16 +100,16 @@ struct StorageSettings: View {
 		}
 		.onAppear { model.loadStorageUsage() }
 		.confirmationDialog(
-			Text(LocalizedStringKey("storage_delete_transfers")),
+			Text(String(localized: L10n.Storage.deleteTransfers)),
 			isPresented: $showDeleteConfirmation,
 			titleVisibility: .visible
 		) {
-			Button(String(localized: "storage_delete_transfers"), role: .destructive) {
+			Button(String(localized: L10n.Storage.deleteTransfers), role: .destructive) {
 				model.deleteAllTransfers()
 			}
-			Button(String(localized: "button_cancel"), role: .cancel) {}
+			Button(String(localized: L10n.Button.cancel), role: .cancel) {}
 		} message: {
-			Text(LocalizedStringKey("storage_delete_transfers_description"))
+			Text(String(localized: L10n.Storage.deleteTransfersDescription))
 		}
 	}
 }
@@ -121,40 +121,40 @@ struct AboutSettings: View {
 
 	var body: some View {
 		Section {
-			Text(LocalizedStringKey("about_tagline")).font(.headline)
-			Text(LocalizedStringKey("about_description")).foregroundStyle(.secondary)
+			Text(String(localized: L10n.About.tagline)).font(.headline)
+			Text(String(localized: L10n.About.description)).foregroundStyle(.secondary)
 		}
 
-		Section(String(localized: "about_is_title")) {
-			AboutPoint("about_is_direct", "paperplane")
-			AboutPoint("about_is_no_account", "person.crop.circle.badge.xmark")
-			AboutPoint("about_is_in_control", "checkmark.shield")
-			AboutPoint("about_is_encrypted", "lock")
-			AboutPoint("about_is_open", "chevron.left.forwardslash.chevron.right")
+		Section(String(localized: L10n.About.isTitle)) {
+			AboutPoint(L10n.About.isDirect, "paperplane")
+			AboutPoint(L10n.About.isNoAccount, "person.crop.circle.badge.xmark")
+			AboutPoint(L10n.About.isInControl, "checkmark.shield")
+			AboutPoint(L10n.About.isEncrypted, "lock")
+			AboutPoint(L10n.About.isOpen, "chevron.left.forwardslash.chevron.right")
 		}
 
-		Section(String(localized: "about_isnt_title")) {
-			AboutPoint("about_isnt_cloud", "icloud.slash")
-			AboutPoint("about_isnt_sync", "arrow.triangle.2.circlepath")
-			AboutPoint("about_isnt_public", "megaphone")
+		Section(String(localized: L10n.About.isntTitle)) {
+			AboutPoint(L10n.About.isntCloud, "icloud.slash")
+			AboutPoint(L10n.About.isntSync, "arrow.triangle.2.circlepath")
+			AboutPoint(L10n.About.isntPublic, "megaphone")
 		}
 
-		Section(String(localized: "about_privacy_title")) {
-			AboutPoint("about_privacy_capability", "qrcode")
-			AboutPoint("about_privacy_deny", "hand.raised")
-			AboutPoint("about_privacy_relay", "antenna.radiowaves.left.and.right")
-			AboutPoint("about_privacy_local", "internaldrive")
+		Section(String(localized: L10n.About.privacyTitle)) {
+			AboutPoint(L10n.About.privacyCapability, "qrcode")
+			AboutPoint(L10n.About.privacyDeny, "hand.raised")
+			AboutPoint(L10n.About.privacyRelay, "antenna.radiowaves.left.and.right")
+			AboutPoint(L10n.About.privacyLocal, "internaldrive")
 		}
 
-		Section(String(localized: "about_title")) {
-			LabeledContent(String(localized: "version_title"), value: model.state.appVersion)
+		Section(String(localized: L10n.About.title)) {
+			LabeledContent(String(localized: L10n.Version.title), value: model.state.appVersion)
 			if let device = model.state.deviceInfo {
-				LabeledContent(String(localized: "device_model_title"), value: device.deviceModel ?? "—")
-				LabeledContent(String(localized: "os_version_title"), value: device.operatingSystem)
+				LabeledContent(String(localized: L10n.Device.modelTitle), value: device.deviceModel ?? "—")
+				LabeledContent(String(localized: L10n.Os.versionTitle), value: device.operatingSystem)
 			}
-			LabeledContent(String(localized: "about_license_label"), value: "Apache 2.0")
+			LabeledContent(String(localized: L10n.About.licenseLabel), value: "Apache 2.0")
 			Link(destination: Self.privacyPolicyURL) {
-				Label(String(localized: "about_privacy_policy_label"), systemImage: "hand.raised")
+				Label(String(localized: L10n.About.privacyPolicyLabel), systemImage: "hand.raised")
 			}
 		}
 
@@ -164,7 +164,7 @@ struct AboutSettings: View {
 					get: { model.state.diagnosticsEnabled },
 					set: { model.setDiagnosticsEnabled($0) }
 				)) {
-					Text(LocalizedStringKey("diagnostics_title"))
+					Text(String(localized: L10n.Diagnostics.title))
 				}
 			}
 		}
@@ -188,13 +188,13 @@ struct BugReportSheet: View {
 				BugReportSettings(model: model, onSubmitted: { dismiss() })
 			}
 			.formStyle(.grouped)
-			.navigationTitle(Text(LocalizedStringKey("about_bug_report")))
+			.navigationTitle(Text(String(localized: L10n.About.bugReport)))
 			#if os(iOS)
 			.navigationBarTitleDisplayMode(.inline)
 			#endif
 			.toolbar {
 				ToolbarItem(placement: .cancellationAction) {
-					Button(String(localized: "button_cancel")) { dismiss() }
+					Button(String(localized: L10n.Button.cancel)) { dismiss() }
 				}
 			}
 		}
@@ -204,17 +204,17 @@ struct BugReportSheet: View {
 
 /// A bullet-style informational row with an SF Symbol and wrapping localized text.
 private struct AboutPoint: View {
-	let key: String
+	let key: String.LocalizationValue
 	let symbol: String
 
-	init(_ key: String, _ symbol: String) {
+	init(_ key: String.LocalizationValue, _ symbol: String) {
 		self.key = key
 		self.symbol = symbol
 	}
 
 	var body: some View {
 		Label {
-			Text(LocalizedStringKey(key))
+			Text(String(localized: key))
 				.font(.subheadline)
 				.fixedSize(horizontal: false, vertical: true)
 		} icon: {
@@ -228,36 +228,36 @@ struct BugReportSettings: View {
 	var onSubmitted: () -> Void = {}
 
 	var body: some View {
-		Section(String(localized: "bug_report_what_label")) {
+		Section(String(localized: L10n.Bug.reportWhatLabel)) {
 			TextField("", text: Binding(get: { model.state.bugWhatHappened }, set: { model.setBugWhatHappened($0) }),
-					  prompt: Text(LocalizedStringKey("bug_report_what_hint")), axis: .vertical)
+					  prompt: Text(String(localized: L10n.Bug.reportWhatHint)), axis: .vertical)
 				.lineLimit(3, reservesSpace: true)
 				.labelsHidden()
 		}
-		Section(String(localized: "bug_report_expected_label")) {
+		Section(String(localized: L10n.Bug.reportExpectedLabel)) {
 			TextField("", text: Binding(get: { model.state.bugExpected }, set: { model.setBugExpected($0) }),
-					  prompt: Text(LocalizedStringKey("bug_report_expected_hint")), axis: .vertical)
+					  prompt: Text(String(localized: L10n.Bug.reportExpectedHint)), axis: .vertical)
 				.lineLimit(3, reservesSpace: true)
 				.labelsHidden()
 		}
-		Section(String(localized: "bug_report_steps_label")) {
+		Section(String(localized: L10n.Bug.reportStepsLabel)) {
 			TextField("", text: Binding(get: { model.state.bugSteps }, set: { model.setBugSteps($0) }),
-					  prompt: Text(LocalizedStringKey("bug_report_steps_hint")), axis: .vertical)
+					  prompt: Text(String(localized: L10n.Bug.reportStepsHint)), axis: .vertical)
 				.lineLimit(3, reservesSpace: true)
 				.labelsHidden()
 		}
-		Section(String(localized: "bug_report_contact_label")) {
+		Section(String(localized: L10n.Bug.reportContactLabel)) {
 			TextField("", text: Binding(get: { model.state.bugContact }, set: { model.setBugContact($0) }),
-					  prompt: Text(LocalizedStringKey("bug_report_contact_hint")))
+					  prompt: Text(String(localized: L10n.Bug.reportContactHint)))
 				.labelsHidden()
 		}
 		Section {
 			Toggle(isOn: Binding(get: { model.state.bugIncludeLogs }, set: { model.setBugIncludeLogs($0) })) {
-				Text(LocalizedStringKey("bug_report_include_logs"))
+				Text(String(localized: L10n.Bug.reportIncludeLogs))
 			}
 			Button(action: { model.submitBugReport(onSuccess: onSubmitted) }) {
 				Text(model.state.isSubmittingBugReport
-					 ? String(localized: "bug_report_submitting") : String(localized: "bug_report_submit"))
+					 ? String(localized: L10n.Bug.reportSubmitting) : String(localized: L10n.Bug.reportSubmit))
 			}
 			.disabled(model.state.isSubmittingBugReport)
 		}

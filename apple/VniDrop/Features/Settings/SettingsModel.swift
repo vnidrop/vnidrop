@@ -11,15 +11,15 @@ enum SettingsSection: Hashable {
 	case about
 	case bugReport
 
-	var titleKey: String {
+	var titleKey: String.LocalizationValue {
 		switch self {
-		case .overview: return "settings_title"
-		case .preferences: return "preferences_title"
-		case .appearance: return "appearance_title"
-		case .notifications: return "notifications_title"
-		case .storage: return "storage_title"
-		case .about: return "about_title"
-		case .bugReport: return "about_bug_report"
+		case .overview: return L10n.Settings.title
+		case .preferences: return L10n.Preferences.title
+		case .appearance: return L10n.Appearance.title
+		case .notifications: return L10n.Notifications.title
+		case .storage: return L10n.Storage.title
+		case .about: return L10n.About.title
+		case .bugReport: return L10n.About.bugReport
 		}
 	}
 }
@@ -184,11 +184,11 @@ final class SettingsModel: ObservableObject {
 				await enableNotifications()
 			} else {
 				preferences.setNotificationsEnabled(false)
-				let key = permission == .unsupported ? "notifications_unsupported" : "notifications_permission_denied"
+				let key = permission == .unsupported ? L10n.Notifications.unsupported : L10n.Notifications.permissionDenied
 				messages.show(UiMessage(
 					text: .resource(key),
 					tone: .warning,
-					actionLabel: permission == .denied ? .resource("button_open_settings") : nil,
+					actionLabel: permission == .denied ? .resource(L10n.Button.openSettings) : nil,
 					onAction: permission == .denied ? { self.openNotificationSettings() } : nil
 				))
 			}
@@ -200,7 +200,7 @@ final class SettingsModel: ObservableObject {
 		Task {
 			preferences.setDiagnosticsEnabled(enabled)
 			messages.show(UiMessage(
-				text: .resource(enabled ? "diagnostics_enabled_message" : "diagnostics_disabled_message"),
+				text: .resource(enabled ? L10n.Diagnostics.enabledMessage : L10n.Diagnostics.disabledMessage),
 				tone: .success
 			))
 		}
@@ -219,11 +219,11 @@ final class SettingsModel: ObservableObject {
 			let what = snapshot.bugWhatHappened.trimmingCharacters(in: .whitespacesAndNewlines)
 			let expected = snapshot.bugExpected.trimmingCharacters(in: .whitespacesAndNewlines)
 			if what.isEmpty {
-				messages.show(UiMessage(text: .resource("bug_report_missing_what"), tone: .warning))
+				messages.show(UiMessage(text: .resource(L10n.Bug.reportMissingWhat), tone: .warning))
 				return
 			}
 			if expected.isEmpty {
-				messages.show(UiMessage(text: .resource("bug_report_missing_expected"), tone: .warning))
+				messages.show(UiMessage(text: .resource(L10n.Bug.reportMissingExpected), tone: .warning))
 				return
 			}
 			state.isSubmittingBugReport = true
@@ -242,11 +242,11 @@ final class SettingsModel: ObservableObject {
 				state.bugSteps = ""
 				state.bugContact = ""
 				state.bugIncludeLogs = true
-				messages.show(UiMessage(text: .resource("bug_report_submitted"), tone: .success))
+				messages.show(UiMessage(text: .resource(L10n.Bug.reportSubmitted), tone: .success))
 				onSuccess()
 			case .failure:
 				state.isSubmittingBugReport = false
-				messages.show(UiMessage(text: .resource("bug_report_submit_failed"), tone: .error))
+				messages.show(UiMessage(text: .resource(L10n.Bug.reportSubmitFailed), tone: .error))
 			}
 		}
 	}
@@ -257,7 +257,7 @@ final class SettingsModel: ObservableObject {
 			let result = await notifications.openSettings()
 			if case .failure = result {
 				enableNotificationsAfterSettings = false
-				messages.show(UiMessage(text: .resource("notifications_settings_open_failed"), tone: .error))
+				messages.show(UiMessage(text: .resource(L10n.Notifications.settingsOpenFailed), tone: .error))
 			}
 		}
 	}
@@ -278,7 +278,7 @@ final class SettingsModel: ObservableObject {
 
 	private func enableNotifications() async {
 		preferences.setNotificationsEnabled(true)
-		messages.show(UiMessage(text: .resource("notifications_enabled_message"), tone: .success))
+		messages.show(UiMessage(text: .resource(L10n.Notifications.enabledMessage), tone: .success))
 	}
 
 	// MARK: - Storage
@@ -328,7 +328,7 @@ final class SettingsModel: ObservableObject {
 			state.isDeletingTransfers = false
 			if failures == 0 {
 				loadStorageUsage()
-				messages.show(UiMessage(text: .resource("storage_transfers_deleted"), tone: .success))
+				messages.show(UiMessage(text: .resource(L10n.Storage.transfersDeleted), tone: .success))
 			} else {
 				messages.error(InvitationError.message("Could not delete \(failures) transfer records"))
 			}

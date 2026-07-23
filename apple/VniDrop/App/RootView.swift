@@ -111,7 +111,7 @@ struct RootView: View {
 		#if os(macOS)
 		NavigationSplitView {
 			List(AppDestination.allCases, selection: sidebarBinding) { destination in
-				Label(LocalizedStringKey(destination.labelKey), systemImage: destination.systemImage)
+				Label(String(localized: destination.labelKey), systemImage: destination.systemImage)
 					.tag(destination)
 			}
 			.navigationSplitViewColumnWidth(min: 180, ideal: 200, max: 260)
@@ -123,7 +123,7 @@ struct RootView: View {
 			ForEach(AppDestination.allCases) { destination in
 				screen(for: destination, windowClass: windowClass)
 					.tabItem {
-						Label(LocalizedStringKey(destination.labelKey), systemImage: destination.systemImage)
+						Label(String(localized: destination.labelKey), systemImage: destination.systemImage)
 					}
 					.tag(destination)
 			}

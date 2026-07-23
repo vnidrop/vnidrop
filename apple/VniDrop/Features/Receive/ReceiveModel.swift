@@ -133,7 +133,7 @@ final class ReceiveModel: ObservableObject {
 			case .success:
 				state.historyDeleteTarget = nil
 				state.isDeletingHistory = false
-				let key = target == .all ? "receive_history_cleared" : "transfer_deleted"
+				let key = target == .all ? L10n.Receive.historyCleared : L10n.Transfer.deleted
 				messages.tryShow(UiMessage(text: .resource(key), tone: .success))
 			case .failure(let error):
 				state.isDeletingHistory = false
@@ -173,9 +173,9 @@ final class ReceiveModel: ObservableObject {
 				resetAcquisition()
 				let canReveal = fileSystemService.canRevealReceiveFolder(folder)
 				messages.tryShow(UiMessage(
-					text: .resource("receive_completed"),
+					text: .resource(L10n.Receive.completed),
 					tone: .success,
-					actionLabel: canReveal ? .resource("button_show_in_files") : nil,
+					actionLabel: canReveal ? .resource(L10n.Button.showInFiles) : nil,
 					onAction: canReveal ? { self.revealReceiveFolder(folder) } : nil
 				))
 			case .failure(let error):
@@ -192,8 +192,8 @@ final class ReceiveModel: ObservableObject {
 				messages.tryShow(UiMessage(
 					text: uiText,
 					tone: .error,
-					actionLabel: error.canRetryWithoutChangingInput ? .resource("button_retry") : nil,
-					onAction: error.canRetryWithoutChangingInput ? { self.receive() } : nil
+					actionLabel: .resource(L10n.Button.retry),
+					onAction: { self.receive() }
 				))
 			}
 		}
@@ -222,14 +222,14 @@ final class ReceiveModel: ObservableObject {
 		Task {
 			let result = await fileSystemService.revealReceiveFolder(folder)
 			if case .failure = result {
-				messages.show(UiMessage(text: .resource("receive_open_files_failed"), tone: .error))
+				messages.show(UiMessage(text: .resource(L10n.Receive.openFilesFailed), tone: .error))
 			}
 		}
 	}
 
 	private func inspectInvitation(_ method: ReceiveMethod, _ raw: String) {
 		let ticket = raw.trimmingCharacters(in: .whitespacesAndNewlines)
-		if ticket.isEmpty { return messages.error(.resource("error_invitation_empty")) }
+		if ticket.isEmpty { return messages.error(.resource(L10n.Error.invitationEmpty)) }
 		state.isAcquisitionOpen = true
 		state.ticket = ticket
 		state.method = method

@@ -23,13 +23,13 @@ struct TransferComposer: View {
 
 	private var chooseStep: some View {
 		VStack(alignment: .leading, spacing: 16) {
-			Text(LocalizedStringKey("send_choose_file_title")).font(.title2).fontWeight(.semibold)
-			Text(LocalizedStringKey("send_choose_file_body"))
+			Text(String(localized: L10n.Send.chooseFileTitle)).font(.title2).fontWeight(.semibold)
+			Text(String(localized: L10n.Send.chooseFileBody))
 				.font(.subheadline).foregroundStyle(.secondary)
 			VStack(spacing: 14) {
 				Image(systemName: "doc").font(.system(size: 30)).foregroundStyle(.tint)
-				PrimaryButton(title: String(localized: "button_choose_files"), action: model.selectFile).fixedSize()
-				QuietButton(title: String(localized: "button_choose_folder"), action: model.selectFolder)
+				PrimaryButton(title: String(localized: L10n.Button.chooseFiles), action: model.selectFile).fixedSize()
+				QuietButton(title: String(localized: L10n.Button.chooseFolder), action: model.selectFolder)
 			}
 			.frame(maxWidth: .infinity)
 			.padding(28)
@@ -39,9 +39,9 @@ struct TransferComposer: View {
 
 	private var reviewStep: some View {
 		VStack(alignment: .leading, spacing: 16) {
-			Text(LocalizedStringKey("send_review_title")).font(.title2).fontWeight(.semibold)
+			Text(String(localized: L10n.Send.reviewTitle)).font(.title2).fontWeight(.semibold)
 			if state.selectedFiles.count > 1 {
-				Text(String(format: String(localized: "send_selected_files_count"), state.selectedFiles.count))
+				Text(L10n.Send.selectedFilesCount(count: state.selectedFiles.count))
 					.font(.subheadline).foregroundStyle(.secondary)
 			}
 			ForEach(state.selectedFiles) { file in
@@ -51,23 +51,23 @@ struct TransferComposer: View {
 					onRemove: { model.removeSelectedFile(file.value) }
 				)
 			}
-			Field(label: String(localized: "field_transfer_name"),
+			Field(label: String(localized: L10n.Field.transferName),
 				  value: Binding(get: { state.transferName }, set: { model.setTransferName($0) }))
-			Field(label: String(localized: "field_sender_name"),
+			Field(label: String(localized: L10n.Field.senderName),
 				  value: Binding(get: { state.senderName }, set: { model.setSenderName($0) }))
-			Text(LocalizedStringKey("send_access_title")).font(.headline)
+			Text(String(localized: L10n.Send.accessTitle)).font(.headline)
 			PolicyOption(
-				icon: "checkmark.shield", titleKey: "send_access_approval", descKey: "send_access_approval_description",
+				icon: "checkmark.shield", titleKey: L10n.Send.accessApproval, descKey: L10n.Send.accessApprovalDescription,
 				selected: state.accessPolicy == .requireApproval,
 				onTap: { model.setAccessPolicy(.requireApproval) }
 			)
 			PolicyOption(
-				icon: "globe", titleKey: "send_access_anyone", descKey: "send_access_anyone_description",
+				icon: "globe", titleKey: L10n.Send.accessAnyone, descKey: L10n.Send.accessAnyoneDescription,
 				selected: state.accessPolicy == .anyoneWithTransfer,
 				onTap: { model.setAccessPolicy(.anyoneWithTransfer) }
 			)
 			if state.accessPolicy == .anyoneWithTransfer {
-				Label(String(localized: "send_access_anyone_warning"), systemImage: "exclamationmark.triangle.fill")
+				Label(String(localized: L10n.Send.accessAnyoneWarning), systemImage: "exclamationmark.triangle.fill")
 					.font(.caption).foregroundStyle(.orange)
 			}
 			actions
@@ -77,7 +77,7 @@ struct TransferComposer: View {
 	@ViewBuilder
 	private var actions: some View {
 		let shareTitle = state.isSharing
-			? String(localized: "button_sharing_file") : String(localized: "button_share_file")
+			? String(localized: L10n.Button.sharingFile) : String(localized: L10n.Button.shareFile)
 		let shareButton = PrimaryButton(
 			title: shareTitle, action: model.createShare,
 			enabled: state.canCreateShare(coreInitialized: model.coreState.isInitialized)
@@ -85,15 +85,15 @@ struct TransferComposer: View {
 		if windowClass == .phone {
 			VStack(spacing: 8) {
 				shareButton
-				QuietButton(title: String(localized: "button_change_files"), action: model.selectFile, enabled: !state.isSharing)
-				QuietButton(title: String(localized: "button_choose_folder"), action: model.selectFolder, enabled: !state.isSharing)
+				QuietButton(title: String(localized: L10n.Button.changeFiles), action: model.selectFile, enabled: !state.isSharing)
+				QuietButton(title: String(localized: L10n.Button.chooseFolder), action: model.selectFolder, enabled: !state.isSharing)
 			}
 		} else {
 			HStack(spacing: 8) {
 				shareButton.fixedSize()
-				QuietButton(title: String(localized: "button_change_files"), action: model.selectFile, enabled: !state.isSharing)
-				QuietButton(title: String(localized: "button_choose_folder"), action: model.selectFolder, enabled: !state.isSharing)
-				QuietButton(title: String(localized: "button_clear"), action: model.clearSelectedSource, enabled: !state.isSharing)
+				QuietButton(title: String(localized: L10n.Button.changeFiles), action: model.selectFile, enabled: !state.isSharing)
+				QuietButton(title: String(localized: L10n.Button.chooseFolder), action: model.selectFolder, enabled: !state.isSharing)
+				QuietButton(title: String(localized: L10n.Button.clear), action: model.clearSelectedSource, enabled: !state.isSharing)
 			}
 		}
 	}
@@ -128,16 +128,16 @@ private struct SelectedFileCard: View {
 	}
 
 	private var subtitle: String {
-		if file.isDirectory { return String(localized: "send_folder_label") }
+		if file.isDirectory { return String(localized: L10n.Send.folderLabel) }
 		if let size = file.sizeBytes { return formatBytes(size) }
-		return String(localized: "send_file_size_unknown")
+		return String(localized: L10n.Send.fileSizeUnknown)
 	}
 }
 
 private struct PolicyOption: View {
 	let icon: String
-	let titleKey: String
-	let descKey: String
+	let titleKey: String.LocalizationValue
+	let descKey: String.LocalizationValue
 	let selected: Bool
 	let onTap: () -> Void
 
@@ -149,8 +149,8 @@ private struct PolicyOption: View {
 					.foregroundStyle(selected ? AnyShapeStyle(.tint) : AnyShapeStyle(.secondary))
 					.frame(width: 22)
 				VStack(alignment: .leading, spacing: 3) {
-					Text(LocalizedStringKey(titleKey))
-					Text(LocalizedStringKey(descKey)).font(.caption).foregroundStyle(.secondary)
+					Text(String(localized: titleKey))
+					Text(String(localized: descKey)).font(.caption).foregroundStyle(.secondary)
 				}
 				Spacer()
 				Image(systemName: selected ? "checkmark.circle.fill" : "circle")
