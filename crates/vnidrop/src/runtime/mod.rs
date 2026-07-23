@@ -27,7 +27,10 @@ use std::{
 
 use anyhow::Result;
 use futures_lite::StreamExt as _;
-use iroh::{endpoint::presets, protocol::Router, Endpoint};
+use iroh::{
+    endpoint::presets, protocol::Router, tls::CaTlsConfig, Endpoint, EndpointAddr, RelayConfig,
+    RelayMap, RelayMode, RelayUrl,
+};
 use iroh_blobs::{
     format::collection::Collection,
     provider::events::{EventMask, EventSender},
@@ -45,15 +48,18 @@ use tokio::{
 
 use crate::{
     access_policy::{mode_from_storage, AccessPolicy},
-    api::{CoreEvent, CoreEventSink, CoreLimits},
+    api::{CoreEvent, CoreEventSink, CoreLimits, CoreRelayMode},
     approval::ApprovalService,
     event_hub::EventHub,
     handshake::HandshakeService,
     logging::init_logging,
     repository::Repository,
     secret::load_or_create_secret,
+    ticket::ticket_matches_relay_profile,
     transfer_state::{TransferDirection, TransferStatus},
 };
+
+const RELAY_CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 
 /// Owns the Iroh endpoint, blob store, transfer history, and byte streaming.
 /// Kotlin owns app lifecycle and platform file picking.
@@ -66,6 +72,8 @@ pub(super) struct CoreInner {
     pub(super) event_hub: Arc<EventHub>,
     pub(super) approval: ApprovalService,
     pub(super) limits: CoreLimits,
+    pub(super) relay_mode: CoreRelayMode,
+    pub(super) custom_relay_urls: Vec<RelayUrl>,
     pub(super) transfer_slots: Semaphore,
     pub(super) access_policy: Arc<AccessPolicy>,
     /// Sync mutex so cancel can remove + signal without awaiting (and without
@@ -93,6 +101,8 @@ impl CoreInner {
         app_data_dir: PathBuf,
         event_sink: Arc<dyn CoreEventSink>,
         limits: CoreLimits,
+        relay_mode: CoreRelayMode,
+        relay_urls: Vec<RelayUrl>,
     ) -> Result<Arc<Self>> {
         tokio::fs::create_dir_all(&app_data_dir).await?;
         init_logging(&app_data_dir)?;
@@ -105,11 +115,39 @@ impl CoreInner {
             add_protected: None,
         });
         let store = FsStore::load_with_opts(store_root.join("blobs.db"), store_options).await?;
-        let endpoint = Endpoint::builder(presets::N0)
-            .secret_key(secret_key)
-            .bind()
-            .await?;
-        endpoint.online().await;
+        let endpoint = match relay_mode {
+            CoreRelayMode::Automatic => {
+                Endpoint::builder(presets::N0)
+                    .secret_key(secret_key)
+                    .bind()
+                    .await?
+            }
+            CoreRelayMode::Custom => {
+                let relay_map = RelayMap::from_iter(relay_urls.iter().cloned().map(|url| {
+                    // Loopback HTTP is a development escape hatch. Without TLS the
+                    // relay cannot serve Iroh's QUIC address-discovery endpoint.
+                    if url.scheme() == "http" {
+                        RelayConfig::new(url, None)
+                    } else {
+                        RelayConfig::from(url)
+                    }
+                }));
+                // Minimal leaves address lookup empty, so strict custom mode
+                // cannot silently publish or resolve addresses through N0.
+                Endpoint::builder(presets::Minimal)
+                    .relay_mode(RelayMode::Custom(relay_map))
+                    .ca_tls_config(CaTlsConfig::embedded())
+                    .secret_key(secret_key)
+                    .bind()
+                    .await?
+            }
+        };
+        if let Err(error) =
+            wait_for_relay(&endpoint, relay_mode, &relay_urls, RELAY_CONNECT_TIMEOUT).await
+        {
+            endpoint.close().await;
+            return Err(error);
+        }
 
         // Provider events are where the sender sees remote readers.  The core
         // uses them for send progress and for the current approval gate.
@@ -189,6 +227,27 @@ impl CoreInner {
                 );
                 continue;
             };
+            let relay_profile_matches = share.ticket.as_deref().is_some_and(|ticket| {
+                ticket_matches_relay_profile(ticket, &limits, relay_mode, &relay_urls)
+                    .unwrap_or(false)
+            });
+            if !relay_profile_matches {
+                repository
+                    .transition_transfer_status(
+                        transfer_id,
+                        TransferStatus::Sharing,
+                        TransferStatus::Stopped,
+                    )
+                    .await?;
+                event_hub.emit_transfer(
+                    transfer_id,
+                    TransferDirection::Send.as_str(),
+                    "recovery",
+                    "share-stopped-network-profile-changed",
+                    json!({ "reason": "saved ticket does not match the active relay profile" }),
+                );
+                continue;
+            }
             let tag_name = share_tag_name(&share.local_id);
             store
                 .tags()
@@ -239,6 +298,8 @@ impl CoreInner {
             repository,
             event_hub,
             approval,
+            relay_mode,
+            custom_relay_urls: relay_urls,
             transfer_slots: Semaphore::new(limits.max_concurrent_transfers as usize),
             limits,
             access_policy,
@@ -307,6 +368,66 @@ impl CoreInner {
             .list_events(transfer_id, self.limits.max_events)
             .await
     }
+}
+
+pub(crate) fn filter_peer_addr_for_relay_mode(
+    addr: &EndpointAddr,
+    relay_mode: CoreRelayMode,
+    custom_relay_urls: &[RelayUrl],
+) -> Result<EndpointAddr> {
+    match relay_mode {
+        CoreRelayMode::Automatic => Ok(addr.clone()),
+        CoreRelayMode::Custom => {
+            let mut filtered = EndpointAddr::new(addr.id);
+            for ip_addr in addr.ip_addrs().copied() {
+                filtered = filtered.with_ip_addr(ip_addr);
+            }
+            for relay_url in addr
+                .relay_urls()
+                .filter(|relay_url| custom_relay_urls.contains(relay_url))
+                .cloned()
+            {
+                filtered = filtered.with_relay_url(relay_url);
+            }
+            if filtered.is_empty() {
+                anyhow::bail!(
+                    "invitation has no direct address or relay allowed by strict custom relay mode"
+                );
+            }
+            Ok(filtered)
+        }
+    }
+}
+
+pub(crate) async fn wait_for_relay(
+    endpoint: &Endpoint,
+    relay_mode: CoreRelayMode,
+    relay_urls: &[RelayUrl],
+    timeout: Duration,
+) -> Result<()> {
+    if tokio::time::timeout(timeout, endpoint.online())
+        .await
+        .is_err()
+    {
+        match relay_mode {
+            CoreRelayMode::Automatic => anyhow::bail!(
+                "timed out after {} seconds while connecting to automatic relays; verify network access and relay availability",
+                timeout.as_secs_f32(),
+            ),
+            CoreRelayMode::Custom => {
+                let configured_relays = relay_urls
+                    .iter()
+                    .map(ToString::to_string)
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                anyhow::bail!(
+                    "timed out after {} seconds while connecting to custom relays [{configured_relays}]; verify the URLs, TLS certificates, network access, and relay availability",
+                    timeout.as_secs_f32(),
+                );
+            }
+        }
+    }
+    Ok(())
 }
 
 pub(super) fn share_tag_name(local_id: &str) -> String {

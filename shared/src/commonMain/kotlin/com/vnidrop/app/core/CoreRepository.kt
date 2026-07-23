@@ -16,6 +16,8 @@ import kotlinx.coroutines.withContext
 import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
+import uniffi.vnidrop.CoreNetworkConfig
+import uniffi.vnidrop.CoreRelayMode
 import uniffi.vnidrop.ReceiveOutputSink
 import uniffi.vnidrop.ReceiveOutputSinkV2
 import uniffi.vnidrop.ReceiverRequest
@@ -28,6 +30,7 @@ import uniffi.vnidrop.TicketInspection
 import uniffi.vnidrop.TransferMetadata
 import uniffi.vnidrop.TransferAccessMode
 import uniffi.vnidrop.VnidropCore
+import uniffi.vnidrop.defaultCoreNetworkConfig
 
 class CoreRepository(
 	private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
@@ -42,6 +45,7 @@ class CoreRepository(
 	override val signals: SharedFlow<CoreSignal> = _signals.asSharedFlow()
 
 	private var core: VnidropCore? = null
+	private val lifecycleGate = CoreLifecycleGate()
 
 	private val sink = object : CoreEventSink {
 		override fun onEvent(event: CoreEvent) {
@@ -60,12 +64,22 @@ class CoreRepository(
 		}
 	}
 
-	override suspend fun initialize(appDataDir: String): Result<Unit> = runCore {
-		core?.shutdown()
-		core = VnidropCore.initialize(appDataDir, sink)
-		refreshSnapshot()
-		_state.update { it.copy(isInitialized = true) }
-	}
+	override suspend fun initialize(appDataDir: String, relaySettings: RelaySettings): Result<Unit> =
+		runReconfiguration {
+			val previousCore = core
+			if (previousCore != null) {
+				val status = previousCore.status()
+				require(status.activeTransfers == 0UL && status.activeShares == 0UL) {
+					"Stop active transfers and shares before changing relay settings"
+				}
+			}
+			_state.update { it.copy(isInitialized = false, status = null) }
+			previousCore?.shutdown()
+			core = null
+			core = VnidropCore.initializeWithNetworkConfig(appDataDir, sink, relaySettings.toNative())
+			refreshSnapshot(requireCore())
+			_state.update { it.copy(isInitialized = true) }
+		}
 
 	override fun shutdown() {
 		core?.shutdown()
@@ -114,37 +128,37 @@ class CoreRepository(
 			accessPolicy = accessPolicy,
 		)
 
-	override suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel> = runCore {
-		requireCore().inspectTicket(ticket).toModel().also { inspection ->
+	override suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel> = runCore { activeCore ->
+		activeCore.inspectTicket(ticket).toModel().also { inspection ->
 			_state.update { it.copy(lastInspection = inspection) }
 		}
 	}
 
-	override suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit> = runCore {
-		requireCore().receive(ticket, outputDir, receiverName.ifBlank { null })
-		refreshSnapshot()
+	override suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit> = runCore { activeCore ->
+		activeCore.receive(ticket, outputDir, receiverName.ifBlank { null })
+		refreshSnapshot(activeCore)
 	}
 
 	override suspend fun receiveWithOutputSink(
 		ticket: String,
 		outputSink: ReceiveOutputSink,
 		receiverName: String,
-	): Result<Unit> = runCore {
-		requireCore().receiveWithOutputSink(ticket, outputSink, receiverName.ifBlank { null })
-		refreshSnapshot()
+	): Result<Unit> = runCore { activeCore ->
+		activeCore.receiveWithOutputSink(ticket, outputSink, receiverName.ifBlank { null })
+		refreshSnapshot(activeCore)
 	}
 
 	override suspend fun receiveWithOutputSinkV2(
 		ticket: String,
 		outputSink: ReceiveOutputSinkV2,
 		receiverName: String,
-	): Result<Unit> = runCore {
-		requireCore().receiveWithOutputSinkV2(ticket, outputSink, receiverName.ifBlank { null })
-		refreshSnapshot()
+	): Result<Unit> = runCore { activeCore ->
+		activeCore.receiveWithOutputSinkV2(ticket, outputSink, receiverName.ifBlank { null })
+		refreshSnapshot(activeCore)
 	}
 
-	override suspend fun storageUsage(): Result<CoreStorageUsageModel> = runCore {
-		val usage = requireCore().storageUsage()
+	override suspend fun storageUsage(): Result<CoreStorageUsageModel> = runCore { activeCore ->
+		val usage = activeCore.storageUsage()
 		CoreStorageUsageModel(
 			blobStoreBytes = usage.blobStoreBytes,
 			databaseBytes = usage.databaseBytes,
@@ -154,8 +168,8 @@ class CoreRepository(
 		)
 	}
 
-	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = runCore {
-		requireCore().listReceivedArtifacts().map { artifact ->
+	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = runCore { activeCore ->
+		activeCore.listReceivedArtifacts().map { artifact ->
 			ReceivedArtifactModel(
 				id = artifact.id,
 				locator = artifact.locator,
@@ -165,47 +179,47 @@ class CoreRepository(
 		}
 	}
 
-	override suspend fun cancel(transferId: ULong): Result<Unit> = runCore {
-		requireCore().cancelTransfer(transferId)
-		refreshSnapshot()
+	override suspend fun cancel(transferId: ULong): Result<Unit> = runCore { activeCore ->
+		activeCore.cancelTransfer(transferId)
+		refreshSnapshot(activeCore)
 	}
 
-	override suspend fun delete(transferId: ULong): Result<Unit> = runCore {
-		requireCore().deleteTransfer(transferId)
-		refreshSnapshot()
+	override suspend fun delete(transferId: ULong): Result<Unit> = runCore { activeCore ->
+		activeCore.deleteTransfer(transferId)
+		refreshSnapshot(activeCore)
 		_signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
 		_signals.tryEmit(CoreSignal.ReceiverHistoryChanged(transferId))
 	}
 
-	override suspend fun clearReceiveHistory(): Result<ULong> = runCore {
-		val deleted = requireCore().deleteReceiveHistory()
-		refreshSnapshot()
+	override suspend fun clearReceiveHistory(): Result<ULong> = runCore { activeCore ->
+		val deleted = activeCore.deleteReceiveHistory()
+		refreshSnapshot(activeCore)
 		deleted
 	}
 
-	override suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>> = runCore {
-		requireCore().listReceiverRequests(transferId).map(ReceiverRequest::toModel)
+	override suspend fun receiverRequests(transferId: ULong): Result<List<ReceiverRequestModel>> = runCore { activeCore ->
+		activeCore.listReceiverRequests(transferId).map(ReceiverRequest::toModel)
 	}
 
 	override suspend fun respondReceiverRequest(
 		requestId: String,
 		accepted: Boolean,
 		reason: String?,
-	): Result<Unit> = runCore {
-		requireCore().respondReceiverRequest(requestId, accepted, reason)
+	): Result<Unit> = runCore { activeCore ->
+		activeCore.respondReceiverRequest(requestId, accepted, reason)
 	}
 
-	override suspend fun refresh(): Result<Unit> = runCore { refreshSnapshot() }
+	override suspend fun refresh(): Result<Unit> = runCore(::refreshSnapshot)
 
 	override suspend fun shareSources(
 		sources: List<ShareSource>,
 		transferName: String,
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
-	): Result<Share> = runCore {
+	): Result<Share> = runCore { activeCore ->
 		require(sources.isNotEmpty()) { "Select at least one file to share" }
 		withPlatformPathAccess(sources) {
-			requireCore().shareFiles(
+			activeCore.shareFiles(
 				sources = sources,
 				metadata = ShareMetadataInput(
 					transferId = nextTransferId(),
@@ -215,7 +229,7 @@ class CoreRepository(
 				),
 			).toModel()
 		}.also { share ->
-			refreshSnapshot()
+			refreshSnapshot(activeCore)
 			_state.update { it.copy(lastShare = share) }
 		}
 	}
@@ -232,8 +246,7 @@ class CoreRepository(
 		}
 	}
 
-	private fun refreshSnapshot() {
-		val activeCore = requireCore()
+	private fun refreshSnapshot(activeCore: VnidropCore) {
 		val status = activeCore.status()
 		_state.update {
 			it.copy(
@@ -244,10 +257,25 @@ class CoreRepository(
 		}
 	}
 
-	private suspend fun <T> runCore(block: suspend () -> T): Result<T> =
+	private suspend fun <T> runCore(block: suspend (VnidropCore) -> T): Result<T> =
 		withContext(dispatcher) {
 			try {
-				Result.success(block())
+				Result.success(
+					lifecycleGate.withCall(
+						capture = ::requireCore,
+						block = block,
+					),
+				)
+			} catch (error: Throwable) {
+				if (error is CancellationException) throw error
+				Result.failure(error)
+			}
+		}
+
+	private suspend fun <T> runReconfiguration(block: suspend () -> T): Result<T> =
+		withContext(dispatcher) {
+			try {
+				Result.success(lifecycleGate.withReconfiguration(block))
 			} catch (error: Throwable) {
 				if (error is CancellationException) throw error
 				Result.failure(error)
@@ -261,6 +289,14 @@ class CoreRepository(
 	private companion object {
 		const val MaxEvents = 200
 	}
+}
+
+private fun RelaySettings.toNative(): CoreNetworkConfig = when (mode) {
+	RelayMode.Automatic -> defaultCoreNetworkConfig()
+	RelayMode.Custom -> CoreNetworkConfig(
+		mode = CoreRelayMode.CUSTOM,
+		relayUrls = relayUrls,
+	)
 }
 
 private fun CoreEvent.toModel(): CoreEventModel = CoreEventModel(

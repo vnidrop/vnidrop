@@ -9,12 +9,12 @@ use bytes::Bytes;
 use futures_lite::StreamExt as _;
 use iroh_blobs::{
     api::proto::ExportRangesItem, api::remote::GetProgressItem, format::collection::Collection,
-    get::request::get_hash_seq_and_sizes, Hash,
+    get::request::get_hash_seq_and_sizes, ticket::BlobTicket, Hash,
 };
 use serde_json::json;
 use tokio::sync::oneshot;
 
-use super::{ActiveTransfer, CoreInner};
+use super::{filter_peer_addr_for_relay_mode, ActiveTransfer, CoreInner};
 use crate::{
     access_policy::mode_to_storage,
     api::{
@@ -28,7 +28,9 @@ use crate::{
     },
     handshake::{DeliveryReceipt, HandshakeResponse, HandshakeService},
     repository::{PendingDeliveryReceiptInsert, ReceivedArtifactInsert, TransferUpsert},
-    ticket::{parse_transfer_ticket_with_limits, ParsedTransferTicket},
+    ticket::{
+        encode_persisted_sender_address, parse_transfer_ticket_with_limits, ParsedTransferTicket,
+    },
     transfer_state::{TransferDirection, TransferStatus},
 };
 
@@ -192,7 +194,7 @@ impl CoreInner {
             .await
             .context("transfer limiter is closed")
             .map_err(VnidropError::internal)?;
-        let parsed = match parse_transfer_ticket_with_limits(&ticket, &self.limits)
+        let mut parsed = match parse_transfer_ticket_with_limits(&ticket, &self.limits)
             .context("failed to parse transfer ticket")
         {
             Ok(parsed) => parsed,
@@ -205,6 +207,17 @@ impl CoreInner {
                 return Err(error);
             }
         };
+        let sender_addr = filter_peer_addr_for_relay_mode(
+            parsed.blob_ticket.addr(),
+            self.relay_mode,
+            &self.custom_relay_urls,
+        )
+        .map_err(VnidropError::network)?;
+        parsed.blob_ticket = BlobTicket::new(
+            sender_addr,
+            parsed.blob_ticket.hash(),
+            parsed.blob_ticket.format(),
+        );
         let transfer_id = parsed.metadata.transfer_id;
         self.persist_receive_start(transfer_id, &parsed, receiver_name.as_deref())
             .await
@@ -271,7 +284,8 @@ impl CoreInner {
                 .map_err(VnidropError::filesystem)?;
         }
         let sender_addr = parsed.blob_ticket.addr().clone();
-        let sender_blob_ticket = parsed.blob_ticket.to_string();
+        let persisted_sender_address = encode_persisted_sender_address(&sender_addr)
+            .context("failed to encode sender address for delivery receipt")?;
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
         // Every VniDrop ticket carries metadata and must complete the handshake.
@@ -355,7 +369,7 @@ impl CoreInner {
         self.repository
             .complete_receive_with_pending_receipt(PendingDeliveryReceiptInsert {
                 local_transfer_id: transfer_id,
-                sender_blob_ticket: &sender_blob_ticket,
+                sender_blob_ticket: &persisted_sender_address,
                 request_id: &delivery_receipt.request_id,
                 sender_transfer_id: delivery_receipt.transfer_id,
                 token: &delivery_receipt.token,

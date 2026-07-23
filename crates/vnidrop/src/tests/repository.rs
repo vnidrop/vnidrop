@@ -80,6 +80,7 @@ async fn persists_transfers_and_events_across_reopen() {
     assert_eq!(shares.len(), 1);
     assert_eq!(shares[0].transfer_id, 7);
     assert_eq!(shares[0].content_hash, "hash");
+    assert_eq!(shares[0].ticket.as_deref(), Some("ticket"));
     assert_eq!(shares[0].access_mode, "approval_required");
 
     repository

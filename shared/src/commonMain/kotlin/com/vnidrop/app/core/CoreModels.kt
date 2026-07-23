@@ -27,6 +27,16 @@ enum class ShareAccessPolicy {
 	AnyoneWithTransfer,
 }
 
+enum class RelayMode {
+	Automatic,
+	Custom,
+}
+
+data class RelaySettings(
+	val mode: RelayMode = RelayMode.Automatic,
+	val relayUrls: List<String> = emptyList(),
+)
+
 enum class TransferDirection {
 	Send,
 	Receive,
@@ -142,7 +152,10 @@ interface CoreGateway {
 	val state: StateFlow<CoreState>
 	val signals: SharedFlow<CoreSignal>
 
-	suspend fun initialize(appDataDir: String): Result<Unit>
+	suspend fun initialize(
+		appDataDir: String,
+		relaySettings: RelaySettings = RelaySettings(),
+	): Result<Unit>
 	fun shutdown()
 	suspend fun sharePath(path: String, transferName: String, senderName: String, accessPolicy: ShareAccessPolicy): Result<Share>
 	suspend fun shareFileDescriptor(

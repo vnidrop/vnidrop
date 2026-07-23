@@ -49,6 +49,7 @@ pub(crate) struct PersistedShare {
     pub(crate) transfer_id: u64,
     pub(crate) local_id: String,
     pub(crate) content_hash: String,
+    pub(crate) ticket: Option<String>,
     pub(crate) access_mode: String,
 }
 
@@ -709,7 +710,7 @@ impl Repository {
     pub(crate) async fn list_active_shares(&self) -> Result<Vec<PersistedShare>> {
         let rows = sqlx::query(
             r#"
-            SELECT transfer_id, local_id, content_hash, access_mode
+            SELECT transfer_id, local_id, content_hash, ticket, access_mode
             FROM transfers
             WHERE direction = 'send'
               AND status = 'sharing'
@@ -724,7 +725,8 @@ impl Repository {
                 transfer_id: row.get::<i64, _>(0) as u64,
                 local_id: row.get::<String, _>(1),
                 content_hash: row.get::<String, _>(2),
-                access_mode: row.get::<String, _>(3),
+                ticket: row.get::<Option<String>, _>(3),
+                access_mode: row.get::<String, _>(4),
             })
             .collect())
     }

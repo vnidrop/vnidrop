@@ -114,6 +114,47 @@ class FoundationComposeTest {
 	}
 
 	@Test
+	fun phoneSettingsOpensCustomRelayConfiguration() = runComposeUiTest {
+		val state = mutableStateOf(SettingsState(endpointId = "endpoint-for-allowlist"))
+		var applied = false
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				SettingsScreen(
+					state = state.value,
+					windowClass = WindowClass.Phone,
+					onSectionSelected = { state.value = state.value.copy(selectedSection = it) },
+					onUsernameChanged = {},
+					onThemeModeChanged = {},
+					onChooseFolder = {},
+					onResetFolder = {},
+					onNotificationsChanged = {},
+					onOpenNotificationSettings = {},
+					onDiagnosticsChanged = {},
+					onBugWhatChanged = {},
+					onBugExpectedChanged = {},
+					onBugStepsChanged = {},
+					onBugContactChanged = {},
+					onBugIncludeLogsChanged = {},
+					onSubmitBugReport = {},
+					onRelayModeChanged = { state.value = state.value.copy(relayMode = it) },
+					onRelayUrlsChanged = { state.value = state.value.copy(relayUrlsText = it) },
+					onApplyRelaySettings = { applied = true },
+				)
+			}
+		}
+
+		onNodeWithText("Network").performClick()
+		onNodeWithText("Device ID: endpoint-for-allowlist").assertIsDisplayed()
+		onNodeWithText("Custom").performClick()
+		onNodeWithText(
+			"Custom mode is strict: VniDrop will not fall back to public relays or public discovery. " +
+				"Other devices must be able to reach your configured relays.",
+		).assertIsDisplayed()
+		onNodeWithText("Apply network settings").performClick()
+		runOnIdle { assertTrue(applied) }
+	}
+
+	@Test
 	fun aboutSettingsShowsTheSharedProductAndPrivacyContent() = runComposeUiTest {
 		setContent {
 			VniDropTheme(isDarkTheme = false) {
@@ -534,6 +575,56 @@ class FoundationComposeTest {
 		onNodeWithText("Scan with VniDrop to receive this transfer").assertIsDisplayed()
 		onNodeWithText("Save .vnd file").assertIsDisplayed()
 		onNodeWithContentDescription("Close").assertIsDisplayed()
+	}
+
+	@Test
+	fun stoppedAndFailedTransfersDoNotExposeStaleInvitations() = runComposeUiTest {
+		val transfer = mutableStateOf(outgoingTransfer().copy(status = TransferStatus.Stopped))
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				SendScreen(
+					coreState = CoreState(isInitialized = true, transfers = listOf(transfer.value)),
+					state = SendState(
+						selectedTransferId = transfer.value.transferId,
+						detailPanel = com.vnidrop.app.feature.send.TransferDetailPanel.Share,
+					),
+					windowClass = WindowClass.Desktop,
+					onOpenComposer = {}, onDismissComposer = {}, onSelectFile = {}, onClearFile = {},
+					onTransferNameChanged = {}, onSenderNameChanged = {}, onAccessPolicyChanged = {},
+					onCreateShare = {}, onTransferSelected = {}, onCloseTransferDetails = {}, onCopyTicket = {},
+				)
+			}
+		}
+
+		onAllNodesWithText("Share").assertCountEquals(0)
+		onAllNodesWithText("Save .vnd file").assertCountEquals(0)
+
+		runOnIdle { transfer.value = transfer.value.copy(status = TransferStatus.Failed) }
+		onAllNodesWithText("Share").assertCountEquals(0)
+		onAllNodesWithText("Save .vnd file").assertCountEquals(0)
+	}
+
+	@Test
+	fun oversizedInvitationShowsQrUnavailableInsteadOfLoadingForever() = runComposeUiTest {
+		val transfer = outgoingTransfer().copy(ticket = "a".repeat(2_954))
+		setContent {
+			VniDropTheme(isDarkTheme = false) {
+				SendScreen(
+					coreState = CoreState(isInitialized = true, transfers = listOf(transfer)),
+					state = SendState(
+						selectedTransferId = transfer.transferId,
+						detailPanel = com.vnidrop.app.feature.send.TransferDetailPanel.Share,
+					),
+					windowClass = WindowClass.Desktop,
+					onOpenComposer = {}, onDismissComposer = {}, onSelectFile = {}, onClearFile = {},
+					onTransferNameChanged = {}, onSenderNameChanged = {}, onAccessPolicyChanged = {},
+					onCreateShare = {}, onTransferSelected = {}, onCloseTransferDetails = {}, onCopyTicket = {},
+				)
+			}
+		}
+
+		onNodeWithText("QR unavailable for this invitation. Use Share or Download instead.").assertIsDisplayed()
+		onNodeWithText("Save .vnd file").assertIsDisplayed()
 	}
 
 	@Test

@@ -1,12 +1,12 @@
-use std::{str::FromStr, sync::Arc, time::Duration};
+use std::{sync::Arc, time::Duration};
 
-use iroh_blobs::ticket::BlobTicket;
 use serde_json::json;
 
-use super::CoreInner;
+use super::{filter_peer_addr_for_relay_mode, CoreInner};
 use crate::{
     handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeService},
     repository::PendingDeliveryReceipt,
+    ticket::parse_persisted_sender_address,
 };
 
 const DELIVERY_RECEIPT_TIMEOUT: Duration = Duration::from_secs(5);
@@ -60,8 +60,8 @@ impl CoreInner {
     }
 
     async fn deliver_pending_receipt(&self, pending: PendingDeliveryReceipt) {
-        let blob_ticket = match BlobTicket::from_str(&pending.sender_blob_ticket) {
-            Ok(ticket) => ticket,
+        let sender_addr = match parse_persisted_sender_address(&pending.sender_blob_ticket) {
+            Ok(addr) => addr,
             Err(error) => {
                 tracing::warn!(%error, request_id = %pending.request_id, "discarded invalid pending delivery receipt");
                 let _ = self
@@ -78,7 +78,24 @@ impl CoreInner {
                 return;
             }
         };
-        let client = HandshakeService::client(self.endpoint.clone(), blob_ticket.addr().clone());
+        let sender_addr = match filter_peer_addr_for_relay_mode(
+            &sender_addr,
+            self.relay_mode,
+            &self.custom_relay_urls,
+        ) {
+            Ok(addr) => addr,
+            Err(error) => {
+                self.emit_transfer(
+                    pending.local_transfer_id,
+                    "receive",
+                    "delivery",
+                    "receipt-failed",
+                    json!({ "reason": error.to_string() }),
+                );
+                return;
+            }
+        };
+        let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
         let receipt = DeliveryReceipt {
             request_id: pending.request_id.clone(),
             transfer_id: pending.sender_transfer_id,

@@ -10,6 +10,7 @@ import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceivedArtifactModel
 import com.vnidrop.app.core.ReceivedStorageInspection
+import com.vnidrop.app.core.RelaySettings
 import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Share
 import com.vnidrop.app.core.ShareAccessPolicy
@@ -54,6 +55,8 @@ class FakeCoreGateway : CoreGateway {
 	var lastReceiveTicket: String? = null
 	var lastReceiveReceiverName: String? = null
 	var lastShareAccessPolicy: ShareAccessPolicy? = null
+	val initializedRelaySettings = mutableListOf<RelaySettings>()
+	var initializeHandler: (RelaySettings) -> Result<Unit> = { Result.success(Unit) }
 
 	fun completeSuspendedReceive() {
 		receiveGate?.complete(Unit)
@@ -66,9 +69,11 @@ class FakeCoreGateway : CoreGateway {
 		gate.await()
 	}
 
-	override suspend fun initialize(appDataDir: String): Result<Unit> {
-		mutableState.value = mutableState.value.copy(isInitialized = true)
-		return Result.success(Unit)
+	override suspend fun initialize(appDataDir: String, relaySettings: RelaySettings): Result<Unit> {
+		initializedRelaySettings += relaySettings
+		return initializeHandler(relaySettings).onSuccess {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+		}
 	}
 	override fun shutdown() = Unit
 	var lastShareSourceCount: Int = 0
@@ -200,6 +205,9 @@ class FakePreferencesRepository(
 	override suspend fun setNotificationsEnabled(enabled: Boolean) { mutablePreferences.value = mutablePreferences.value.copy(notificationsEnabled = enabled) }
 	override suspend fun setDiagnosticsEnabled(enabled: Boolean) {
 		mutablePreferences.value = mutablePreferences.value.copy(diagnosticsEnabled = enabled)
+	}
+	override suspend fun setRelaySettings(settings: RelaySettings) {
+		mutablePreferences.value = mutablePreferences.value.copy(relaySettings = settings)
 	}
 	override suspend fun ensureDiagnosticsInstallId(): String {
 		val existing = mutablePreferences.value.diagnosticsInstallId

@@ -14,10 +14,11 @@ mod transfer_state;
 mod util;
 
 pub use api::{
-    default_core_limits, CoreEvent, CoreEventSink, CoreLimits, CoreStorageUsage, PublishedOutput,
-    ReceiveOutputSink, ReceiveOutputSinkV2, ReceivedArtifact, ReceivedLocatorKind, ReceiverRequest,
-    RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource, SourceKind, StoredTransfer,
-    TicketInspection, TransferAccessMode, TransferMetadata,
+    default_core_limits, default_core_network_config, CoreEvent, CoreEventSink, CoreLimits,
+    CoreNetworkConfig, CoreRelayMode, CoreStorageUsage, PublishedOutput, ReceiveOutputSink,
+    ReceiveOutputSinkV2, ReceivedArtifact, ReceivedLocatorKind, ReceiverRequest, RuntimeStatus,
+    ShareMetadataInput, ShareResult, ShareSource, SourceKind, StoredTransfer, TicketInspection,
+    TransferAccessMode, TransferMetadata,
 };
 pub use error::VnidropError;
 pub use runtime::VnidropCore;

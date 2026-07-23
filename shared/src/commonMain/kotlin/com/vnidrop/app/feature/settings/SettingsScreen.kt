@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.ui.state.WindowClass
+import com.vnidrop.app.core.RelayMode
 import com.vnidrop.app.ui.theme.ThemeMode
 
 @Composable
@@ -30,6 +31,9 @@ fun SettingsScreen(
 	onBugIncludeLogsChanged: (Boolean) -> Unit,
 	onSubmitBugReport: () -> Unit,
 	onDeleteAllTransfers: () -> Unit = {},
+	onRelayModeChanged: (RelayMode) -> Unit = {},
+	onRelayUrlsChanged: (String) -> Unit = {},
+	onApplyRelaySettings: () -> Unit = {},
 ) {
 	if (windowClass == WindowClass.Desktop) {
 		Row(
@@ -60,6 +64,9 @@ fun SettingsScreen(
 					onBugIncludeLogsChanged = onBugIncludeLogsChanged,
 					onSubmitBugReport = onSubmitBugReport,
 					onDeleteAllTransfers = onDeleteAllTransfers,
+					onRelayModeChanged = onRelayModeChanged,
+					onRelayUrlsChanged = onRelayUrlsChanged,
+					onApplyRelaySettings = onApplyRelaySettings,
 				)
 			}
 		}
@@ -94,6 +101,9 @@ fun SettingsScreen(
 				onBugIncludeLogsChanged = onBugIncludeLogsChanged,
 				onSubmitBugReport = onSubmitBugReport,
 				onDeleteAllTransfers = onDeleteAllTransfers,
+				onRelayModeChanged = onRelayModeChanged,
+				onRelayUrlsChanged = onRelayUrlsChanged,
+				onApplyRelaySettings = onApplyRelaySettings,
 			)
 		}
 	}
@@ -120,11 +130,22 @@ private fun SettingsSectionContent(
 	onBugIncludeLogsChanged: (Boolean) -> Unit,
 	onSubmitBugReport: () -> Unit,
 	onDeleteAllTransfers: () -> Unit,
+	onRelayModeChanged: (RelayMode) -> Unit,
+	onRelayUrlsChanged: (String) -> Unit,
+	onApplyRelaySettings: () -> Unit,
 ) {
 	when (section) {
 		SettingsSection.Overview -> Unit
 		SettingsSection.Preferences -> PreferencesSettings(state, onUsernameChanged, onChooseFolder, onResetFolder, onBack, showBack)
 		SettingsSection.Appearance -> AppearanceSettings(state.themeMode, onThemeModeChanged, onBack, showBack)
+		SettingsSection.Network -> NetworkSettings(
+			state = state,
+			onModeChanged = onRelayModeChanged,
+			onUrlsChanged = onRelayUrlsChanged,
+			onApply = onApplyRelaySettings,
+			onBack = onBack,
+			showBack = showBack,
+		)
 		SettingsSection.Notifications -> NotificationSettings(state, onNotificationsChanged, onOpenNotificationSettings, onBack, showBack)
 		SettingsSection.Storage -> StorageSettings(state, onDeleteAllTransfers, onBack, showBack)
 		SettingsSection.About -> AboutSettings(

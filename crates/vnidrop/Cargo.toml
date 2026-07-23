@@ -36,4 +36,5 @@ uuid = { version = "1.23.3", features = ["v4", "serde"] }
 walkdir = "2.5.0"
 
 [dev-dependencies]
+iroh-relay = { version = "1.0.0", features = ["server"] }
 tempfile = "3.27.0"

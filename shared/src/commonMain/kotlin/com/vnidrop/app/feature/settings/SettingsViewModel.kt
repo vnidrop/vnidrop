@@ -7,8 +7,12 @@ import com.vnidrop.app.DeviceInfoProvider
 import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.FileSystemService
 import com.vnidrop.app.core.CoreGateway
+import com.vnidrop.app.core.CoreLifecycleBusyException
 import com.vnidrop.app.core.FolderAccessStatus
 import com.vnidrop.app.core.ReceiveFolder
+import com.vnidrop.app.core.RelayMode
+import com.vnidrop.app.core.RelaySettings
+import com.vnidrop.app.core.TransferStatus
 import com.vnidrop.app.diagnostics.BugReportDraft
 import com.vnidrop.app.diagnostics.BugReportService
 import com.vnidrop.app.diagnostics.DiagnosticsBuildConfig
@@ -43,15 +47,23 @@ import vnidrop.shared.generated.resources.notifications_enabled_message
 import vnidrop.shared.generated.resources.notifications_permission_denied
 import vnidrop.shared.generated.resources.notifications_settings_open_failed
 import vnidrop.shared.generated.resources.notifications_unsupported
+import vnidrop.shared.generated.resources.relay_settings_applied
 
 enum class SettingsSection {
 	Overview,
 	Preferences,
 	Appearance,
+	Network,
 	Notifications,
 	Storage,
 	About,
 	BugReport,
+}
+
+enum class RelaySettingsApplyError {
+	ActiveTransfers,
+	ApplyFailed,
+	RestoreFailed,
 }
 
 data class StorageBreakdown(
@@ -74,6 +86,14 @@ data class SettingsState(
 	val isValidatingFolder: Boolean = false,
 	val supportsCustomReceiveFolders: Boolean = true,
 	val themeMode: ThemeMode = ThemeMode.System,
+	val savedRelaySettings: RelaySettings = RelaySettings(),
+	val relayMode: RelayMode = RelayMode.Automatic,
+	val relayUrlsText: String = "",
+	val relayInputError: RelaySettingsInputError? = null,
+	val relayApplyError: RelaySettingsApplyError? = null,
+	val isApplyingRelaySettings: Boolean = false,
+	val hasActiveNetworkWork: Boolean = false,
+	val endpointId: String? = null,
 	val notificationsEnabled: Boolean = false,
 	val notificationPermission: NotificationPermission = NotificationPermission.NotDetermined,
 	val diagnosticsEnabled: Boolean = false,
@@ -90,7 +110,11 @@ data class SettingsState(
 	val storage: StorageBreakdown? = null,
 	val isCalculatingStorage: Boolean = false,
 	val isDeletingTransfers: Boolean = false,
-)
+) {
+	val hasRelaySettingsChanges: Boolean
+		get() = relayMode != savedRelaySettings.mode ||
+			(relayMode == RelayMode.Custom && relayUrlsText != savedRelaySettings.relayUrls.joinToString("\n"))
+}
 
 sealed interface SettingsEffect {
 	data object OpenReceiveFolderPicker : SettingsEffect
@@ -121,6 +145,7 @@ class SettingsViewModel(
 	private var enableNotificationsAfterSettings = false
 	private var usernamePersistJob: Job? = null
 	private var hasLocalUsernameDraft = false
+	private var hasLocalRelayDraft = false
 
 	init {
 		viewModelScope.launch {
@@ -134,10 +159,30 @@ class SettingsViewModel(
 						themeMode = preferences.themeMode,
 						notificationsEnabled = preferences.notificationsEnabled,
 						diagnosticsEnabled = preferences.diagnosticsEnabled,
+						savedRelaySettings = preferences.relaySettings,
+						relayMode = if (hasLocalRelayDraft) current.relayMode else preferences.relaySettings.mode,
+						relayUrlsText = if (hasLocalRelayDraft) {
+							current.relayUrlsText
+						} else {
+							preferences.relaySettings.relayUrls.joinToString("\n")
+						},
 					)
 				}
 				if (receiveFolder != previousFolder) {
 					validateFolder(receiveFolder)
+				}
+			}
+		}
+		viewModelScope.launch {
+			repository.state.collect { coreState ->
+				val status = coreState.status
+				val hasActiveWork = status?.let { it.activeTransfers > 0UL || it.activeShares > 0UL } == true ||
+					coreState.transfers.any { it.status in ActiveTransferStatuses }
+				_state.update {
+					it.copy(
+						hasActiveNetworkWork = hasActiveWork,
+						endpointId = coreState.status?.endpointId,
+					)
 				}
 			}
 		}
@@ -216,6 +261,103 @@ class SettingsViewModel(
 
 	fun setThemeMode(mode: ThemeMode) {
 		viewModelScope.launch { preferencesRepository.setThemeMode(mode) }
+	}
+
+	fun setRelayMode(mode: RelayMode) {
+		hasLocalRelayDraft = true
+		_state.update {
+			it.copy(
+				relayMode = mode,
+				relayInputError = null,
+				relayApplyError = null,
+			)
+		}
+		hasLocalRelayDraft = _state.value.hasRelaySettingsChanges
+	}
+
+	fun setRelayUrlsText(value: String) {
+		hasLocalRelayDraft = true
+		_state.update {
+			it.copy(
+				relayUrlsText = value,
+				relayInputError = null,
+				relayApplyError = null,
+			)
+		}
+		hasLocalRelayDraft = _state.value.hasRelaySettingsChanges
+	}
+
+	fun applyRelaySettings() {
+		val snapshot = _state.value
+		if (snapshot.isApplyingRelaySettings || !snapshot.hasRelaySettingsChanges) return
+		val validation = validateRelaySettings(
+			mode = snapshot.relayMode,
+			urlsText = snapshot.relayUrlsText,
+			retainedUrls = snapshot.savedRelaySettings.relayUrls,
+		)
+		val desired = validation.settings
+		if (desired == null) {
+			_state.update { it.copy(relayInputError = validation.error, relayApplyError = null) }
+			return
+		}
+		if (snapshot.hasActiveNetworkWork) {
+			_state.update {
+				it.copy(relayInputError = null, relayApplyError = RelaySettingsApplyError.ActiveTransfers)
+			}
+			return
+		}
+
+		_state.update {
+			it.copy(
+				isApplyingRelaySettings = true,
+				relayInputError = null,
+				relayApplyError = null,
+			)
+		}
+		viewModelScope.launch {
+			val previous = snapshot.savedRelaySettings
+			val applied = repository.initialize(environment.defaultCoreDataDir, desired)
+			if (applied.isFailure) {
+				val busy = applied.exceptionOrNull() is CoreLifecycleBusyException
+				if (busy || repository.state.value.isInitialized) {
+					_state.update {
+						it.copy(
+							isApplyingRelaySettings = false,
+							relayApplyError = if (repository.state.value.isInitialized) {
+								RelaySettingsApplyError.ActiveTransfers
+							} else {
+								RelaySettingsApplyError.ApplyFailed
+							},
+						)
+					}
+				} else {
+					finishFailedRelayApply(previous)
+				}
+				return@launch
+			}
+			try {
+				preferencesRepository.setRelaySettings(desired)
+			} catch (error: CancellationException) {
+				throw error
+			} catch (_: Throwable) {
+				finishFailedRelayApply(previous)
+				return@launch
+			}
+			hasLocalRelayDraft = false
+			_state.update {
+				it.copy(
+					savedRelaySettings = desired,
+					relayMode = desired.mode,
+					relayUrlsText = desired.relayUrls.joinToString("\n"),
+					isApplyingRelaySettings = false,
+					relayInputError = null,
+					relayApplyError = null,
+				)
+			}
+			messages.show(
+				UiMessage(UiText.Resource(Res.string.relay_settings_applied), UiMessageTone.Success),
+			)
+		}
 	}
 
 	fun chooseReceiveFolder() {
@@ -417,7 +559,22 @@ class SettingsViewModel(
 		_state.update { it.copy(folderAccessStatus = status, isValidatingFolder = false) }
 	}
 
+	private suspend fun finishFailedRelayApply(previous: RelaySettings) {
+		val restored = repository.initialize(environment.defaultCoreDataDir, previous).isSuccess
+		_state.update {
+			it.copy(
+				isApplyingRelaySettings = false,
+				relayApplyError = if (restored) {
+					RelaySettingsApplyError.ApplyFailed
+				} else {
+					RelaySettingsApplyError.RestoreFailed
+				},
+			)
+		}
+	}
+
 	private companion object {
 		const val UsernamePersistDebounceMs = 350L
+		val ActiveTransferStatuses = setOf(TransferStatus.Importing, TransferStatus.Sharing, TransferStatus.Receiving)
 	}
 }

@@ -10269,6 +10269,1326 @@
         }
       }
     },
+    "relay_add_url": {
+      "comment": "Apple Network settings button that appends another custom relay URL field.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relay-Server hinzufügen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add relay server"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Añadir servidor de retransmisión"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajouter un serveur relais"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aggiungi server relay"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relayserver toevoegen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dodaj serwer przekaźnikowy"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adicionar servidor de retransmissão"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Добавить сервер-ретранслятор"
+          }
+        }
+      }
+    },
+    "relay_apply": {
+      "comment": "Network settings button that activates the selected relay configuration.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netzwerkeinstellungen anwenden"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply network settings"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aplicar ajustes de red"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Appliquer les réglages réseau"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Applica impostazioni di rete"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netwerkinstellingen toepassen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zastosuj ustawienia sieci"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aplicar definições de rede"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Применить настройки сети"
+          }
+        }
+      }
+    },
+    "relay_apply_active_transfers": {
+      "comment": "Network settings warning when relay configuration cannot change during active work.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beenden Sie alle aktiven Übertragungen und Freigaben, bevor Sie die Netzwerkeinstellungen anwenden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stop all active transfers and shares before applying network settings."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Detenga todas las transferencias y elementos compartidos activos antes de aplicar los ajustes de red."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Arrêtez tous les transferts et partages actifs avant d’appliquer les réglages réseau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Interrompa tutti i trasferimenti e le condivisioni attivi prima di applicare le impostazioni di rete."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Stop alle actieve overdrachten en gedeelde items voordat u de netwerkinstellingen toepast."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zatrzymaj wszystkie aktywne transfery i udostępnienia przed zastosowaniem ustawień sieci."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pare todas as transferências e partilhas ativas antes de aplicar as definições de rede."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Остановите все активные передачи и раздачи перед применением настроек сети."
+          }
+        }
+      }
+    },
+    "relay_apply_failed": {
+      "comment": "Network settings error after a relay configuration fails and the previous one is restored.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Diese Einstellungen konnten nicht angewendet werden. Die vorherigen Netzwerkeinstellungen wurden wiederhergestellt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not apply these settings. The previous network settings were restored."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se han podido aplicar estos ajustes. Se han restaurado los ajustes de red anteriores."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossible d’appliquer ces réglages. Les réglages réseau précédents ont été restaurés."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossibile applicare queste impostazioni. Sono state ripristinate le impostazioni di rete precedenti."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Deze instellingen konden niet worden toegepast. De vorige netwerkinstellingen zijn hersteld."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nie udało się zastosować tych ustawień. Przywrócono poprzednie ustawienia sieci."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível aplicar estas definições. As definições de rede anteriores foram restauradas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Не удалось применить эти настройки. Предыдущие настройки сети восстановлены."
+          }
+        }
+      }
+    },
+    "relay_apply_restart_description": {
+      "comment": "Network settings explanation of restart and invitation effects when applying relay changes.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Beim Anwenden wird die Netzwerkverbindung von VniDrop neu gestartet. Beenden Sie zuerst aktive Übertragungen und Freigaben. Vorhandene Einladungen müssen eventuell erneut geteilt werden."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applying restarts VniDrop’s network connection. Stop active transfers and shares first. Existing invitations may need to be shared again."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Al aplicar los ajustes, se reinicia la conexión de red de VniDrop. Detenga primero las transferencias y los elementos compartidos activos. Es posible que tenga que volver a compartir las invitaciones existentes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’application de ces réglages redémarre la connexion réseau de VniDrop. Arrêtez d’abord les transferts et partages actifs. Il peut être nécessaire de partager à nouveau les invitations existantes."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’applicazione riavvia la connessione di rete di VniDrop. Interrompa prima i trasferimenti e le condivisioni attivi. Potrebbe essere necessario condividere di nuovo gli inviti esistenti."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Bij het toepassen wordt de netwerkverbinding van VniDrop opnieuw gestart. Stop eerst actieve overdrachten en gedeelde items. Bestaande uitnodigingen moeten mogelijk opnieuw worden gedeeld."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zastosowanie ustawień ponownie uruchamia połączenie sieciowe VniDrop. Najpierw zatrzymaj aktywne transfery i udostępnienia. Istniejące zaproszenia mogą wymagać ponownego udostępnienia."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A aplicação reinicia a ligação de rede do VniDrop. Pare primeiro as transferências e partilhas ativas. Poderá ser necessário voltar a partilhar os convites existentes."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "При применении сетевое соединение VniDrop перезапускается. Сначала остановите активные передачи и раздачи. Возможно, существующие приглашения потребуется отправить повторно."
+          }
+        }
+      }
+    },
+    "relay_applying": {
+      "comment": "Network settings button label while a relay configuration is being activated.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wird angewendet…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applying…"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aplicando…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Application…"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Applicazione…"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Toepassen…"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Stosowanie…"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A aplicar…"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Применение…"
+          }
+        }
+      }
+    },
+    "relay_custom_urls_help": {
+      "comment": "Network settings help for entering custom relay server URLs.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geben Sie pro Zeile eine HTTPS-Relay-URL ein. Anmeldedaten in URLs werden nicht unterstützt. Das TLS-Zertifikat muss von einer öffentlich vertrauenswürdigen Zertifizierungsstelle ausgestellt sein."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter one HTTPS relay URL per line. URL credentials are not supported. The TLS certificate must be issued by a publicly trusted certificate authority."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Introduzca una URL HTTPS de relé por línea. No se admiten credenciales en las URL. El certificado TLS debe ser emitido por una autoridad de certificación de confianza pública."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Saisissez une URL de relais HTTPS par ligne. Les identifiants dans les URL ne sont pas pris en charge. Le certificat TLS doit être émis par une autorité de certification reconnue publiquement."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Inserisca un URL relay HTTPS per riga. Le credenziali negli URL non sono supportate. Il certificato TLS deve essere emesso da un’autorità di certificazione pubblicamente attendibile."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voer per regel één HTTPS-relay-URL in. Aanmeldgegevens in URL's worden niet ondersteund. Het TLS-certificaat moet zijn uitgegeven door een openbaar vertrouwde certificeringsinstantie."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Wprowadź po jednym adresie URL HTTPS przekaźnika w każdym wierszu. Dane logowania w adresach URL nie są obsługiwane. Certyfikat TLS musi być wystawiony przez publicznie zaufany urząd certyfikacji."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Introduza um URL HTTPS de retransmissor por linha. Não são suportadas credenciais nos URLs. O certificado TLS tem de ser emitido por uma autoridade de certificação publicamente reconhecida."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Введите по одному HTTPS-адресу ретранслятора в строке. Учётные данные в URL-адресах не поддерживаются. Сертификат TLS должен быть выдан общедоступным доверенным центром сертификации."
+          }
+        }
+      }
+    },
+    "relay_custom_urls_label": {
+      "comment": "Network settings label for the custom relay URL input.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relay-URLs"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relay URLs"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL de relés"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL des relais"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL relay"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relay-URL's"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adresy URL przekaźników"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URLs dos retransmissores"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL-адреса ретрансляторов"
+          }
+        }
+      }
+    },
+    "relay_mode_automatic": {
+      "comment": "Network settings label for VniDrop's automatic public relay mode.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automatisch"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automático"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automatique"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automatica"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automatisch"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automatyczny"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Automático"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Автоматически"
+          }
+        }
+      }
+    },
+    "relay_mode_automatic_description": {
+      "comment": "Network settings description of automatic public relay behavior.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verwendet die öffentliche Standard-Relay-Infrastruktur von VniDrop, wenn keine direkte Verbindung möglich ist."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use VniDrop’s default public relay infrastructure when a direct connection is unavailable."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Usa la infraestructura pública de relés predeterminada de VniDrop cuando no haya una conexión directa disponible."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Utiliser l’infrastructure de relais publique par défaut de VniDrop lorsqu’une connexion directe est indisponible."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Usa l’infrastruttura relay pubblica predefinita di VniDrop quando non è disponibile una connessione diretta."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gebruikt de standaard openbare relay-infrastructuur van VniDrop wanneer geen directe verbinding beschikbaar is."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Używa domyślnej publicznej infrastruktury przekaźników VniDrop, gdy połączenie bezpośrednie jest niedostępne."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Utiliza a infraestrutura pública de retransmissores predefinida do VniDrop quando não está disponível uma ligação direta."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Использовать стандартную публичную инфраструктуру ретрансляторов VniDrop, если прямое соединение недоступно."
+          }
+        }
+      }
+    },
+    "relay_mode_custom": {
+      "comment": "Network settings label for strict custom relay mode.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Benutzerdefiniert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Personalizado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Personnalisé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Personalizzata"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aangepast"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Niestandardowy"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Personalizado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Пользовательский"
+          }
+        }
+      }
+    },
+    "relay_mode_custom_description": {
+      "comment": "Network settings description of strict custom relay behavior.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Verwendet ausschließlich die unten aufgeführten Relay-Server."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Use only the relay servers below."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Usa únicamente los servidores de retransmisión indicados a continuación."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Utiliser uniquement les serveurs relais ci-dessous."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Usa solo i server relay indicati di seguito."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Gebruikt alleen de onderstaande relayservers."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Używa wyłącznie poniższych serwerów przekaźnikowych."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Utiliza apenas os servidores de retransmissão abaixo."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Использовать только указанные ниже серверы-ретрансляторы."
+          }
+        }
+      }
+    },
+    "relay_privacy_description": {
+      "comment": "Network settings privacy note about what relay operators can observe.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relays leiten verschlüsselten Datenverkehr weiter und können Ihre Dateien nicht lesen, ihr Betreiber kann jedoch Verbindungsmetadaten sehen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relays forward encrypted traffic and cannot read your files, but their operator can observe connection metadata."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Los relés reenvían tráfico cifrado y no pueden leer sus archivos, pero su operador puede observar los metadatos de conexión."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Les relais transmettent du trafic chiffré et ne peuvent pas lire vos fichiers, mais leur opérateur peut observer les métadonnées de connexion."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "I relay inoltrano traffico cifrato e non possono leggere i suoi file, ma il loro operatore può osservare i metadati di connessione."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relays sturen versleuteld verkeer door en kunnen uw bestanden niet lezen, maar de beheerder kan verbindingsmetadata bekijken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Przekaźniki przesyłają zaszyfrowany ruch i nie mogą odczytać plików, ale ich operator może obserwować metadane połączenia."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Os retransmissores encaminham tráfego cifrado e não conseguem ler os seus ficheiros, mas o operador pode observar metadados da ligação."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ретрансляторы передают зашифрованный трафик и не могут читать ваши файлы, но их оператор может видеть метаданные соединения."
+          }
+        }
+      }
+    },
+    "relay_remove_url": {
+      "comment": "Apple Network settings accessibility label for removing one custom relay URL field.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relay-Server entfernen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove relay server"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Eliminar servidor de retransmisión"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Supprimer le serveur relais"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rimuovi server relay"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Relayserver verwijderen"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Usuń serwer przekaźnikowy"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Remover servidor de retransmissão"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Удалить сервер-ретранслятор"
+          }
+        }
+      }
+    },
+    "relay_restore_failed": {
+      "comment": "Network settings severe error when neither new nor previous relay settings can initialize.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die vorherigen Netzwerkeinstellungen konnten nicht wiederhergestellt werden. Starten Sie VniDrop neu und prüfen Sie Ihre Relay-Konfiguration."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not restore the previous network settings. Restart VniDrop and review your relay configuration."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "No se han podido restaurar los ajustes de red anteriores. Reinicie VniDrop y revise la configuración de relés."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossible de restaurer les réglages réseau précédents. Redémarrez VniDrop et vérifiez votre configuration de relais."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impossibile ripristinare le impostazioni di rete precedenti. Riavvii VniDrop e verifichi la configurazione dei relay."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De vorige netwerkinstellingen konden niet worden hersteld. Start VniDrop opnieuw en controleer uw relayconfiguratie."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Nie udało się przywrócić poprzednich ustawień sieci. Uruchom ponownie VniDrop i sprawdź konfigurację przekaźników."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Não foi possível restaurar as definições de rede anteriores. Reinicie o VniDrop e reveja a configuração dos retransmissores."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Не удалось восстановить предыдущие настройки сети. Перезапустите VniDrop и проверьте конфигурацию ретрансляторов."
+          }
+        }
+      }
+    },
+    "relay_settings_applied": {
+      "comment": "Network settings confirmation after a relay configuration is activated.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netzwerkeinstellungen angewendet."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network settings applied."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajustes de red aplicados."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réglages réseau appliqués."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Impostazioni di rete applicate."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netwerkinstellingen toegepast."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zastosowano ustawienia sieci."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Definições de rede aplicadas."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Настройки сети применены."
+          }
+        }
+      }
+    },
+    "relay_strict_warning": {
+      "comment": "Network settings warning that custom relay mode has no public fallback or discovery.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Der benutzerdefinierte Modus ist strikt: VniDrop greift weder auf öffentliche Relays noch auf öffentliche Erkennung zurück. Andere Geräte müssen Ihre konfigurierten Relays erreichen können."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Custom mode is strict: VniDrop will not fall back to public relays or public discovery. Other devices must be able to reach your configured relays."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "El modo personalizado es estricto: VniDrop no recurrirá a relés públicos ni al descubrimiento público. Los demás dispositivos deben poder acceder a los relés configurados."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le mode personnalisé est strict : VniDrop n’utilisera ni les relais publics ni la découverte publique comme solution de repli. Les autres appareils doivent pouvoir accéder aux relais configurés."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La modalità personalizzata è rigorosa: VniDrop non userà relay pubblici o il rilevamento pubblico come ripiego. Gli altri dispositivi devono poter raggiungere i relay configurati."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De aangepaste modus is strikt: VniDrop valt niet terug op openbare relays of openbare detectie. Andere apparaten moeten uw ingestelde relays kunnen bereiken."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Tryb niestandardowy jest rygorystyczny: VniDrop nie użyje awaryjnie publicznych przekaźników ani publicznego wykrywania. Inne urządzenia muszą mieć dostęp do skonfigurowanych przekaźników."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O modo personalizado é estrito: o VniDrop não recorrerá a retransmissores públicos nem à descoberta pública. Os outros dispositivos têm de conseguir aceder aos retransmissores configurados."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Пользовательский режим работает строго: VniDrop не будет переключаться на публичные ретрансляторы или публичное обнаружение. Другие устройства должны иметь доступ к настроенным ретрансляторам."
+          }
+        }
+      }
+    },
+    "relay_validation_duplicate_url": {
+      "comment": "Network settings validation error for a repeated custom relay URL.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Relay-URL in Zeile %1$d ist bereits zuvor eingetragen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relay URL on line %1$d duplicates an earlier entry."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La URL de relé de la línea %1$d duplica una entrada anterior."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’URL de relais à la ligne %1$d est identique à une entrée précédente."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’URL relay alla riga %1$d duplica una voce precedente."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De relay-URL op regel %1$d is gelijk aan een eerdere invoer."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adres URL przekaźnika w wierszu %1$d powtarza wcześniejszy wpis."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O URL do retransmissor na linha %1$d duplica uma entrada anterior."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL-адрес ретранслятора в строке %1$d повторяет предыдущую запись."
+          }
+        }
+      }
+    },
+    "relay_validation_https_required": {
+      "comment": "Network settings validation error when a custom relay URL is not HTTPS.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Relay-URL in Zeile %1$d muss mit https:// beginnen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relay URL on line %1$d must start with https://."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La URL de relé de la línea %1$d debe empezar por https://."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’URL de relais à la ligne %1$d doit commencer par https://."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’URL relay alla riga %1$d deve iniziare con https://."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De relay-URL op regel %1$d moet beginnen met https://."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adres URL przekaźnika w wierszu %1$d musi zaczynać się od https://."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O URL do retransmissor na linha %1$d tem de começar por https://."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL-адрес ретранслятора в строке %1$d должен начинаться с https://."
+          }
+        }
+      }
+    },
+    "relay_validation_invalid_url": {
+      "comment": "Network settings validation error for a malformed custom relay URL.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Die Relay-URL in Zeile %1$d ist ungültig."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Relay URL on line %1$d is not valid."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "La URL de relé de la línea %1$d no es válida."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’URL de relais à la ligne %1$d n’est pas valide."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "L’URL relay alla riga %1$d non è valido."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "De relay-URL op regel %1$d is ongeldig."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adres URL przekaźnika w wierszu %1$d jest nieprawidłowy."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O URL do retransmissor na linha %1$d não é válido."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "URL-адрес ретранслятора в строке %1$d недействителен."
+          }
+        }
+      }
+    },
+    "relay_validation_missing_url": {
+      "comment": "Network settings validation error when custom mode has no relay URL.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Fügen Sie mindestens eine Relay-URL hinzu."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add at least one relay URL."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Añada al menos una URL de relé."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Ajoutez au moins une URL de relais."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Aggiunga almeno un URL relay."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Voeg ten minste één relay-URL toe."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Dodaj co najmniej jeden adres URL przekaźnika."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Adicione pelo menos um URL de retransmissor."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Добавьте хотя бы один URL-адрес ретранслятора."
+          }
+        }
+      }
+    },
+    "relay_validation_too_many_urls": {
+      "comment": "Network settings validation error when too many custom relay URLs are entered.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sie können bis zu %1$d Relay-Server konfigurieren."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can configure up to %1$d relay servers."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Puede configurar hasta %1$d servidores de retransmisión."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Vous pouvez configurer jusqu’à %1$d serveurs relais."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Può configurare fino a %1$d server relay."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "U kunt maximaal %1$d relayservers instellen."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Możesz skonfigurować maksymalnie %1$d serwerów przekaźnikowych."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Pode configurar até %1$d servidores de retransmissão."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Можно настроить до %1$d серверов-ретрансляторов."
+          }
+        }
+      }
+    },
     "send_access_anyone": {
       "comment": "Send access option: anyone with the invitation can receive.",
       "extractionState": "manual",
@@ -11645,6 +12965,126 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Ваши передачи"
+          }
+        }
+      }
+    },
+    "settings_advanced_title": {
+      "comment": "Settings overview section header for expert configuration.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Erweitert"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Advanced"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Avanzado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Avancé"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Avanzate"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Geavanceerd"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Zaawansowane"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Avançado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Дополнительно"
+          }
+        }
+      }
+    },
+    "settings_network_title": {
+      "comment": "Settings overview row and Network settings screen title.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netzwerk"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Network"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Red"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Réseau"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rete"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Netwerk"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Sieć"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Rede"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Сеть"
           }
         }
       }
@@ -14717,6 +16157,66 @@
           "stringUnit": {
             "state": "needs_review",
             "value": "Никто ещё не запросил эту передачу."
+          }
+        }
+      }
+    },
+    "transfer_qr_unavailable": {
+      "comment": "Transfer share: shown when an invitation is too large to encode as a QR code.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Für diese Einladung ist kein QR-Code verfügbar. Verwenden Sie stattdessen Teilen oder Herunterladen."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "QR unavailable for this invitation. Use Share or Download instead."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "El QR no está disponible para esta invitación. Use Compartir o Descargar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Le code QR n’est pas disponible pour cette invitation. Utilisez plutôt Partager ou Télécharger."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Il codice QR non è disponibile per questo invito. Utilizzi invece Condividi o Scarica."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "QR is niet beschikbaar voor deze uitnodiging. Gebruik in plaats daarvan Delen of Downloaden."
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Kod QR jest niedostępny dla tego zaproszenia. Zamiast tego użyj opcji Udostępnij lub Pobierz."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "O código QR não está disponível para este convite. Utilize Partilhar ou Transferir."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "QR-код недоступен для этого приглашения. Используйте «Поделиться» или «Скачать»."
           }
         }
       }

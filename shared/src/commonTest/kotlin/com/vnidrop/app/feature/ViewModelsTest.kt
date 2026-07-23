@@ -3,12 +3,15 @@ package com.vnidrop.app.feature
 import com.vnidrop.app.DeviceInfo
 import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.CoreState
+import com.vnidrop.app.core.CoreStatus
 import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
 import com.vnidrop.app.core.ReceiverDeliveryStatus
 import com.vnidrop.app.core.ReceiverRequestModel
+import com.vnidrop.app.core.RelayMode
+import com.vnidrop.app.core.RelaySettings
 import com.vnidrop.app.core.Share
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.Transfer
@@ -24,6 +27,7 @@ import com.vnidrop.app.feature.receive.ReceiveHistoryDeleteTarget
 import com.vnidrop.app.feature.receive.ReceiveViewModel
 import com.vnidrop.app.feature.send.SendViewModel
 import com.vnidrop.app.feature.settings.SettingsSection
+import com.vnidrop.app.feature.settings.RelaySettingsApplyError
 import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
@@ -74,8 +78,24 @@ class ViewModelsTest {
 		val viewModel = AppViewModel(environment(), core, preferences(), UiMessageController())
 		advanceUntilIdle()
 		assertTrue(core.state.value.isInitialized)
+		assertEquals(listOf(RelaySettings()), core.initializedRelaySettings)
 		viewModel.selectDestination(AppDestination.Settings)
 		assertEquals(AppDestination.Settings, viewModel.state.value.destination)
+	}
+
+	@Test
+	fun appViewModelInitializesCoreWithSavedRelaySettings() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val custom = RelaySettings(RelayMode.Custom, listOf("https://relay.example.com"))
+		val preferences = preferences().apply {
+			mutablePreferences.value = mutablePreferences.value.copy(relaySettings = custom)
+		}
+		val core = FakeCoreGateway()
+
+		AppViewModel(environment(), core, preferences, UiMessageController())
+		advanceUntilIdle()
+
+		assertEquals(listOf(custom), core.initializedRelaySettings)
 	}
 
 	@Test
@@ -114,6 +134,94 @@ class ViewModelsTest {
 		preferences.setThemeMode(ThemeMode.Dark)
 		advanceUntilIdle()
 		assertEquals("Ada ", viewModel.state.value.username)
+	}
+
+	@Test
+	fun settingsAppliesNormalizedCustomRelaysAndPersistsThem() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val preferences = preferences()
+		val core = FakeCoreGateway()
+		val viewModel = settingsViewModel(preferences = preferences, repository = core)
+		advanceUntilIdle()
+
+		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayUrlsText(" HTTPS://Relay.Example.com/ \nhttps://backup.example.com:443")
+		viewModel.applyRelaySettings()
+		advanceUntilIdle()
+
+		val expected = RelaySettings(
+			RelayMode.Custom,
+			listOf("https://relay.example.com", "https://backup.example.com"),
+		)
+		assertEquals(expected, preferences.mutablePreferences.value.relaySettings)
+		assertEquals(listOf(expected), core.initializedRelaySettings)
+		assertEquals(expected, viewModel.state.value.savedRelaySettings)
+		assertFalse(viewModel.state.value.hasRelaySettingsChanges)
+	}
+
+	@Test
+	fun settingsIgnoresDuplicateApplyBeforeRestartBegins() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway()
+		val viewModel = settingsViewModel(repository = core)
+		advanceUntilIdle()
+
+		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.applyRelaySettings()
+		viewModel.applyRelaySettings()
+		assertTrue(viewModel.state.value.isApplyingRelaySettings)
+		advanceUntilIdle()
+
+		assertEquals(1, core.initializedRelaySettings.size)
+	}
+
+	@Test
+	fun settingsDoesNotRestartNetworkWhileTransfersAreActive() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(status = CoreStatus("endpoint", 0UL, 1UL))
+		}
+		val viewModel = settingsViewModel(repository = core)
+		advanceUntilIdle()
+		assertEquals("endpoint", viewModel.state.value.endpointId)
+
+		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.applyRelaySettings()
+		advanceUntilIdle()
+
+		assertEquals(emptyList(), core.initializedRelaySettings)
+		assertEquals(RelaySettingsApplyError.ActiveTransfers, viewModel.state.value.relayApplyError)
+	}
+
+	@Test
+	fun settingsRestoresPreviousNetworkConfigurationWhenApplyFails() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			initializeHandler = { settings ->
+				if (settings.mode == RelayMode.Custom) Result.failure(IllegalStateException("unreachable"))
+				else Result.success(Unit)
+			}
+		}
+		val preferences = preferences()
+		val viewModel = settingsViewModel(preferences = preferences, repository = core)
+		advanceUntilIdle()
+
+		viewModel.setRelayMode(RelayMode.Custom)
+		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.applyRelaySettings()
+		advanceUntilIdle()
+
+		assertEquals(
+			listOf(
+				RelaySettings(RelayMode.Custom, listOf("https://relay.example.com")),
+				RelaySettings(),
+			),
+			core.initializedRelaySettings,
+		)
+		assertEquals(RelaySettings(), preferences.mutablePreferences.value.relaySettings)
+		assertEquals(RelaySettingsApplyError.ApplyFailed, viewModel.state.value.relayApplyError)
 	}
 
 	@Test
@@ -722,11 +830,12 @@ class ViewModelsTest {
 		transport: DiagnosticsTransport = RecordingDiagnosticsTransport(),
 		fileSystem: FakeFileSystemService = FakeFileSystemService(folder),
 		diagnosticsIncluded: Boolean = false,
+		repository: FakeCoreGateway = FakeCoreGateway(),
 	) = SettingsViewModel(
 		environment(),
 		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
 		fileSystem,
-		FakeCoreGateway(),
+		repository,
 		preferences,
 		notifications,
 		UiMessageController(),

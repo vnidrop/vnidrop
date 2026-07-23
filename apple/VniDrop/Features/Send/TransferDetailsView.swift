@@ -43,12 +43,14 @@ struct TransferDetailsView: View {
 					count: pendingReceivers + completedReceivers,
 					onTap: model.openReceivers
 				)
-				DetailDestination(
-					title: String(localized: "transfer_share_title"),
-					description: String(localized: "transfer_share_description"),
-					count: 0,
-					onTap: model.openShare
-				)
+				if transfer.invitationPresentation != .unavailable {
+					DetailDestination(
+						title: String(localized: "transfer_share_title"),
+						description: String(localized: "transfer_share_description"),
+						count: 0,
+						onTap: model.openShare
+					)
+				}
 			}
 
 			if isActiveShare {
@@ -276,29 +278,66 @@ struct TransferSharePanel: View {
 
 	var body: some View {
 		PanelContainer(title: String(localized: "transfer_share_title")) {
-			if let ticket = transfer.ticket {
-				qrCard(ticket: ticket)
-				Text(LocalizedStringKey("transfer_scan_qr"))
-					.font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
-					.frame(maxWidth: .infinity)
+			switch transfer.invitationPresentation {
+			case .ready(let ticket):
+				let qrImage = QRCode.generate(from: ticket)
+				qrCard(image: qrImage)
+				if qrImage != nil {
+					Text(LocalizedStringKey("transfer_scan_qr"))
+						.font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
+						.frame(maxWidth: .infinity)
+				}
 				ShareActionsView(model: model, transfer: transfer, ticket: ticket)
-			} else {
+			case .preparing:
 				Text(LocalizedStringKey("transfer_event_preparing")).foregroundStyle(colors.foregroundLighter)
+			case .unavailable:
+				Text(LocalizedStringKey(
+					transfer.status == .failed ? "transfer_event_failed" : "transfer_event_stopped"
+				))
+				.foregroundStyle(colors.foregroundLighter)
 			}
 		}
 	}
 
-	private func qrCard(ticket: String) -> some View {
+	private func qrCard(image: Image?) -> some View {
 		ZStack {
-			if let qr = QRCode.generate(from: ticket) {
-				qr.interpolation(.none).resizable().scaledToFit().padding(14)
+			if let image {
+				image.interpolation(.none).resizable().scaledToFit().padding(14)
 			} else {
-				ProgressView()
+				VStack(spacing: 10) {
+					Image(systemName: "qrcode")
+						.font(.system(size: 36, weight: .medium))
+					Text(LocalizedStringKey("transfer_qr_unavailable"))
+						.font(VniType.bodySmall)
+						.multilineTextAlignment(.center)
+				}
+				.foregroundStyle(.black.opacity(0.72))
+				.padding(22)
 			}
 		}
 		.frame(width: 268, height: 268)
 		.background(Color.white, in: RoundedRectangle(cornerRadius: 18))
 		.frame(maxWidth: .infinity)
+	}
+}
+
+enum TransferInvitationPresentation: Equatable {
+	case preparing
+	case ready(String)
+	case unavailable
+}
+
+extension Transfer {
+	var invitationPresentation: TransferInvitationPresentation {
+		switch status {
+		case .importing:
+			return .preparing
+		case .sharing:
+			guard let ticket, !ticket.isEmpty else { return .preparing }
+			return .ready(ticket)
+		case .receiving, .done, .failed, .cancelled, .stopped:
+			return .unavailable
+		}
 	}
 }
 
