@@ -514,6 +514,23 @@ enum L10n {
         /// - nl: Batterijniveau
         /// - ru: Уровень заряда
         static let levelTitle: String.LocalizationValue = "battery_level_title"
+        /// {level}%
+        ///
+        /// Key: `battery_level_value`
+        /// Context: Device information: battery charge formatted as a percentage. {level} = integer percent value.
+        ///
+        /// - en: {level}%
+        /// - fr: {level} %
+        /// - es: {level} %
+        /// - it: {level}%
+        /// - de: {level} %
+        /// - pt: {level}%
+        /// - pl: {level}%
+        /// - nl: {level}%
+        /// - ru: {level} %
+        static func levelValue(level: String) -> String {
+            String(format: String(localized: "battery_level_value"), level)
+        }
     }
     enum Bug {
         /// name@example.com
@@ -1683,6 +1700,42 @@ enum L10n {
         /// - nl: Gereed
         /// - ru: Готово
         static let statusWritable: String.LocalizationValue = "folder_status_writable"
+    }
+    enum Format {
+        /// {first} · {second}
+        ///
+        /// Key: `format_separated_pair`
+        /// Context: Composes two already-localized values with a middot separator (e.g. size · status). {first} and {second} are the two values.
+        ///
+        /// - en: {first} · {second}
+        /// - fr: {first} · {second}
+        /// - es: {first} · {second}
+        /// - it: {first} · {second}
+        /// - de: {first} · {second}
+        /// - pt: {first} · {second}
+        /// - pl: {first} · {second}
+        /// - nl: {first} · {second}
+        /// - ru: {first} · {second}
+        static func separatedPair(first: String, second: String) -> String {
+            String(format: String(localized: "format_separated_pair"), first, second)
+        }
+        /// {first} {second} · {third}
+        ///
+        /// Key: `format_separated_triple`
+        /// Context: Composes three already-localized values, the first two space-joined then a middot before the third (e.g. count files · size). {first}, {second}, {third} are the values.
+        ///
+        /// - en: {first} {second} · {third}
+        /// - fr: {first} {second} · {third}
+        /// - es: {first} {second} · {third}
+        /// - it: {first} {second} · {third}
+        /// - de: {first} {second} · {third}
+        /// - pt: {first} {second} · {third}
+        /// - pl: {first} {second} · {third}
+        /// - nl: {first} {second} · {third}
+        /// - ru: {first} {second} · {third}
+        static func separatedTriple(first: String, second: String, third: String) -> String {
+            String(format: String(localized: "format_separated_triple"), first, second, third)
+        }
     }
     enum Metadata {
         /// Files

@@ -111,7 +111,10 @@ struct InvitationReviewPanel: View {
 				let metadata = inspection.metadata
 				VStack(alignment: .leading, spacing: 8) {
 					Text(metadata.transferName).font(VniType.bodyLarge).lineLimit(2)
-					Text("\(metadata.fileCount) \(String(localized: L10n.Metadata.files).lowercased()) · \(formatBytes(metadata.totalSize))")
+					Text(L10n.Format.separatedTriple(
+						first: "\(metadata.fileCount)",
+						second: String(localized: L10n.Metadata.files).lowercased(),
+						third: formatBytes(metadata.totalSize)))
 						.foregroundStyle(colors.foregroundLighter)
 				}
 				.padding(16)

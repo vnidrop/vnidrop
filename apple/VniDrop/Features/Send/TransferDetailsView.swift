@@ -91,7 +91,9 @@ struct TransferDetailsView: View {
 
 private func receiversDescription(_ pending: Int, _ completed: Int) -> String {
 	if pending > 0 && completed > 0 {
-		return "\(L10n.Transfer.receiversPending(count: pending)) · \(L10n.Transfer.receiversCompletedCount(count: completed))"
+		return L10n.Format.separatedPair(
+			first: L10n.Transfer.receiversPending(count: pending),
+			second: L10n.Transfer.receiversCompletedCount(count: completed))
 	}
 	if pending > 0 { return L10n.Transfer.receiversPending(count: pending) }
 	if completed > 0 { return L10n.Transfer.receiversCompletedCount(count: completed) }

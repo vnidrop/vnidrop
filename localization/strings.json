@@ -13,76 +13,6 @@
     "ru"
   ],
   "strings": {
-    "%@": {
-      "context": "Apple format passthrough placeholder (single value). Legacy literal key — rename to a semantic key.",
-      "targets": [
-        "apple"
-      ]
-    },
-    "%@ %@ · %@": {
-      "context": "Apple format template composing three values with a middot separator (e.g. metadata rows). Legacy literal key — rename.",
-      "targets": [
-        "apple"
-      ],
-      "args": [
-        {
-          "name": "arg1",
-          "type": "string"
-        },
-        {
-          "name": "arg2",
-          "type": "string"
-        },
-        {
-          "name": "arg3",
-          "type": "string"
-        }
-      ],
-      "translations": {
-        "en": "{arg1} {arg2} · {arg3}",
-        "fr": "{arg1} {arg2} · {arg3}",
-        "es": "{arg1} {arg2} · {arg3}",
-        "it": "{arg1} {arg2} · {arg3}",
-        "de": "{arg1} {arg2} · {arg3}",
-        "pt": "{arg1} {arg2} · {arg3}",
-        "pl": "{arg1} {arg2} · {arg3}",
-        "nl": "{arg1} {arg2} · {arg3}",
-        "ru": "{arg1} {arg2} · {arg3}"
-      }
-    },
-    "%@ · %@": {
-      "context": "Apple format template composing two values with a middot separator. Legacy literal key — rename.",
-      "targets": [
-        "apple"
-      ],
-      "args": [
-        {
-          "name": "arg1",
-          "type": "string"
-        },
-        {
-          "name": "arg2",
-          "type": "string"
-        }
-      ],
-      "translations": {
-        "en": "{arg1} · {arg2}",
-        "fr": "{arg1} · {arg2}",
-        "es": "{arg1} · {arg2}",
-        "it": "{arg1} · {arg2}",
-        "de": "{arg1} · {arg2}",
-        "pt": "{arg1} · {arg2}",
-        "pl": "{arg1} · {arg2}",
-        "nl": "{arg1} · {arg2}",
-        "ru": "{arg1} · {arg2}"
-      }
-    },
-    "%@%%": {
-      "context": "Apple format template appending a percent sign to a value (e.g. battery level). Legacy literal key — rename.",
-      "targets": [
-        "apple"
-      ]
-    },
     "about_bug_report": {
       "context": "About screen: button/link that opens the bug report form.",
       "translations": {
@@ -565,6 +495,29 @@
         "pl": "Poziom baterii",
         "nl": "Batterijniveau",
         "ru": "Уровень заряда"
+      }
+    },
+    "battery_level_value": {
+      "context": "Device information: battery charge formatted as a percentage. {level} = integer percent value.",
+      "targets": [
+        "apple"
+      ],
+      "args": [
+        {
+          "name": "level",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "{level}%",
+        "fr": "{level} %",
+        "es": "{level} %",
+        "it": "{level}%",
+        "de": "{level} %",
+        "pt": "{level}%",
+        "pl": "{level}%",
+        "nl": "{level}%",
+        "ru": "{level} %"
       }
     },
     "bug_report_contact_hint": {
@@ -1643,6 +1596,64 @@
         "pl": "Gotowy",
         "nl": "Gereed",
         "ru": "Готово"
+      }
+    },
+    "format_separated_pair": {
+      "context": "Composes two already-localized values with a middot separator (e.g. size · status). {first} and {second} are the two values.",
+      "targets": [
+        "apple"
+      ],
+      "args": [
+        {
+          "name": "first",
+          "type": "string"
+        },
+        {
+          "name": "second",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "{first} · {second}",
+        "fr": "{first} · {second}",
+        "es": "{first} · {second}",
+        "it": "{first} · {second}",
+        "de": "{first} · {second}",
+        "pt": "{first} · {second}",
+        "pl": "{first} · {second}",
+        "nl": "{first} · {second}",
+        "ru": "{first} · {second}"
+      }
+    },
+    "format_separated_triple": {
+      "context": "Composes three already-localized values, the first two space-joined then a middot before the third (e.g. count files · size). {first}, {second}, {third} are the values.",
+      "targets": [
+        "apple"
+      ],
+      "args": [
+        {
+          "name": "first",
+          "type": "string"
+        },
+        {
+          "name": "second",
+          "type": "string"
+        },
+        {
+          "name": "third",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "{first} {second} · {third}",
+        "fr": "{first} {second} · {third}",
+        "es": "{first} {second} · {third}",
+        "it": "{first} {second} · {third}",
+        "de": "{first} {second} · {third}",
+        "pt": "{first} {second} · {third}",
+        "pl": "{first} {second} · {third}",
+        "nl": "{first} {second} · {third}",
+        "ru": "{first} {second} · {third}"
       }
     },
     "metadata_files": {

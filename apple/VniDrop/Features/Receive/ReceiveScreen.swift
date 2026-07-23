@@ -137,7 +137,7 @@ private struct ReceiveTransferRow: View {
 			VStack(alignment: .leading, spacing: 3) {
 				Text(transfer.transferName ?? String(localized: L10n.Receive.unknownTransfer))
 					.font(.body).lineLimit(1)
-				Text("\(formatBytes(transfer.totalSize)) · \(statusLabel(transfer.status))")
+				Text(L10n.Format.separatedPair(first: formatBytes(transfer.totalSize), second: statusLabel(transfer.status)))
 					.font(.caption).foregroundStyle(.secondary)
 				if transfer.status == .receiving, let progress {
 					ProgressRow(labelKey: progress.labelKey, progress: progress.progress, detail: progress.detail)

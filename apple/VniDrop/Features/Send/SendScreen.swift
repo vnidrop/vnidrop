@@ -160,7 +160,7 @@ private struct TransferListItem: View {
 					Spacer()
 					StatusPill(label: statusLabel(transfer.status), tone: transfer.status.pillTone)
 				}
-				Text("\(formatBytes(transfer.totalSize)) · \(accessPolicyLabel(transfer.accessPolicy))")
+				Text(L10n.Format.separatedPair(first: formatBytes(transfer.totalSize), second: accessPolicyLabel(transfer.accessPolicy)))
 					.font(.caption).foregroundStyle(.secondary).lineLimit(1)
 				if let progress, transfer.status == .importing || transfer.status == .sharing {
 					ProgressRow(labelKey: progress.labelKey, progress: progress.progress, detail: progress.detail, labelText: progress.label)
