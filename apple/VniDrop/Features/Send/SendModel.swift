@@ -207,6 +207,9 @@ final class SendModel: ObservableObject {
 	func confirmDeleteTransfer() {
 		guard let transferId = state.selectedTransferId, !state.isDeleting else { return }
 		state.isDeleting = true
+		// Close synchronously: the alert's dismiss binding runs async and no-ops while
+		// `isDeleting`, which would otherwise leave the flag true and macOS re-present it.
+		state.isDeleteConfirmationOpen = false
 		Task {
 			let result = await repository.delete(transferId: transferId)
 			switch result {

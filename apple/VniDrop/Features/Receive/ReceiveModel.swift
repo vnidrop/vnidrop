@@ -121,6 +121,10 @@ final class ReceiveModel: ObservableObject {
 	func confirmHistoryDelete() {
 		guard let target = state.historyDeleteTarget, !state.isDeletingHistory else { return }
 		state.isDeletingHistory = true
+		// Close synchronously: the alert's dismiss binding runs async and no-ops while
+		// `isDeletingHistory`, which would otherwise leave the target set and macOS
+		// re-present it.
+		state.historyDeleteTarget = nil
 		Task {
 			let result: Result<Void, Error>
 			switch target {
