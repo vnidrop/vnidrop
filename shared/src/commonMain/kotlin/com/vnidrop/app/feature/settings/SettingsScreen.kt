@@ -31,6 +31,7 @@ fun SettingsScreen(
 	onBugIncludeLogsChanged: (Boolean) -> Unit,
 	onSubmitBugReport: () -> Unit,
 	onDeleteAllTransfers: () -> Unit = {},
+	onClearTransferCache: () -> Unit = {},
 	onRelayModeChanged: (RelayMode) -> Unit = {},
 	onRelayUrlChanged: (Int, String) -> Unit = { _, _ -> },
 	onAddRelayUrl: () -> Unit = {},
@@ -67,6 +68,7 @@ fun SettingsScreen(
 					onBugIncludeLogsChanged = onBugIncludeLogsChanged,
 					onSubmitBugReport = onSubmitBugReport,
 					onDeleteAllTransfers = onDeleteAllTransfers,
+					onClearTransferCache = onClearTransferCache,
 					onRelayModeChanged = onRelayModeChanged,
 					onRelayUrlChanged = onRelayUrlChanged,
 					onAddRelayUrl = onAddRelayUrl,
@@ -107,6 +109,7 @@ fun SettingsScreen(
 				onBugIncludeLogsChanged = onBugIncludeLogsChanged,
 				onSubmitBugReport = onSubmitBugReport,
 				onDeleteAllTransfers = onDeleteAllTransfers,
+				onClearTransferCache = onClearTransferCache,
 				onRelayModeChanged = onRelayModeChanged,
 				onRelayUrlChanged = onRelayUrlChanged,
 				onAddRelayUrl = onAddRelayUrl,
@@ -139,6 +142,7 @@ private fun SettingsSectionContent(
 	onBugIncludeLogsChanged: (Boolean) -> Unit,
 	onSubmitBugReport: () -> Unit,
 	onDeleteAllTransfers: () -> Unit,
+	onClearTransferCache: () -> Unit,
 	onRelayModeChanged: (RelayMode) -> Unit,
 	onRelayUrlChanged: (Int, String) -> Unit,
 	onAddRelayUrl: () -> Unit,
@@ -160,7 +164,14 @@ private fun SettingsSectionContent(
 			showBack = showBack,
 		)
 		SettingsSection.Notifications -> NotificationSettings(state, onNotificationsChanged, onOpenNotificationSettings, onBack, showBack)
-		SettingsSection.Storage -> StorageSettings(state, windowClass, onDeleteAllTransfers, onBack, showBack)
+		SettingsSection.Storage -> StorageSettings(
+			state,
+			windowClass,
+			onDeleteAllTransfers,
+			onClearTransferCache,
+			onBack,
+			showBack,
+		)
 		SettingsSection.About -> AboutSettings(
 			state = state,
 			onDiagnosticsChanged = onDiagnosticsChanged,

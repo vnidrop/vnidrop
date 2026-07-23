@@ -182,6 +182,7 @@ interface CoreGateway {
 	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit>
 	suspend fun receiveWithOutputSinkV2(ticket: String, outputSink: ReceiveOutputSinkV2, receiverName: String): Result<Unit>
 	suspend fun storageUsage(): Result<CoreStorageUsageModel>
+	suspend fun clearTransferCache(): Result<ULong>
 	suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>>
 	suspend fun cancel(transferId: ULong): Result<Unit>
 	suspend fun delete(transferId: ULong): Result<Unit>

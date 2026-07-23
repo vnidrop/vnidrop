@@ -47,10 +47,12 @@ class FakeCoreGateway : CoreGateway {
 	var receiveSuspend: Boolean = false
 	private var receiveGate: CompletableDeferred<Unit>? = null
 	var deleteResult: Result<Unit> = Result.success(Unit)
+	var clearTransferCacheResult: Result<ULong> = Result.success(0UL)
 	var clearReceiveHistoryResult: Result<ULong> = Result.success(0UL)
 	val deletedTransfers = mutableListOf<ULong>()
 	val cancelledTransfers = mutableListOf<ULong>()
 	var clearReceiveHistoryCount = 0
+	var clearTransferCacheCount = 0
 	var receiveCount = 0
 	var lastReceiveTicket: String? = null
 	var lastReceiveReceiverName: String? = null
@@ -154,6 +156,10 @@ class FakeCoreGateway : CoreGateway {
 	override suspend fun storageUsage(): Result<CoreStorageUsageModel> = Result.success(
 		CoreStorageUsageModel(0UL, 0UL, 0UL, 0UL, 0UL),
 	)
+	override suspend fun clearTransferCache(): Result<ULong> {
+		clearTransferCacheCount += 1
+		return clearTransferCacheResult
+	}
 	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = Result.success(emptyList())
 	override suspend fun cancel(transferId: ULong): Result<Unit> {
 		cancelledTransfers += transferId
@@ -252,7 +258,7 @@ class FakeFileSystemService(
 	override suspend fun validateReceiveFolder(folder: ReceiveFolder) = FolderAccessStatus.Writable
 	override suspend fun inspectReceivedArtifacts(artifacts: List<ReceivedArtifactModel>) =
 		ReceivedStorageInspection(artifacts.fold(0UL) { total, item -> total + item.logicalSize }, artifacts.size, 0, 0)
-	override suspend fun temporaryUsage(): ULong = 0UL
+	override suspend fun temporaryUsage(receiveFolder: ReceiveFolder): ULong = 0UL
 	override fun createReceiveOutputSink(folder: ReceiveFolder): ReceiveOutputSinkV2? = null
 	override fun canRevealReceiveFolder(folder: ReceiveFolder) = canRevealFolder
 	override suspend fun revealReceiveFolder(folder: ReceiveFolder): Result<Unit> {

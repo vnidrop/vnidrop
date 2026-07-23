@@ -33,6 +33,9 @@ import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_cancel
 import vnidrop.shared.generated.resources.storage_app_data
 import vnidrop.shared.generated.resources.storage_calculating
+import vnidrop.shared.generated.resources.storage_clear_transfer_cache
+import vnidrop.shared.generated.resources.storage_clear_transfer_cache_description
+import vnidrop.shared.generated.resources.storage_clearing_transfer_cache
 import vnidrop.shared.generated.resources.storage_delete_transfers
 import vnidrop.shared.generated.resources.storage_delete_transfers_description
 import vnidrop.shared.generated.resources.storage_deleting
@@ -48,10 +51,12 @@ internal fun StorageSettings(
 	state: SettingsState,
 	windowClass: WindowClass,
 	onDeleteAllTransfers: () -> Unit,
+	onClearTransferCache: () -> Unit,
 	onBack: () -> Unit,
 	showBack: Boolean,
 ) {
 	var showDeleteConfirmation by rememberSaveable { mutableStateOf(false) }
+	var showClearCacheConfirmation by rememberSaveable { mutableStateOf(false) }
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 		SettingsTopBar(stringResource(Res.string.storage_title), onBack, showBack)
 		val storage = state.storage
@@ -79,9 +84,25 @@ internal fun StorageSettings(
 				)
 			}
 		}
+		SecondaryButton(
+			text = stringResource(
+				if (state.isClearingTransferCache) {
+					Res.string.storage_clearing_transfer_cache
+				} else {
+					Res.string.storage_clear_transfer_cache
+				},
+			),
+			onClick = { showClearCacheConfirmation = true },
+			enabled = !state.isDeletingTransfers &&
+				!state.isClearingTransferCache &&
+				!state.isCalculatingStorage &&
+				!state.hasActiveNetworkWork,
+		)
 		Button(
 			onClick = { showDeleteConfirmation = true },
-			enabled = !state.isDeletingTransfers,
+			enabled = !state.isDeletingTransfers &&
+				!state.isClearingTransferCache &&
+				!state.isCalculatingStorage,
 			colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
 		) {
 			Text(stringResource(if (state.isDeletingTransfers) Res.string.storage_deleting else Res.string.storage_delete_transfers))
@@ -91,6 +112,20 @@ internal fun StorageSettings(
 			style = MaterialTheme.typography.bodySmall,
 			color = LocalVniDropColors.current.foregroundLighter,
 		)
+	}
+	if (showClearCacheConfirmation) {
+		AdaptiveDrawer(
+			windowClass = windowClass,
+			onDismissRequest = { showClearCacheConfirmation = false },
+		) {
+			ClearTransferCachePanel(
+				onCancel = { showClearCacheConfirmation = false },
+				onConfirm = {
+					showClearCacheConfirmation = false
+					onClearTransferCache()
+				},
+			)
+		}
 	}
 	if (showDeleteConfirmation) {
 		AdaptiveDrawer(
@@ -103,6 +138,36 @@ internal fun StorageSettings(
 					showDeleteConfirmation = false
 					onDeleteAllTransfers()
 				},
+			)
+		}
+	}
+}
+
+@Composable
+private fun ClearTransferCachePanel(
+	onCancel: () -> Unit,
+	onConfirm: () -> Unit,
+) {
+	Column(
+		Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 14.dp),
+		verticalArrangement = Arrangement.spacedBy(14.dp),
+	) {
+		Text(
+			stringResource(Res.string.storage_clear_transfer_cache),
+			style = MaterialTheme.typography.titleLarge,
+			fontWeight = FontWeight.Bold,
+		)
+		Text(
+			stringResource(Res.string.storage_clear_transfer_cache_description),
+			color = LocalVniDropColors.current.foregroundLighter,
+			style = MaterialTheme.typography.bodyMedium,
+		)
+		Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End)) {
+			SecondaryButton(stringResource(Res.string.button_cancel), onClick = onCancel)
+			DestructiveButton(
+				stringResource(Res.string.storage_clear_transfer_cache),
+				onClick = onConfirm,
+				modifier = Modifier.testTag("confirm-clear-transfer-cache"),
 			)
 		}
 	}

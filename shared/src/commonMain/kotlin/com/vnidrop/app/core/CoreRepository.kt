@@ -30,6 +30,7 @@ import uniffi.vnidrop.TicketInspection
 import uniffi.vnidrop.TransferMetadata
 import uniffi.vnidrop.TransferAccessMode
 import uniffi.vnidrop.VnidropCore
+import uniffi.vnidrop.clearInactiveTransferCache
 import uniffi.vnidrop.defaultCoreNetworkConfig
 
 class CoreRepository(
@@ -45,6 +46,8 @@ class CoreRepository(
 	override val signals: SharedFlow<CoreSignal> = _signals.asSharedFlow()
 
 	private var core: VnidropCore? = null
+	private var currentAppDataDir: String? = null
+	private var currentRelaySettings = RelaySettings()
 	private val lifecycleGate = CoreLifecycleGate()
 
 	private val sink = object : CoreEventSink {
@@ -77,6 +80,8 @@ class CoreRepository(
 			previousCore?.shutdown()
 			core = null
 			core = VnidropCore.initializeWithNetworkConfig(appDataDir, sink, relaySettings.toNative())
+			currentAppDataDir = appDataDir
+			currentRelaySettings = relaySettings
 			refreshSnapshot(requireCore())
 			_state.update { it.copy(isInitialized = true) }
 		}
@@ -84,6 +89,7 @@ class CoreRepository(
 	override fun shutdown() {
 		core?.shutdown()
 		core = null
+		currentAppDataDir = null
 		_state.value = CoreState()
 	}
 
@@ -166,6 +172,28 @@ class CoreRepository(
 			previewsBytes = usage.previewsBytes,
 			otherCoreBytes = usage.otherCoreBytes,
 		)
+	}
+
+	override suspend fun clearTransferCache(): Result<ULong> = runReconfiguration {
+		val activeCore = requireCore()
+		val status = activeCore.status()
+		require(status.activeTransfers == 0UL && status.activeShares == 0UL) {
+			"Wait for active transfers and shares to finish before clearing the transfer cache"
+		}
+		val appDataDir = requireNotNull(currentAppDataDir) { "Core data directory is unavailable" }
+		val relaySettings = currentRelaySettings
+		_state.update { it.copy(isInitialized = false, status = null) }
+		activeCore.shutdown()
+		core = null
+		var reclaimed = 0UL
+		try {
+			reclaimed = clearInactiveTransferCache(appDataDir)
+		} finally {
+			core = VnidropCore.initializeWithNetworkConfig(appDataDir, sink, relaySettings.toNative())
+			refreshSnapshot(requireCore())
+			_state.update { it.copy(isInitialized = true) }
+		}
+		reclaimed
 	}
 
 	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = runCore { activeCore ->

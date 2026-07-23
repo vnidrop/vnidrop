@@ -2,8 +2,9 @@ use anyhow::Context;
 use iroh::RelayUrl;
 use iroh_blobs::Hash;
 use serde::{Deserialize, Serialize};
-use std::{collections::BTreeSet, net::IpAddr, str::FromStr};
+use std::{collections::BTreeSet, net::IpAddr, path::PathBuf, str::FromStr};
 
+use crate::error::VnidropError;
 use crate::util::{non_empty, now_ms};
 
 pub(crate) const MAX_CUSTOM_RELAYS: usize = 8;
@@ -124,6 +125,49 @@ impl CoreNetworkConfig {
 #[uniffi::export]
 pub fn default_core_network_config() -> CoreNetworkConfig {
     CoreNetworkConfig::default()
+}
+
+/// Removes the blob store after its owning core has shut down.
+///
+/// Callers must verify that no transfer or share is active before shutdown.
+#[uniffi::export]
+pub fn clear_inactive_transfer_cache(app_data_dir: String) -> Result<u64, VnidropError> {
+    let result = (|| -> anyhow::Result<u64> {
+        let app_data_dir = PathBuf::from(app_data_dir);
+        anyhow::ensure!(
+            app_data_dir.is_absolute(),
+            "app data directory must be absolute"
+        );
+        anyhow::ensure!(
+            app_data_dir.file_name().is_some(),
+            "app data directory must not be a filesystem root"
+        );
+        let blobs = app_data_dir.join("blobs");
+        let metadata = match std::fs::symlink_metadata(&blobs) {
+            Ok(metadata) => metadata,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(0),
+            Err(error) => return Err(error.into()),
+        };
+        anyhow::ensure!(
+            metadata.is_dir() && !metadata.file_type().is_symlink(),
+            "blob store path is not a directory"
+        );
+        let bytes = walkdir::WalkDir::new(&blobs)
+            .follow_links(false)
+            .into_iter()
+            .try_fold(0u64, |total, entry| {
+                let entry = entry?;
+                let metadata = entry.metadata()?;
+                Ok::<_, walkdir::Error>(if metadata.is_file() {
+                    total.saturating_add(metadata.len())
+                } else {
+                    total
+                })
+            })?;
+        std::fs::remove_dir_all(blobs)?;
+        Ok(bytes)
+    })();
+    result.map_err(VnidropError::filesystem)
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, uniffi::Record)]

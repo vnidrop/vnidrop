@@ -138,6 +138,57 @@ class ViewModelsTest {
 	}
 
 	@Test
+	fun settingsClearsTransferCacheExplicitly() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			clearTransferCacheResult = Result.success(3_700_000_000UL)
+		}
+		val viewModel = settingsViewModel(repository = core)
+		advanceUntilIdle()
+
+		viewModel.clearTransferCache()
+		advanceUntilIdle()
+
+		assertEquals(1, core.clearTransferCacheCount)
+		assertFalse(viewModel.state.value.isClearingTransferCache)
+	}
+
+	@Test
+	fun settingsDoesNotClearTransferCacheDuringActiveNetworkWork() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(status = CoreStatus("endpoint", 1UL, 0UL))
+		}
+		val viewModel = settingsViewModel(repository = core)
+		advanceUntilIdle()
+
+		viewModel.clearTransferCache()
+		advanceUntilIdle()
+
+		assertEquals(0, core.clearTransferCacheCount)
+	}
+
+	@Test
+	fun settingsDeleteAllTransfersImmediatelyClearsUnusedCache() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(
+				isInitialized = true,
+				transfers = listOf(receivedTransfer(41UL, TransferStatus.Done)),
+			)
+		}
+		val viewModel = settingsViewModel(repository = core)
+		advanceUntilIdle()
+
+		viewModel.deleteAllTransfers()
+		advanceUntilIdle()
+
+		assertEquals(listOf(41UL), core.deletedTransfers)
+		assertEquals(1, core.clearTransferCacheCount)
+		assertFalse(viewModel.state.value.isDeletingTransfers)
+	}
+
+	@Test
 	fun settingsAppliesNormalizedCustomRelaysAndPersistsThem() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()

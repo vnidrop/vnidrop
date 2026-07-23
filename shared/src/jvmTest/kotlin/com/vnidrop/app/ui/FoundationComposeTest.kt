@@ -176,6 +176,7 @@ class FoundationComposeTest {
 	@Test
 	fun storageDeleteAllTransfersRequiresConfirmation() = runComposeUiTest {
 		var deleteRequested = false
+		var cacheClearRequested = false
 		setContent {
 			VniDropTheme(isDarkTheme = false) {
 				SettingsScreen(
@@ -196,15 +197,24 @@ class FoundationComposeTest {
 					onBugIncludeLogsChanged = {},
 					onSubmitBugReport = {},
 					onDeleteAllTransfers = { deleteRequested = true },
+					onClearTransferCache = { cacheClearRequested = true },
 				)
 			}
 		}
 
+		onNodeWithText("Clear transfer cache").performClick()
+		onNodeWithText(
+			"Removes cached transfer content after briefly restarting VniDrop. " +
+				"Finish ongoing transfers and stop active shares first. Received files and transfer history are not deleted.",
+		).assertIsDisplayed()
+		runOnIdle { assertFalse(cacheClearRequested) }
+		onNodeWithTag("confirm-clear-transfer-cache").performClick()
+		runOnIdle { assertTrue(cacheClearRequested) }
+
 		onNodeWithText("Delete all transfers").performClick()
 		onNodeWithText(
-			"This clears all sent and received transfer records from your history. Your received files are not deleted. " +
-				"Cached shared content that is no longer needed is reclaimed automatically, which may take a little time. " +
-				"This can’t be undone.",
+			"This clears all sent and received transfer records from your history and immediately reclaims unused transfer cache. " +
+				"Ongoing transfers and received files are not deleted. This can’t be undone.",
 		).assertIsDisplayed()
 		runOnIdle { assertFalse(deleteRequested) }
 

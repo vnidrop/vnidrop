@@ -49,6 +49,8 @@ import vnidrop.shared.generated.resources.notifications_permission_denied
 import vnidrop.shared.generated.resources.notifications_settings_open_failed
 import vnidrop.shared.generated.resources.notifications_unsupported
 import vnidrop.shared.generated.resources.relay_settings_applied
+import vnidrop.shared.generated.resources.storage_transfer_cache_cleared
+import vnidrop.shared.generated.resources.storage_transfers_deleted
 
 enum class SettingsSection {
 	Overview,
@@ -111,6 +113,7 @@ data class SettingsState(
 	val storage: StorageBreakdown? = null,
 	val isCalculatingStorage: Boolean = false,
 	val isDeletingTransfers: Boolean = false,
+	val isClearingTransferCache: Boolean = false,
 ) {
 	val hasRelaySettingsChanges: Boolean
 		get() = relayMode != savedRelaySettings.mode ||
@@ -208,6 +211,7 @@ class SettingsViewModel(
 		viewModelScope.launch {
 			_state.update { it.copy(isCalculatingStorage = true) }
 			try {
+				val receiveFolder = _state.value.receiveFolder ?: fileSystemService.defaultReceiveFolder()
 				val coreUsage = repository.storageUsage().getOrThrow()
 				val artifacts = repository.receivedArtifacts().getOrThrow()
 				val received = fileSystemService.inspectReceivedArtifacts(artifacts)
@@ -216,7 +220,7 @@ class SettingsViewModel(
 						storage = StorageBreakdown(
 							transferCacheBytes = coreUsage.blobStoreBytes,
 							appDataBytes = coreUsage.appDataBytes,
-							temporaryBytes = fileSystemService.temporaryUsage(),
+							temporaryBytes = fileSystemService.temporaryUsage(receiveFolder),
 							receivedBytes = received.existingBytes,
 							receivedFileCount = received.existingCount,
 							missingReceivedFileCount = received.missingCount,
@@ -235,18 +239,45 @@ class SettingsViewModel(
 	}
 
 	fun deleteAllTransfers() {
-		if (_state.value.isDeletingTransfers) return
+		if (_state.value.isDeletingTransfers || _state.value.isClearingTransferCache) return
 		viewModelScope.launch {
 			_state.update { it.copy(isDeletingTransfers = true) }
 			val failures = repository.state.value.transfers
 				.map { repository.delete(it.transferId) }
 				.count { it.isFailure }
+			val cleanup = repository.clearTransferCache()
 			_state.update { it.copy(isDeletingTransfers = false) }
-			if (failures == 0) {
-				loadStorageUsage()
-			} else {
+			loadStorageUsage()
+			if (failures > 0) {
 				messages.error(IllegalStateException("Could not delete $failures transfer records"))
+			} else if (cleanup.isSuccess) {
+				messages.tryShow(UiMessage(UiText.Resource(Res.string.storage_transfers_deleted), UiMessageTone.Success))
 			}
+			cleanup.onFailure(messages::error)
+		}
+	}
+
+	fun clearTransferCache() {
+		if (
+			_state.value.isDeletingTransfers ||
+			_state.value.isClearingTransferCache ||
+			_state.value.hasActiveNetworkWork
+		) return
+		viewModelScope.launch {
+			_state.update { it.copy(isClearingTransferCache = true) }
+			repository.clearTransferCache().fold(
+				onSuccess = {
+					_state.update { it.copy(isClearingTransferCache = false) }
+					loadStorageUsage()
+					messages.tryShow(
+						UiMessage(UiText.Resource(Res.string.storage_transfer_cache_cleared), UiMessageTone.Success),
+					)
+				},
+				onFailure = { error ->
+					_state.update { it.copy(isClearingTransferCache = false) }
+					messages.error(error)
+				},
+			)
 		}
 	}
 
