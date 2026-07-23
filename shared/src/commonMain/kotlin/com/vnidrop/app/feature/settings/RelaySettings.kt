@@ -3,17 +3,17 @@ package com.vnidrop.app.feature.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.preferences.RelayModeSetting
 import com.vnidrop.app.ui.components.Field
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 import org.jetbrains.compose.resources.stringResource
 import vnidrop.shared.generated.resources.Res
@@ -44,19 +44,19 @@ internal fun RelaySettings(
 		SettingsTopBar(stringResource(Res.string.relay_title), onBack, showBack)
 		SettingsGroup {
 			RelayModeRow(
-				icon = SettingsIcons.Antenna,
+				icon = relayModeIcon(RelayModeSetting.Standard),
 				title = stringResource(Res.string.relay_mode_default),
 				selected = state.relay.mode == RelayModeSetting.Standard,
 			) { onModeChanged(RelayModeSetting.Standard) }
 			SettingsDivider()
 			RelayModeRow(
-				icon = SettingsIcons.Device,
+				icon = relayModeIcon(RelayModeSetting.Custom),
 				title = stringResource(Res.string.relay_mode_custom),
 				selected = state.relay.mode == RelayModeSetting.Custom,
 			) { onModeChanged(RelayModeSetting.Custom) }
 			SettingsDivider()
 			RelayModeRow(
-				icon = SettingsIcons.Folder,
+				icon = relayModeIcon(RelayModeSetting.Disabled),
 				title = stringResource(Res.string.relay_mode_none),
 				selected = state.relay.mode == RelayModeSetting.Disabled,
 			) { onModeChanged(RelayModeSetting.Disabled) }
@@ -109,7 +109,7 @@ internal fun RelaySettings(
 }
 
 @Composable
-private fun RelayModeRow(icon: ImageVector, title: String, selected: Boolean, onClick: () -> Unit) {
+private fun RelayModeRow(icon: AppIcon, title: String, selected: Boolean, onClick: () -> Unit) {
 	SettingsRow(
 		icon = icon,
 		title = title,
@@ -118,8 +118,8 @@ private fun RelayModeRow(icon: ImageVector, title: String, selected: Boolean, on
 		showsDisclosure = false,
 		trailing = if (selected) {
 			{
-				Icon(
-					SettingsIcons.Check,
+				PlatformIcon(
+					AppIcon.Check,
 					contentDescription = null,
 					tint = LocalVniDropColors.current.brandLink,
 					modifier = Modifier.size(20.dp),
@@ -129,6 +129,12 @@ private fun RelayModeRow(icon: ImageVector, title: String, selected: Boolean, on
 			null
 		},
 	)
+}
+
+internal fun relayModeIcon(mode: RelayModeSetting): AppIcon = when (mode) {
+	RelayModeSetting.Standard -> AppIcon.Radio
+	RelayModeSetting.Custom -> AppIcon.Globe
+	RelayModeSetting.Disabled -> AppIcon.CloudOff
 }
 
 @Composable

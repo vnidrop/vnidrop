@@ -1,12 +1,33 @@
 mod support;
 
-use std::sync::Arc;
+use std::{
+    sync::Arc,
+    time::{Duration, Instant},
+};
 
 use support::{
     receive_with_response, share_path, wait_for_receiver_request, CoreGuard, RecordingSink,
     TestNode,
 };
 use vnidrop::{CoreLimits, ShareMetadataInput, ShareSource, SourceKind, TransferAccessMode};
+
+fn wait_for_completed_delivery(
+    sender: &vnidrop::VnidropCore,
+    transfer_id: u64,
+) -> Vec<vnidrop::ReceiverRequest> {
+    let started = Instant::now();
+    loop {
+        let requests = sender.list_receiver_requests(transfer_id).unwrap();
+        if requests.iter().any(|request| request.status == "completed") {
+            return requests;
+        }
+        assert!(
+            started.elapsed() < Duration::from_secs(5),
+            "delivery receipt was not recorded"
+        );
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}
 
 #[test]
 fn public_share_receives_without_sender_approval() {
@@ -47,10 +68,7 @@ fn public_share_receives_without_sender_approval() {
         std::fs::read(output_dir.path().join("public.txt")).unwrap(),
         b"public content"
     );
-    let deliveries = sender
-        .core
-        .list_receiver_requests(share.transfer_id)
-        .unwrap();
+    let deliveries = wait_for_completed_delivery(&sender.core, share.transfer_id);
     assert_eq!(deliveries.len(), 1);
     assert_eq!(deliveries[0].receiver_name.as_deref(), Some("Receiver"));
     assert_eq!(deliveries[0].status, "completed");
@@ -104,10 +122,7 @@ fn approval_required_denies_then_allows_receiver() {
         std::fs::read(allowed_output.path().join("private.txt")).unwrap(),
         b"approved content"
     );
-    let completed = sender
-        .core
-        .list_receiver_requests(share.transfer_id)
-        .unwrap();
+    let completed = wait_for_completed_delivery(&sender.core, share.transfer_id);
     assert!(completed
         .iter()
         .any(|request| request.status == "completed"));

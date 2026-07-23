@@ -16,8 +16,7 @@ struct LocalNotification {
 	let body: String
 }
 
-/// Local notification service, ported from `LocalNotificationService.kt` /
-/// `.ios.kt`, backed by `UNUserNotificationCenter`.
+/// Local notification service backed by `UNUserNotificationCenter`.
 @MainActor
 final class LocalNotificationService: ObservableObject {
 	@Published private(set) var permission: NotificationPermission = .notDetermined

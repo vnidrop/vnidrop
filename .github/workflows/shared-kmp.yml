@@ -15,6 +15,9 @@ on:
       - "gradle.properties"
       - "androidApp/**"
       - "desktopApp/**"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
       - ".github/workflows/shared-kmp.yml"
   push:
     branches:
@@ -32,6 +35,9 @@ on:
       - "gradle.properties"
       - "androidApp/**"
       - "desktopApp/**"
+      - "Makefile"
+      - "config.mk"
+      - "make/**"
       - ".github/workflows/shared-kmp.yml"
 
 permissions:
@@ -44,8 +50,7 @@ concurrency:
 jobs:
   jvm-test:
     # Host Rust embedding is enabled only for the current Gobley host target.
-    # This job stays on macOS to cover the Apple targets as well as JVM tests.
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     timeout-minutes: 75
     steps:
       - name: Checkout
@@ -63,7 +68,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin,aarch64-linux-android,x86_64-linux-android
+          targets: aarch64-linux-android,x86_64-linux-android
 
       - name: Cache Cargo
         uses: actions/cache@v4
@@ -95,7 +100,7 @@ jobs:
           echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> "$GITHUB_ENV"
 
       - name: Run shared JVM tests
-        run: ./gradlew :shared:jvmTest --no-daemon --stacktrace
+        run: make check-shared
 
       - name: Verify Android native libraries
-        run: ./gradlew :androidApp:verifyDebugVnidropLibraries --no-daemon --stacktrace
+        run: make verify-android-libs

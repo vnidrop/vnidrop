@@ -1,4 +1,5 @@
 import XCTest
+import VnidropCore
 @testable import VniDrop
 
 /// Ports `ui/feedback/UiMessageControllerTest.kt` and `UserFacingErrorTest.kt`.
@@ -54,5 +55,16 @@ final class UserFacingErrorTests: XCTestCase {
 
 	func testToUiTextFallsBackToGeneric() {
 		XCTAssertEqual(InvitationError.message("something entirely unexpected").toUiText(), .resource("error_generic"))
+	}
+
+	func testToUiTextMapsTypedTransferFailures() {
+		XCTAssertEqual(VnidropError.FilesystemPermission(reason: "read-only folder").toUiText(), .resource("error_filesystem"))
+		XCTAssertEqual(VnidropError.DestinationExists(reason: "target exists").toUiText(), .resource("error_destination_exists"))
+		XCTAssertEqual(VnidropError.StorageFull(reason: "disk full").toUiText(), .resource("error_storage_full"))
+		XCTAssertEqual(VnidropError.Network(reason: "offline").toUiText(), .resource("error_network"))
+		XCTAssertEqual(VnidropError.InvalidInput(reason: "bad path").toUiText(), .resource("error_invalid_input"))
+		XCTAssertFalse(VnidropError.FilesystemPermission(reason: "read-only").canRetryWithoutChangingInput)
+		XCTAssertFalse(VnidropError.DestinationExists(reason: "target exists").canRetryWithoutChangingInput)
+		XCTAssertTrue(VnidropError.Network(reason: "offline").canRetryWithoutChangingInput)
 	}
 }

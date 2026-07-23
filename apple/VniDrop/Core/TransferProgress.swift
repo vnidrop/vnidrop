@@ -96,14 +96,14 @@ func progressForReceiver(
 			labelKey: "progress_interrupted", progress: nil, detail: nil
 		)
 	}
-	if latest.kind == "completed" && !transferEvents.contains(where: { $0.kind == "progress" || $0.kind == "started" }) {
+	let progress = aggregateReceiverProgress(events: transferEvents, totalSizeHint: totalSizeHint)
+	if latest.kind == "completed" && (progress.map { $0 >= 0.999 } ?? true) {
 		return TransferProgress(
 			transferId: transferId, phase: "transfer", kind: "completed",
 			labelKey: "progress_completed", progress: 1, detail: nil
 		)
 	}
 
-	let progress = aggregateReceiverProgress(events: transferEvents, totalSizeHint: totalSizeHint)
 	return TransferProgress(
 		transferId: transferId, phase: "transfer", kind: latest.kind,
 		labelKey: "progress_sending", progress: progress, detail: progressDetail(latest)

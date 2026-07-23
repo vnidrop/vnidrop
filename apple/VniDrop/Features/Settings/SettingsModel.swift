@@ -30,9 +30,10 @@ enum SettingsSection: Hashable {
 /// On-disk usage breakdown for the Storage screen.
 struct StorageBreakdown: Equatable {
 	var receivedFiles: UInt64 = 0
-	var transferData: UInt64 = 0
+	var transferCache: UInt64 = 0
+	var appData: UInt64 = 0
 	var temporary: UInt64 = 0
-	var total: UInt64 { receivedFiles + transferData + temporary }
+	var total: UInt64 { receivedFiles + transferCache + appData + temporary }
 }
 
 struct SettingsState: Equatable {
@@ -352,19 +353,29 @@ final class SettingsModel: ObservableObject {
 	func loadStorageUsage() {
 		if state.isCalculatingStorage { return }
 		state.isCalculatingStorage = true
-		let coreDir = environment.defaultCoreDataDir
-		let receiveDir = state.receiveFolder?.isFileSystemPath == true ? state.receiveFolder?.value : nil
 		let tempDir = NSTemporaryDirectory()
-		Task.detached {
-			let breakdown = StorageBreakdown(
-				receivedFiles: receiveDir.map { SettingsModel.directorySize($0) } ?? 0,
-				transferData: SettingsModel.directorySize(coreDir),
-				temporary: SettingsModel.directorySize(tempDir)
-			)
-			await MainActor.run { [weak self] in
-				self?.state.storage = breakdown
-				self?.state.isCalculatingStorage = false
+		Task {
+			let coreResult = await repository.storageUsage()
+			let artifactsResult = await repository.receivedArtifacts()
+			guard case .success(let core) = coreResult,
+				case .success(let artifacts) = artifactsResult else {
+				state.isCalculatingStorage = false
+				return
 			}
+			let diskSizes = await Task.detached {
+				let received = artifacts.reduce(UInt64(0)) { total, artifact in
+					total + SettingsModel.fileSize(artifact.locator)
+				}
+				return (received, SettingsModel.directorySize(tempDir))
+			}.value
+			let breakdown = StorageBreakdown(
+				receivedFiles: diskSizes.0,
+				transferCache: core.blobStoreBytes,
+				appData: core.appDataBytes,
+				temporary: diskSizes.1
+			)
+			state.storage = breakdown
+			state.isCalculatingStorage = false
 		}
 	}
 
@@ -375,14 +386,27 @@ final class SettingsModel: ObservableObject {
 		if state.isDeletingTransfers { return }
 		state.isDeletingTransfers = true
 		Task {
+			var failures = 0
 			for id in repository.state.transfers.map(\.transferId) {
-				_ = await repository.delete(transferId: id)
+				if case .failure = await repository.delete(transferId: id) { failures += 1 }
 			}
 			_ = await repository.refresh()
 			state.isDeletingTransfers = false
-			loadStorageUsage()
-			messages.show(UiMessage(text: .resource("storage_transfers_deleted"), tone: .success))
+			if failures == 0 {
+				loadStorageUsage()
+				messages.show(UiMessage(text: .resource("storage_transfers_deleted"), tone: .success))
+			} else {
+				messages.error(InvitationError.message("Could not delete \(failures) transfer records"))
+			}
 		}
+	}
+
+	nonisolated static func fileSize(_ path: String) -> UInt64 {
+		let values = try? URL(fileURLWithPath: path).resourceValues(
+			forKeys: [.isRegularFileKey, .totalFileAllocatedSizeKey, .fileSizeKey]
+		)
+		guard values?.isRegularFile == true else { return 0 }
+		return UInt64(values?.totalFileAllocatedSize ?? values?.fileSize ?? 0)
 	}
 
 	/// Recursive size of every regular file under `path` (0 if missing).

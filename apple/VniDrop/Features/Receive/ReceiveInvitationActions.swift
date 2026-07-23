@@ -2,7 +2,7 @@ import SwiftUI
 
 enum ReceiveMethodAvailability { case available, unavailable, hidden }
 
-/// Invitation acquisition actions, ported from `ReceiveInvitationActions` (iosMain).
+/// Invitation acquisition actions shared by the native Apple feature models.
 @MainActor
 protocol ReceiveInvitationActions: AnyObject {
 	var fileAvailability: ReceiveMethodAvailability { get }

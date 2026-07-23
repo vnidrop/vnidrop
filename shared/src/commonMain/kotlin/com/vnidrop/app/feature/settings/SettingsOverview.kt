@@ -7,9 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.ui.icons.AppIcon
 import com.vnidrop.app.ui.theme.ThemeMode
 import org.jetbrains.compose.resources.stringResource
-import com.vnidrop.app.ui.theme.LocalVniDropColors
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.about_title
 import vnidrop.shared.generated.resources.appearance_dark_mode
@@ -19,8 +19,8 @@ import vnidrop.shared.generated.resources.appearance_title
 import vnidrop.shared.generated.resources.notifications_title
 import vnidrop.shared.generated.resources.preferences_title
 import vnidrop.shared.generated.resources.relay_title
-import vnidrop.shared.generated.resources.settings_subtitle
 import vnidrop.shared.generated.resources.settings_title
+import vnidrop.shared.generated.resources.storage_title
 
 @Composable
 internal fun SettingsOverview(
@@ -29,21 +29,14 @@ internal fun SettingsOverview(
 	largeTitle: Boolean,
 ) {
 	Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-		Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-			Text(
-				stringResource(Res.string.settings_title),
-				style = if (largeTitle) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
-				fontWeight = FontWeight.Bold,
-			)
-			Text(
-				stringResource(Res.string.settings_subtitle),
-				color = LocalVniDropColors.current.foregroundLighter,
-				style = MaterialTheme.typography.bodyMedium,
-			)
-		}
+		Text(
+			stringResource(Res.string.settings_title),
+			style = if (largeTitle) MaterialTheme.typography.headlineLarge else MaterialTheme.typography.headlineMedium,
+			fontWeight = FontWeight.Bold,
+		)
 		SettingsGroup {
 			SettingsRow(
-				icon = SettingsIcons.Device,
+				icon = AppIcon.User,
 				title = stringResource(Res.string.preferences_title),
 				value = state.username,
 				selected = state.selectedSection == SettingsSection.Preferences,
@@ -51,7 +44,7 @@ internal fun SettingsOverview(
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Sun,
+				icon = AppIcon.Sun,
 				title = stringResource(Res.string.appearance_title),
 				value = themeModeLabel(state.themeMode),
 				selected = state.selectedSection == SettingsSection.Appearance,
@@ -60,14 +53,14 @@ internal fun SettingsOverview(
 		}
 		SettingsGroup {
 			SettingsRow(
-				icon = SettingsIcons.Bell,
+				icon = AppIcon.Bell,
 				title = stringResource(Res.string.notifications_title),
 				selected = state.selectedSection == SettingsSection.Notifications,
 				onClick = { onSectionSelected(SettingsSection.Notifications) },
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Antenna,
+				icon = relayModeIcon(state.relay.mode),
 				title = stringResource(Res.string.relay_title),
 				value = relayModeLabel(state.relay.mode),
 				selected = state.selectedSection == SettingsSection.Relay,
@@ -75,7 +68,14 @@ internal fun SettingsOverview(
 			)
 			SettingsDivider()
 			SettingsRow(
-				icon = SettingsIcons.Info,
+				icon = AppIcon.Storage,
+				title = stringResource(Res.string.storage_title),
+				selected = state.selectedSection == SettingsSection.Storage,
+				onClick = { onSectionSelected(SettingsSection.Storage) },
+			)
+			SettingsDivider()
+			SettingsRow(
+				icon = AppIcon.Info,
 				title = stringResource(Res.string.about_title),
 				selected = state.selectedSection == SettingsSection.About,
 				iconTone = SettingsIconTone.Neutral,

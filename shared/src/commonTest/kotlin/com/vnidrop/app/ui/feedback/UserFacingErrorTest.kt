@@ -7,8 +7,10 @@ import kotlin.test.assertTrue
 import uniffi.vnidrop.VnidropException
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.error_filesystem
+import vnidrop.shared.generated.resources.error_destination_exists
 import vnidrop.shared.generated.resources.error_generic
 import vnidrop.shared.generated.resources.error_initialization
+import vnidrop.shared.generated.resources.error_invalid_input
 import vnidrop.shared.generated.resources.error_invalid_ticket
 import vnidrop.shared.generated.resources.error_invitation_empty
 import vnidrop.shared.generated.resources.error_missing_native_library
@@ -19,8 +21,10 @@ import vnidrop.shared.generated.resources.error_selection_failed
 import vnidrop.shared.generated.resources.error_socket_bind
 import vnidrop.shared.generated.resources.error_camera
 import vnidrop.shared.generated.resources.error_nfc
+import vnidrop.shared.generated.resources.error_network
 import vnidrop.shared.generated.resources.error_share_empty
 import vnidrop.shared.generated.resources.error_starting_up
+import vnidrop.shared.generated.resources.error_storage_full
 import vnidrop.shared.generated.resources.error_transfer
 
 class UserFacingErrorTest {
@@ -37,6 +41,26 @@ class UserFacingErrorTest {
 		assertEquals(
 			UiText.Resource(Res.string.error_filesystem),
 			VnidropException.Filesystem("permission denied opening path").toUiText(),
+		)
+		assertEquals(
+			UiText.Resource(Res.string.error_filesystem),
+			VnidropException.FilesystemPermission("folder is read-only").toUiText(),
+		)
+		assertEquals(
+			UiText.Resource(Res.string.error_destination_exists),
+			VnidropException.DestinationExists("destination already exists").toUiText(),
+		)
+		assertEquals(
+			UiText.Resource(Res.string.error_storage_full),
+			VnidropException.StorageFull("no space left").toUiText(),
+		)
+		assertEquals(
+			UiText.Resource(Res.string.error_network),
+			VnidropException.Network("connection reset").toUiText(),
+		)
+		assertEquals(
+			UiText.Resource(Res.string.error_invalid_input),
+			VnidropException.InvalidInput("invalid collection name").toUiText(),
 		)
 		assertEquals(
 			UiText.Resource(Res.string.error_transfer),
@@ -125,6 +149,15 @@ class UserFacingErrorTest {
 		assertTrue(IllegalStateException("QR scanning was cancelled").isUserCancellation())
 		assertTrue(IllegalStateException("NFC writing was cancelled").isUserCancellation())
 		assertTrue(VnidropException.Transfer("transfer cancelled by user").isUserCancellation())
+		assertTrue(VnidropException.Cancelled("cancel requested").isUserCancellation())
 		assertFalse(IllegalStateException("sender refused").isUserCancellation())
+	}
+
+	@Test
+	fun retryRequiresChangingCollisionOrInvalidInput() {
+		assertFalse(VnidropException.FilesystemPermission("read-only").canRetryWithoutChangingInput())
+		assertFalse(VnidropException.DestinationExists("target exists").canRetryWithoutChangingInput())
+		assertFalse(VnidropException.InvalidInput("bad path").canRetryWithoutChangingInput())
+		assertTrue(VnidropException.Network("offline").canRetryWithoutChangingInput())
 	}
 }

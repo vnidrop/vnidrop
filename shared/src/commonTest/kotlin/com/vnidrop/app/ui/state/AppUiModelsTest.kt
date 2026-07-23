@@ -211,9 +211,10 @@ class AppUiModelsTest {
 				direction = "send",
 			),
 		)
-		val progress = activeSendProgress(events, 7UL, totalSizeHint = 100UL)
+		val progress = activeSendProgress(events, 7UL, setOf("peer-a"), totalSizeHint = 100UL)
 		assertEquals(0.3f, progress?.progress)
 		assertEquals(Res.string.progress_sending, progress?.label)
+		assertEquals(null, activeSendProgress(events, 7UL, emptySet(), totalSizeHint = 100UL))
 	}
 
 	@Test
@@ -268,6 +269,39 @@ class AppUiModelsTest {
 		val progress = progressForReceiver(events, 7UL, "peer-a")
 		assertEquals(Res.string.progress_completed, progress?.label)
 		assertEquals(1f, progress?.progress)
+	}
+
+	@Test
+	fun progressForReceiverCompletedAfterProgressUsesCompletedLabel() {
+		val events = listOf(
+			event(
+				id = "done",
+				phase = "transfer",
+				kind = "completed",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a"}""",
+				direction = "send",
+			),
+			event(
+				id = "progress",
+				phase = "transfer",
+				kind = "progress",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a","end_offset":100}""",
+				direction = "send",
+			),
+			event(
+				id = "started",
+				phase = "transfer",
+				kind = "started",
+				data = """{"connection_id":1,"request_id":1,"endpoint_id":"peer-a","size":100}""",
+				direction = "send",
+			),
+		)
+
+		val progress = progressForReceiver(events, 7UL, "peer-a", totalSizeHint = 100UL)
+		assertEquals("completed", progress?.kind)
+		assertEquals(Res.string.progress_completed, progress?.label)
+		assertEquals(1f, progress?.progress)
+		assertEquals(null, activeSendProgress(events, 7UL, setOf("peer-a"), totalSizeHint = 100UL))
 	}
 
 	private fun storedTransfer(status: TransferStatus): Transfer =

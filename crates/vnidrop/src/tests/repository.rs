@@ -1,6 +1,9 @@
 use crate::{
-    api::CoreEvent,
-    repository::{ReceiverRequestInsert, Repository, TransferUpsert},
+    api::{CoreEvent, ReceivedLocatorKind},
+    repository::{
+        PendingDeliveryReceiptInsert, ReceivedArtifactInsert, ReceiverRequestInsert, Repository,
+        TransferUpsert,
+    },
     transfer_state::{ReceiverRequestStatus, TransferDirection, TransferStatus},
 };
 
@@ -24,10 +27,46 @@ fn transfer(
 }
 
 #[tokio::test]
+async fn received_artifacts_survive_history_deletion() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    repository
+        .start_receive(transfer(
+            91,
+            TransferDirection::Receive,
+            TransferStatus::Receiving,
+        ))
+        .await
+        .unwrap();
+    let local_id = repository.transfer_local_id(91).await.unwrap();
+    repository
+        .record_received_artifact(ReceivedArtifactInsert {
+            transfer_local_id: &local_id,
+            protocol_transfer_id: 91,
+            relative_path: "folder/file.txt",
+            locator_kind: ReceivedLocatorKind::FilesystemPath,
+            locator: "/tmp/folder/file.txt",
+            logical_size: 12,
+        })
+        .await
+        .unwrap();
+    repository
+        .transition_transfer_status(91, TransferStatus::Receiving, TransferStatus::Done)
+        .await
+        .unwrap();
+
+    assert_eq!(repository.delete_receive_history().await.unwrap(), 1);
+    let artifacts = repository.list_received_artifacts().await.unwrap();
+    assert_eq!(artifacts.len(), 1);
+    assert_eq!(artifacts[0].transfer_local_id, local_id);
+    assert_eq!(artifacts[0].logical_size, 12);
+}
+
+#[tokio::test]
 async fn persists_transfers_and_events_across_reopen() {
     let temp = tempfile::tempdir().unwrap();
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 4);
+    assert_eq!(repository.schema_version().await.unwrap(), 6);
     repository
         .insert_transfer(transfer(
             7,
@@ -74,6 +113,57 @@ async fn persists_transfers_and_events_across_reopen() {
     assert_eq!(transfers.len(), 1);
     let events = reopened.list_events(Some(7), 500).await.unwrap();
     assert_eq!(events[0].id, "event-1");
+}
+
+#[tokio::test]
+async fn receive_completion_persists_delivery_receipt_until_recorded() {
+    let temp = tempfile::tempdir().unwrap();
+    let repository = Repository::open(temp.path()).await.unwrap();
+    repository
+        .start_receive(transfer(
+            93,
+            TransferDirection::Receive,
+            TransferStatus::Receiving,
+        ))
+        .await
+        .unwrap();
+    repository
+        .complete_receive_with_pending_receipt(PendingDeliveryReceiptInsert {
+            local_transfer_id: 93,
+            sender_blob_ticket: "blob-ticket",
+            request_id: "request-93",
+            sender_transfer_id: 39,
+            token: "receipt-token",
+        })
+        .await
+        .unwrap();
+
+    let transfer = repository
+        .list_transfers()
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|transfer| transfer.transfer_id == 93)
+        .unwrap();
+    assert_eq!(transfer.status, "done");
+    drop(repository);
+
+    let reopened = Repository::open(temp.path()).await.unwrap();
+    let pending = reopened.list_pending_delivery_receipts().await.unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].local_transfer_id, 93);
+    assert_eq!(pending[0].sender_transfer_id, 39);
+    assert_eq!(pending[0].request_id, "request-93");
+    assert_eq!(pending[0].token, "receipt-token");
+    reopened
+        .delete_pending_delivery_receipt("request-93")
+        .await
+        .unwrap();
+    assert!(reopened
+        .list_pending_delivery_receipts()
+        .await
+        .unwrap()
+        .is_empty());
 }
 
 #[tokio::test]
@@ -491,7 +581,7 @@ async fn migrates_schema_v2_identity_without_losing_transfer() {
     pool.close().await;
 
     let repository = Repository::open(temp.path()).await.unwrap();
-    assert_eq!(repository.schema_version().await.unwrap(), 4);
+    assert_eq!(repository.schema_version().await.unwrap(), 6);
     let stored = repository.list_transfers().await.unwrap().remove(0);
     assert_eq!(stored.transfer_id, 7);
     assert_eq!(stored.local_id, "legacy-7-send");

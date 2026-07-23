@@ -3,6 +3,8 @@ mod support;
 use std::sync::{Arc, Condvar, Mutex};
 use std::time::Duration;
 
+use futures_lite::StreamExt as _;
+use iroh_blobs::store::fs::FsStore;
 use support::{share_path, CoreGuard, RecordingSink, TestNode};
 use vnidrop::{
     CoreEvent, CoreEventSink, CoreLimits, ShareMetadataInput, ShareSource, SourceKind,
@@ -75,6 +77,39 @@ fn deleting_share_revokes_it_and_removes_persisted_history() {
     let restarted = CoreGuard::start(core_dir.path(), Arc::new(RecordingSink::default()));
     assert!(restarted.list_transfers().unwrap().is_empty());
     assert_eq!(restarted.status().active_shares, 0);
+}
+
+#[test]
+fn active_share_tag_is_persistent_and_removed_with_transfer() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let core_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("tagged.txt");
+    std::fs::write(&source_path, b"tagged content").unwrap();
+
+    let sender = CoreGuard::start(core_dir.path(), Arc::new(RecordingSink::default()));
+    let share = share_path(&sender, &source_path, 102, "tagged.txt", false);
+    drop(sender);
+    assert_eq!(share_tag_count(core_dir.path()), 1);
+
+    let restarted = CoreGuard::start(core_dir.path(), Arc::new(RecordingSink::default()));
+    restarted.delete_transfer(share.transfer_id).unwrap();
+    drop(restarted);
+    assert_eq!(share_tag_count(core_dir.path()), 0);
+}
+
+fn share_tag_count(core_dir: &std::path::Path) -> usize {
+    let runtime = tokio::runtime::Runtime::new().unwrap();
+    runtime.block_on(async {
+        let store = FsStore::load(core_dir.join("blobs")).await.unwrap();
+        let mut tags = store.tags().list_prefix("vnidrop/share/").await.unwrap();
+        let mut count = 0;
+        while let Some(tag) = tags.next().await {
+            tag.unwrap();
+            count += 1;
+        }
+        store.shutdown().await.unwrap();
+        count
+    })
 }
 
 #[test]

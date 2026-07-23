@@ -3,7 +3,7 @@ import Foundation
 import UIKit
 import VnidropCore
 
-/// iOS file system service, ported from `FileSystemService.ios.kt`.
+/// Native iOS file system service.
 /// App-owned Documents is the fixed receive folder; custom folders are not
 /// supported because raw external picker URLs do not survive relaunch.
 struct IosFileSystemService: FileSystemService {

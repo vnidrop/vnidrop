@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,18 +29,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.vnidrop.app.core.CoreEventModel
+import com.vnidrop.app.core.ReceiverDeliveryStatus
+import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Transfer
 import com.vnidrop.app.core.TransferStatus
-import com.vnidrop.app.ui.components.EmptyStateAnimation
 import com.vnidrop.app.ui.components.PillTone
 import com.vnidrop.app.ui.components.PrimaryButton
 import com.vnidrop.app.ui.components.ProgressRow
 import com.vnidrop.app.ui.components.StatusPill
+import com.vnidrop.app.ui.icons.AppIcon
+import com.vnidrop.app.ui.icons.PlatformIcon
+import com.vnidrop.app.ui.platform.LocalUiPlatform
+import com.vnidrop.app.ui.platform.usesMobilePresentation
 import com.vnidrop.app.ui.state.TransferProgress
 import com.vnidrop.app.ui.state.WindowClass
 import com.vnidrop.app.ui.state.activeSendProgress
@@ -57,7 +62,6 @@ import vnidrop.shared.generated.resources.send_empty_body
 import vnidrop.shared.generated.resources.send_empty_title
 import vnidrop.shared.generated.resources.send_new_transfer_description
 import vnidrop.shared.generated.resources.send_new_transfer_title
-import vnidrop.shared.generated.resources.send_subtitle
 import vnidrop.shared.generated.resources.send_title
 import vnidrop.shared.generated.resources.send_transfers_title
 
@@ -69,7 +73,7 @@ internal fun SendFloatingAction(onClick: () -> Unit, modifier: Modifier = Modifi
 		containerColor = LocalVniDropColors.current.brandButton,
 		contentColor = Color.White,
 	) {
-		Icon(SendIcons.Plus, contentDescription = stringResource(Res.string.send_new_transfer_description))
+		PlatformIcon(AppIcon.Add, contentDescription = stringResource(Res.string.send_new_transfer_description))
 	}
 }
 
@@ -77,22 +81,24 @@ internal fun SendFloatingAction(onClick: () -> Unit, modifier: Modifier = Modifi
 internal fun TransferCatalog(
 	transfers: List<Transfer>,
 	transferThumbnails: Map<ULong, ByteArray>,
+	receiversByTransfer: Map<ULong, List<ReceiverRequestModel>> = emptyMap(),
 	events: List<CoreEventModel> = emptyList(),
 	windowClass: WindowClass,
 	onOpenComposer: () -> Unit,
 	onTransferSelected: (ULong) -> Unit,
 ) {
+	val usesFloatingAction = usesMobilePresentation(LocalUiPlatform.current, windowClass)
 	LazyColumn(
 		modifier = Modifier.fillMaxSize().statusBarsPadding(),
 		contentPadding = PaddingValues(
 			start = 16.dp,
 			top = 16.dp,
 			end = 16.dp,
-			bottom = if (windowClass == WindowClass.Phone && transfers.isNotEmpty()) 96.dp else 24.dp,
+			bottom = if (usesFloatingAction && transfers.isNotEmpty()) 96.dp else 24.dp,
 		),
 		verticalArrangement = Arrangement.spacedBy(12.dp),
 	) {
-		item { CatalogHeader(showAction = windowClass != WindowClass.Phone && transfers.isNotEmpty(), onOpenComposer) }
+		item { CatalogHeader(showAction = !usesFloatingAction && transfers.isNotEmpty(), onOpenComposer) }
 		if (transfers.isEmpty()) {
 			item { SendEmptyState(onOpenComposer) }
 		} else {
@@ -104,9 +110,18 @@ internal fun TransferCatalog(
 				)
 			}
 			items(transfers, key = Transfer::localId) { transfer ->
+				val activeReceiverEndpointIds = receiversByTransfer[transfer.transferId]
+					.orEmpty()
+					.filter { it.status == ReceiverDeliveryStatus.Accepted }
+					.mapTo(mutableSetOf()) { it.remoteEndpointId }
 				val progress = when (transfer.status) {
 					TransferStatus.Importing -> progressForTransfer(events, transfer.transferId)
-					TransferStatus.Sharing -> activeSendProgress(events, transfer.transferId, transfer.totalSize)
+					TransferStatus.Sharing -> activeSendProgress(
+						events,
+						transfer.transferId,
+						activeReceiverEndpointIds,
+						transfer.totalSize,
+					)
 					else -> null
 				}
 				TransferListItem(
@@ -125,11 +140,6 @@ private fun CatalogHeader(showAction: Boolean, onOpenComposer: () -> Unit) {
 	Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 		Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
 			Text(stringResource(Res.string.send_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
-			Text(
-				stringResource(Res.string.send_subtitle),
-				color = LocalVniDropColors.current.foregroundLighter,
-				style = MaterialTheme.typography.bodyMedium,
-			)
 		}
 		if (showAction) {
 			Spacer(Modifier.width(16.dp))
@@ -146,9 +156,13 @@ private fun SendEmptyState(onOpenComposer: () -> Unit) {
 		horizontalAlignment = Alignment.CenterHorizontally,
 		verticalArrangement = Arrangement.Center,
 	) {
-		EmptyStateAnimation(
-			assetPath = "files/animations/send_empty_state.json",
-			modifier = Modifier.size(168.dp),
+		PlatformIcon(
+			icon = AppIcon.Send,
+			contentDescription = null,
+			tint = colors.brandLink,
+			modifier = Modifier
+				.size(88.dp)
+				.testTag("send-empty-icon"),
 		)
 		Text(
 			stringResource(Res.string.send_empty_title),
@@ -214,7 +228,7 @@ private fun TransferListItem(
 				}
 			}
 			Spacer(Modifier.width(8.dp))
-			Icon(SendIcons.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
+			PlatformIcon(AppIcon.ChevronRight, contentDescription = null, tint = colors.foregroundLighter, modifier = Modifier.size(18.dp))
 		}
 	}
 }
@@ -231,7 +245,7 @@ internal fun FileArtwork(thumbnailBytes: ByteArray?, modifier: Modifier = Modifi
 		)
 	} else {
 		Box(modifier, contentAlignment = Alignment.Center) {
-			Icon(SendIcons.File, contentDescription = null, tint = LocalVniDropColors.current.foregroundLight, modifier = Modifier.size(22.dp))
+			PlatformIcon(AppIcon.File, contentDescription = null, tint = LocalVniDropColors.current.foregroundLight, modifier = Modifier.size(22.dp))
 		}
 	}
 }

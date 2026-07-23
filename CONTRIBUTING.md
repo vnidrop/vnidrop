@@ -35,14 +35,34 @@ Use a branch name that describes the outcome, such as
 
 Install the tools needed for the area you plan to change:
 
+- GNU Make and Bash for the root command interface
 - JDK 17 or newer for Gradle and application builds
 - Rust stable with `rustfmt` and Clippy for the transfer core
 - Android SDK and NDK for Android builds
-- Xcode on macOS for iOS builds and simulator tests
+- Xcode and XcodeGen on macOS for native Apple builds and simulator tests
 - Node.js 22.12 or newer for the optional diagnostics service
 
 The first Rust and Gradle builds may take several minutes while dependencies are
 downloaded and native components are compiled.
+
+## Command Interface
+
+Run development commands through the root `Makefile`. It keeps local and CI
+commands aligned while continuing to delegate builds to Cargo, Gradle, Xcode,
+Bun, and npm:
+
+```bash
+make help       # list commands
+make doctor     # report missing host tools
+make setup      # install repository-local JavaScript dependencies
+make check      # portable Rust, shared, localization, docs, and service checks
+```
+
+Configuration can be passed on the command line, for example
+`make package-deb VERSION=1.2.0`, or placed in an ignored
+`config.override.mk`. Windows use requires GNU Make in a Bash environment; the
+underlying Gradle and PowerShell entry points remain available when Make is not
+installed.
 
 ## Repository Structure
 
@@ -50,10 +70,10 @@ downloaded and native components are compiled.
 |------|---------|
 | `crates/vnidrop/` | Rust transfer core, persistence, approval, and streaming |
 | `crates/vni/` | `vnidrop` command-line client built on the core |
-| `shared/` | Shared Kotlin Multiplatform UI and platform bridges |
+| `shared/` | Compose Multiplatform UI and bridges for Android, Windows, and Linux |
 | `androidApp/` | Android application shell |
-| `iosApp/` | iOS application shell |
-| `desktopApp/` | Desktop JVM application shell |
+| `desktopApp/` | Windows/Linux JVM application shell |
+| `apple/` | Native SwiftUI application and Rust/UniFFI integration for Apple platforms |
 | `services/diagnostics-api/` | Optional Cloudflare diagnostics service |
 
 Read the nearest contributor guidance before editing:
@@ -88,43 +108,48 @@ Run checks from the repository root. Choose the suite for the files you changed.
 ### Rust Core
 
 ```bash
-cargo fmt --all
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test -p vnidrop
+make format
+make test-rust
 ```
 
 For cancel, export, or output-sink changes, also run:
 
 ```bash
-cargo test -p vnidrop --test output_sink
+make test-rust-output-sink
 ```
 
 For broader core changes, run the complete workspace suite:
 
 ```bash
-cargo test --workspace --all-targets
+make check-rust
 ```
 
 ### Shared Kotlin and Compose
 
 ```bash
-./gradlew :shared:jvmTest
+make test-shared
 ```
 
 Platform-specific checks may also be appropriate:
 
 ```bash
-./gradlew :shared:testAndroidHostTest
-./gradlew :shared:iosSimulatorArm64Test
-./gradlew :androidApp:assembleDebug
+make test-android-host
+make check-android
 ```
+
+### Native Apple App
+
+```bash
+make check-apple
+```
+
+Override the selected simulator when needed with
+`make check-apple APPLE_DESTINATION='platform=iOS Simulator,name=iPhone 16'`.
 
 ### Diagnostics Service
 
 ```bash
-cd services/diagnostics-api
-npm ci
-npm run check
+make check-diagnostics
 ```
 
 If a required check cannot run on your machine, explain why in the pull request

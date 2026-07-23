@@ -9,13 +9,13 @@ import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.Composable
@@ -47,31 +47,26 @@ import androidx.compose.ui.window.WindowPlacement
 import androidx.compose.ui.window.WindowScope
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.vnidrop.app.platform.DesktopAppearanceBridge
-import com.vnidrop.app.feature.send.DesktopShareBridge
 import com.vnidrop.app.feature.receive.ExternalInvitationController
 import com.vnidrop.app.feature.receive.MaxVniDropInvitationBytes
 import com.vnidrop.app.feature.receive.VniDropInvitationExtension
 import com.vnidrop.app.feature.receive.decodeInvitationBytes
+import com.vnidrop.app.platform.DesktopAppearanceBridge
 import com.vnidrop.app.ui.theme.LocalVniDropColors
+import io.github.vinceglb.filekit.FileKit
 import java.awt.Desktop
 import java.io.File
 
 fun main(args: Array<String>) {
+	FileKit.init(appId = "vnidrop")
 	val externalInvitations = ExternalInvitationController()
-	val macOs = DesktopAppearanceBridge.isMacOs()
 	val linux = DesktopAppearanceBridge.isLinux()
-	val customWindowChrome = macOs || linux
-	configureMacOsNativeAppearance()
+	val windows = DesktopAppearanceBridge.isWindows()
 	configureInvitationOpenHandler(externalInvitations)
 	args.asSequence()
 		.map(::File)
 		.filter { it.extension.equals(VniDropInvitationExtension, ignoreCase = true) }
 		.forEach { externalInvitations.openFile(it) }
-	DesktopAppearanceBridge.applyNativeAppearance = MacOsAppKitAppearance::apply
-	if (macOs) {
-		DesktopShareBridge.shareFile = MacOsShareSheet::share
-	}
 	application {
 		val windowState = rememberWindowState()
 		Window(
@@ -81,19 +76,24 @@ fun main(args: Array<String>) {
 			// Compose keeps edge resizers active for this client-decorated Linux window.
 			undecorated = linux,
 		) {
-			App(
-				dependencies = rememberJvmAppDependencies(externalInvitations),
-				windowChromeTopInset = when {
-					macOs -> MacOsTitleBarHeight
-					linux -> LinuxTitleBarHeight
-					else -> 0.dp
-				},
-				windowContentTopStartRadius = if (customWindowChrome) DesktopContentCornerRadius else 0.dp,
-				windowChrome = when {
-					macOs -> {
-						{ MacOsTitleBar() }
-					}
-					linux -> {
+			val dependencies = rememberJvmAppDependencies(externalInvitations)
+			if (windows) {
+				WindowsWindowFrame(windowState) { chrome ->
+					App(
+						dependencies = dependencies,
+						windowChromeTopInset = chrome.topInset,
+						windowContentTopStartRadius = chrome.contentTopStartRadius,
+						useNativeWindowBackdrop = chrome.useNativeBackdrop,
+						onResolvedDarkThemeChanged = chrome.onDarkThemeChanged,
+						windowChrome = chrome.chrome,
+					)
+				}
+			} else {
+				App(
+					dependencies = dependencies,
+					windowChromeTopInset = if (linux) LinuxTitleBarHeight else 0.dp,
+					windowContentTopStartRadius = if (linux) DesktopContentCornerRadius else 0.dp,
+					windowChrome = if (linux) {
 						{
 							LinuxTitleBar(
 								isMaximized = windowState.placement == WindowPlacement.Maximized,
@@ -104,10 +104,11 @@ fun main(args: Array<String>) {
 								onClose = ::exitApplication,
 							)
 						}
-					}
-					else -> null
-				},
-			)
+					} else {
+						null
+					},
+				)
+			}
 		}
 	}
 }
@@ -130,54 +131,11 @@ private fun ExternalInvitationController.openFile(file: File) {
 	}
 }
 
-private fun configureMacOsNativeAppearance() {
-	if (!DesktopAppearanceBridge.isMacOs()) return
-	// AWT reads this before creating the first native window. Runtime theme
-	// changes are handled in the JVM platform appearance hook.
-	System.setProperty("apple.awt.application.appearance", "system")
-}
-
-private val MacOsTitleBarHeight = 28.dp
-private val MacOsTrafficLightsWidth = 76.dp
-private val LinuxTitleBarHeight = 40.dp
-private val LinuxWindowControlWidth = 46.dp
-private val LinuxWindowControlsWidth = 138.dp
-private val DesktopContentCornerRadius = 20.dp
-
-@Composable
-@OptIn(ExperimentalComposeUiApi::class)
-private fun WindowScope.MacOsTitleBar() {
-	val colors = LocalVniDropColors.current
-	Box(
-		modifier = Modifier
-			.fillMaxWidth()
-			.height(MacOsTitleBarHeight)
-			.background(colors.backgroundSurface200),
-	) {
-		WindowDraggableArea(
-			modifier = Modifier
-				.fillMaxSize()
-				.padding(start = MacOsTrafficLightsWidth)
-				.onPointerEvent(PointerEventType.Press) { event ->
-					if (event.awtEventOrNull?.clickCount == 2) {
-						DesktopAppearanceBridge.toggleMaximized(window)
-					}
-				},
-		) {
-			Box(modifier = Modifier.fillMaxSize().padding(end = MacOsTrafficLightsWidth)) {
-				BasicText(
-					text = "VniDrop",
-					modifier = Modifier.align(Alignment.Center),
-					style = TextStyle(
-						color = colors.foregroundDefault,
-						fontSize = 13.sp,
-						fontWeight = FontWeight.SemiBold,
-					),
-				)
-			}
-		}
-	}
-}
+private val LinuxTitleBarHeight = 48.dp
+private val LinuxWindowControlHitTargetSize = 34.dp
+private val LinuxWindowControlVisualSize = 28.dp
+private val LinuxWindowControlsWidth = 120.dp
+internal val DesktopContentCornerRadius = 20.dp
 
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
@@ -216,7 +174,9 @@ private fun WindowScope.LinuxTitleBar(
 		Row(
 			modifier = Modifier
 				.align(Alignment.CenterEnd)
-				.fillMaxHeight(),
+				.padding(end = 10.dp)
+				.background(colors.backgroundSurface300, RoundedCornerShape(20.dp))
+				.padding(3.dp),
 		) {
 			LinuxWindowControlButton(
 				icon = LinuxMinimizeIcon,
@@ -249,17 +209,15 @@ private fun LinuxWindowControlButton(
 	val interactionSource = remember { MutableInteractionSource() }
 	val hovered by interactionSource.collectIsHoveredAsState()
 	val pressed by interactionSource.collectIsPressedAsState()
-	val active = hovered || pressed
-	val background = when {
-		isClose && active -> colors.destructiveDefault
-		active -> colors.backgroundOverlayHover
-		else -> Color.Transparent
+	val visualState = linuxWindowControlVisualState(isClose, hovered, pressed)
+	val background = when (visualState) {
+		LinuxWindowControlVisualState.Default -> Color.Transparent
+		LinuxWindowControlVisualState.NeutralActive -> colors.backgroundOverlayHover
+		LinuxWindowControlVisualState.DestructiveActive -> colors.destructiveDefault
 	}
 	Box(
 		modifier = Modifier
-			.width(LinuxWindowControlWidth)
-			.fillMaxHeight()
-			.background(background)
+			.size(LinuxWindowControlHitTargetSize)
 			.hoverable(interactionSource)
 			.clickable(
 				interactionSource = interactionSource,
@@ -269,13 +227,39 @@ private fun LinuxWindowControlButton(
 			),
 		contentAlignment = Alignment.Center,
 	) {
-		Image(
-			painter = rememberVectorPainter(icon),
-			contentDescription = contentDescription,
-			colorFilter = ColorFilter.tint(if (isClose && active) Color.White else colors.foregroundLight),
-			modifier = Modifier.size(15.dp),
-		)
+		Box(
+			modifier = Modifier
+				.size(LinuxWindowControlVisualSize)
+				.background(background, CircleShape),
+			contentAlignment = Alignment.Center,
+		) {
+			Image(
+				painter = rememberVectorPainter(icon),
+				contentDescription = contentDescription,
+				colorFilter = ColorFilter.tint(
+					if (visualState == LinuxWindowControlVisualState.DestructiveActive) Color.White
+					else colors.foregroundLight,
+				),
+				modifier = Modifier.size(14.dp),
+			)
+		}
 	}
+}
+
+internal enum class LinuxWindowControlVisualState {
+	Default,
+	NeutralActive,
+	DestructiveActive,
+}
+
+internal fun linuxWindowControlVisualState(
+	isClose: Boolean,
+	isHovered: Boolean,
+	isPressed: Boolean,
+): LinuxWindowControlVisualState = when {
+	isClose && (isHovered || isPressed) -> LinuxWindowControlVisualState.DestructiveActive
+	isHovered || isPressed -> LinuxWindowControlVisualState.NeutralActive
+	else -> LinuxWindowControlVisualState.Default
 }
 
 internal fun toggledWindowPlacement(current: WindowPlacement): WindowPlacement =

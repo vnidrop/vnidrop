@@ -2,6 +2,7 @@ package com.vnidrop.app.diagnostics
 
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.attribute.FileTime
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -24,6 +25,8 @@ class PendingCrashStoreJvmTest {
 			File(directory, ".orphan.tmp").writeText("partial")
 			store.write(current.copy(id = "../../escape"))
 			val escapedPath = File(directory, "../../escape.crash").canonicalFile
+			Files.setLastModifiedTime(File(directory, "${older.id}.crash").toPath(), FileTime.fromMillis(2_000))
+			Files.setLastModifiedTime(File(directory, "${current.id}.crash").toPath(), FileTime.fromMillis(1_000))
 
 			assertEquals(
 				listOf("replaced", "older"),

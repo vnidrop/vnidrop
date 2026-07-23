@@ -95,7 +95,8 @@ people, especially when using **Anyone with this transfer**.
 - Cancel, stop sharing, and local transfer history
 - Safe receive destinations that do not silently overwrite existing files
 - Configurable relays: default, custom self-hosted, or local-network only
-- Android, iOS, and desktop apps built from a shared Compose Multiplatform UI
+- Native SwiftUI apps on iOS, iPadOS, and macOS; Compose apps on Android,
+  Windows, and Linux
 - Opt-in diagnostics with transfer contents, invitations, and file paths
   excluded
 
@@ -124,14 +125,21 @@ if you want to try the current version.
 git clone https://github.com/vnidrop/vnidrop.git
 cd vnidrop
 
-# Desktop
-./gradlew :desktopApp:run
+# List the supported development commands and check prerequisites
+make help
+make doctor
+
+# Windows/Linux desktop
+make run-desktop
 
 # Android debug build
-./gradlew :androidApp:assembleDebug
+make build-android
 
-# iOS
-open iosApp/iosApp.xcodeproj
+# Build and launch the macOS app
+make open-apple
+
+# Open the native project for iOS, iPadOS, or Xcode development
+make open-apple-project
 ```
 
 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for prerequisites, development setup,

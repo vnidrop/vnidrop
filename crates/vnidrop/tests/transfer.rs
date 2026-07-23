@@ -1,6 +1,7 @@
 mod support;
 
 use support::{receive_with_response, share_path, TestNode};
+use vnidrop::VnidropError;
 
 #[test]
 fn transfers_file_between_two_cores() {
@@ -38,6 +39,20 @@ fn transfers_file_between_two_cores() {
         received.peer_id.as_deref(),
         Some(sender.core.status().endpoint_id.as_str())
     );
+    let artifacts = receiver.core.list_received_artifacts().unwrap();
+    assert_eq!(artifacts.len(), 1);
+    assert_eq!(artifacts[0].relative_path, "hello.txt");
+    assert_eq!(
+        artifacts[0].logical_size,
+        b"hello from vnidrop".len() as u64
+    );
+    assert_eq!(
+        artifacts[0].locator,
+        output_dir.path().join("hello.txt").to_string_lossy()
+    );
+
+    receiver.core.delete_receive_history().unwrap();
+    assert_eq!(receiver.core.list_received_artifacts().unwrap(), artifacts);
 }
 
 #[test]
@@ -84,7 +99,7 @@ fn receive_refuses_to_overwrite_existing_destination() {
     let receiver = TestNode::new();
     let share = share_path(&sender.core, &source_path, 27, "existing.txt", false);
 
-    assert!(receive_with_response(
+    let error = receive_with_response(
         &sender.core,
         share.transfer_id,
         receiver.core.arc(),
@@ -92,7 +107,8 @@ fn receive_refuses_to_overwrite_existing_destination() {
         output_dir.path(),
         true,
     )
-    .is_err());
+    .unwrap_err();
+    assert!(matches!(error, VnidropError::DestinationExists { .. }));
     assert_eq!(std::fs::read(&output_path).unwrap(), b"keep content");
     assert!(std::fs::read_dir(output_dir.path())
         .unwrap()
@@ -101,4 +117,22 @@ fn receive_refuses_to_overwrite_existing_destination() {
             .file_name()
             .to_string_lossy()
             .contains(".part")));
+    let transfer = receiver
+        .core
+        .list_transfers()
+        .unwrap()
+        .into_iter()
+        .find(|transfer| transfer.transfer_id == 27)
+        .unwrap();
+    assert_eq!(transfer.status, "failed");
+    assert!(receiver
+        .core
+        .list_events(Some(27))
+        .unwrap()
+        .iter()
+        .any(|event| {
+            event.phase == "error"
+                && event.kind == "failed"
+                && event.data_json.contains("\"code\":\"destination_exists\"")
+        }));
 }

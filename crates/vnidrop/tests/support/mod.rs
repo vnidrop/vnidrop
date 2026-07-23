@@ -14,8 +14,9 @@ use std::{
 };
 
 use vnidrop::{
-    CoreEvent, CoreEventSink, CoreLimits, ReceiveOutputSink, ReceiverRequest, ShareMetadataInput,
-    ShareResult, ShareSource, SourceKind, TransferAccessMode, VnidropCore, VnidropError,
+    CoreEvent, CoreEventSink, CoreLimits, PublishedOutput, ReceiveOutputSink, ReceiveOutputSinkV2,
+    ReceivedLocatorKind, ReceiverRequest, ShareMetadataInput, ShareResult, ShareSource, SourceKind,
+    TransferAccessMode, VnidropCore, VnidropError,
 };
 
 #[derive(Default)]
@@ -219,6 +220,28 @@ impl ReceiveOutputSink for MemoryOutputSink {
     }
 }
 
+impl ReceiveOutputSinkV2 for MemoryOutputSink {
+    fn start_file(&self, relative_path: String) -> Result<(), VnidropError> {
+        ReceiveOutputSink::start_file(self, relative_path)
+    }
+
+    fn write_chunk(&self, relative_path: String, bytes: Vec<u8>) -> Result<(), VnidropError> {
+        ReceiveOutputSink::write_chunk(self, relative_path, bytes)
+    }
+
+    fn finish_file(&self, relative_path: String) -> Result<PublishedOutput, VnidropError> {
+        ReceiveOutputSink::finish_file(self, relative_path.clone())?;
+        Ok(PublishedOutput {
+            locator_kind: ReceivedLocatorKind::AndroidDocument,
+            locator: format!("content://test/{relative_path}"),
+        })
+    }
+
+    fn abort_file(&self, relative_path: String, reason: String) -> Result<(), VnidropError> {
+        ReceiveOutputSink::abort_file(self, relative_path, reason)
+    }
+}
+
 pub fn share_path(
     sender: &VnidropCore,
     source: &Path,
@@ -269,12 +292,10 @@ pub fn receive_with_response(
     ticket: String,
     output_dir: &Path,
     accepted: bool,
-) -> Result<(), String> {
+) -> Result<(), VnidropError> {
     let output_dir = output_dir.to_string_lossy().to_string();
     let handle = std::thread::spawn(move || {
-        receiver
-            .receive(ticket, output_dir, Some("receiver".to_string()))
-            .map_err(|error| error.to_string())
+        receiver.receive(ticket, output_dir, Some("receiver".to_string()))
     });
     respond_to_pending_request(sender, transfer_id, accepted);
     handle.join().unwrap()
@@ -287,11 +308,24 @@ pub fn receive_with_sink_response(
     ticket: String,
     output_sink: Arc<dyn ReceiveOutputSink>,
     accepted: bool,
-) -> Result<(), String> {
+) -> Result<(), VnidropError> {
     let handle = std::thread::spawn(move || {
-        receiver
-            .receive_with_output_sink(ticket, output_sink, Some("receiver".to_string()))
-            .map_err(|error| error.to_string())
+        receiver.receive_with_output_sink(ticket, output_sink, Some("receiver".to_string()))
+    });
+    respond_to_pending_request(sender, transfer_id, accepted);
+    handle.join().unwrap()
+}
+
+pub fn receive_with_sink_v2_response(
+    sender: &VnidropCore,
+    transfer_id: u64,
+    receiver: Arc<VnidropCore>,
+    ticket: String,
+    output_sink: Arc<dyn ReceiveOutputSinkV2>,
+    accepted: bool,
+) -> Result<(), VnidropError> {
+    let handle = std::thread::spawn(move || {
+        receiver.receive_with_output_sink_v2(ticket, output_sink, Some("receiver".to_string()))
     });
     respond_to_pending_request(sender, transfer_id, accepted);
     handle.join().unwrap()

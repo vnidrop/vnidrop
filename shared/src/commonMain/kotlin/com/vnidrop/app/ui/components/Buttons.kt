@@ -12,15 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.vnidrop.app.isDesktop
+import com.vnidrop.app.ui.platform.LocalUiPlatform
 import com.vnidrop.app.ui.theme.LocalVniDropColors
 
 @Composable
 fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+	val desktop = LocalUiPlatform.current.isDesktop
 	Button(
 		onClick = onClick,
 		enabled = enabled,
-		modifier = modifier.heightIn(min = 44.dp),
-		shape = RoundedCornerShape(8.dp),
+		modifier = modifier.heightIn(min = if (desktop) 36.dp else 44.dp),
+		shape = RoundedCornerShape(if (desktop) 6.dp else 8.dp),
 		colors = ButtonDefaults.buttonColors(containerColor = LocalVniDropColors.current.brandButton, contentColor = Color.White),
 	) {
 		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -29,24 +32,32 @@ fun PrimaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifi
 
 @Composable
 fun SecondaryButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-	OutlinedButton(onClick = onClick, enabled = enabled, modifier = modifier.heightIn(min = 44.dp), shape = RoundedCornerShape(8.dp)) {
+	val desktop = LocalUiPlatform.current.isDesktop
+	OutlinedButton(
+		onClick = onClick,
+		enabled = enabled,
+		modifier = modifier.heightIn(min = if (desktop) 36.dp else 44.dp),
+		shape = RoundedCornerShape(if (desktop) 6.dp else 8.dp),
+	) {
 		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
 	}
 }
 
 @Composable
 fun QuietButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
-	TextButton(onClick = onClick, enabled = enabled, modifier = modifier.heightIn(min = 40.dp)) {
+	val desktop = LocalUiPlatform.current.isDesktop
+	TextButton(onClick = onClick, enabled = enabled, modifier = modifier.heightIn(min = if (desktop) 32.dp else 40.dp)) {
 		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
 	}
 }
 
 @Composable
 fun DestructiveQuietButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+	val desktop = LocalUiPlatform.current.isDesktop
 	TextButton(
 		onClick = onClick,
 		enabled = enabled,
-		modifier = modifier.heightIn(min = 40.dp),
+		modifier = modifier.heightIn(min = if (desktop) 32.dp else 40.dp),
 		colors = ButtonDefaults.textButtonColors(contentColor = LocalVniDropColors.current.destructiveDefault),
 	) {
 		Text(text, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -55,11 +66,12 @@ fun DestructiveQuietButton(text: String, onClick: () -> Unit, modifier: Modifier
 
 @Composable
 fun DestructiveButton(text: String, onClick: () -> Unit, modifier: Modifier = Modifier, enabled: Boolean = true) {
+	val desktop = LocalUiPlatform.current.isDesktop
 	Button(
 		onClick = onClick,
 		enabled = enabled,
-		modifier = modifier.heightIn(min = 44.dp),
-		shape = RoundedCornerShape(8.dp),
+		modifier = modifier.heightIn(min = if (desktop) 36.dp else 44.dp),
+		shape = RoundedCornerShape(if (desktop) 6.dp else 8.dp),
 		colors = ButtonDefaults.buttonColors(
 			containerColor = LocalVniDropColors.current.destructiveDefault,
 			contentColor = Color.White,

@@ -19,20 +19,18 @@ Read [`CORE_FLOW.md`](CORE_FLOW.md) before changing send/receive/export/cancel.
 Always prefer workspace commands so lockfile/fmt stay consistent:
 
 ```bash
-cargo fmt --all
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test -p vnidrop
-cargo test --workspace --all-targets
+make format
+make test-rust
+make check-rust
 ```
 
 Focused integration suites:
 
 ```bash
-cargo test -p vnidrop --test transfer
-cargo test -p vnidrop --test approval
-cargo test -p vnidrop --test lifecycle
-cargo test -p vnidrop --test output_sink
+make test-rust-transfer
+make test-rust-approval
+make test-rust-lifecycle
+make test-rust-output-sink
 ```
 
 Docs (CI uses `-D warnings`):
@@ -41,7 +39,7 @@ Docs (CI uses `-D warnings`):
 RUSTDOCFLAGS='-D warnings' cargo doc -p vnidrop --no-deps
 ```
 
-Run `cargo fmt --all` after finishing Rust edits without asking.
+Run `make format` after finishing Rust edits without asking.
 
 ---
 
@@ -116,13 +114,11 @@ Details: [`tests/README.md`](tests/README.md).
 ## PR / verify checklist for this crate
 
 ```bash
-cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test -p vnidrop
+make check-rust
 ```
 
 If you touched cancel, export, or sinks, also:
 
 ```bash
-cargo test -p vnidrop --test output_sink
+make test-rust-output-sink
 ```

@@ -16,6 +16,7 @@ import com.vnidrop.app.ui.feedback.UiMessage
 import com.vnidrop.app.ui.feedback.UiMessageController
 import com.vnidrop.app.ui.feedback.UiMessageTone
 import com.vnidrop.app.ui.feedback.UiText
+import com.vnidrop.app.ui.feedback.canRetryWithoutChangingInput
 import com.vnidrop.app.ui.feedback.isUserCancellation
 import com.vnidrop.app.ui.feedback.toUiText
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -161,14 +162,10 @@ class ReceiveViewModel(
 				it.copy(isReceiving = true, lastReceiveError = null, activeReceiveTransferId = null)
 			}
 			val outputSink = fileSystemService.createReceiveOutputSink(folder)
-			val result = when {
-				outputSink != null -> repository.receiveWithOutputSink(current.ticket, outputSink, current.receiverName)
-				folder.kind == ReceiveFolderKind.IosSecurityScopedUrl -> repository.receiveIntoSecurityScopedDirectory(
-					current.ticket,
-					folder.value,
-					current.receiverName,
-				)
-				else -> repository.receive(current.ticket, folder.value, current.receiverName)
+			val result = if (outputSink != null) {
+				repository.receiveWithOutputSinkV2(current.ticket, outputSink, current.receiverName)
+			} else {
+				repository.receive(current.ticket, folder.value, current.receiverName)
 			}
 			result.fold(
 				onSuccess = {
@@ -210,8 +207,12 @@ class ReceiveViewModel(
 						UiMessage(
 							text = uiText,
 							tone = UiMessageTone.Error,
-							actionLabel = UiText.Resource(Res.string.button_retry),
-							onAction = { receive() },
+							actionLabel = if (error.canRetryWithoutChangingInput()) {
+								UiText.Resource(Res.string.button_retry)
+							} else {
+								null
+							},
+							onAction = if (error.canRetryWithoutChangingInput()) ({ receive() }) else null,
 						),
 					)
 				},

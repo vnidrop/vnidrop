@@ -17,6 +17,7 @@ import kotlin.random.Random
 import uniffi.vnidrop.CoreEvent
 import uniffi.vnidrop.CoreEventSink
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiveOutputSinkV2
 import uniffi.vnidrop.RelayMode
 import uniffi.vnidrop.defaultCoreLimits
 import uniffi.vnidrop.ReceiverRequest
@@ -51,7 +52,7 @@ class CoreRepository(
 			val transferId = model.transferId
 			if (transferId != null) {
 				when (model.phase) {
-					"approval" -> _signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
+					"approval", "access" -> _signals.tryEmit(CoreSignal.ApprovalChanged(transferId))
 					"delivery" -> _signals.tryEmit(CoreSignal.ReceiverHistoryChanged(transferId))
 				}
 				if (model.shouldRefreshTransfers()) {
@@ -115,27 +116,6 @@ class CoreRepository(
 			accessPolicy = accessPolicy,
 		)
 
-	override suspend fun shareSecurityScopedFileUrl(
-		fileUrl: String,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	): Result<Share> =
-		shareSources(
-			sources = listOf(
-				ShareSource(
-					kind = SourceKind.IOS_SECURITY_SCOPED_URL,
-					value = fileUrl,
-					displayName = displayName.ifBlank { fileUrl.substringAfterLast('/').ifBlank { "transfer" } },
-					isDirectory = false,
-				),
-			),
-			transferName = transferName,
-			senderName = senderName,
-			accessPolicy = accessPolicy,
-		)
-
 	override suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel> = runCore {
 		requireCore().inspectTicket(ticket).toModel().also { inspection ->
 			_state.update { it.copy(lastInspection = inspection) }
@@ -156,15 +136,35 @@ class CoreRepository(
 		refreshSnapshot()
 	}
 
-	override suspend fun receiveIntoSecurityScopedDirectory(
+	override suspend fun receiveWithOutputSinkV2(
 		ticket: String,
-		outputDirectoryUrl: String,
+		outputSink: ReceiveOutputSinkV2,
 		receiverName: String,
 	): Result<Unit> = runCore {
-		withPlatformPathAccess(SourceKind.IOS_SECURITY_SCOPED_URL, outputDirectoryUrl) {
-			requireCore().receive(ticket, outputDirectoryUrl, receiverName.ifBlank { null })
-		}
+		requireCore().receiveWithOutputSinkV2(ticket, outputSink, receiverName.ifBlank { null })
 		refreshSnapshot()
+	}
+
+	override suspend fun storageUsage(): Result<CoreStorageUsageModel> = runCore {
+		val usage = requireCore().storageUsage()
+		CoreStorageUsageModel(
+			blobStoreBytes = usage.blobStoreBytes,
+			databaseBytes = usage.databaseBytes,
+			logsBytes = usage.logsBytes,
+			previewsBytes = usage.previewsBytes,
+			otherCoreBytes = usage.otherCoreBytes,
+		)
+	}
+
+	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = runCore {
+		requireCore().listReceivedArtifacts().map { artifact ->
+			ReceivedArtifactModel(
+				id = artifact.id,
+				locator = artifact.locator,
+				locatorKind = artifact.locatorKind,
+				logicalSize = artifact.logicalSize,
+			)
+		}
 	}
 
 	override suspend fun cancel(transferId: ULong): Result<Unit> = runCore {

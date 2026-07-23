@@ -5,8 +5,58 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use support::{
-    receive_with_sink_response, share_path, wait_for_receiver_request, MemoryOutputSink, TestNode,
+    receive_with_sink_response, receive_with_sink_v2_response, share_path,
+    wait_for_receiver_request, MemoryOutputSink, TestNode,
 };
+use vnidrop::{PublishedOutput, ReceiveOutputSinkV2, VnidropError};
+
+struct ExistingDestinationSink;
+
+impl ReceiveOutputSinkV2 for ExistingDestinationSink {
+    fn start_file(&self, relative_path: String) -> Result<(), VnidropError> {
+        Err(VnidropError::DestinationExists {
+            reason: format!("destination already exists: {relative_path}"),
+        })
+    }
+
+    fn write_chunk(&self, _relative_path: String, _bytes: Vec<u8>) -> Result<(), VnidropError> {
+        unreachable!("a rejected file must not be written")
+    }
+
+    fn finish_file(&self, _relative_path: String) -> Result<PublishedOutput, VnidropError> {
+        unreachable!("a rejected file must not be finished")
+    }
+
+    fn abort_file(&self, _relative_path: String, _reason: String) -> Result<(), VnidropError> {
+        unreachable!("start_file failure must not be aborted")
+    }
+}
+
+#[test]
+fn versioned_sink_records_published_locator() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("tracked.txt");
+    std::fs::write(&source_path, b"tracked").unwrap();
+    let sender = TestNode::new();
+    let receiver = TestNode::new();
+    let share = share_path(&sender.core, &source_path, 38, "tracked.txt", false);
+    let output_sink = Arc::new(MemoryOutputSink::default());
+
+    receive_with_sink_v2_response(
+        &sender.core,
+        share.transfer_id,
+        receiver.core.arc(),
+        share.ticket,
+        output_sink,
+        true,
+    )
+    .unwrap();
+
+    let artifacts = receiver.core.list_received_artifacts().unwrap();
+    assert_eq!(artifacts.len(), 1);
+    assert_eq!(artifacts[0].locator, "content://test/tracked.txt");
+    assert_eq!(artifacts[0].logical_size, 7);
+}
 
 #[test]
 fn exports_nested_files_to_output_sink() {
@@ -62,8 +112,43 @@ fn reports_output_sink_write_failure() {
     )
     .unwrap_err();
 
-    assert!(error.contains("sink write failed"));
+    assert!(matches!(
+        error,
+        VnidropError::Filesystem { ref reason } if reason.contains("sink write failed")
+    ));
     assert_eq!(output_sink.terminal_state("hello.txt"), Some("aborted"));
+}
+
+#[test]
+fn preserves_typed_output_sink_failure() {
+    let source_dir = tempfile::tempdir().unwrap();
+    let source_path = source_dir.path().join("existing.txt");
+    std::fs::write(&source_path, b"new content").unwrap();
+    let sender = TestNode::new();
+    let receiver = TestNode::new();
+    let share = share_path(&sender.core, &source_path, 39, "existing.txt", false);
+
+    let error = receive_with_sink_v2_response(
+        &sender.core,
+        share.transfer_id,
+        receiver.core.arc(),
+        share.ticket,
+        Arc::new(ExistingDestinationSink),
+        true,
+    )
+    .unwrap_err();
+
+    assert!(matches!(error, VnidropError::DestinationExists { .. }));
+    assert!(receiver
+        .core
+        .list_events(Some(39))
+        .unwrap()
+        .iter()
+        .any(|event| {
+            event.phase == "error"
+                && event.kind == "failed"
+                && event.data_json.contains("\"code\":\"destination_exists\"")
+        }));
 }
 
 #[test]

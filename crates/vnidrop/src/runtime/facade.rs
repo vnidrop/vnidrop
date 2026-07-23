@@ -6,9 +6,10 @@ use serde_json::json;
 use super::CoreInner;
 use crate::{
     api::{
-        CoreEvent, CoreEventSink, CoreLimits, ReceiveOutputSink, ReceiverRequest, RelayMode,
-        RuntimeStatus, ShareMetadataInput, ShareResult, ShareSource, StoredTransfer,
-        TicketInspection, TransferAccessMode,
+        CoreEvent, CoreEventSink, CoreLimits, CoreStorageUsage, ReceiveOutputSink,
+        ReceiveOutputSinkV2, ReceivedArtifact, ReceiverRequest, RelayMode, RuntimeStatus,
+        ShareMetadataInput, ShareResult, ShareSource, StoredTransfer, TicketInspection,
+        TransferAccessMode,
     },
     error::VnidropError,
     filesystem::platform_path,
@@ -145,6 +146,24 @@ impl VnidropCore {
         .map_err(VnidropError::transfer)
     }
 
+    pub fn receive_with_output_sink_v2(
+        &self,
+        ticket: String,
+        output_sink: Arc<dyn ReceiveOutputSinkV2>,
+        receiver_name: Option<String>,
+    ) -> Result<(), VnidropError> {
+        if let Err(error) = parse_transfer_ticket_with_limits(&ticket, &self.inner.limits)
+            .context("failed to parse transfer ticket")
+        {
+            return Err(VnidropError::ticket(error));
+        }
+        self.block_on(
+            self.inner
+                .receive_with_output_sink_v2(ticket, output_sink, receiver_name),
+        )
+        .map_err(VnidropError::transfer)
+    }
+
     pub fn cancel_transfer(&self, transfer_id: u64) -> Result<(), VnidropError> {
         // Fire the oneshot on this thread before entering the runtime so a
         // blocked export write cannot prevent the cancel signal from being
@@ -231,6 +250,16 @@ impl VnidropCore {
     pub fn list_transfers(&self) -> Result<Vec<StoredTransfer>, VnidropError> {
         self.block_on(self.inner.repository.list_transfers())
             .map_err(VnidropError::repository)
+    }
+
+    pub fn list_received_artifacts(&self) -> Result<Vec<ReceivedArtifact>, VnidropError> {
+        self.block_on(self.inner.repository.list_received_artifacts())
+            .map_err(VnidropError::repository)
+    }
+
+    pub fn storage_usage(&self) -> Result<CoreStorageUsage, VnidropError> {
+        self.block_on(self.inner.storage_usage())
+            .map_err(VnidropError::filesystem)
     }
 
     pub fn list_events(&self, transfer_id: Option<u64>) -> Result<Vec<CoreEvent>, VnidropError> {

@@ -69,7 +69,11 @@ impl AtomicOutputFile {
         }
         cleanup_stale_temporary_files(parent, STALE_PART_AGE)?;
         if std::fs::symlink_metadata(&target).is_ok() {
-            anyhow::bail!("destination already exists: {}", target.display());
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                format!("destination already exists: {}", target.display()),
+            )
+            .into());
         }
 
         let final_name = target
@@ -108,6 +112,10 @@ impl AtomicOutputFile {
             .with_context(|| format!("failed to commit {}", self.target.display()))?;
         self.committed = true;
         Ok(())
+    }
+
+    pub(crate) fn target(&self) -> &Path {
+        &self.target
     }
 }
 

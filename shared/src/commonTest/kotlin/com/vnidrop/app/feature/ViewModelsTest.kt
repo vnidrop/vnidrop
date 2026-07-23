@@ -3,9 +3,12 @@ package com.vnidrop.app.feature
 import com.vnidrop.app.DeviceInfo
 import com.vnidrop.app.PlatformEnvironment
 import com.vnidrop.app.core.CoreState
+import com.vnidrop.app.core.CoreSignal
 import com.vnidrop.app.core.PickedShareFile
 import com.vnidrop.app.core.ReceiveFolder
 import com.vnidrop.app.core.ReceiveFolderKind
+import com.vnidrop.app.core.ReceiverDeliveryStatus
+import com.vnidrop.app.core.ReceiverRequestModel
 import com.vnidrop.app.core.Share
 import com.vnidrop.app.core.ShareAccessPolicy
 import com.vnidrop.app.core.Transfer
@@ -55,9 +58,11 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
+import uniffi.vnidrop.VnidropException
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.button_show_in_files
 import vnidrop.shared.generated.resources.error_permission
+import vnidrop.shared.generated.resources.error_destination_exists
 import vnidrop.shared.generated.resources.receive_open_files_failed
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -325,7 +330,7 @@ class ViewModelsTest {
 	fun settingsUsesDefaultReceiveFolderWhenPlatformDoesNotSupportCustomFolders() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val appDocuments = ReceiveFolder(ReceiveFolderKind.FileSystemPath, "/app/Documents", "Documents")
-		val externalFolder = ReceiveFolder(ReceiveFolderKind.IosSecurityScopedUrl, "file:///external", "External")
+		val externalFolder = ReceiveFolder(ReceiveFolderKind.AndroidTreeUri, "content://external", "External")
 		val preferences = preferences().apply {
 			mutablePreferences.value = mutablePreferences.value.copy(receiveFolder = externalFolder)
 		}
@@ -355,6 +360,38 @@ class ViewModelsTest {
 		advanceUntilIdle()
 		assertEquals(null, viewModel.state.value.selectedFile)
 		assertEquals(listOf(selected), fileSystem.discardedPickedFiles)
+	}
+
+	@Test
+	fun sendViewModelTracksReceiverCompletionForCatalogProgress() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val accepted = ReceiverRequestModel(
+			id = "request-7",
+			transferId = 7UL,
+			remoteEndpointId = "peer-a",
+			transferName = "Photo",
+			receiverName = "Receiver",
+			receiverDeviceName = null,
+			appVersion = "1.0",
+			status = ReceiverDeliveryStatus.Accepted,
+			reason = null,
+			requestedAt = 1L,
+			respondedAt = 2L,
+			completedAt = null,
+		)
+		val core = FakeCoreGateway().apply {
+			mutableState.value = CoreState(isInitialized = true, transfers = listOf(sentTransfer(7UL)))
+			requests[7UL] = listOf(accepted)
+		}
+		val viewModel = SendViewModel(core, FakeFileSystemService(folder), preferences(), FakeFilePreviewRepository(), UiMessageController())
+		advanceUntilIdle()
+		assertEquals(ReceiverDeliveryStatus.Accepted, viewModel.state.value.receiversByTransfer.getValue(7UL).single().status)
+
+		core.requests[7UL] = listOf(accepted.copy(status = ReceiverDeliveryStatus.Completed, completedAt = 3L))
+		core.mutableSignals.emit(CoreSignal.ReceiverHistoryChanged(7UL))
+		advanceUntilIdle()
+
+		assertEquals(ReceiverDeliveryStatus.Completed, viewModel.state.value.receiversByTransfer.getValue(7UL).single().status)
 	}
 
 	@Test
@@ -669,6 +706,29 @@ class ViewModelsTest {
 	}
 
 	@Test
+	fun receiveViewModelDoesNotOfferBlindRetryForDestinationCollision() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway().apply {
+			mutableState.value = mutableState.value.copy(isInitialized = true)
+			inspectionResult = Result.success(sampleTicketInspection())
+			receiveResult = Result.failure(VnidropException.DestinationExists("target exists"))
+		}
+		val messages = UiMessageController()
+		val viewModel = ReceiveViewModel(core, FakeFileSystemService(folder), preferences(), messages)
+		advanceUntilIdle()
+		viewModel.onInvitationResult(com.vnidrop.app.feature.receive.ReceiveMethod.QrCode, Result.success("ticket"))
+		advanceUntilIdle()
+
+		viewModel.receive()
+		advanceUntilIdle()
+		val message = messages.messages.first()
+
+		assertEquals(UiText.Resource(Res.string.error_destination_exists), message.text)
+		assertEquals(null, message.actionLabel)
+		assertEquals(null, message.onAction)
+	}
+
+	@Test
 	fun receiveViewModelCancelUsesActiveTransferId() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val core = FakeCoreGateway().apply {
@@ -774,6 +834,7 @@ class ViewModelsTest {
 		environment(),
 		{ DeviceInfo("Device", "Model", "OS", "Wi-Fi", "80%") },
 		fileSystem,
+		FakeCoreGateway(),
 		preferences,
 		notifications,
 		UiMessageController(),
@@ -799,6 +860,22 @@ class ViewModelsTest {
 		fileCount = 1UL,
 		totalSize = 42UL,
 		ticket = null,
+		accessPolicy = ShareAccessPolicy.RequireApproval,
+		createdAt = 1L,
+		updatedAt = 1L,
+	)
+
+	private fun sentTransfer(id: ULong) = Transfer(
+		localId = "send-$id",
+		transferId = id,
+		direction = TransferDirection.Send,
+		status = TransferStatus.Sharing,
+		peerId = null,
+		transferName = "Sent $id",
+		contentHash = "hash-$id",
+		fileCount = 1UL,
+		totalSize = 42UL,
+		ticket = "ticket-$id",
 		accessPolicy = ShareAccessPolicy.RequireApproval,
 		createdAt = 1L,
 		updatedAt = 1L,

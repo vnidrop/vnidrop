@@ -3,9 +3,11 @@ package com.vnidrop.app.ui.feedback
 import uniffi.vnidrop.VnidropException
 import vnidrop.shared.generated.resources.Res
 import vnidrop.shared.generated.resources.error_device_info
+import vnidrop.shared.generated.resources.error_destination_exists
 import vnidrop.shared.generated.resources.error_filesystem
 import vnidrop.shared.generated.resources.error_generic
 import vnidrop.shared.generated.resources.error_initialization
+import vnidrop.shared.generated.resources.error_invalid_input
 import vnidrop.shared.generated.resources.error_invalid_ticket
 import vnidrop.shared.generated.resources.error_invitation_empty
 import vnidrop.shared.generated.resources.error_missing_native_library
@@ -17,8 +19,10 @@ import vnidrop.shared.generated.resources.error_selection_failed
 import vnidrop.shared.generated.resources.error_socket_bind
 import vnidrop.shared.generated.resources.error_camera
 import vnidrop.shared.generated.resources.error_nfc
+import vnidrop.shared.generated.resources.error_network
 import vnidrop.shared.generated.resources.error_share_empty
 import vnidrop.shared.generated.resources.error_starting_up
+import vnidrop.shared.generated.resources.error_storage_full
 import vnidrop.shared.generated.resources.error_transfer
 
 /**
@@ -31,8 +35,14 @@ fun Throwable.toUiText(): UiText =
 		is VnidropException.Ticket -> UiText.Resource(Res.string.error_invalid_ticket)
 		is VnidropException.Permission -> UiText.Resource(Res.string.error_permission)
 		is VnidropException.Filesystem -> UiText.Resource(Res.string.error_filesystem)
+		is VnidropException.FilesystemPermission -> UiText.Resource(Res.string.error_filesystem)
+		is VnidropException.DestinationExists -> UiText.Resource(Res.string.error_destination_exists)
+		is VnidropException.StorageFull -> UiText.Resource(Res.string.error_storage_full)
+		is VnidropException.Network -> networkUiText(reason)
 		is VnidropException.Transfer -> transferUiText(reason)
 		is VnidropException.Repository -> UiText.Resource(Res.string.error_repository)
+		is VnidropException.Cancelled -> UiText.Resource(Res.string.error_generic)
+		is VnidropException.InvalidInput -> UiText.Resource(Res.string.error_invalid_input)
 		is VnidropException.Initialization -> initializationUiText(reason)
 		is VnidropException.Configuration -> UiText.Resource(Res.string.error_relay_configuration)
 		is VnidropException.Internal -> reasonHints(reason) ?: UiText.Resource(Res.string.error_generic)
@@ -41,6 +51,7 @@ fun Throwable.toUiText(): UiText =
 
 /** User intentionally backed out of a flow — do not treat as a failure snackbar. */
 fun Throwable.isUserCancellation(): Boolean {
+	if (this is VnidropException.Cancelled) return true
 	val haystack = technicalDetail().lowercase()
 	if (haystack.isBlank()) return false
 	return haystack.contains("cancelled") ||
@@ -49,19 +60,40 @@ fun Throwable.isUserCancellation(): Boolean {
 		haystack.contains("user canceled")
 }
 
+fun Throwable.canRetryWithoutChangingInput(): Boolean =
+	this !is VnidropException.FilesystemPermission &&
+		this !is VnidropException.DestinationExists &&
+		this !is VnidropException.InvalidInput
+
 /** Prefer [VnidropException.reason] when present; else [Throwable.message]. */
 fun Throwable.technicalDetail(): String =
 	when (this) {
 		is VnidropException.Initialization -> reason
 		is VnidropException.Ticket -> reason
 		is VnidropException.Filesystem -> reason
+		is VnidropException.FilesystemPermission -> reason
+		is VnidropException.DestinationExists -> reason
+		is VnidropException.StorageFull -> reason
+		is VnidropException.Network -> reason
 		is VnidropException.Transfer -> reason
 		is VnidropException.Permission -> reason
 		is VnidropException.Repository -> reason
+		is VnidropException.Cancelled -> reason
+		is VnidropException.InvalidInput -> reason
 		is VnidropException.Configuration -> reason
 		is VnidropException.Internal -> reason
 		else -> message.orEmpty()
 	}
+
+/**
+ * A connect failure is classified as a Network error, but with relays disabled
+ * its reason carries the mode-aware hint from the core.
+ */
+private fun networkUiText(reason: String): UiText = when {
+	reason.lowercase().contains("relays disabled") ->
+		UiText.Resource(Res.string.error_relay_direct_failed)
+	else -> UiText.Resource(Res.string.error_network)
+}
 
 private fun transferUiText(reason: String): UiText {
 	val detail = reason.lowercase()

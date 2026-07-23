@@ -148,6 +148,25 @@ final class CoreRepository: ObservableObject, CoreGateway {
 		}
 	}
 
+	func storageUsage() async -> Result<CoreStorageUsageModel, Error> {
+		await runCore {
+			let usage = try self.requireCore().storageUsage()
+			return CoreStorageUsageModel(
+				blobStoreBytes: usage.blobStoreBytes,
+				appDataBytes: usage.databaseBytes + usage.logsBytes + usage.previewsBytes + usage.otherCoreBytes
+			)
+		}
+	}
+
+	func receivedArtifacts() async -> Result<[ReceivedArtifactModel], Error> {
+		await runCore {
+			try self.requireCore().listReceivedArtifacts().compactMap { artifact in
+				guard artifact.locatorKind == .filesystemPath else { return nil }
+				return ReceivedArtifactModel(locator: artifact.locator, logicalSize: artifact.logicalSize)
+			}
+		}
+	}
+
 	func receiverRequests(transferId: UInt64) async -> Result<[ReceiverRequestModel], Error> {
 		await runCore {
 			try self.requireCore().listReceiverRequests(transferId: transferId).map { $0.toModel() }
@@ -183,7 +202,7 @@ final class CoreRepository: ObservableObject, CoreGateway {
 
 		guard let transferId = model.transferId else { return }
 		switch model.phase {
-		case "approval": signalsSubject.send(.approvalChanged(transferId: transferId))
+		case "approval", "access": signalsSubject.send(.approvalChanged(transferId: transferId))
 		case "delivery": signalsSubject.send(.receiverHistoryChanged(transferId: transferId))
 		default: break
 		}

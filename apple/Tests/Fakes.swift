@@ -64,6 +64,10 @@ final class FakeCoreGateway: CoreGateway {
 	func cancel(transferId: UInt64) async -> Result<Void, Error> { cancelledTransfers.append(transferId); return cancelResult }
 	func delete(transferId: UInt64) async -> Result<Void, Error> { deletedTransfers.append(transferId); return deleteResult }
 	func clearReceiveHistory() async -> Result<UInt64, Error> { clearReceiveHistoryCount += 1; return clearReceiveHistoryResult }
+	func storageUsage() async -> Result<CoreStorageUsageModel, Error> {
+		.success(CoreStorageUsageModel(blobStoreBytes: 0, appDataBytes: 0))
+	}
+	func receivedArtifacts() async -> Result<[ReceivedArtifactModel], Error> { .success([]) }
 	func receiverRequests(transferId: UInt64) async -> Result<[ReceiverRequestModel], Error> { .success(requests[transferId] ?? []) }
 	func respondReceiverRequest(requestId: String, accepted: Bool, reason: String?) async -> Result<Void, Error> {
 		responses.append((requestId, accepted, reason))

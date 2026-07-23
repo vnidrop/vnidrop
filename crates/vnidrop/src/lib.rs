@@ -15,9 +15,10 @@ mod util;
 
 pub use api::{
     default_core_limits, default_relay_mode, validate_relay_mode, CoreEvent, CoreEventSink,
-    CoreLimits, ReceiveOutputSink, ReceiverRequest, RelayMode, RuntimeStatus, ShareMetadataInput,
-    ShareResult, ShareSource, SourceKind, StoredTransfer, TicketInspection, TransferAccessMode,
-    TransferMetadata,
+    CoreLimits, CoreStorageUsage, PublishedOutput, ReceiveOutputSink, ReceiveOutputSinkV2,
+    ReceivedArtifact, ReceivedLocatorKind, ReceiverRequest, RelayMode, RuntimeStatus,
+    ShareMetadataInput, ShareResult, ShareSource, SourceKind, StoredTransfer, TicketInspection,
+    TransferAccessMode, TransferMetadata,
 };
 pub use error::VnidropError;
 pub use runtime::VnidropCore;

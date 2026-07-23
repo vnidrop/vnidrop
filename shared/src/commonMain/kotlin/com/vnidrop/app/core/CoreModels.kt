@@ -3,6 +3,7 @@ package com.vnidrop.app.core
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import uniffi.vnidrop.ReceiveOutputSink
+import uniffi.vnidrop.ReceiveOutputSinkV2
 import uniffi.vnidrop.RelayMode
 
 data class CoreStatus(
@@ -114,6 +115,23 @@ data class CoreState(
 	val lastInspection: TicketInspectionModel? = null,
 )
 
+data class CoreStorageUsageModel(
+	val blobStoreBytes: ULong,
+	val databaseBytes: ULong,
+	val logsBytes: ULong,
+	val previewsBytes: ULong,
+	val otherCoreBytes: ULong,
+) {
+	val appDataBytes: ULong get() = databaseBytes + logsBytes + previewsBytes + otherCoreBytes
+}
+
+data class ReceivedArtifactModel(
+	val id: String,
+	val locator: String,
+	val locatorKind: uniffi.vnidrop.ReceivedLocatorKind,
+	val logicalSize: ULong,
+)
+
 sealed interface CoreSignal {
 	data class ApprovalChanged(val transferId: ULong) : CoreSignal
 	data class ReceiverHistoryChanged(val transferId: ULong) : CoreSignal
@@ -139,13 +157,6 @@ interface CoreGateway {
 		senderName: String,
 		accessPolicy: ShareAccessPolicy,
 	): Result<Share>
-	suspend fun shareSecurityScopedFileUrl(
-		fileUrl: String,
-		displayName: String,
-		transferName: String,
-		senderName: String,
-		accessPolicy: ShareAccessPolicy,
-	): Result<Share>
 	/** Multi-source share used by multi-file pickers. */
 	suspend fun shareSources(
 		sources: List<uniffi.vnidrop.ShareSource>,
@@ -156,7 +167,9 @@ interface CoreGateway {
 	suspend fun inspectTicket(ticket: String): Result<TicketInspectionModel>
 	suspend fun receive(ticket: String, outputDir: String, receiverName: String): Result<Unit>
 	suspend fun receiveWithOutputSink(ticket: String, outputSink: ReceiveOutputSink, receiverName: String): Result<Unit>
-	suspend fun receiveIntoSecurityScopedDirectory(ticket: String, outputDirectoryUrl: String, receiverName: String): Result<Unit>
+	suspend fun receiveWithOutputSinkV2(ticket: String, outputSink: ReceiveOutputSinkV2, receiverName: String): Result<Unit>
+	suspend fun storageUsage(): Result<CoreStorageUsageModel>
+	suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>>
 	suspend fun cancel(transferId: ULong): Result<Unit>
 	suspend fun delete(transferId: ULong): Result<Unit>
 	suspend fun clearReceiveHistory(): Result<ULong>

@@ -25,6 +25,7 @@ fun rememberAndroidAppDependencies(activity: ComponentActivity, externalInvitati
 				appVersion = context.appVersion(),
 				defaultCoreDataDir = context.filesDir.resolve("vnidrop").absolutePath,
 				defaultUsername = Build.DEVICE.takeIf(String::isNotBlank) ?: "Receiver",
+				uiPlatform = UiPlatform.Android,
 			),
 			deviceInfoProvider = AndroidDeviceInfoProvider(context),
 			fileSystemService = fileSystemService,
