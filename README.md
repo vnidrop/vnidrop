@@ -50,6 +50,12 @@ mobile networks. If a direct path cannot be established, it can forward the
 same end-to-end encrypted connection through a relay. The relay forwards
 encrypted packets; it is not a VniDrop file store.
 
+Relays are configurable in Settings. **Default relays** use the public servers
+and always work across networks. **Custom relays** let self-hosters route through
+their own servers instead. **Local network only** disables relays entirely — a
+private, direct-only mode where transfers work between devices on the same
+network but not over the internet or mobile data.
+
 ## Why Iroh and `iroh-blobs`?
 
 VniDrop combines a networking layer with its own sharing rules:
@@ -88,6 +94,7 @@ people, especially when using **Anyone with this transfer**.
 - Per-receiver requests, approvals, progress, and delivery status
 - Cancel, stop sharing, and local transfer history
 - Safe receive destinations that do not silently overwrite existing files
+- Configurable relays: default, custom self-hosted, or local-network only
 - Android, iOS, and desktop apps built from a shared Compose Multiplatform UI
 - Opt-in diagnostics with transfer contents, invitations, and file paths
   excluded

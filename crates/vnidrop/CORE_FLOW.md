@@ -40,8 +40,8 @@ bytes through Kotlin memory.
 
 - Transfer statuses: `sharing`, `receiving`, `done`, `failed`, `cancelled`,
   `stopped`.
-- Main event phases: `endpoint`, `import`, `ticket`, `handshake`, `approval`,
-  `access`, `transfer`, `download`, `export`, `delivery`, `lifecycle`, `error`.
+- Main event phases: `import`, `ticket`, `handshake`, `approval`, `access`,
+  `transfer`, `download`, `export`, `delivery`, `lifecycle`, `network`, `error`.
 - Events are sent to `CoreEventSink` immediately and persisted through the event
   hub. `list_events` flushes queued persistence before reading SQLite.
 - `shutdown()` is idempotent and flushes events before stopping the router.
@@ -100,3 +100,37 @@ checked before downloading file content.
 Manual `approve_endpoint_for_transfer` only applies to active shares, requires a
 non-empty endpoint id, and creates a time-limited session (same TTL as handshake
 approval), never a permanent grant.
+
+## Relay Configuration
+
+`RelayMode` selects the Iroh relay transport, applied when the endpoint is built
+in `CoreInner::start` and therefore fixed for the life of the process. Callers
+choose it at init time through `initialize_with_options`; `initialize` and
+`initialize_with_limits` keep the default (n0 public relays).
+
+- `Default` — n0's public relay servers (unchanged historical behaviour).
+- `Custom { urls }` — user-supplied relay URLs. Each is validated eagerly
+  (`https`/`http` scheme, non-empty host); a malformed or empty list returns a
+  typed `Configuration` error before any durable or network work.
+- `Disabled` — no relays. Direct connections only.
+
+Relays carry payload bytes, not just connection setup: when hole punching fails,
+the encrypted transfer flows through the relay. Relays never see plaintext.
+`Disabled` therefore means **local-network only** in practice — without a relay
+map, Iroh runs no QUIC address-discovery probes, so the endpoint publishes only
+its local interface addresses and peers can reach it only on the same network.
+Endpoint discovery (DNS/pkarr) itself stays enabled in every mode.
+
+**Startup relay wait.** `Endpoint::online()` waits on the home-relay watcher,
+which stays empty when no relay is configured, so it never returns under
+`Disabled` — and hangs the same way under `Default`/`Custom` when no relay is
+reachable. `CoreInner::start` skips the wait entirely when disabled and bounds it
+with a timeout otherwise; a timeout is not a startup failure, since the endpoint
+still serves direct connections. The chosen mode and the wait outcome are emitted
+as a `network`/`relay-status` event.
+
+**Path reporting.** After connecting and again after the payload transfers, the
+core samples `Endpoint::remote_info` and emits `network`/`active-path` with
+`direct | relay | mixed`. A relayed connection can upgrade to a direct path
+mid-transfer, so both samples are reported. Peer IP addresses are never emitted —
+only the path kind and the relay URL.

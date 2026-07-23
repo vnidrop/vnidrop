@@ -49,6 +49,7 @@ downloaded and native components are compiled.
 | Path | Purpose |
 |------|---------|
 | `crates/vnidrop/` | Rust transfer core, persistence, approval, and streaming |
+| `crates/vni/` | `vnidrop` command-line client built on the core |
 | `shared/` | Shared Kotlin Multiplatform UI and platform bridges |
 | `androidApp/` | Android application shell |
 | `iosApp/` | iOS application shell |
