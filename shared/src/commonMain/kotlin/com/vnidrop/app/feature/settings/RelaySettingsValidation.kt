@@ -19,13 +19,13 @@ data class RelaySettingsValidation(
 
 fun validateRelaySettings(
 	mode: RelayMode,
-	urlsText: String,
+	relayUrls: List<String>,
 	retainedUrls: List<String> = emptyList(),
 ): RelaySettingsValidation {
 	if (!mode.usesCustomRelayUrls) {
 		return RelaySettingsValidation(RelaySettings(mode, retainedUrls))
 	}
-	val lines = urlsText.lineSequence()
+	val lines = relayUrls
 		.mapIndexedNotNull { index, raw -> raw.trim().takeIf(String::isNotEmpty)?.let { index + 1 to it } }
 		.toList()
 	if (lines.isEmpty()) return RelaySettingsValidation(error = RelaySettingsInputError.MissingUrl)
@@ -144,5 +144,5 @@ private fun isValidPortSuffix(suffix: String): Boolean {
 }
 
 private const val HttpsPrefix = "https://"
-private const val MaximumRelayUrls = 8
+internal const val MaximumRelayUrls = 8
 private const val MaximumRelayUrlLength = 2_048

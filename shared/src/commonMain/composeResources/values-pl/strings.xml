@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Zatrzymaj wszystkie aktywne transfery i udostępnienia przed zastosowaniem ustawień sieci.</string>
     <string name="relay_apply_failed">Nie udało się zastosować tych ustawień. Przywrócono poprzednie ustawienia sieci.</string>
     <string name="relay_apply_restart_description">Zastosowanie ustawień ponownie uruchamia połączenie sieciowe VniDrop. Najpierw zatrzymaj aktywne transfery i udostępnienia. Istniejące zaproszenia mogą wymagać ponownego udostępnienia.</string>
-    <string name="relay_custom_urls_help">Wprowadź po jednym adresie URL HTTPS przekaźnika w każdym wierszu. Dane logowania w adresach URL nie są obsługiwane. Certyfikat TLS musi być wystawiony przez publicznie zaufany urząd certyfikacji.</string>
+    <string name="relay_custom_urls_help">Dodaj każdy adres URL HTTPS serwera przekaźnikowego osobno. Dane logowania w adresach URL nie są obsługiwane. Certyfikat TLS musi być wystawiony przez publicznie zaufany urząd certyfikacji.</string>
     <string name="relay_custom_urls_label">Adresy URL przekaźników</string>
     <string name="relay_mode_automatic">Automatyczny (zalecany)</string>
     <string name="relay_mode_automatic_description">Używa domyślnej publicznej infrastruktury przekaźników VniDrop, gdy połączenie bezpośrednie jest niedostępne.</string>

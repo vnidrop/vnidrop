@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Detenga todas las transferencias y elementos compartidos activos antes de aplicar los ajustes de red.</string>
     <string name="relay_apply_failed">No se han podido aplicar estos ajustes. Se han restaurado los ajustes de red anteriores.</string>
     <string name="relay_apply_restart_description">Al aplicar los ajustes, se reinicia la conexión de red de VniDrop. Detenga primero las transferencias y los elementos compartidos activos. Es posible que tenga que volver a compartir las invitaciones existentes.</string>
-    <string name="relay_custom_urls_help">Introduzca una URL HTTPS de relé por línea. No se admiten credenciales en las URL. El certificado TLS debe ser emitido por una autoridad de certificación de confianza pública.</string>
+    <string name="relay_custom_urls_help">Añada cada URL HTTPS de relé por separado. No se admiten credenciales en las URL. El certificado TLS debe ser emitido por una autoridad de certificación de confianza pública.</string>
     <string name="relay_custom_urls_label">URL de relés</string>
     <string name="relay_mode_automatic">Automático (recomendado)</string>
     <string name="relay_mode_automatic_description">Usa la infraestructura pública de relés predeterminada de VniDrop cuando no haya una conexión directa disponible.</string>

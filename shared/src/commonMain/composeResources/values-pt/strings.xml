@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Pare todas as transferências e partilhas ativas antes de aplicar as definições de rede.</string>
     <string name="relay_apply_failed">Não foi possível aplicar estas definições. As definições de rede anteriores foram restauradas.</string>
     <string name="relay_apply_restart_description">A aplicação reinicia a ligação de rede do VniDrop. Pare primeiro as transferências e partilhas ativas. Poderá ser necessário voltar a partilhar os convites existentes.</string>
-    <string name="relay_custom_urls_help">Introduza um URL HTTPS de retransmissor por linha. Não são suportadas credenciais nos URLs. O certificado TLS tem de ser emitido por uma autoridade de certificação publicamente reconhecida.</string>
+    <string name="relay_custom_urls_help">Adicione cada URL HTTPS de retransmissor separadamente. Não são suportadas credenciais nos URLs. O certificado TLS tem de ser emitido por uma autoridade de certificação publicamente reconhecida.</string>
     <string name="relay_custom_urls_label">URLs dos retransmissores</string>
     <string name="relay_mode_automatic">Automático (recomendado)</string>
     <string name="relay_mode_automatic_description">Utiliza a infraestrutura pública de retransmissores predefinida do VniDrop quando não está disponível uma ligação direta.</string>

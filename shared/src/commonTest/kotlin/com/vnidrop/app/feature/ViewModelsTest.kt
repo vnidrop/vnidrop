@@ -28,6 +28,7 @@ import com.vnidrop.app.feature.receive.ReceiveViewModel
 import com.vnidrop.app.feature.send.SendViewModel
 import com.vnidrop.app.feature.settings.SettingsSection
 import com.vnidrop.app.feature.settings.RelaySettingsApplyError
+import com.vnidrop.app.feature.settings.RelaySettingsInputError
 import com.vnidrop.app.feature.settings.SettingsViewModel
 import com.vnidrop.app.notifications.NotificationPermission
 import com.vnidrop.app.preferences.AppPreferences
@@ -145,7 +146,9 @@ class ViewModelsTest {
 		advanceUntilIdle()
 
 		viewModel.setRelayMode(RelayMode.StrictCustom)
-		viewModel.setRelayUrlsText(" HTTPS://Relay.Example.com/ \nhttps://backup.example.com:443")
+		viewModel.setRelayUrl(0, " HTTPS://Relay.Example.com/ ")
+		viewModel.addRelayUrl()
+		viewModel.setRelayUrl(1, "https://backup.example.com:443")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
 
@@ -160,6 +163,37 @@ class ViewModelsTest {
 	}
 
 	@Test
+	fun settingsRejectsInvalidRelayUrlWithoutEnteringLoadingState() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val core = FakeCoreGateway()
+		val viewModel = settingsViewModel(repository = core)
+		advanceUntilIdle()
+
+		viewModel.setRelayMode(RelayMode.StrictCustom)
+		viewModel.setRelayUrl(0, "relay.example.com")
+		viewModel.applyRelaySettings()
+
+		assertFalse(viewModel.state.value.isApplyingRelaySettings)
+		assertEquals(RelaySettingsInputError.HttpsRequired(1), viewModel.state.value.relayInputError)
+		assertEquals(emptyList(), core.initializedRelaySettings)
+	}
+
+	@Test
+	fun settingsEditsCustomRelaysAsIndividualRows() = runTest {
+		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+		val viewModel = settingsViewModel()
+		advanceUntilIdle()
+
+		viewModel.setRelayMode(RelayMode.StrictCustom)
+		viewModel.setRelayUrl(0, "https://first.example.com")
+		viewModel.addRelayUrl()
+		viewModel.setRelayUrl(1, "https://second.example.com")
+		viewModel.removeRelayUrl(0)
+
+		assertEquals(listOf("https://second.example.com"), viewModel.state.value.relayUrls)
+	}
+
+	@Test
 	fun settingsAppliesCustomFallbackAndLocalOnlyWhileRetainingRelayDrafts() = runTest {
 		Dispatchers.setMain(StandardTestDispatcher(testScheduler))
 		val preferences = preferences()
@@ -168,7 +202,7 @@ class ViewModelsTest {
 		advanceUntilIdle()
 
 		viewModel.setRelayMode(RelayMode.CustomWithDirectFallback)
-		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.setRelayUrl(0, "https://relay.example.com")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
 		viewModel.setRelayMode(RelayMode.LocalOnly)
@@ -196,7 +230,7 @@ class ViewModelsTest {
 		advanceUntilIdle()
 
 		viewModel.setRelayMode(RelayMode.StrictCustom)
-		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.setRelayUrl(0, "https://relay.example.com")
 		viewModel.applyRelaySettings()
 		viewModel.applyRelaySettings()
 		assertTrue(viewModel.state.value.isApplyingRelaySettings)
@@ -216,7 +250,7 @@ class ViewModelsTest {
 		assertEquals("endpoint", viewModel.state.value.endpointId)
 
 		viewModel.setRelayMode(RelayMode.StrictCustom)
-		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.setRelayUrl(0, "https://relay.example.com")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
 
@@ -238,7 +272,7 @@ class ViewModelsTest {
 		advanceUntilIdle()
 
 		viewModel.setRelayMode(RelayMode.StrictCustom)
-		viewModel.setRelayUrlsText("https://relay.example.com")
+		viewModel.setRelayUrl(0, "https://relay.example.com")
 		viewModel.applyRelaySettings()
 		advanceUntilIdle()
 

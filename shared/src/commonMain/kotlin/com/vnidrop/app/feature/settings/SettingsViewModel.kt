@@ -89,7 +89,7 @@ data class SettingsState(
 	val themeMode: ThemeMode = ThemeMode.System,
 	val savedRelaySettings: RelaySettings = RelaySettings(),
 	val relayMode: RelayMode = RelayMode.Automatic,
-	val relayUrlsText: String = "",
+	val relayUrls: List<String> = emptyList(),
 	val relayInputError: RelaySettingsInputError? = null,
 	val relayApplyError: RelaySettingsApplyError? = null,
 	val isApplyingRelaySettings: Boolean = false,
@@ -114,7 +114,7 @@ data class SettingsState(
 ) {
 	val hasRelaySettingsChanges: Boolean
 		get() = relayMode != savedRelaySettings.mode ||
-			(relayMode.usesCustomRelayUrls && relayUrlsText != savedRelaySettings.relayUrls.joinToString("\n"))
+			(relayMode.usesCustomRelayUrls && relayUrls != savedRelaySettings.relayUrls)
 }
 
 sealed interface SettingsEffect {
@@ -162,10 +162,10 @@ class SettingsViewModel(
 						diagnosticsEnabled = preferences.diagnosticsEnabled,
 						savedRelaySettings = preferences.relaySettings,
 						relayMode = if (hasLocalRelayDraft) current.relayMode else preferences.relaySettings.mode,
-						relayUrlsText = if (hasLocalRelayDraft) {
-							current.relayUrlsText
+						relayUrls = if (hasLocalRelayDraft) {
+							current.relayUrls
 						} else {
-							preferences.relaySettings.relayUrls.joinToString("\n")
+							preferences.relaySettings.relayUrls
 						},
 					)
 				}
@@ -269,6 +269,7 @@ class SettingsViewModel(
 		_state.update {
 			it.copy(
 				relayMode = mode,
+				relayUrls = if (mode.usesCustomRelayUrls && it.relayUrls.isEmpty()) listOf("") else it.relayUrls,
 				relayInputError = null,
 				relayApplyError = null,
 			)
@@ -276,11 +277,39 @@ class SettingsViewModel(
 		hasLocalRelayDraft = _state.value.hasRelaySettingsChanges
 	}
 
-	fun setRelayUrlsText(value: String) {
+	fun setRelayUrl(index: Int, value: String) {
+		if (index !in _state.value.relayUrls.indices) return
 		hasLocalRelayDraft = true
 		_state.update {
 			it.copy(
-				relayUrlsText = value,
+				relayUrls = it.relayUrls.toMutableList().apply { this[index] = value },
+				relayInputError = null,
+				relayApplyError = null,
+			)
+		}
+		hasLocalRelayDraft = _state.value.hasRelaySettingsChanges
+	}
+
+	fun addRelayUrl() {
+		if (_state.value.relayUrls.size >= MaximumRelayUrls) return
+		hasLocalRelayDraft = true
+		_state.update {
+			it.copy(
+				relayUrls = it.relayUrls + "",
+				relayInputError = null,
+				relayApplyError = null,
+			)
+		}
+		hasLocalRelayDraft = _state.value.hasRelaySettingsChanges
+	}
+
+	fun removeRelayUrl(index: Int) {
+		if (index !in _state.value.relayUrls.indices) return
+		hasLocalRelayDraft = true
+		_state.update {
+			val remaining = it.relayUrls.toMutableList().apply { removeAt(index) }
+			it.copy(
+				relayUrls = remaining.ifEmpty { listOf("") },
 				relayInputError = null,
 				relayApplyError = null,
 			)
@@ -293,7 +322,7 @@ class SettingsViewModel(
 		if (snapshot.isApplyingRelaySettings || !snapshot.hasRelaySettingsChanges) return
 		val validation = validateRelaySettings(
 			mode = snapshot.relayMode,
-			urlsText = snapshot.relayUrlsText,
+			relayUrls = snapshot.relayUrls,
 			retainedUrls = snapshot.savedRelaySettings.relayUrls,
 		)
 		val desired = validation.settings
@@ -349,7 +378,7 @@ class SettingsViewModel(
 				it.copy(
 					savedRelaySettings = desired,
 					relayMode = desired.mode,
-					relayUrlsText = desired.relayUrls.joinToString("\n"),
+					relayUrls = desired.relayUrls,
 					isApplyingRelaySettings = false,
 					relayInputError = null,
 					relayApplyError = null,

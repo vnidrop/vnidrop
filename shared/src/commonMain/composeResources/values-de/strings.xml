@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Beenden Sie alle aktiven Übertragungen und Freigaben, bevor Sie die Netzwerkeinstellungen anwenden.</string>
     <string name="relay_apply_failed">Diese Einstellungen konnten nicht angewendet werden. Die vorherigen Netzwerkeinstellungen wurden wiederhergestellt.</string>
     <string name="relay_apply_restart_description">Beim Anwenden wird die Netzwerkverbindung von VniDrop neu gestartet. Beenden Sie zuerst aktive Übertragungen und Freigaben. Vorhandene Einladungen müssen eventuell erneut geteilt werden.</string>
-    <string name="relay_custom_urls_help">Geben Sie pro Zeile eine HTTPS-Relay-URL ein. Anmeldedaten in URLs werden nicht unterstützt. Das TLS-Zertifikat muss von einer öffentlich vertrauenswürdigen Zertifizierungsstelle ausgestellt sein.</string>
+    <string name="relay_custom_urls_help">Fügen Sie jede HTTPS-Relay-URL separat hinzu. Anmeldedaten in URLs werden nicht unterstützt. Das TLS-Zertifikat muss von einer öffentlich vertrauenswürdigen Zertifizierungsstelle ausgestellt sein.</string>
     <string name="relay_custom_urls_label">Relay-URLs</string>
     <string name="relay_mode_automatic">Automatisch (empfohlen)</string>
     <string name="relay_mode_automatic_description">Verwendet die öffentliche Standard-Relay-Infrastruktur von VniDrop, wenn keine direkte Verbindung möglich ist.</string>

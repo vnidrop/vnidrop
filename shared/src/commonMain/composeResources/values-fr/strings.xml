@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Arrêtez tous les transferts et partages actifs avant d’appliquer les réglages réseau.</string>
     <string name="relay_apply_failed">Impossible d’appliquer ces réglages. Les réglages réseau précédents ont été restaurés.</string>
     <string name="relay_apply_restart_description">L’application de ces réglages redémarre la connexion réseau de VniDrop. Arrêtez d’abord les transferts et partages actifs. Il peut être nécessaire de partager à nouveau les invitations existantes.</string>
-    <string name="relay_custom_urls_help">Saisissez une URL de relais HTTPS par ligne. Les identifiants dans les URL ne sont pas pris en charge. Le certificat TLS doit être émis par une autorité de certification reconnue publiquement.</string>
+    <string name="relay_custom_urls_help">Ajoutez chaque URL de relais HTTPS séparément. Les identifiants dans les URL ne sont pas pris en charge. Le certificat TLS doit être émis par une autorité de certification reconnue publiquement.</string>
     <string name="relay_custom_urls_label">URL des relais</string>
     <string name="relay_mode_automatic">Automatique (recommandé)</string>
     <string name="relay_mode_automatic_description">Utiliser l’infrastructure de relais publique par défaut de VniDrop lorsqu’une connexion directe est indisponible.</string>

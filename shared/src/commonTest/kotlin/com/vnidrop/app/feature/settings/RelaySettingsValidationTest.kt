@@ -10,7 +10,7 @@ class RelaySettingsValidationTest {
 	fun customFallbackUsesTheSameValidatedRelayList() {
 		val result = validateRelaySettings(
 			mode = RelayMode.CustomWithDirectFallback,
-			urlsText = "https://relay.example.com/",
+			relayUrls = listOf("https://relay.example.com/"),
 		)
 
 		assertEquals(
@@ -28,11 +28,11 @@ class RelaySettingsValidationTest {
 
 		assertEquals(
 			RelaySettings(RelayMode.Automatic, retained),
-			validateRelaySettings(RelayMode.Automatic, "invalid", retained).settings,
+			validateRelaySettings(RelayMode.Automatic, listOf("invalid"), retained).settings,
 		)
 		assertEquals(
 			RelaySettings(RelayMode.LocalOnly, retained),
-			validateRelaySettings(RelayMode.LocalOnly, "invalid", retained).settings,
+			validateRelaySettings(RelayMode.LocalOnly, listOf("invalid"), retained).settings,
 		)
 	}
 
@@ -40,7 +40,7 @@ class RelaySettingsValidationTest {
 	fun customRelayUrlsAreNormalized() {
 		val result = validateRelaySettings(
 			mode = RelayMode.StrictCustom,
-			urlsText = " HTTPS://Relay.Example.com/ \nhttps://[2001:DB8::1]:443",
+			relayUrls = listOf(" HTTPS://Relay.Example.com/ ", "https://[2001:DB8::1]:443"),
 		)
 
 		assertEquals(
@@ -57,11 +57,11 @@ class RelaySettingsValidationTest {
 	fun customRelayUrlsRequireHttpsAndRootPath() {
 		assertEquals(
 			RelaySettingsInputError.HttpsRequired(1),
-			validateRelaySettings(RelayMode.StrictCustom, "http://relay.example.com").error,
+			validateRelaySettings(RelayMode.StrictCustom, listOf("http://relay.example.com")).error,
 		)
 		assertEquals(
 			RelaySettingsInputError.InvalidUrl(1),
-			validateRelaySettings(RelayMode.StrictCustom, "https://relay.example.com/custom").error,
+			validateRelaySettings(RelayMode.StrictCustom, listOf("https://relay.example.com/custom")).error,
 		)
 	}
 
@@ -69,7 +69,7 @@ class RelaySettingsValidationTest {
 	fun duplicateNormalizedRelayUrlsAreRejected() {
 		val result = validateRelaySettings(
 			RelayMode.StrictCustom,
-			"https://relay.example.com\nHTTPS://RELAY.EXAMPLE.COM:443/",
+			listOf("https://relay.example.com", "HTTPS://RELAY.EXAMPLE.COM:443/"),
 		)
 
 		assertEquals(RelaySettingsInputError.DuplicateUrl(2), result.error)
@@ -79,7 +79,7 @@ class RelaySettingsValidationTest {
 	fun structurallyValidIpv6RelayUrlsAreAccepted() {
 		val result = validateRelaySettings(
 			RelayMode.StrictCustom,
-			"https://[::1]:443\nhttps://[2001:db8::1]\nhttps://[::ffff:192.0.2.1]",
+			listOf("https://[::1]:443", "https://[2001:db8::1]", "https://[::ffff:192.0.2.1]"),
 		)
 
 		assertEquals(
@@ -105,7 +105,7 @@ class RelaySettingsValidationTest {
 		).forEach { url ->
 			assertEquals(
 				RelaySettingsInputError.InvalidUrl(1),
-				validateRelaySettings(RelayMode.StrictCustom, url).error,
+				validateRelaySettings(RelayMode.StrictCustom, listOf(url)).error,
 				url,
 			)
 		}

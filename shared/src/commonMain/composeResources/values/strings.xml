@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Stop all active transfers and shares before applying network settings.</string>
     <string name="relay_apply_failed">Could not apply these settings. The previous network settings were restored.</string>
     <string name="relay_apply_restart_description">Applying restarts VniDrop’s network connection. Stop active transfers and shares first. Existing invitations may need to be shared again.</string>
-    <string name="relay_custom_urls_help">Enter one HTTPS relay URL per line. URL credentials are not supported. The TLS certificate must be issued by a publicly trusted certificate authority.</string>
+    <string name="relay_custom_urls_help">Add each HTTPS relay URL separately. URL credentials are not supported. The TLS certificate must be issued by a publicly trusted certificate authority.</string>
     <string name="relay_custom_urls_label">Relay URLs</string>
     <string name="relay_mode_automatic">Automatic (recommended)</string>
     <string name="relay_mode_automatic_description">Use VniDrop’s default public relay infrastructure when a direct connection is unavailable.</string>

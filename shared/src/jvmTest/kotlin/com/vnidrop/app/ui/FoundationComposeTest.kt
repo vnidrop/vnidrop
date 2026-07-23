@@ -136,8 +136,25 @@ class FoundationComposeTest {
 					onBugContactChanged = {},
 					onBugIncludeLogsChanged = {},
 					onSubmitBugReport = {},
-					onRelayModeChanged = { state.value = state.value.copy(relayMode = it) },
-					onRelayUrlsChanged = { state.value = state.value.copy(relayUrlsText = it) },
+					onRelayModeChanged = {
+						state.value = state.value.copy(
+							relayMode = it,
+							relayUrls = state.value.relayUrls.ifEmpty { listOf("") },
+						)
+					},
+					onRelayUrlChanged = { index, value ->
+						state.value = state.value.copy(
+							relayUrls = state.value.relayUrls.toMutableList().apply { this[index] = value },
+						)
+					},
+					onAddRelayUrl = {
+						state.value = state.value.copy(relayUrls = state.value.relayUrls + "")
+					},
+					onRemoveRelayUrl = { index ->
+						state.value = state.value.copy(
+							relayUrls = state.value.relayUrls.toMutableList().apply { removeAt(index) }.ifEmpty { listOf("") },
+						)
+					},
 					onApplyRelaySettings = { applied = true },
 				)
 			}
@@ -150,6 +167,7 @@ class FoundationComposeTest {
 			"Strict custom mode will not start unless at least one configured relay is reachable. " +
 				"VniDrop never uses public relays or public discovery in this mode.",
 		).assertIsDisplayed()
+		onNodeWithText("Add relay server").assertIsDisplayed()
 		onNodeWithText("Apply network settings").performClick()
 		runOnIdle { assertTrue(applied) }
 	}

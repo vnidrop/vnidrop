@@ -41,14 +41,6 @@ internal fun SettingsOverview(
 		)
 		SettingsGroup {
 			SettingsRow(
-				icon = AppIcon.Globe,
-				title = stringResource(Res.string.settings_network_title),
-				value = relayModeLabel(state.savedRelaySettings.mode),
-				selected = state.selectedSection == SettingsSection.Network,
-				onClick = { onSectionSelected(SettingsSection.Network) },
-			)
-			SettingsDivider()
-			SettingsRow(
 				icon = AppIcon.User,
 				title = stringResource(Res.string.preferences_title),
 				value = state.username,
@@ -78,7 +70,17 @@ internal fun SettingsOverview(
 				selected = state.selectedSection == SettingsSection.Storage,
 				onClick = { onSectionSelected(SettingsSection.Storage) },
 			)
-			SettingsDivider()
+		}
+		SettingsGroup {
+			SettingsRow(
+				icon = AppIcon.Globe,
+				title = stringResource(Res.string.settings_network_title),
+				value = relayModeLabel(state.savedRelaySettings.mode),
+				selected = state.selectedSection == SettingsSection.Network,
+				onClick = { onSectionSelected(SettingsSection.Network) },
+			)
+		}
+		SettingsGroup {
 			SettingsRow(
 				icon = AppIcon.Info,
 				title = stringResource(Res.string.about_title),

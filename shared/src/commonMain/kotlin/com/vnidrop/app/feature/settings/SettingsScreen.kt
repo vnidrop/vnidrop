@@ -32,7 +32,9 @@ fun SettingsScreen(
 	onSubmitBugReport: () -> Unit,
 	onDeleteAllTransfers: () -> Unit = {},
 	onRelayModeChanged: (RelayMode) -> Unit = {},
-	onRelayUrlsChanged: (String) -> Unit = {},
+	onRelayUrlChanged: (Int, String) -> Unit = { _, _ -> },
+	onAddRelayUrl: () -> Unit = {},
+	onRemoveRelayUrl: (Int) -> Unit = {},
 	onApplyRelaySettings: () -> Unit = {},
 ) {
 	if (windowClass == WindowClass.Desktop) {
@@ -65,7 +67,9 @@ fun SettingsScreen(
 					onSubmitBugReport = onSubmitBugReport,
 					onDeleteAllTransfers = onDeleteAllTransfers,
 					onRelayModeChanged = onRelayModeChanged,
-					onRelayUrlsChanged = onRelayUrlsChanged,
+					onRelayUrlChanged = onRelayUrlChanged,
+					onAddRelayUrl = onAddRelayUrl,
+					onRemoveRelayUrl = onRemoveRelayUrl,
 					onApplyRelaySettings = onApplyRelaySettings,
 				)
 			}
@@ -102,7 +106,9 @@ fun SettingsScreen(
 				onSubmitBugReport = onSubmitBugReport,
 				onDeleteAllTransfers = onDeleteAllTransfers,
 				onRelayModeChanged = onRelayModeChanged,
-				onRelayUrlsChanged = onRelayUrlsChanged,
+				onRelayUrlChanged = onRelayUrlChanged,
+				onAddRelayUrl = onAddRelayUrl,
+				onRemoveRelayUrl = onRemoveRelayUrl,
 				onApplyRelaySettings = onApplyRelaySettings,
 			)
 		}
@@ -131,7 +137,9 @@ private fun SettingsSectionContent(
 	onSubmitBugReport: () -> Unit,
 	onDeleteAllTransfers: () -> Unit,
 	onRelayModeChanged: (RelayMode) -> Unit,
-	onRelayUrlsChanged: (String) -> Unit,
+	onRelayUrlChanged: (Int, String) -> Unit,
+	onAddRelayUrl: () -> Unit,
+	onRemoveRelayUrl: (Int) -> Unit,
 	onApplyRelaySettings: () -> Unit,
 ) {
 	when (section) {
@@ -141,7 +149,9 @@ private fun SettingsSectionContent(
 		SettingsSection.Network -> NetworkSettings(
 			state = state,
 			onModeChanged = onRelayModeChanged,
-			onUrlsChanged = onRelayUrlsChanged,
+			onUrlChanged = onRelayUrlChanged,
+			onAddUrl = onAddRelayUrl,
+			onRemoveUrl = onRemoveRelayUrl,
 			onApply = onApplyRelaySettings,
 			onBack = onBack,
 			showBack = showBack,

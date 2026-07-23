@@ -175,7 +175,7 @@
     <string name="relay_apply_active_transfers">Stop alle actieve overdrachten en gedeelde items voordat u de netwerkinstellingen toepast.</string>
     <string name="relay_apply_failed">Deze instellingen konden niet worden toegepast. De vorige netwerkinstellingen zijn hersteld.</string>
     <string name="relay_apply_restart_description">Bij het toepassen wordt de netwerkverbinding van VniDrop opnieuw gestart. Stop eerst actieve overdrachten en gedeelde items. Bestaande uitnodigingen moeten mogelijk opnieuw worden gedeeld.</string>
-    <string name="relay_custom_urls_help">Voer per regel één HTTPS-relay-URL in. Aanmeldgegevens in URL\'s worden niet ondersteund. Het TLS-certificaat moet zijn uitgegeven door een openbaar vertrouwde certificeringsinstantie.</string>
+    <string name="relay_custom_urls_help">Voeg elke HTTPS-relay-URL afzonderlijk toe. Aanmeldgegevens in URL\'s worden niet ondersteund. Het TLS-certificaat moet zijn uitgegeven door een openbaar vertrouwde certificeringsinstantie.</string>
     <string name="relay_custom_urls_label">Relay-URL\'s</string>
     <string name="relay_mode_automatic">Automatisch (aanbevolen)</string>
     <string name="relay_mode_automatic_description">Gebruikt de standaard openbare relay-infrastructuur van VniDrop wanneer geen directe verbinding beschikbaar is.</string>
