@@ -20,7 +20,7 @@ use crate::{
     util::now_ms,
 };
 
-const SCHEMA_VERSION: i64 = 6;
+const SCHEMA_VERSION: i64 = 7;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Repository {
@@ -86,6 +86,7 @@ pub(crate) struct PendingDeliveryReceipt {
     pub(crate) request_id: String,
     pub(crate) sender_transfer_id: u64,
     pub(crate) token: String,
+    pub(crate) failure_reason: Option<String>,
 }
 
 pub(crate) struct PendingDeliveryReceiptInsert<'a> {
@@ -94,6 +95,7 @@ pub(crate) struct PendingDeliveryReceiptInsert<'a> {
     pub(crate) request_id: &'a str,
     pub(crate) sender_transfer_id: u64,
     pub(crate) token: &'a str,
+    pub(crate) failure_reason: Option<&'a str>,
 }
 
 impl Repository {
@@ -294,12 +296,24 @@ impl Repository {
                 sender_blob_ticket TEXT NOT NULL,
                 sender_transfer_id INTEGER NOT NULL,
                 token TEXT NOT NULL,
+                failure_reason TEXT,
                 created_at INTEGER NOT NULL
             );
             "#,
         )
         .execute(&self.pool)
         .await?;
+        let receipt_columns = sqlx::query("PRAGMA table_info(pending_delivery_receipts)")
+            .fetch_all(&self.pool)
+            .await?;
+        if !receipt_columns
+            .iter()
+            .any(|row| row.get::<String, _>(1) == "failure_reason")
+        {
+            sqlx::query("ALTER TABLE pending_delivery_receipts ADD COLUMN failure_reason TEXT")
+                .execute(&self.pool)
+                .await?;
+        }
 
         sqlx::query(&format!("PRAGMA user_version = {SCHEMA_VERSION}"))
             .execute(&self.pool)
@@ -561,13 +575,14 @@ impl Repository {
             r#"
             INSERT INTO pending_delivery_receipts (
                 request_id, local_transfer_id, sender_blob_ticket,
-                sender_transfer_id, token, created_at
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+                sender_transfer_id, token, failure_reason, created_at
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
             ON CONFLICT(request_id) DO UPDATE SET
                 local_transfer_id = excluded.local_transfer_id,
                 sender_blob_ticket = excluded.sender_blob_ticket,
                 sender_transfer_id = excluded.sender_transfer_id,
-                token = excluded.token
+                token = excluded.token,
+                failure_reason = excluded.failure_reason
             "#,
         )
         .bind(receipt.request_id)
@@ -575,10 +590,44 @@ impl Repository {
         .bind(receipt.sender_blob_ticket)
         .bind(to_db_id(receipt.sender_transfer_id)?)
         .bind(receipt.token)
+        .bind(receipt.failure_reason)
         .bind(now_ms())
         .execute(&mut *transaction)
         .await?;
         transaction.commit().await?;
+        Ok(())
+    }
+
+    pub(crate) async fn queue_failed_delivery_receipt(
+        &self,
+        receipt: PendingDeliveryReceiptInsert<'_>,
+    ) -> Result<()> {
+        let Some(reason) = receipt.failure_reason else {
+            anyhow::bail!("failed delivery receipt requires a reason");
+        };
+        sqlx::query(
+            r#"
+            INSERT INTO pending_delivery_receipts (
+                request_id, local_transfer_id, sender_blob_ticket,
+                sender_transfer_id, token, failure_reason, created_at
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)
+            ON CONFLICT(request_id) DO UPDATE SET
+                local_transfer_id = excluded.local_transfer_id,
+                sender_blob_ticket = excluded.sender_blob_ticket,
+                sender_transfer_id = excluded.sender_transfer_id,
+                token = excluded.token,
+                failure_reason = excluded.failure_reason
+            "#,
+        )
+        .bind(receipt.request_id)
+        .bind(to_db_id(receipt.local_transfer_id)?)
+        .bind(receipt.sender_blob_ticket)
+        .bind(to_db_id(receipt.sender_transfer_id)?)
+        .bind(receipt.token)
+        .bind(reason)
+        .bind(now_ms())
+        .execute(&self.pool)
+        .await?;
         Ok(())
     }
 
@@ -588,7 +637,7 @@ impl Repository {
         let rows = sqlx::query(
             r#"
             SELECT local_transfer_id, sender_blob_ticket, request_id,
-                   sender_transfer_id, token
+                   sender_transfer_id, token, failure_reason
             FROM pending_delivery_receipts
             ORDER BY created_at ASC
             "#,
@@ -603,6 +652,7 @@ impl Repository {
                 request_id: row.get("request_id"),
                 sender_transfer_id: row.get::<i64, _>("sender_transfer_id") as u64,
                 token: row.get("token"),
+                failure_reason: row.get("failure_reason"),
             })
             .collect())
     }
@@ -880,6 +930,56 @@ impl Repository {
             Ok(())
         } else {
             anyhow::bail!("delivery receipt did not match an accepted receiver request")
+        }
+    }
+
+    pub(crate) async fn fail_receiver_delivery(
+        &self,
+        id: &str,
+        transfer_id: u64,
+        remote_endpoint_id: &str,
+        token_hash: &str,
+        reason: &str,
+    ) -> Result<()> {
+        let result = sqlx::query(
+            r#"
+            UPDATE receiver_requests
+            SET status = 'failed', reason = ?1
+            WHERE id = ?2 AND transfer_id = ?3 AND remote_endpoint_id = ?4 AND receipt_token_hash = ?5
+              AND status = 'accepted'
+            "#,
+        )
+        .bind(reason)
+        .bind(id)
+        .bind(to_db_id(transfer_id)?)
+        .bind(remote_endpoint_id)
+        .bind(token_hash)
+        .execute(&self.pool)
+        .await?;
+        if result.rows_affected() == 1 {
+            return Ok(());
+        }
+        let already_recorded = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM receiver_requests
+                WHERE id = ?1 AND transfer_id = ?2 AND remote_endpoint_id = ?3
+                  AND receipt_token_hash = ?4 AND status = 'failed'
+            )
+            "#,
+        )
+        .bind(id)
+        .bind(to_db_id(transfer_id)?)
+        .bind(remote_endpoint_id)
+        .bind(token_hash)
+        .fetch_one(&self.pool)
+        .await?
+        .get::<i64, _>(0)
+            != 0;
+        if already_recorded {
+            Ok(())
+        } else {
+            anyhow::bail!("delivery failure did not match an accepted receiver request")
         }
     }
 

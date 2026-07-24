@@ -24,6 +24,30 @@ fn wait_for_sender_transfer_event(sender: &TestNode, transfer_id: u64, kind: &st
     }
 }
 
+fn wait_for_receiver_status(
+    sender: &TestNode,
+    transfer_id: u64,
+    status: &str,
+) -> vnidrop::ReceiverRequest {
+    let started = Instant::now();
+    loop {
+        if let Some(request) = sender
+            .core
+            .list_receiver_requests(transfer_id)
+            .unwrap()
+            .into_iter()
+            .find(|request| request.status == status)
+        {
+            return request;
+        }
+        assert!(
+            started.elapsed() < Duration::from_secs(5),
+            "timed out waiting for receiver status {status}"
+        );
+        std::thread::sleep(Duration::from_millis(10));
+    }
+}
+
 #[test]
 fn transfers_file_between_two_cores() {
     let source_dir = tempfile::tempdir().unwrap();
@@ -162,4 +186,11 @@ fn receive_refuses_to_overwrite_existing_destination() {
                 && event.kind == "failed"
                 && event.data_json.contains("\"code\":\"destination_exists\"")
         }));
+    let failed = wait_for_receiver_status(&sender, share.transfer_id, "failed");
+    assert_eq!(failed.reason.as_deref(), Some("destination_exists"));
+    assert!(sender.sink.events().iter().any(|event| {
+        event.transfer_id == Some(share.transfer_id)
+            && event.phase == "delivery"
+            && event.kind == "receiver-failed"
+    }));
 }

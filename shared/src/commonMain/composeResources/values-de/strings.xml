@@ -274,6 +274,7 @@
     <string name="transfer_no_receivers">Noch niemand hat diese Übertragung angefragt.</string>
     <string name="transfer_receiver_accepted">Genehmigt – wartet auf Abschluss</string>
     <string name="transfer_receiver_completed">Erfolgreich empfangen</string>
+    <string name="transfer_receiver_failed">Übertragung fehlgeschlagen</string>
     <string name="transfer_receiver_expired">Anfrage abgelaufen</string>
     <string name="transfer_receiver_refused">Anfrage abgelehnt</string>
     <string name="transfer_receiver_requested">Wartet auf Ihre Genehmigung</string>

@@ -16581,6 +16581,66 @@
         }
       }
     },
+    "transfer_receiver_failed": {
+      "comment": "Receiver status: the transfer failed.",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Übertragung fehlgeschlagen"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transfer failed"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transferencia fallida"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Transfert échoué"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Trasferimento non riuscito"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Overdracht mislukt"
+          }
+        },
+        "pl": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Przesyłanie nie powiodło się"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "A transferência falhou"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "Передача не удалась"
+          }
+        }
+      }
+    },
     "transfer_receiver_expired": {
       "comment": "Receiver status: the request expired.",
       "extractionState": "manual",

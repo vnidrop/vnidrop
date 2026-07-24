@@ -237,6 +237,7 @@ private struct ReceiverRow: View {
 		let name = receiver.receiverName ?? receiver.receiverDeviceName ?? String(localized: "transfer_nearby_device")
 		let showLive = sendProgress != nil && receiver.status != .completed
 			&& receiver.status != .refused && receiver.status != .expired
+			&& receiver.status != .failed
 		HStack(alignment: .top, spacing: 12) {
 			VStack(alignment: .leading, spacing: 6) {
 				Text(name).font(VniType.bodyLarge).lineLimit(1)
@@ -397,6 +398,7 @@ extension ReceiverDeliveryStatus {
 		case .refused: return "transfer_receiver_refused"
 		case .expired: return "transfer_receiver_expired"
 		case .completed: return "transfer_receiver_completed"
+		case .failed: return "transfer_receiver_failed"
 		case .unknown: return "transfer_receiver_unknown"
 		}
 	}
@@ -404,7 +406,7 @@ extension ReceiverDeliveryStatus {
 	func statusColor(_ colors: VniDropColors) -> Color {
 		switch self {
 		case .completed: return colors.brandDefault
-		case .refused, .expired: return colors.destructiveDefault
+		case .refused, .expired, .failed: return colors.destructiveDefault
 		default: return colors.foregroundLighter
 		}
 	}

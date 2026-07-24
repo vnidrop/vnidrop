@@ -274,6 +274,7 @@
     <string name="transfer_no_receivers">Nessuno ha ancora richiesto questo trasferimento.</string>
     <string name="transfer_receiver_accepted">Approvato: in attesa del completamento</string>
     <string name="transfer_receiver_completed">Ricevuto correttamente</string>
+    <string name="transfer_receiver_failed">Trasferimento non riuscito</string>
     <string name="transfer_receiver_expired">Richiesta scaduta</string>
     <string name="transfer_receiver_refused">Richiesta rifiutata</string>
     <string name="transfer_receiver_requested">In attesa della sua approvazione</string>

@@ -4,7 +4,9 @@ use serde_json::json;
 
 use super::{filter_peer_addr_for_relay_mode, CoreInner};
 use crate::{
-    handshake::{DeliveryReceipt, DeliveryReceiptResponse, HandshakeService},
+    handshake::{
+        DeliveryFailureReceipt, DeliveryReceipt, DeliveryReceiptResponse, HandshakeService,
+    },
     repository::PendingDeliveryReceipt,
     ticket::parse_persisted_sender_address,
 };
@@ -96,13 +98,29 @@ impl CoreInner {
             }
         };
         let client = HandshakeService::client(self.endpoint.clone(), sender_addr);
-        let receipt = DeliveryReceipt {
-            request_id: pending.request_id.clone(),
-            transfer_id: pending.sender_transfer_id,
-            token: pending.token,
-        };
-        match tokio::time::timeout(DELIVERY_RECEIPT_TIMEOUT, client.report_delivery(receipt)).await
-        {
+        let request_id = pending.request_id.clone();
+        let response = tokio::time::timeout(DELIVERY_RECEIPT_TIMEOUT, async {
+            if let Some(reason) = pending.failure_reason {
+                client
+                    .report_delivery_failure(DeliveryFailureReceipt {
+                        request_id,
+                        transfer_id: pending.sender_transfer_id,
+                        token: pending.token,
+                        reason,
+                    })
+                    .await
+            } else {
+                client
+                    .report_delivery(DeliveryReceipt {
+                        request_id,
+                        transfer_id: pending.sender_transfer_id,
+                        token: pending.token,
+                    })
+                    .await
+            }
+        })
+        .await;
+        match response {
             Ok(Ok(DeliveryReceiptResponse::Recorded)) => {
                 if let Err(error) = self
                     .repository

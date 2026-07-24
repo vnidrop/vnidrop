@@ -274,6 +274,7 @@
     <string name="transfer_no_receivers">Никто ещё не запросил эту передачу.</string>
     <string name="transfer_receiver_accepted">Одобрено — ожидание завершения</string>
     <string name="transfer_receiver_completed">Успешно получено</string>
+    <string name="transfer_receiver_failed">Передача не удалась</string>
     <string name="transfer_receiver_expired">Запрос истёк</string>
     <string name="transfer_receiver_refused">Запрос отклонён</string>
     <string name="transfer_receiver_requested">Ожидание вашего одобрения</string>

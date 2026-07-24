@@ -88,6 +88,7 @@ enum ReceiverDeliveryStatus: Equatable, Sendable {
 	case refused
 	case expired
 	case completed
+	case failed
 	case unknown
 }
 

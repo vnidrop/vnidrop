@@ -274,6 +274,7 @@
     <string name="transfer_no_receivers">Nog niemand heeft deze overdracht aangevraagd.</string>
     <string name="transfer_receiver_accepted">Goedgekeurd — wachten op voltooiing</string>
     <string name="transfer_receiver_completed">Succesvol ontvangen</string>
+    <string name="transfer_receiver_failed">Overdracht mislukt</string>
     <string name="transfer_receiver_expired">Verzoek verlopen</string>
     <string name="transfer_receiver_refused">Verzoek geweigerd</string>
     <string name="transfer_receiver_requested">Wachten op uw goedkeuring</string>

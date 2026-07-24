@@ -433,6 +433,7 @@ private fun ReceiverRequest.toModel(): ReceiverRequestModel = ReceiverRequestMod
 		"refused" -> ReceiverDeliveryStatus.Refused
 		"expired" -> ReceiverDeliveryStatus.Expired
 		"completed" -> ReceiverDeliveryStatus.Completed
+		"failed" -> ReceiverDeliveryStatus.Failed
 		else -> ReceiverDeliveryStatus.Unknown
 	},
 	reason = reason,

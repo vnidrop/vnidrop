@@ -1,7 +1,7 @@
 use std::{
     io,
     path::{Path, PathBuf},
-    sync::Arc,
+    sync::{Arc, Mutex},
 };
 
 use anyhow::{Context, Result};
@@ -222,6 +222,10 @@ impl CoreInner {
         self.persist_receive_start(transfer_id, &parsed, receiver_name.as_deref())
             .await
             .map_err(VnidropError::repository)?;
+        let persisted_sender_address =
+            encode_persisted_sender_address(parsed.blob_ticket.addr())
+                .context("failed to encode sender address for delivery receipt")?;
+        let delivery_receipt = Arc::new(Mutex::new(None));
         // Cancellation is cooperative: it stops our receive future and marks
         // local state while lower-level Iroh work unwinds naturally.
         let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
@@ -237,7 +241,14 @@ impl CoreInner {
             );
 
         let (result, cancelled) = tokio::select! {
-            result = self.receive_inner(transfer_id, parsed, target, receiver_name) => {
+            result = self.receive_inner(
+                transfer_id,
+                parsed,
+                target,
+                receiver_name,
+                persisted_sender_address.clone(),
+                delivery_receipt.clone(),
+            ) => {
                 (result.map_err(VnidropError::transfer), false)
             },
             _ = &mut shutdown_rx => (Err(VnidropError::cancelled("transfer cancelled")), true),
@@ -267,6 +278,34 @@ impl CoreInner {
                     )
                     .await;
             }
+            let receipt = delivery_receipt.lock().expect("delivery_receipt").take();
+            if let Some(receipt) = receipt {
+                let reason = if cancelled { "cancelled" } else { error.code() };
+                match self
+                    .repository
+                    .queue_failed_delivery_receipt(PendingDeliveryReceiptInsert {
+                        local_transfer_id: transfer_id,
+                        sender_blob_ticket: &persisted_sender_address,
+                        request_id: &receipt.request_id,
+                        sender_transfer_id: receipt.transfer_id,
+                        token: &receipt.token,
+                        failure_reason: Some(reason),
+                    })
+                    .await
+                {
+                    Ok(()) => self.delivery_receipt_notify.notify_one(),
+                    Err(queue_error) => {
+                        tracing::warn!(%queue_error, "failed to queue delivery failure receipt");
+                        self.emit_transfer(
+                            transfer_id,
+                            "receive",
+                            "delivery",
+                            "receipt-failed",
+                            json!({ "reason": queue_error.to_string() }),
+                        );
+                    }
+                }
+            }
         }
         result.map_err(anyhow::Error::new)
     }
@@ -277,6 +316,8 @@ impl CoreInner {
         parsed: ParsedTransferTicket,
         target: ReceiveTarget,
         receiver_name: Option<String>,
+        persisted_sender_address: String,
+        pending_delivery_receipt: Arc<Mutex<Option<DeliveryReceipt>>>,
     ) -> Result<()> {
         if let ReceiveTarget::Directory(output_dir) = &target {
             tokio::fs::create_dir_all(output_dir)
@@ -284,8 +325,6 @@ impl CoreInner {
                 .map_err(VnidropError::filesystem)?;
         }
         let sender_addr = parsed.blob_ticket.addr().clone();
-        let persisted_sender_address = encode_persisted_sender_address(&sender_addr)
-            .context("failed to encode sender address for delivery receipt")?;
 
         self.emit_transfer(transfer_id, "receive", "network", "connecting", json!({}));
         // Every VniDrop ticket carries metadata and must complete the handshake.
@@ -297,6 +336,9 @@ impl CoreInner {
                 receiver_name.as_deref(),
             )
             .await?;
+        *pending_delivery_receipt
+            .lock()
+            .expect("pending_delivery_receipt") = Some(delivery_receipt.clone());
         let connection = self
             .endpoint
             .connect(sender_addr.clone(), iroh_blobs::ALPN)
@@ -373,9 +415,14 @@ impl CoreInner {
                 request_id: &delivery_receipt.request_id,
                 sender_transfer_id: delivery_receipt.transfer_id,
                 token: &delivery_receipt.token,
+                failure_reason: None,
             })
             .await
             .map_err(VnidropError::repository)?;
+        pending_delivery_receipt
+            .lock()
+            .expect("pending_delivery_receipt")
+            .take();
         drop(download_tag);
         self.emit_transfer(transfer_id, "receive", "lifecycle", "done", json!({}));
         self.delivery_receipt_notify.notify_one();

@@ -512,6 +512,7 @@ private extension ReceiverRequest {
 		case "refused": return .refused
 		case "expired": return .expired
 		case "completed": return .completed
+		case "failed": return .failed
 		default: return .unknown
 		}
 	}

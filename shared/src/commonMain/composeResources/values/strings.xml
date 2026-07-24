@@ -274,6 +274,7 @@
     <string name="transfer_no_receivers">Nobody has requested this transfer yet.</string>
     <string name="transfer_receiver_accepted">Approved — waiting for completion</string>
     <string name="transfer_receiver_completed">Received successfully</string>
+    <string name="transfer_receiver_failed">Transfer failed</string>
     <string name="transfer_receiver_expired">Request expired</string>
     <string name="transfer_receiver_refused">Request refused</string>
     <string name="transfer_receiver_requested">Waiting for your approval</string>

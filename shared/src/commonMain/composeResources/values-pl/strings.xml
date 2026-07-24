@@ -274,6 +274,7 @@
     <string name="transfer_no_receivers">Nikt jeszcze nie poprosił o ten transfer.</string>
     <string name="transfer_receiver_accepted">Zatwierdzono — oczekiwanie na ukończenie</string>
     <string name="transfer_receiver_completed">Odebrano pomyślnie</string>
+    <string name="transfer_receiver_failed">Przesyłanie nie powiodło się</string>
     <string name="transfer_receiver_expired">Prośba wygasła</string>
     <string name="transfer_receiver_refused">Prośba odrzucona</string>
     <string name="transfer_receiver_requested">Oczekiwanie na Twoje zatwierdzenie</string>

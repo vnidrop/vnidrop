@@ -117,6 +117,7 @@ enum class ReceiverDeliveryStatus {
 	Refused,
 	Expired,
 	Completed,
+	Failed,
 	Unknown,
 }
 

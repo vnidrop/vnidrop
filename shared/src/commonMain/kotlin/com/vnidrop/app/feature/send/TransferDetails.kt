@@ -409,13 +409,15 @@ private fun receiverStatusText(status: ReceiverDeliveryStatus) = stringResource(
 	ReceiverDeliveryStatus.Refused -> Res.string.transfer_receiver_refused
 	ReceiverDeliveryStatus.Expired -> Res.string.transfer_receiver_expired
 	ReceiverDeliveryStatus.Completed -> Res.string.transfer_receiver_completed
+	ReceiverDeliveryStatus.Failed -> Res.string.transfer_receiver_failed
 	ReceiverDeliveryStatus.Unknown -> Res.string.transfer_receiver_unknown
 })
 
 @Composable
 private fun receiverStatusColor(status: ReceiverDeliveryStatus) = when (status) {
 	ReceiverDeliveryStatus.Completed -> LocalVniDropColors.current.brandDefault
-	ReceiverDeliveryStatus.Refused, ReceiverDeliveryStatus.Expired -> LocalVniDropColors.current.destructiveDefault
+	ReceiverDeliveryStatus.Refused, ReceiverDeliveryStatus.Expired, ReceiverDeliveryStatus.Failed ->
+		LocalVniDropColors.current.destructiveDefault
 	else -> LocalVniDropColors.current.foregroundLighter
 }
 

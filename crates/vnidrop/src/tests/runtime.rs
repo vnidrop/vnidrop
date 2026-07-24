@@ -164,6 +164,7 @@ fn startup_processes_persisted_delivery_receipts() {
                 request_id: "request-94",
                 sender_transfer_id: 49,
                 token: "receipt-token",
+                failure_reason: None,
             })
             .await
             .unwrap();
