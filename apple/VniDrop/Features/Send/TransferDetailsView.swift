@@ -44,21 +44,18 @@ struct TransferDetailsView: View {
 					count: pendingReceivers + completedReceivers,
 					onTap: model.openReceivers
 				)
-				DetailDestination(
-					title: String(localized: L10n.Transfer.shareTitle),
-					description: String(localized: L10n.Transfer.shareDescription),
-					count: 0,
-					onTap: model.openShare
-				)
 			}
 
-			if isActiveShare {
-				Section {
+			Section {
+				if isActiveShare {
 					Button(role: .destructive) {
 						showStopConfirmation = true
 					} label: {
 						Label(String(localized: L10n.Send.stopSharing), systemSymbol: .stopCircle)
 					}
+				}
+				Button(role: .destructive, action: model.requestDeleteTransfer) {
+					Label(String(localized: L10n.Button.deleteTransfer), systemSymbol: .trash)
 				}
 			}
 		}
@@ -69,9 +66,10 @@ struct TransferDetailsView: View {
 		#endif
 		.toolbar {
 			ToolbarItem(placement: .primaryAction) {
-				Button(role: .destructive, action: model.requestDeleteTransfer) {
-					Image(systemSymbol: .trash)
+				Button(action: model.openShare) {
+					Label(String(localized: L10n.Transfer.shareTitle), systemSymbol: .squareAndArrowUp)
 				}
+				.help(String(localized: L10n.Transfer.shareTitle))
 			}
 		}
 		.confirmationDialog(
