@@ -77,8 +77,8 @@ class CoreRepository(
 				}
 			}
 			_state.update { it.copy(isInitialized = false, status = null) }
-			previousCore?.shutdown()
 			core = null
+			disposeCore(previousCore)
 			core = VnidropCore.initializeWithNetworkConfig(appDataDir, sink, relaySettings.toNative())
 			currentAppDataDir = appDataDir
 			currentRelaySettings = relaySettings
@@ -87,8 +87,9 @@ class CoreRepository(
 		}
 
 	override fun shutdown() {
-		core?.shutdown()
+		val activeCore = core
 		core = null
+		disposeCore(activeCore)
 		currentAppDataDir = null
 		_state.value = CoreState()
 	}
@@ -183,8 +184,8 @@ class CoreRepository(
 		val appDataDir = requireNotNull(currentAppDataDir) { "Core data directory is unavailable" }
 		val relaySettings = currentRelaySettings
 		_state.update { it.copy(isInitialized = false, status = null) }
-		activeCore.shutdown()
 		core = null
+		disposeCore(activeCore)
 		var reclaimed = 0UL
 		try {
 			reclaimed = clearInactiveTransferCache(appDataDir)
@@ -194,6 +195,16 @@ class CoreRepository(
 			_state.update { it.copy(isInitialized = true) }
 		}
 		reclaimed
+	}
+
+	private fun disposeCore(activeCore: VnidropCore?) {
+		if (activeCore == null) return
+		try {
+			activeCore.shutdown()
+		} finally {
+			// UniFFI owns the Rust Arc; explicit disposal releases Windows file handles before cache deletion.
+			activeCore.close()
+		}
 	}
 
 	override suspend fun receivedArtifacts(): Result<List<ReceivedArtifactModel>> = runCore { activeCore ->
