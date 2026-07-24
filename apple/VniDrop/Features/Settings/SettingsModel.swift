@@ -7,6 +7,7 @@ enum SettingsSection: Hashable {
 	case preferences
 	case appearance
 	case notifications
+	case network
 	case storage
 	case about
 	case bugReport
@@ -17,6 +18,7 @@ enum SettingsSection: Hashable {
 		case .preferences: return "preferences_title"
 		case .appearance: return "appearance_title"
 		case .notifications: return "notifications_title"
+		case .network: return "settings_network_title"
 		case .storage: return "storage_title"
 		case .about: return "about_title"
 		case .bugReport: return "about_bug_report"
@@ -44,6 +46,14 @@ struct SettingsState: Equatable {
 	var notificationsEnabled = false
 	var notificationPermission: NotificationPermission = .notDetermined
 	var diagnosticsEnabled = false
+	var relayMode: RelayPreferenceMode = .automatic
+	var relayURLs: [String] = []
+	var relayValidationError: RelayConfigurationValidationError?
+	var relayConfigurationIsDirty = false
+	var isApplyingRelayConfiguration = false
+	var hasActiveNetworkWork = false
+	var endpointId: String?
+	var relayApplyErrorKey: String?
 	var deviceInfo: DeviceInfo?
 	var appVersion = ""
 	var isLoadingDeviceInfo = false
@@ -66,6 +76,13 @@ struct SettingsState: Equatable {
 			&& lhs.themeMode == rhs.themeMode && lhs.notificationsEnabled == rhs.notificationsEnabled
 			&& lhs.notificationPermission == rhs.notificationPermission
 			&& lhs.diagnosticsEnabled == rhs.diagnosticsEnabled && lhs.appVersion == rhs.appVersion
+			&& lhs.relayMode == rhs.relayMode && lhs.relayURLs == rhs.relayURLs
+			&& lhs.relayValidationError == rhs.relayValidationError
+			&& lhs.relayConfigurationIsDirty == rhs.relayConfigurationIsDirty
+			&& lhs.isApplyingRelayConfiguration == rhs.isApplyingRelayConfiguration
+			&& lhs.hasActiveNetworkWork == rhs.hasActiveNetworkWork
+			&& lhs.endpointId == rhs.endpointId
+			&& lhs.relayApplyErrorKey == rhs.relayApplyErrorKey
 			&& lhs.isLoadingDeviceInfo == rhs.isLoadingDeviceInfo
 			&& lhs.bugWhatHappened == rhs.bugWhatHappened && lhs.bugExpected == rhs.bugExpected
 			&& lhs.bugSteps == rhs.bugSteps && lhs.bugContact == rhs.bugContact
@@ -96,6 +113,7 @@ final class SettingsModel: ObservableObject {
 	private var enableNotificationsAfterSettings = false
 	private var usernamePersistTask: Task<Void, Never>?
 	private var hasLocalUsernameDraft = false
+	private var hasRelayConfigurationDraft = false
 	private var cancellables = Set<AnyCancellable>()
 
 	init(
@@ -133,7 +151,26 @@ final class SettingsModel: ObservableObject {
 				self.state.themeMode = prefs.themeMode
 				self.state.notificationsEnabled = prefs.notificationsEnabled
 				self.state.diagnosticsEnabled = prefs.diagnosticsEnabled
+				if !self.hasRelayConfigurationDraft {
+					self.state.relayMode = prefs.relayConfiguration.mode
+					self.state.relayURLs = prefs.relayConfiguration.relayURLs
+					self.state.relayConfigurationIsDirty = false
+				}
 				if folder != previousFolder { Task { await self.validateFolder(folder) } }
+			}
+			.store(in: &cancellables)
+
+		repository.statePublisher
+			.sink { [weak self] coreState in
+				guard let self else { return }
+				let hasActiveWork = (coreState.status?.activeTransfers ?? 0) > 0
+					|| (coreState.status?.activeShares ?? 0) > 0
+					|| coreState.transfers.contains(where: { $0.status.isActiveTransfer })
+				self.state.hasActiveNetworkWork = hasActiveWork
+				self.state.endpointId = coreState.status?.endpointId
+				if !hasActiveWork && self.state.relayApplyErrorKey == "relay_apply_active_transfers" {
+					self.state.relayApplyErrorKey = nil
+				}
 			}
 			.store(in: &cancellables)
 
@@ -204,6 +241,119 @@ final class SettingsModel: ObservableObject {
 				tone: .success
 			))
 		}
+	}
+
+	// MARK: - Network
+
+	func setRelayMode(_ mode: RelayPreferenceMode) {
+		hasRelayConfigurationDraft = true
+		state.relayMode = mode
+		if mode.usesCustomRelayURLs && state.relayURLs.isEmpty { state.relayURLs = [""] }
+		updateRelayConfigurationDraft()
+	}
+
+	func setRelayURL(_ value: String, at index: Int) {
+		guard state.relayURLs.indices.contains(index) else { return }
+		hasRelayConfigurationDraft = true
+		state.relayURLs[index] = value
+		updateRelayConfigurationDraft()
+	}
+
+	func addRelayURL() {
+		guard state.relayURLs.count < RelayConfigurationValidator.maximumRelayCount else { return }
+		hasRelayConfigurationDraft = true
+		state.relayURLs.append("")
+		updateRelayConfigurationDraft()
+	}
+
+	func removeRelayURL(at index: Int) {
+		guard state.relayURLs.indices.contains(index) else { return }
+		hasRelayConfigurationDraft = true
+		state.relayURLs.remove(at: index)
+		if state.relayURLs.isEmpty { state.relayURLs = [""] }
+		updateRelayConfigurationDraft()
+	}
+
+	func applyRelayConfiguration() {
+		guard !state.isApplyingRelayConfiguration, state.relayConfigurationIsDirty else { return }
+
+		let configuration: RelayConfiguration
+		do {
+			configuration = try RelayConfigurationValidator.validate(
+				mode: state.relayMode,
+				relayURLs: state.relayURLs,
+				retainedRelayURLs: preferences.preferences.relayConfiguration.relayURLs
+			)
+		} catch let error as RelayConfigurationValidationError {
+			state.relayValidationError = error
+			state.relayApplyErrorKey = nil
+			return
+		} catch {
+			return
+		}
+
+		let coreState = repository.state
+		let hasActiveWork = (coreState.status?.activeTransfers ?? 0) > 0
+			|| (coreState.status?.activeShares ?? 0) > 0
+			|| coreState.transfers.contains(where: { $0.status.isActiveTransfer })
+		guard !hasActiveWork else {
+			state.hasActiveNetworkWork = true
+			state.relayApplyErrorKey = "relay_apply_active_transfers"
+			messages.show(UiMessage(text: .resource("relay_apply_active_transfers"), tone: .warning))
+			return
+		}
+
+		let previousConfiguration = preferences.preferences.relayConfiguration
+		state.relayValidationError = nil
+		state.relayApplyErrorKey = nil
+		state.isApplyingRelayConfiguration = true
+		Task {
+			let applyResult = await repository.initialize(
+				appDataDir: environment.defaultCoreDataDir,
+				networkConfiguration: configuration
+			)
+			switch applyResult {
+			case .success:
+				hasRelayConfigurationDraft = false
+				preferences.setRelayConfiguration(configuration)
+				state.isApplyingRelayConfiguration = false
+				state.relayConfigurationIsDirty = false
+				messages.show(UiMessage(text: .resource("relay_settings_applied"), tone: .success))
+			case .failure(let error):
+				if let lifecycleError = error as? CoreNetworkLifecycleError {
+					state.isApplyingRelayConfiguration = false
+					switch lifecycleError {
+					case .activeNetworkWork:
+						state.hasActiveNetworkWork = true
+						state.relayApplyErrorKey = "relay_apply_active_transfers"
+					case .transitionInProgress:
+						state.relayApplyErrorKey = "relay_apply_failed"
+					}
+					return
+				}
+				let rollbackResult = await repository.initialize(
+					appDataDir: environment.defaultCoreDataDir,
+					networkConfiguration: previousConfiguration
+				)
+				state.isApplyingRelayConfiguration = false
+				if case .success = rollbackResult {
+					state.relayApplyErrorKey = "relay_apply_failed"
+					messages.show(UiMessage(text: .resource("relay_apply_failed"), tone: .error))
+				} else {
+					state.relayApplyErrorKey = "relay_restore_failed"
+					messages.show(UiMessage(text: .resource("relay_restore_failed"), tone: .error))
+				}
+			}
+		}
+	}
+
+	private func updateRelayConfigurationDraft() {
+		state.relayValidationError = nil
+		state.relayApplyErrorKey = nil
+		let saved = preferences.preferences.relayConfiguration
+		let draftURLs = state.relayMode.usesCustomRelayURLs ? state.relayURLs : saved.relayURLs
+		state.relayConfigurationIsDirty = saved != RelayConfiguration(mode: state.relayMode, relayURLs: draftURLs)
+		hasRelayConfigurationDraft = state.relayConfigurationIsDirty
 	}
 
 	func setBugWhatHappened(_ value: String) { state.bugWhatHappened = value }

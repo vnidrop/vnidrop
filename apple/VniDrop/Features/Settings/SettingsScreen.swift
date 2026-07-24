@@ -38,6 +38,17 @@ struct SettingsScreen: View {
 					NavigationLink(value: SettingsSection.storage) {
 						SettingsRow(icon: "internaldrive", title: String(localized: "storage_title"), value: nil)
 					}
+				}
+				Section(String(localized: "settings_advanced_title")) {
+					NavigationLink(value: SettingsSection.network) {
+						SettingsRow(
+							icon: "network",
+							title: String(localized: "settings_network_title"),
+							value: relayModeLabel(model.state.relayMode)
+						)
+					}
+				}
+				Section {
 					NavigationLink(value: SettingsSection.about) {
 						SettingsRow(icon: "info.circle", title: String(localized: "about_title"), value: nil)
 					}
@@ -99,6 +110,8 @@ private struct SettingsSectionContent: View {
 			AppearanceSettings(model: model)
 		case .notifications:
 			NotificationSettings(model: model)
+		case .network:
+			NetworkSettings(model: model)
 		case .storage:
 			StorageSettings(model: model)
 		case .about:
@@ -106,6 +119,24 @@ private struct SettingsSectionContent: View {
 		case .bugReport:
 			BugReportSettings(model: model)
 		}
+	}
+}
+
+func relayModeLabel(_ mode: RelayPreferenceMode) -> String {
+	switch mode {
+	case .automatic: return String(localized: "relay_mode_automatic")
+	case .strictCustom: return String(localized: "relay_mode_custom")
+	case .customWithDirectFallback: return String(localized: "relay_mode_custom_direct_fallback")
+	case .localOnly: return String(localized: "relay_mode_local_only")
+	}
+}
+
+func relayModeDescriptionKey(_ mode: RelayPreferenceMode) -> String {
+	switch mode {
+	case .automatic: return "relay_mode_automatic_description"
+	case .strictCustom: return "relay_mode_custom_description"
+	case .customWithDirectFallback: return "relay_mode_custom_direct_fallback_description"
+	case .localOnly: return "relay_mode_local_only_description"
 	}
 }
 
