@@ -20,6 +20,10 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>VniDrop</string>
+	<!-- macOS: a single instance only; re-launching activates the running app
+	     instead of spawning another copy. -->
+	<key>LSMultipleInstancesProhibited</key>
+	<true/>
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
