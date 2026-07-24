@@ -105,7 +105,7 @@ class CoreRepository(
 				ShareSource(
 					kind = SourceKind.PATH,
 					value = path,
-					displayName = path.substringAfterLast('/').ifBlank { null },
+					displayName = null,
 					isDirectory = false,
 				),
 			),
