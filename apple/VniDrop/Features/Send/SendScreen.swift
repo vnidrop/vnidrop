@@ -7,6 +7,11 @@ struct SendScreen: View {
 	@ObservedObject var model: SendModel
 	let windowClass: WindowClass
 
+	/// Transfer whose share panel is presented inline from the list context menu.
+	@State private var shareTarget: Transfer?
+	/// Transfer pending an inline (list-level) delete confirmation.
+	@State private var deleteTarget: Transfer?
+
 	private var outgoing: [Transfer] {
 		model.coreState.transfers.filter { $0.direction == .send }
 	}
@@ -41,6 +46,18 @@ struct SendScreen: View {
 					detailView(for: transfer)
 				}
 			}
+			// Attached inside the NavigationStack (a different sheet host than the
+			// composer drawer on the outer body, so the two don't clash). Opens the
+			// share panel over the list without navigating into the transfer detail.
+			.adaptiveDrawer(
+				isPresented: Binding(get: { shareTarget != nil }, set: { if !$0 { shareTarget = nil } }),
+				windowClass: windowClass,
+				onDismiss: { shareTarget = nil }
+			) {
+				if let shareTarget {
+					TransferSharePanel(model: model, transfer: shareTarget)
+				}
+			}
 		}
 		.adaptiveDrawer(
 			isPresented: Binding(get: { model.state.isComposerOpen }, set: { _ in }),
@@ -49,7 +66,23 @@ struct SendScreen: View {
 		) {
 			TransferComposer(model: model, windowClass: windowClass)
 		}
+		.alert(
+			Text(String(localized: L10n.Transfer.deleteTitle)),
+			isPresented: Binding(get: { deleteTarget != nil }, set: { if !$0 { deleteTarget = nil } })
+		) {
+			Button(String(localized: L10n.Button.cancel), role: .cancel) { deleteTarget = nil }
+			Button(String(localized: L10n.Button.deleteTransfer), role: .destructive) {
+				if let target = deleteTarget { model.deleteTransfer(id: target.transferId) }
+				deleteTarget = nil
+			}
+		} message: {
+			if let target = deleteTarget {
+				Text(L10n.Transfer.deleteDescription(
+					transferName: target.transferName ?? String(localized: L10n.Send.newTransferTitle)))
+			}
+		}
 	}
+
 
 	/// The pushed transfer details view, with its detail-panel sheet and delete
 	/// alert attached here so they present from the detail's own context (presenting
@@ -91,6 +124,28 @@ struct SendScreen: View {
 						)
 					}
 					.buttonStyle(.plain)
+					.contextMenu {
+						if transfer.ticket != nil {
+							Button {
+								shareTarget = transfer
+							} label: {
+								Label(String(localized: L10n.Transfer.shareTitle), systemSymbol: .squareAndArrowUp)
+							}
+						}
+						if transfer.status == .sharing {
+							Button(role: .destructive) {
+								model.stopSharing(transferId: transfer.transferId)
+							} label: {
+								Label(String(localized: L10n.Send.stopSharing), systemSymbol: .stopCircle)
+							}
+						}
+						Divider()
+						Button(role: .destructive) {
+							deleteTarget = transfer
+						} label: {
+							Label(String(localized: L10n.Button.deleteTransfer), systemSymbol: .trash)
+						}
+					}
 				}
 			} header: {
 				Text(String(localized: L10n.Send.transfersTitle))

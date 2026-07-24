@@ -79,6 +79,15 @@ struct ReceiveScreen: View {
 							}
 						}
 					}
+					.contextMenu {
+						if transfer.status.isTerminalReceiveHistory {
+							Button(role: .destructive) {
+								model.requestDeleteHistoryItem(transfer.transferId)
+							} label: {
+								Label(String(localized: L10n.Button.deleteTransfer), systemSymbol: .trash)
+							}
+						}
+					}
 				}
 			} header: {
 				Text(String(localized: L10n.Receive.historyTitle))

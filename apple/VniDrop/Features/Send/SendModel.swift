@@ -228,6 +228,31 @@ final class SendModel: ObservableObject {
 		}
 	}
 
+	/// Deletes a transfer by id, independent of the detail selection — used by the
+	/// list context menu so it can act inline without navigating into the detail.
+	func deleteTransfer(id: UInt64) {
+		if state.isDeleting { return }
+		state.isDeleting = true
+		Task {
+			let result = await repository.delete(transferId: id)
+			switch result {
+			case .success:
+				filePreviewRepository.remove(transferId: id)
+				if state.selectedTransferId == id {
+					state.selectedTransferId = nil
+					state.detailPanel = nil
+					state.receiverHistory = []
+				}
+				state.isDeleting = false
+				_ = await repository.refresh()
+				messages.tryShow(UiMessage(text: .resource(L10n.Transfer.deleted), tone: .success))
+			case .failure(let error):
+				state.isDeleting = false
+				messages.error(error)
+			}
+		}
+	}
+
 	/// Cancels/refuses a single receiver by responding to its request negatively.
 	/// Uses the core's `respondReceiverRequest` (no backend change); applies to
 	/// receivers that are still pending or accepted.
