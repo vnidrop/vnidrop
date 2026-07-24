@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Конфиденциальность и безопасность</string>
     <string name="about_tagline">Отправляйте файлы напрямую. Сохраняйте контроль над тем, кто их получает.</string>
     <string name="about_title">О приложении</string>
+    <string name="app_starting">Запуск…</string>
     <string name="appearance_auto_description">Следовать светлому или тёмному оформлению этого устройства.</string>
     <string name="appearance_dark_mode">Тёмный режим</string>
     <string name="appearance_light_mode">Светлый режим</string>
@@ -117,7 +118,7 @@
     <string name="nav_send">Отправить</string>
     <string name="nav_settings">Настройки</string>
     <string name="network_title">Сеть</string>
-    <string name="notifications_description">Получайте уведомления о новых запросах на получение, пока VniDrop работает в фоне.</string>
+    <string name="notifications_description">Получайте уведомления об активности передач, пока VniDrop работает в фоне.</string>
     <string name="notifications_enabled_message">Уведомления включены.</string>
     <string name="notifications_local_title">Разрешить уведомления</string>
     <string name="notifications_permission_denied">Уведомления отключены для VniDrop. Вы можете включить их в Настройках.</string>
@@ -203,6 +204,15 @@
     <string name="status_receiving">Получение</string>
     <string name="status_stopped">Остановлено</string>
     <string name="storage_calculating">Вычисление…</string>
+    <string name="storage_cleaning">Очистка…</string>
+    <string name="storage_cleanup_busy">Завершите активные передачи перед освобождением места</string>
+    <string name="storage_cleanup_freed">Освобождено %1$s</string>
+    <string name="storage_delete_transfers_caption">Очищает историю отправки и получения и кэшированное содержимое общих ресурсов. Полученные файлы на диске сохраняются.</string>
+    <string name="storage_free_up_space_caption">Удаляет временные файлы и остатки прошлых передач. Ваши передачи и полученные файлы сохраняются.</string>
+    <string name="storage_refresh">Обновить</string>
+    <string name="storage_unavailable">Данные об использовании хранилища пока недоступны</string>
+    <string name="storage_usage_header">На этом устройстве</string>
+    <string name="storage_free_up_space">Освободить место</string>
     <string name="storage_delete_transfers">Удалить все передачи</string>
     <string name="storage_delete_transfers_description">Это удалит из истории все записи об отправленных и полученных передачах. Полученные файлы не удаляются. Кэшированное общее содержимое, которое больше не требуется, освобождается автоматически; это может занять некоторое время. Это действие нельзя отменить.</string>
     <string name="storage_app_data">Данные приложения</string>

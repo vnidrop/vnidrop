@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Prywatność i bezpieczeństwo</string>
     <string name="about_tagline">Wysyłaj pliki bezpośrednio. Zachowaj kontrolę nad tym, kto je otrzymuje.</string>
     <string name="about_title">Informacje</string>
+    <string name="app_starting">Uruchamianie…</string>
     <string name="appearance_auto_description">Dopasuj do jasnego lub ciemnego wyglądu tego urządzenia.</string>
     <string name="appearance_dark_mode">Tryb ciemny</string>
     <string name="appearance_light_mode">Tryb jasny</string>
@@ -117,7 +118,7 @@
     <string name="nav_send">Wyślij</string>
     <string name="nav_settings">Ustawienia</string>
     <string name="network_title">Sieć</string>
-    <string name="notifications_description">Otrzymuj powiadomienia o nowych prośbach o odbiór, gdy VniDrop działa w tle.</string>
+    <string name="notifications_description">Otrzymuj powiadomienia o aktywności transferów, gdy VniDrop działa w tle.</string>
     <string name="notifications_enabled_message">Powiadomienia włączone.</string>
     <string name="notifications_local_title">Zezwól na powiadomienia</string>
     <string name="notifications_permission_denied">Powiadomienia są wyłączone dla VniDrop. Możesz je włączyć w Ustawieniach.</string>
@@ -203,6 +204,15 @@
     <string name="status_receiving">Odbieranie</string>
     <string name="status_stopped">Zatrzymany</string>
     <string name="storage_calculating">Obliczanie…</string>
+    <string name="storage_cleaning">Czyszczenie…</string>
+    <string name="storage_cleanup_busy">Zakończ aktywne transfery przed zwolnieniem miejsca</string>
+    <string name="storage_cleanup_freed">Zwolniono %1$s</string>
+    <string name="storage_delete_transfers_caption">Czyści historię wysyłania i odbierania oraz zapisane w pamięci podręcznej udostępniane treści. Odebrane pliki na dysku zostają zachowane.</string>
+    <string name="storage_free_up_space_caption">Usuwa pliki tymczasowe i pozostałości po wcześniejszych transferach. Twoje transfery i odebrane pliki zostają zachowane.</string>
+    <string name="storage_refresh">Odśwież</string>
+    <string name="storage_unavailable">Wykorzystanie pamięci nie jest jeszcze dostępne</string>
+    <string name="storage_usage_header">Na tym urządzeniu</string>
+    <string name="storage_free_up_space">Zwolnij miejsce</string>
     <string name="storage_delete_transfers">Usuń wszystkie transfery</string>
     <string name="storage_delete_transfers_description">Spowoduje to usunięcie z historii wszystkich rekordów wysłanych i odebranych transferów. Odebrane pliki nie zostaną usunięte. Niepotrzebna już zawartość udostępniona w pamięci podręcznej jest odzyskiwana automatycznie, co może chwilę potrwać. Tej operacji nie można cofnąć.</string>
     <string name="storage_app_data">Dane aplikacji</string>

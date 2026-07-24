@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 
 /// Settings screen, rebuilt on a native `Form` with `NavigationStack` push
 /// navigation. The model stays the source of truth via a derived path binding.
@@ -25,26 +26,26 @@ struct SettingsScreen: View {
 			Form {
 				Section {
 					NavigationLink(value: SettingsSection.preferences) {
-						SettingsRow(icon: "person.crop.circle", title: String(localized: "preferences_title"), value: model.state.username)
+						SettingsRow(icon: .personCropCircle, title: String(localized: L10n.Preferences.title), value: model.state.username)
 					}
 					NavigationLink(value: SettingsSection.appearance) {
-						SettingsRow(icon: "sun.max", title: String(localized: "appearance_title"), value: themeModeLabel(model.state.themeMode))
+						SettingsRow(icon: .sunMax, title: String(localized: L10n.Appearance.title), value: themeModeLabel(model.state.themeMode))
 					}
 				}
 				Section {
 					NavigationLink(value: SettingsSection.notifications) {
-						SettingsRow(icon: "bell", title: String(localized: "notifications_title"), value: nil)
+						SettingsRow(icon: .bell, title: String(localized: L10n.Notifications.title), value: nil)
 					}
 					NavigationLink(value: SettingsSection.storage) {
-						SettingsRow(icon: "internaldrive", title: String(localized: "storage_title"), value: nil)
+						SettingsRow(icon: .internaldrive, title: String(localized: L10n.Storage.title), value: nil)
 					}
 					NavigationLink(value: SettingsSection.about) {
-						SettingsRow(icon: "info.circle", title: String(localized: "about_title"), value: nil)
+						SettingsRow(icon: .infoCircle, title: String(localized: L10n.About.title), value: nil)
 					}
 				}
 			}
 			.formStyle(.grouped)
-			.navigationTitle(Text(LocalizedStringKey("settings_title")))
+			.navigationTitle(Text(String(localized: L10n.Settings.title)))
 			.navigationDestination(for: SettingsSection.self) { section in
 				sectionForm(section)
 			}
@@ -57,7 +58,7 @@ struct SettingsScreen: View {
 			SettingsSectionContent(model: model, section: section)
 		}
 		.formStyle(.grouped)
-		.navigationTitle(Text(LocalizedStringKey(section.titleKey)))
+		.navigationTitle(Text(String(localized: section.titleKey)))
 
 		if section == .about {
 			content
@@ -69,7 +70,7 @@ struct SettingsScreen: View {
 						Button {
 							showBugReport = true
 						} label: {
-							Label(String(localized: "about_bug_report"), systemImage: "ladybug")
+							Label(String(localized: L10n.About.bugReport), systemSymbol: .ladybug)
 						}
 					}
 				}
@@ -110,13 +111,13 @@ private struct SettingsSectionContent: View {
 }
 
 struct SettingsRow: View {
-	let icon: String
+	let icon: SFSymbol
 	let title: String
 	let value: String?
 
 	var body: some View {
 		HStack(spacing: 12) {
-			Image(systemName: icon)
+			Image(systemSymbol: icon)
 				.foregroundStyle(.tint)
 				.frame(width: 26)
 			Text(title).foregroundStyle(.primary)
@@ -130,8 +131,8 @@ struct SettingsRow: View {
 
 func themeModeLabel(_ mode: ThemeMode) -> String {
 	switch mode {
-	case .system: return String(localized: "appearance_system_mode")
-	case .light: return String(localized: "appearance_light_mode")
-	case .dark: return String(localized: "appearance_dark_mode")
+	case .system: return String(localized: L10n.Appearance.systemMode)
+	case .light: return String(localized: L10n.Appearance.lightMode)
+	case .dark: return String(localized: L10n.Appearance.darkMode)
 	}
 }

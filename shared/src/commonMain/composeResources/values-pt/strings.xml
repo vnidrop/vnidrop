@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Privacidade e segurança</string>
     <string name="about_tagline">Envie ficheiros diretamente. Mantenha o controlo sobre quem os recebe.</string>
     <string name="about_title">Acerca de</string>
+    <string name="app_starting">A iniciar…</string>
     <string name="appearance_auto_description">Acompanhar o aspeto claro ou escuro deste dispositivo.</string>
     <string name="appearance_dark_mode">Modo escuro</string>
     <string name="appearance_light_mode">Modo claro</string>
@@ -117,7 +118,7 @@
     <string name="nav_send">Enviar</string>
     <string name="nav_settings">Definições</string>
     <string name="network_title">Rede</string>
-    <string name="notifications_description">Seja notificado sobre novos pedidos de receção enquanto o VniDrop está em segundo plano.</string>
+    <string name="notifications_description">Seja notificado sobre a atividade das transferências enquanto o VniDrop está em segundo plano.</string>
     <string name="notifications_enabled_message">Notificações ativadas.</string>
     <string name="notifications_local_title">Permitir notificações</string>
     <string name="notifications_permission_denied">As notificações estão desativadas para o VniDrop. Pode ativá-las nas Definições.</string>
@@ -203,6 +204,15 @@
     <string name="status_receiving">A receber</string>
     <string name="status_stopped">Parada</string>
     <string name="storage_calculating">A calcular…</string>
+    <string name="storage_cleaning">A limpar…</string>
+    <string name="storage_cleanup_busy">Conclui as transferências ativas antes de libertar espaço</string>
+    <string name="storage_cleanup_freed">Libertado %1$s</string>
+    <string name="storage_delete_transfers_caption">Limpa o teu histórico de envios e receções e o conteúdo de partilha em cache da app. Os ficheiros recebidos no disco são mantidos.</string>
+    <string name="storage_free_up_space_caption">Remove ficheiros temporários e resíduos de transferências anteriores. As tuas transferências e ficheiros recebidos são mantidos.</string>
+    <string name="storage_refresh">Atualizar</string>
+    <string name="storage_unavailable">A utilização do armazenamento ainda não está disponível</string>
+    <string name="storage_usage_header">Neste dispositivo</string>
+    <string name="storage_free_up_space">Libertar espaço</string>
     <string name="storage_delete_transfers">Eliminar todas as transferências</string>
     <string name="storage_delete_transfers_description">Isto elimina do histórico todos os registos de transferências enviadas e recebidas. Os ficheiros recebidos não são eliminados. O conteúdo partilhado em cache que já não é necessário é recuperado automaticamente, o que pode demorar algum tempo. Esta ação não pode ser anulada.</string>
     <string name="storage_app_data">Dados da aplicação</string>

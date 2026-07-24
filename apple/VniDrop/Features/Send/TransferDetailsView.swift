@@ -1,4 +1,5 @@
 import SwiftUI
+import SFSafeSymbols
 import CoreImage.CIFilterBuiltins
 
 /// Transfer details + drawer panels, ported from `feature/send/TransferDetails.kt`.
@@ -23,78 +24,78 @@ struct TransferDetailsView: View {
 	var body: some View {
 		Form {
 			Section {
-				LabeledContent(String(localized: "metadata_status"), value: statusLabel(transfer.status))
-				LabeledContent(String(localized: "metadata_size"), value: formatBytes(transfer.totalSize))
-				LabeledContent(String(localized: "send_access_title"), value: accessPolicyLabel(transfer.accessPolicy))
+				LabeledContent(String(localized: L10n.Metadata.status), value: statusLabel(transfer.status))
+				LabeledContent(String(localized: L10n.Metadata.size), value: formatBytes(transfer.totalSize))
+				LabeledContent(String(localized: L10n.Send.accessTitle), value: accessPolicyLabel(transfer.accessPolicy))
 			} header: {
-				Text(transfer.transferName ?? String(localized: "send_new_transfer_title"))
+				Text(transfer.transferName ?? String(localized: L10n.Send.newTransferTitle))
 			}
 
 			Section {
 				DetailDestination(
-					title: String(localized: "transfer_activity_title"),
-					description: String(localized: "transfer_activity_description"),
+					title: String(localized: L10n.Transfer.activityTitle),
+					description: String(localized: L10n.Transfer.activityDescription),
 					count: events.filter { $0.transferId == transfer.transferId && $0.isMeaningfulActivity }.count,
 					onTap: model.openActivity
 				)
 				DetailDestination(
-					title: String(localized: "transfer_receivers_title"),
+					title: String(localized: L10n.Transfer.receiversTitle),
 					description: receiversDescription(pendingReceivers, completedReceivers),
 					count: pendingReceivers + completedReceivers,
 					onTap: model.openReceivers
 				)
-				DetailDestination(
-					title: String(localized: "transfer_share_title"),
-					description: String(localized: "transfer_share_description"),
-					count: 0,
-					onTap: model.openShare
-				)
 			}
 
-			if isActiveShare {
-				Section {
+			Section {
+				if isActiveShare {
 					Button(role: .destructive) {
 						showStopConfirmation = true
 					} label: {
-						Label(String(localized: "send_stop_sharing"), systemImage: "stop.circle")
+						Label(String(localized: L10n.Send.stopSharing), systemSymbol: .stopCircle)
 					}
+				}
+				Button(role: .destructive, action: model.requestDeleteTransfer) {
+					Label(String(localized: L10n.Button.deleteTransfer), systemSymbol: .trash)
 				}
 			}
 		}
 		.formStyle(.grouped)
-		.navigationTitle(Text(LocalizedStringKey("send_transfer_details_title")))
+		.navigationTitle(Text(String(localized: L10n.Send.transferDetailsTitle)))
 		#if os(iOS)
 		.navigationBarTitleDisplayMode(.inline)
 		#endif
 		.toolbar {
 			ToolbarItem(placement: .primaryAction) {
-				Button(role: .destructive, action: model.requestDeleteTransfer) {
-					Image(systemName: "trash")
+				Button(action: model.openShare) {
+					Label(String(localized: L10n.Transfer.shareTitle), systemSymbol: .squareAndArrowUp)
 				}
+				.help(String(localized: L10n.Transfer.shareTitle))
 			}
 		}
 		.confirmationDialog(
-			Text(LocalizedStringKey("send_stop_sharing")),
+			Text(String(localized: L10n.Send.stopSharing)),
 			isPresented: $showStopConfirmation,
 			titleVisibility: .visible
 		) {
-			Button(String(localized: "send_stop_sharing"), role: .destructive) {
+			Button(String(localized: L10n.Send.stopSharing), role: .destructive) {
 				model.stopSharing(transferId: transfer.transferId)
 			}
-			Button(String(localized: "button_cancel"), role: .cancel) {}
+			Button(String(localized: L10n.Button.cancel), role: .cancel) {}
 		} message: {
-			Text(LocalizedStringKey("send_stop_sharing_description"))
+			Text(String(localized: L10n.Send.stopSharingDescription))
 		}
 	}
 }
 
 private func receiversDescription(_ pending: Int, _ completed: Int) -> String {
 	if pending > 0 && completed > 0 {
-		return "\(String(format: String(localized: "transfer_receivers_pending"), pending)) · \(String(format: String(localized: "transfer_receivers_completed_count"), completed))"
+		return L10n.Format.separatedPair(
+			first: L10n.Transfer.receiversPending(count: pending),
+			second: L10n.Transfer.receiversCompletedCount(count: completed))
 	}
-	if pending > 0 { return String(format: String(localized: "transfer_receivers_pending"), pending) }
-	if completed > 0 { return String(format: String(localized: "transfer_receivers_completed_count"), completed) }
-	return String(localized: "transfer_receivers_description")
+	if pending > 0 { return L10n.Transfer.receiversPending(count: pending) }
+	if completed > 0 { return L10n.Transfer.receiversCompletedCount(count: completed) }
+	return String(localized: L10n.Transfer.receiversDescription)
 }
 
 private struct DetailDestination: View {
@@ -115,7 +116,7 @@ private struct DetailDestination: View {
 						.font(.footnote)
 						.foregroundStyle(.secondary)
 				}
-				Image(systemName: "chevron.forward")
+				Image(systemSymbol: .chevronForward)
 					.font(.footnote.weight(.semibold)).foregroundStyle(.tertiary)
 			}
 			.contentShape(Rectangle())
@@ -171,13 +172,13 @@ struct TransferActivityPanel: View {
 		let visible = events
 			.filter { $0.transferId == transferId && $0.isMeaningfulActivity }
 			.sorted { $0.timestamp > $1.timestamp }
-		PanelContainer(title: String(localized: "transfer_activity_title")) {
+		PanelContainer(title: String(localized: L10n.Transfer.activityTitle)) {
 			if visible.isEmpty {
-				Text(LocalizedStringKey("transfer_no_activity")).foregroundStyle(colors.foregroundLighter)
+				Text(String(localized: L10n.Transfer.noActivity)).foregroundStyle(colors.foregroundLighter)
 			} else {
 				ForEach(Array(visible.enumerated()), id: \.offset) { index, event in
 					if index > 0 { Divider().overlay(colors.borderDefault) }
-					Text(LocalizedStringKey(event.activityTitleKey))
+					Text(String(localized: event.activityTitleKey))
 						.fontWeight(.medium).padding(.vertical, 14)
 				}
 			}
@@ -194,11 +195,11 @@ struct ReceiverHistoryPanel: View {
 	let onCancel: (String) -> Void
 
 	var body: some View {
-		PanelContainer(title: String(localized: "transfer_receivers_title")) {
+		PanelContainer(title: String(localized: L10n.Transfer.receiversTitle)) {
 			if loading {
 				ProgressView().frame(maxWidth: .infinity).padding(40)
 			} else if receivers.isEmpty {
-				Text(LocalizedStringKey("transfer_no_receivers")).foregroundStyle(colors.foregroundLighter)
+				Text(String(localized: L10n.Transfer.noReceivers)).foregroundStyle(colors.foregroundLighter)
 			} else {
 				ForEach(Array(receivers.enumerated()), id: \.element.id) { index, receiver in
 					if index > 0 { Divider().overlay(colors.borderDefault) }
@@ -232,7 +233,7 @@ private struct ReceiverRow: View {
 	}
 
 	var body: some View {
-		let name = receiver.receiverName ?? receiver.receiverDeviceName ?? String(localized: "transfer_nearby_device")
+		let name = receiver.receiverName ?? receiver.receiverDeviceName ?? String(localized: L10n.Transfer.nearbyDevice)
 		let showLive = sendProgress != nil && receiver.status != .completed
 			&& receiver.status != .refused && receiver.status != .expired
 		HStack(alignment: .top, spacing: 12) {
@@ -244,7 +245,7 @@ private struct ReceiverRow: View {
 				if showLive, let sendProgress {
 					ProgressRow(labelKey: sendProgress.labelKey, progress: sendProgress.progress, detail: sendProgress.detail, labelText: sendProgress.label)
 				} else {
-					Text(LocalizedStringKey(receiver.status.statusTextKey))
+					Text(String(localized: receiver.status.statusTextKey))
 						.font(VniType.bodySmall).fontWeight(.medium)
 						.foregroundStyle(receiver.status.statusColor(colors))
 				}
@@ -257,7 +258,7 @@ private struct ReceiverRow: View {
 				Button(role: .destructive) {
 					onCancel(receiver.id)
 				} label: {
-					Text(LocalizedStringKey("button_refuse"))
+					Text(String(localized: L10n.Button.refuse))
 						.font(VniType.bodySmall)
 				}
 				.buttonStyle(.borderless)
@@ -275,15 +276,15 @@ struct TransferSharePanel: View {
 	let transfer: Transfer
 
 	var body: some View {
-		PanelContainer(title: String(localized: "transfer_share_title")) {
+		PanelContainer(title: String(localized: L10n.Transfer.shareTitle)) {
 			if let ticket = transfer.ticket {
 				qrCard(ticket: ticket)
-				Text(LocalizedStringKey("transfer_scan_qr"))
+				Text(String(localized: L10n.Transfer.scanQr))
 					.font(VniType.bodySmall).foregroundStyle(colors.foregroundLighter)
 					.frame(maxWidth: .infinity)
 				ShareActionsView(model: model, transfer: transfer, ticket: ticket)
 			} else {
-				Text(LocalizedStringKey("transfer_event_preparing")).foregroundStyle(colors.foregroundLighter)
+				Text(String(localized: L10n.Transfer.eventPreparing)).foregroundStyle(colors.foregroundLighter)
 			}
 		}
 	}
@@ -334,31 +335,31 @@ extension CoreEventModel {
 				"receiver-refused", "receiver-completed", "share-stopped", "failed"].contains(kind)
 	}
 
-	var activityTitleKey: String {
-		if phase == "import" && kind == "started" { return "transfer_event_preparing" }
-		if phase == "ticket" && kind == "created" { return "transfer_event_ready" }
-		if phase == "network" { return "transfer_event_connecting" }
-		if phase == "download" { return "transfer_event_downloading" }
-		if phase == "export" { return "transfer_event_saving" }
-		if kind == "receiver-requested" { return "transfer_event_requested" }
-		if kind == "receiver-accepted" || kind == "receiver-auto-approved" { return "transfer_event_approved" }
-		if kind == "receiver-refused" { return "transfer_event_refused" }
-		if kind == "receiver-completed" { return "transfer_event_completed" }
-		if kind == "share-stopped" || (phase == "lifecycle" && kind == "cancelled") { return "transfer_event_stopped" }
-		if kind == "failed" { return "transfer_event_failed" }
-		return "transfer_event_updated"
+	var activityTitleKey: String.LocalizationValue {
+		if phase == "import" && kind == "started" { return L10n.Transfer.eventPreparing }
+		if phase == "ticket" && kind == "created" { return L10n.Transfer.eventReady }
+		if phase == "network" { return L10n.Transfer.eventConnecting }
+		if phase == "download" { return L10n.Transfer.eventDownloading }
+		if phase == "export" { return L10n.Transfer.eventSaving }
+		if kind == "receiver-requested" { return L10n.Transfer.eventRequested }
+		if kind == "receiver-accepted" || kind == "receiver-auto-approved" { return L10n.Transfer.eventApproved }
+		if kind == "receiver-refused" { return L10n.Transfer.eventRefused }
+		if kind == "receiver-completed" { return L10n.Transfer.eventCompleted }
+		if kind == "share-stopped" || (phase == "lifecycle" && kind == "cancelled") { return L10n.Transfer.eventStopped }
+		if kind == "failed" { return L10n.Transfer.eventFailed }
+		return L10n.Transfer.eventUpdated
 	}
 }
 
 extension ReceiverDeliveryStatus {
-	var statusTextKey: String {
+	var statusTextKey: String.LocalizationValue {
 		switch self {
-		case .requested: return "transfer_receiver_requested"
-		case .accepted: return "transfer_receiver_accepted"
-		case .refused: return "transfer_receiver_refused"
-		case .expired: return "transfer_receiver_expired"
-		case .completed: return "transfer_receiver_completed"
-		case .unknown: return "transfer_receiver_unknown"
+		case .requested: return L10n.Transfer.receiverRequested
+		case .accepted: return L10n.Transfer.receiverAccepted
+		case .refused: return L10n.Transfer.receiverRefused
+		case .expired: return L10n.Transfer.receiverExpired
+		case .completed: return L10n.Transfer.receiverCompleted
+		case .unknown: return L10n.Transfer.receiverUnknown
 		}
 	}
 

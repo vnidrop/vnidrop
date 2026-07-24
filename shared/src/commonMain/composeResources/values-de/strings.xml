@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Datenschutz &amp; Sicherheit</string>
     <string name="about_tagline">Senden Sie Dateien direkt. Behalten Sie die Kontrolle darüber, wer sie empfängt.</string>
     <string name="about_title">Über</string>
+    <string name="app_starting">Wird gestartet…</string>
     <string name="appearance_auto_description">Der hellen oder dunklen Darstellung dieses Geräts folgen.</string>
     <string name="appearance_dark_mode">Dunkelmodus</string>
     <string name="appearance_light_mode">Hellmodus</string>
@@ -117,7 +118,7 @@
     <string name="nav_send">Senden</string>
     <string name="nav_settings">Einstellungen</string>
     <string name="network_title">Netzwerk</string>
-    <string name="notifications_description">Werden Sie über neue Empfangsanfragen benachrichtigt, während VniDrop im Hintergrund läuft.</string>
+    <string name="notifications_description">Werden Sie über Übertragungsaktivitäten benachrichtigt, während VniDrop im Hintergrund läuft.</string>
     <string name="notifications_enabled_message">Mitteilungen aktiviert.</string>
     <string name="notifications_local_title">Mitteilungen erlauben</string>
     <string name="notifications_permission_denied">Mitteilungen sind für VniDrop deaktiviert. Sie können sie in den Einstellungen aktivieren.</string>
@@ -203,6 +204,15 @@
     <string name="status_receiving">Wird empfangen</string>
     <string name="status_stopped">Beendet</string>
     <string name="storage_calculating">Wird berechnet…</string>
+    <string name="storage_cleaning">Wird bereinigt…</string>
+    <string name="storage_cleanup_busy">Beende aktive Übertragungen, bevor du Speicher freigibst</string>
+    <string name="storage_cleanup_freed">%1$s freigegeben</string>
+    <string name="storage_delete_transfers_caption">Löscht deinen Sende- und Empfangsverlauf sowie die zwischengespeicherten Freigabeinhalte der App. Empfangene Dateien auf dem Datenträger bleiben erhalten.</string>
+    <string name="storage_free_up_space_caption">Entfernt temporäre Dateien und Reste früherer Übertragungen. Deine Übertragungen und empfangenen Dateien bleiben erhalten.</string>
+    <string name="storage_refresh">Aktualisieren</string>
+    <string name="storage_unavailable">Die Speichernutzung ist noch nicht verfügbar</string>
+    <string name="storage_usage_header">Auf diesem Gerät</string>
+    <string name="storage_free_up_space">Speicher freigeben</string>
     <string name="storage_delete_transfers">Alle Übertragungen löschen</string>
     <string name="storage_delete_transfers_description">Dadurch werden alle Datensätze gesendeter und empfangener Übertragungen aus Ihrem Verlauf gelöscht. Ihre empfangenen Dateien werden nicht gelöscht. Nicht mehr benötigte zwischengespeicherte freigegebene Inhalte werden automatisch bereinigt; dies kann etwas dauern. Dies kann nicht rückgängig gemacht werden.</string>
     <string name="storage_app_data">App-Daten</string>
