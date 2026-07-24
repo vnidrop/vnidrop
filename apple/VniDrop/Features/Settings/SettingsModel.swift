@@ -56,6 +56,7 @@ struct SettingsState: Equatable {
 	var storage: StorageBreakdown?
 	var isCalculatingStorage = false
 	var isDeletingTransfers = false
+	var isCleaningStorage = false
 
 	static func == (lhs: SettingsState, rhs: SettingsState) -> Bool {
 		lhs.selectedSection == rhs.selectedSection && lhs.username == rhs.username
@@ -72,6 +73,7 @@ struct SettingsState: Equatable {
 			&& lhs.bugLogPreviewBytes == rhs.bugLogPreviewBytes
 			&& lhs.storage == rhs.storage && lhs.isCalculatingStorage == rhs.isCalculatingStorage
 			&& lhs.isDeletingTransfers == rhs.isDeletingTransfers
+			&& lhs.isCleaningStorage == rhs.isCleaningStorage
 			&& lhs.deviceInfo?.operatingSystem == rhs.deviceInfo?.operatingSystem
 	}
 }
@@ -313,6 +315,83 @@ final class SettingsModel: ObservableObject {
 				messages.error(InvitationError.message("Could not delete \(failures) transfer records"))
 			}
 		}
+	}
+
+	/// Reclaims disk space the core's transfer deletion doesn't touch: the app's
+	/// temporary directory (leftover picker/staging copies) and any stray `.Trash`
+	/// folders that accumulate inside app-owned directories. Never touches received
+	/// files, the core database, or user-chosen receive folders.
+	func freeUpSpace() {
+		if state.isCleaningStorage { return }
+		// Purging staging while a transfer is mid-flight could break it.
+		let hasActive = repository.state.transfers.contains {
+			$0.status == .sharing || $0.status == .importing || $0.status == .receiving
+		}
+		if hasActive {
+			messages.tryShow(UiMessage(text: .resource(L10n.Storage.cleanupBusy), tone: .warning))
+			return
+		}
+		state.isCleaningStorage = true
+		let tempDir = NSTemporaryDirectory()
+		let dataDir = environment.defaultCoreDataDir
+		// Only clean the receive folder's trash when it is app-owned (iOS fixed
+		// Documents), never a user-chosen macOS folder like ~/Downloads.
+		let receiveTrashRoot = fileSystemService.supportsCustomReceiveFolders ? nil : state.receiveFolder?.value
+		Task {
+			let freed = await Task.detached {
+				SettingsModel.reclaimJunk(tempDir: tempDir, dataDir: dataDir, receiveTrashRoot: receiveTrashRoot)
+			}.value
+			state.isCleaningStorage = false
+			loadStorageUsage()
+			messages.show(UiMessage(
+				text: .dynamic(L10n.Storage.cleanupFreed(size: formatBytes(freed))),
+				tone: .success
+			))
+		}
+	}
+
+	/// Deletes temp-directory contents and `.Trash` folders under the given roots,
+	/// returning the number of bytes reclaimed. Runs off the main actor.
+	nonisolated static func reclaimJunk(tempDir: String, dataDir: String, receiveTrashRoot: String?) -> UInt64 {
+		let fm = FileManager.default
+		var freed: UInt64 = 0
+		// Empty the temporary directory.
+		if let entries = try? fm.contentsOfDirectory(atPath: tempDir) {
+			for name in entries {
+				let path = (tempDir as NSString).appendingPathComponent(name)
+				freed += itemSize(path)
+				try? fm.removeItem(atPath: path)
+			}
+		}
+		// Remove stray `.Trash` folders inside app-owned directories.
+		for root in [dataDir, receiveTrashRoot].compactMap({ $0 }) {
+			for trash in trashDirectories(under: root) {
+				freed += directorySize(trash)
+				try? fm.removeItem(atPath: trash)
+			}
+		}
+		return freed
+	}
+
+	/// Paths of every directory named `.Trash` under `root` (not descending into them).
+	private nonisolated static func trashDirectories(under root: String) -> [String] {
+		let url = URL(fileURLWithPath: root, isDirectory: true)
+		guard let enumerator = FileManager.default.enumerator(
+			at: url, includingPropertiesForKeys: [.isDirectoryKey]
+		) else { return [] }
+		var result: [String] = []
+		for case let fileURL as URL in enumerator where fileURL.lastPathComponent == ".Trash" {
+			result.append(fileURL.path)
+			enumerator.skipDescendants()
+		}
+		return result
+	}
+
+	/// Allocated size of a file or directory (0 if missing).
+	private nonisolated static func itemSize(_ path: String) -> UInt64 {
+		var isDirectory: ObjCBool = false
+		guard FileManager.default.fileExists(atPath: path, isDirectory: &isDirectory) else { return 0 }
+		return isDirectory.boolValue ? directorySize(path) : fileSize(path)
 	}
 
 	nonisolated static func fileSize(_ path: String) -> UInt64 {

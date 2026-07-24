@@ -203,6 +203,10 @@
     <string name="status_receiving">Receiving</string>
     <string name="status_stopped">Stopped</string>
     <string name="storage_calculating">Calculating…</string>
+    <string name="storage_cleaning">Cleaning up…</string>
+    <string name="storage_cleanup_busy">Finish active transfers before freeing up space</string>
+    <string name="storage_cleanup_freed">Freed %1$s</string>
+    <string name="storage_free_up_space">Free up space</string>
     <string name="storage_delete_transfers">Delete all transfers</string>
     <string name="storage_delete_transfers_description">This clears all sent and received transfer records from your history. Your received files are not deleted. Cached shared content that is no longer needed is reclaimed automatically, which may take a little time. This can’t be undone.</string>
     <string name="storage_app_data">App data</string>

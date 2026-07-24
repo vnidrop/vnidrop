@@ -3140,6 +3140,68 @@
         "ru": "Вычисление…"
       }
     },
+    "storage_cleaning": {
+      "context": "Settings > Storage: free-up-space button while cleanup runs.",
+      "translations": {
+        "en": "Cleaning up…",
+        "fr": "Nettoyage…",
+        "es": "Limpiando…",
+        "it": "Pulizia…",
+        "de": "Wird bereinigt…",
+        "pt": "A limpar…",
+        "pl": "Czyszczenie…",
+        "nl": "Opschonen…",
+        "ru": "Очистка…"
+      }
+    },
+    "storage_cleanup_busy": {
+      "context": "Settings > Storage: shown when cleanup is blocked by in-flight transfers.",
+      "translations": {
+        "en": "Finish active transfers before freeing up space",
+        "fr": "Terminez les transferts en cours avant de libérer de l'espace",
+        "es": "Finaliza las transferencias activas antes de liberar espacio",
+        "it": "Completa i trasferimenti attivi prima di liberare spazio",
+        "de": "Beende aktive Übertragungen, bevor du Speicher freigibst",
+        "pt": "Conclui as transferências ativas antes de libertar espaço",
+        "pl": "Zakończ aktywne transfery przed zwolnieniem miejsca",
+        "nl": "Voltooi actieve overdrachten voordat je ruimte vrijmaakt",
+        "ru": "Завершите активные передачи перед освобождением места"
+      }
+    },
+    "storage_cleanup_freed": {
+      "context": "Settings > Storage: cleanup success. {size} = amount freed.",
+      "args": [
+        {
+          "name": "size",
+          "type": "string"
+        }
+      ],
+      "translations": {
+        "en": "Freed {size}",
+        "fr": "{size} libéré",
+        "es": "Se liberó {size}",
+        "it": "Liberati {size}",
+        "de": "{size} freigegeben",
+        "pt": "Libertado {size}",
+        "pl": "Zwolniono {size}",
+        "nl": "{size} vrijgemaakt",
+        "ru": "Освобождено {size}"
+      }
+    },
+    "storage_free_up_space": {
+      "context": "Settings > Storage: button that clears temporary files and stray trash.",
+      "translations": {
+        "en": "Free up space",
+        "fr": "Libérer de l'espace",
+        "es": "Liberar espacio",
+        "it": "Libera spazio",
+        "de": "Speicher freigeben",
+        "pt": "Libertar espaço",
+        "pl": "Zwolnij miejsce",
+        "nl": "Ruimte vrijmaken",
+        "ru": "Освободить место"
+      }
+    },
     "storage_delete_transfers": {
       "context": "Settings > Storage: button to delete all transfer records.",
       "translations": {

@@ -203,6 +203,10 @@
     <string name="status_receiving">Ontvangen</string>
     <string name="status_stopped">Gestopt</string>
     <string name="storage_calculating">Berekenen…</string>
+    <string name="storage_cleaning">Opschonen…</string>
+    <string name="storage_cleanup_busy">Voltooi actieve overdrachten voordat je ruimte vrijmaakt</string>
+    <string name="storage_cleanup_freed">%1$s vrijgemaakt</string>
+    <string name="storage_free_up_space">Ruimte vrijmaken</string>
     <string name="storage_delete_transfers">Alle overdrachten verwijderen</string>
     <string name="storage_delete_transfers_description">Hiermee worden alle records van verzonden en ontvangen overdrachten uit uw geschiedenis gewist. Uw ontvangen bestanden worden niet verwijderd. Gedeelde inhoud in de cache die niet meer nodig is, wordt automatisch opgeruimd; dit kan enige tijd duren. Dit kan niet ongedaan worden gemaakt.</string>
     <string name="storage_app_data">Appgegevens</string>

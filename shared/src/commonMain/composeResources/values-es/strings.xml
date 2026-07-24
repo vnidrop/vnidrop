@@ -203,6 +203,10 @@
     <string name="status_receiving">Recibiendo</string>
     <string name="status_stopped">Detenido</string>
     <string name="storage_calculating">Calculando…</string>
+    <string name="storage_cleaning">Limpiando…</string>
+    <string name="storage_cleanup_busy">Finaliza las transferencias activas antes de liberar espacio</string>
+    <string name="storage_cleanup_freed">Se liberó %1$s</string>
+    <string name="storage_free_up_space">Liberar espacio</string>
     <string name="storage_delete_transfers">Eliminar todas las transferencias</string>
     <string name="storage_delete_transfers_description">Esto borra de su historial todos los registros de transferencias enviadas y recibidas. Sus archivos recibidos no se eliminan. El contenido compartido en caché que ya no se necesita se recupera automáticamente, lo que puede tardar un poco. Esto no se puede deshacer.</string>
     <string name="storage_app_data">Datos de la aplicación</string>

@@ -100,6 +100,23 @@ struct StorageSettings: View {
 		}
 
 		Section {
+			Button {
+				model.freeUpSpace()
+			} label: {
+				HStack {
+					Text(model.state.isCleaningStorage
+						 ? String(localized: L10n.Storage.cleaning)
+						 : String(localized: L10n.Storage.freeUpSpace))
+					if model.state.isCleaningStorage {
+						Spacer()
+						ProgressView()
+					}
+				}
+			}
+			.disabled(model.state.isCleaningStorage)
+		}
+
+		Section {
 			Button(role: .destructive) {
 				showDeleteConfirmation = true
 			} label: {

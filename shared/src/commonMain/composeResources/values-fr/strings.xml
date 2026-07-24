@@ -203,6 +203,10 @@
     <string name="status_receiving">Réception</string>
     <string name="status_stopped">Arrêté</string>
     <string name="storage_calculating">Calcul…</string>
+    <string name="storage_cleaning">Nettoyage…</string>
+    <string name="storage_cleanup_busy">Terminez les transferts en cours avant de libérer de l\'espace</string>
+    <string name="storage_cleanup_freed">%1$s libéré</string>
+    <string name="storage_free_up_space">Libérer de l\'espace</string>
     <string name="storage_delete_transfers">Supprimer tous les transferts</string>
     <string name="storage_delete_transfers_description">Cela efface de votre historique tous les enregistrements de transferts envoyés et reçus. Vos fichiers reçus ne sont pas supprimés. Le contenu partagé mis en cache qui n’est plus nécessaire est récupéré automatiquement, ce qui peut prendre un peu de temps. Cette action est irréversible.</string>
     <string name="storage_app_data">Données de l’app</string>
