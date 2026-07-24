@@ -300,6 +300,13 @@ final class SendModel: ObservableObject {
 				state.transferName = ""
 				state.accessPolicy = .requireApproval
 				state.isSharing = false
+				// Jump straight to the new transfer's share panel (QR + delivery) rather
+				// than dropping the user on the list to drill in manually. Refresh first
+				// so the transfer exists in state before it's selected.
+				_ = await repository.refresh()
+				state.selectedTransferId = share.transferId
+				state.detailPanel = .share
+				refreshReceivers(share.transferId)
 				messages.show(UiMessage(text: .resource(L10n.Send.transferCreated), tone: .success))
 			case .failure(let error):
 				state.isSharing = false
