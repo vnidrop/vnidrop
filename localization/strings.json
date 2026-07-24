@@ -3188,6 +3188,76 @@
         "ru": "Освобождено {size}"
       }
     },
+    "storage_delete_transfers_caption": {
+      "context": "Settings > Storage: caption under the destructive delete-all button.",
+      "translations": {
+        "en": "Clears your send and receive history and the app's cached share content. Received files on disk are kept.",
+        "fr": "Efface votre historique d'envois et de réceptions ainsi que le contenu de partage mis en cache par l'app. Les fichiers reçus sur le disque sont conservés.",
+        "es": "Borra tu historial de envíos y recepciones y el contenido compartido en caché de la app. Los archivos recibidos en el disco se conservan.",
+        "it": "Cancella la cronologia di invii e ricezioni e i contenuti di condivisione memorizzati dall'app. I file ricevuti sul disco vengono mantenuti.",
+        "de": "Löscht deinen Sende- und Empfangsverlauf sowie die zwischengespeicherten Freigabeinhalte der App. Empfangene Dateien auf dem Datenträger bleiben erhalten.",
+        "pt": "Limpa o teu histórico de envios e receções e o conteúdo de partilha em cache da app. Os ficheiros recebidos no disco são mantidos.",
+        "pl": "Czyści historię wysyłania i odbierania oraz zapisane w pamięci podręcznej udostępniane treści. Odebrane pliki na dysku zostają zachowane.",
+        "nl": "Wist je verzend- en ontvangstgeschiedenis en de gecachte deelinhoud van de app. Ontvangen bestanden op schijf blijven behouden.",
+        "ru": "Очищает историю отправки и получения и кэшированное содержимое общих ресурсов. Полученные файлы на диске сохраняются."
+      }
+    },
+    "storage_free_up_space_caption": {
+      "context": "Settings > Storage: caption under the free-up-space button.",
+      "translations": {
+        "en": "Removes temporary files and leftover trash from earlier transfers. Your transfers and received files are kept.",
+        "fr": "Supprime les fichiers temporaires et les résidus des transferts précédents. Vos transferts et fichiers reçus sont conservés.",
+        "es": "Elimina los archivos temporales y los restos de transferencias anteriores. Tus transferencias y archivos recibidos se conservan.",
+        "it": "Rimuove i file temporanei e i residui dei trasferimenti precedenti. I tuoi trasferimenti e i file ricevuti vengono mantenuti.",
+        "de": "Entfernt temporäre Dateien und Reste früherer Übertragungen. Deine Übertragungen und empfangenen Dateien bleiben erhalten.",
+        "pt": "Remove ficheiros temporários e resíduos de transferências anteriores. As tuas transferências e ficheiros recebidos são mantidos.",
+        "pl": "Usuwa pliki tymczasowe i pozostałości po wcześniejszych transferach. Twoje transfery i odebrane pliki zostają zachowane.",
+        "nl": "Verwijdert tijdelijke bestanden en resten van eerdere overdrachten. Je overdrachten en ontvangen bestanden blijven behouden.",
+        "ru": "Удаляет временные файлы и остатки прошлых передач. Ваши передачи и полученные файлы сохраняются."
+      }
+    },
+    "storage_refresh": {
+      "context": "Settings > Storage: label for the button that recalculates usage.",
+      "translations": {
+        "en": "Refresh",
+        "fr": "Actualiser",
+        "es": "Actualizar",
+        "it": "Aggiorna",
+        "de": "Aktualisieren",
+        "pt": "Atualizar",
+        "pl": "Odśwież",
+        "nl": "Vernieuwen",
+        "ru": "Обновить"
+      }
+    },
+    "storage_unavailable": {
+      "context": "Settings > Storage: shown when usage couldn't be calculated yet.",
+      "translations": {
+        "en": "Storage usage isn't available yet",
+        "fr": "L'utilisation du stockage n'est pas encore disponible",
+        "es": "El uso de almacenamiento aún no está disponible",
+        "it": "L'utilizzo dello spazio non è ancora disponibile",
+        "de": "Die Speichernutzung ist noch nicht verfügbar",
+        "pt": "A utilização do armazenamento ainda não está disponível",
+        "pl": "Wykorzystanie pamięci nie jest jeszcze dostępne",
+        "nl": "Opslaggebruik is nog niet beschikbaar",
+        "ru": "Данные об использовании хранилища пока недоступны"
+      }
+    },
+    "storage_usage_header": {
+      "context": "Settings > Storage: header above the usage breakdown.",
+      "translations": {
+        "en": "On this device",
+        "fr": "Sur cet appareil",
+        "es": "En este dispositivo",
+        "it": "Su questo dispositivo",
+        "de": "Auf diesem Gerät",
+        "pt": "Neste dispositivo",
+        "pl": "Na tym urządzeniu",
+        "nl": "Op dit apparaat",
+        "ru": "На этом устройстве"
+      }
+    },
     "storage_free_up_space": {
       "context": "Settings > Storage: button that clears temporary files and stray trash.",
       "translations": {

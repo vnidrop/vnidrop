@@ -206,6 +206,11 @@
     <string name="storage_cleaning">Opschonen…</string>
     <string name="storage_cleanup_busy">Voltooi actieve overdrachten voordat je ruimte vrijmaakt</string>
     <string name="storage_cleanup_freed">%1$s vrijgemaakt</string>
+    <string name="storage_delete_transfers_caption">Wist je verzend- en ontvangstgeschiedenis en de gecachte deelinhoud van de app. Ontvangen bestanden op schijf blijven behouden.</string>
+    <string name="storage_free_up_space_caption">Verwijdert tijdelijke bestanden en resten van eerdere overdrachten. Je overdrachten en ontvangen bestanden blijven behouden.</string>
+    <string name="storage_refresh">Vernieuwen</string>
+    <string name="storage_unavailable">Opslaggebruik is nog niet beschikbaar</string>
+    <string name="storage_usage_header">Op dit apparaat</string>
     <string name="storage_free_up_space">Ruimte vrijmaken</string>
     <string name="storage_delete_transfers">Alle overdrachten verwijderen</string>
     <string name="storage_delete_transfers_description">Hiermee worden alle records van verzonden en ontvangen overdrachten uit uw geschiedenis gewist. Uw ontvangen bestanden worden niet verwijderd. Gedeelde inhoud in de cache die niet meer nodig is, wordt automatisch opgeruimd; dit kan enige tijd duren. Dit kan niet ongedaan worden gemaakt.</string>

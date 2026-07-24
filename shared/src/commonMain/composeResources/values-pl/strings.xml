@@ -206,6 +206,11 @@
     <string name="storage_cleaning">Czyszczenie…</string>
     <string name="storage_cleanup_busy">Zakończ aktywne transfery przed zwolnieniem miejsca</string>
     <string name="storage_cleanup_freed">Zwolniono %1$s</string>
+    <string name="storage_delete_transfers_caption">Czyści historię wysyłania i odbierania oraz zapisane w pamięci podręcznej udostępniane treści. Odebrane pliki na dysku zostają zachowane.</string>
+    <string name="storage_free_up_space_caption">Usuwa pliki tymczasowe i pozostałości po wcześniejszych transferach. Twoje transfery i odebrane pliki zostają zachowane.</string>
+    <string name="storage_refresh">Odśwież</string>
+    <string name="storage_unavailable">Wykorzystanie pamięci nie jest jeszcze dostępne</string>
+    <string name="storage_usage_header">Na tym urządzeniu</string>
     <string name="storage_free_up_space">Zwolnij miejsce</string>
     <string name="storage_delete_transfers">Usuń wszystkie transfery</string>
     <string name="storage_delete_transfers_description">Spowoduje to usunięcie z historii wszystkich rekordów wysłanych i odebranych transferów. Odebrane pliki nie zostaną usunięte. Niepotrzebna już zawartość udostępniona w pamięci podręcznej jest odzyskiwana automatycznie, co może chwilę potrwać. Tej operacji nie można cofnąć.</string>

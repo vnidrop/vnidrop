@@ -55,6 +55,7 @@ struct SettingsState: Equatable {
 	var bugLogPreviewBytes = 0
 	var storage: StorageBreakdown?
 	var isCalculatingStorage = false
+	var storageLoadFailed = false
 	var isDeletingTransfers = false
 	var isCleaningStorage = false
 
@@ -72,6 +73,7 @@ struct SettingsState: Equatable {
 			&& lhs.bugIncludeLogs == rhs.bugIncludeLogs && lhs.isSubmittingBugReport == rhs.isSubmittingBugReport
 			&& lhs.bugLogPreviewBytes == rhs.bugLogPreviewBytes
 			&& lhs.storage == rhs.storage && lhs.isCalculatingStorage == rhs.isCalculatingStorage
+			&& lhs.storageLoadFailed == rhs.storageLoadFailed
 			&& lhs.isDeletingTransfers == rhs.isDeletingTransfers
 			&& lhs.isCleaningStorage == rhs.isCleaningStorage
 			&& lhs.deviceInfo?.operatingSystem == rhs.deviceInfo?.operatingSystem
@@ -265,17 +267,28 @@ final class SettingsModel: ObservableObject {
 
 	// MARK: - Storage
 
-	/// Recomputes the on-disk usage breakdown off the main actor.
+	/// Recomputes the on-disk usage breakdown off the main actor. Safe to call
+	/// before the core is ready: it keeps the spinner up and waits for the core to
+	/// finish initializing (it starts asynchronously at launch) rather than bailing.
 	func loadStorageUsage() {
 		if state.isCalculatingStorage { return }
 		state.isCalculatingStorage = true
+		state.storageLoadFailed = false
 		let tempDir = NSTemporaryDirectory()
 		Task {
+			// The core initializes asynchronously at launch; poll briefly so opening
+			// Storage early doesn't leave the summary stuck.
+			var attempts = 0
+			while !repository.state.isInitialized && attempts < 100 {
+				try? await Task.sleep(nanoseconds: 100_000_000)
+				attempts += 1
+			}
 			let coreResult = await repository.storageUsage()
 			let artifactsResult = await repository.receivedArtifacts()
 			guard case .success(let core) = coreResult,
 				case .success(let artifacts) = artifactsResult else {
 				state.isCalculatingStorage = false
+				state.storageLoadFailed = true
 				return
 			}
 			let diskSizes = await Task.detached {

@@ -78,61 +78,71 @@ struct StorageSettings: View {
 	@ObservedObject var model: SettingsModel
 	@State private var showDeleteConfirmation = false
 
+	private var isBusy: Bool {
+		model.state.isCalculatingStorage || model.state.isCleaningStorage || model.state.isDeletingTransfers
+	}
+
 	var body: some View {
 		Section {
-			if let storage = model.state.storage {
-				LabeledContent(String(localized: L10n.Storage.receivedFiles), value: formatBytes(storage.receivedFiles))
-				LabeledContent(String(localized: L10n.Storage.transferData), value: formatBytes(storage.transferCache))
-				LabeledContent(String(localized: L10n.Storage.appData), value: formatBytes(storage.appData))
-				LabeledContent(String(localized: L10n.Storage.temporary), value: formatBytes(storage.temporary))
-				LabeledContent(String(localized: L10n.Storage.total)) {
-					Text(formatBytes(storage.total)).fontWeight(.semibold)
-				}
-			} else {
-				HStack {
-					Text(String(localized: L10n.Storage.calculating)).foregroundStyle(.secondary)
-					Spacer()
-					ProgressView()
+			usageContent
+		} header: {
+			HStack {
+				Text(String(localized: L10n.Storage.usageHeader))
+				Spacer()
+				if model.state.isCalculatingStorage {
+					ProgressView().controlSize(.small)
+				} else {
+					Button(action: model.loadStorageUsage) {
+						Label(String(localized: L10n.Storage.refresh), systemSymbol: .arrowClockwise)
+							.labelStyle(.iconOnly)
+					}
+					.buttonStyle(.borderless)
+					.disabled(isBusy)
+					.help(String(localized: L10n.Storage.refresh))
 				}
 			}
 		} footer: {
 			Text(String(localized: L10n.Storage.footer))
 		}
 
+		// Reclaim reversible junk (temp + trash) — non-destructive to history.
 		Section {
-			Button {
-				model.freeUpSpace()
-			} label: {
-				HStack {
-					Text(model.state.isCleaningStorage
-						 ? String(localized: L10n.Storage.cleaning)
-						 : String(localized: L10n.Storage.freeUpSpace))
-					if model.state.isCleaningStorage {
-						Spacer()
-						ProgressView()
-					}
-				}
+			Button(action: model.freeUpSpace) {
+				actionLabel(
+					title: L10n.Storage.freeUpSpace,
+					busyTitle: L10n.Storage.cleaning,
+					isBusy: model.state.isCleaningStorage,
+					symbol: .sparkles,
+					tint: .accentColor
+				)
 			}
-			.disabled(model.state.isCleaningStorage)
+			// `.plain` so pressing the row dims the label instead of flipping it to
+			// the white selection-highlight that the default form button style uses.
+			.buttonStyle(.plain)
+			.disabled(isBusy)
+		} footer: {
+			Text(String(localized: L10n.Storage.freeUpSpaceCaption))
 		}
 
+		// Destructive: clears transfer history + cached share content.
 		Section {
-			Button(role: .destructive) {
+			Button {
 				showDeleteConfirmation = true
 			} label: {
-				HStack {
-					Text(model.state.isDeletingTransfers
-						 ? String(localized: L10n.Storage.deleting)
-						 : String(localized: L10n.Storage.deleteTransfers))
-					if model.state.isDeletingTransfers {
-						Spacer()
-						ProgressView()
-					}
-				}
+				actionLabel(
+					title: L10n.Storage.deleteTransfers,
+					busyTitle: L10n.Storage.deleting,
+					isBusy: model.state.isDeletingTransfers,
+					symbol: .trash,
+					tint: .red
+				)
 			}
-			.disabled(model.state.isDeletingTransfers)
+			.buttonStyle(.plain)
+			.disabled(isBusy)
+		} footer: {
+			Text(String(localized: L10n.Storage.deleteTransfersCaption))
 		}
-		.onAppear { model.loadStorageUsage() }
+		.task { model.loadStorageUsage() }
 		.confirmationDialog(
 			Text(String(localized: L10n.Storage.deleteTransfers)),
 			isPresented: $showDeleteConfirmation,
@@ -145,6 +155,53 @@ struct StorageSettings: View {
 		} message: {
 			Text(String(localized: L10n.Storage.deleteTransfersDescription))
 		}
+	}
+
+	@ViewBuilder
+	private var usageContent: some View {
+		if let storage = model.state.storage {
+			LabeledContent(String(localized: L10n.Storage.receivedFiles), value: formatBytes(storage.receivedFiles))
+			LabeledContent(String(localized: L10n.Storage.transferData), value: formatBytes(storage.transferCache))
+			LabeledContent(String(localized: L10n.Storage.appData), value: formatBytes(storage.appData))
+			LabeledContent(String(localized: L10n.Storage.temporary), value: formatBytes(storage.temporary))
+			LabeledContent(String(localized: L10n.Storage.total)) {
+				Text(formatBytes(storage.total)).fontWeight(.semibold)
+			}
+		} else if model.state.storageLoadFailed {
+			// Genuine failure (core reported an error) — offer a retry.
+			Button(action: model.loadStorageUsage) {
+				Label(String(localized: L10n.Storage.unavailable), systemSymbol: .arrowClockwise)
+					.foregroundStyle(.secondary)
+			}
+			.buttonStyle(.plain)
+		} else {
+			// Loading, or waiting for the core to finish starting.
+			HStack {
+				Text(String(localized: L10n.Storage.calculating)).foregroundStyle(.secondary)
+				Spacer()
+				ProgressView().controlSize(.small)
+			}
+		}
+	}
+
+	/// A tinted, full-width button label with a leading symbol and a trailing
+	/// spinner while busy. `.contentShape` keeps the whole row tappable.
+	private func actionLabel(
+		title: String.LocalizationValue,
+		busyTitle: String.LocalizationValue,
+		isBusy: Bool,
+		symbol: SFSymbol,
+		tint: Color
+	) -> some View {
+		HStack {
+			Label(String(localized: isBusy ? busyTitle : title), systemSymbol: symbol)
+			Spacer()
+			if isBusy {
+				ProgressView().controlSize(.small)
+			}
+		}
+		.foregroundStyle(tint)
+		.contentShape(Rectangle())
 	}
 }
 

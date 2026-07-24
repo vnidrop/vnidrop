@@ -206,6 +206,11 @@
     <string name="storage_cleaning">Очистка…</string>
     <string name="storage_cleanup_busy">Завершите активные передачи перед освобождением места</string>
     <string name="storage_cleanup_freed">Освобождено %1$s</string>
+    <string name="storage_delete_transfers_caption">Очищает историю отправки и получения и кэшированное содержимое общих ресурсов. Полученные файлы на диске сохраняются.</string>
+    <string name="storage_free_up_space_caption">Удаляет временные файлы и остатки прошлых передач. Ваши передачи и полученные файлы сохраняются.</string>
+    <string name="storage_refresh">Обновить</string>
+    <string name="storage_unavailable">Данные об использовании хранилища пока недоступны</string>
+    <string name="storage_usage_header">На этом устройстве</string>
     <string name="storage_free_up_space">Освободить место</string>
     <string name="storage_delete_transfers">Удалить все передачи</string>
     <string name="storage_delete_transfers_description">Это удалит из истории все записи об отправленных и полученных передачах. Полученные файлы не удаляются. Кэшированное общее содержимое, которое больше не требуется, освобождается автоматически; это может занять некоторое время. Это действие нельзя отменить.</string>

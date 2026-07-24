@@ -206,6 +206,11 @@
     <string name="storage_cleaning">Cleaning up…</string>
     <string name="storage_cleanup_busy">Finish active transfers before freeing up space</string>
     <string name="storage_cleanup_freed">Freed %1$s</string>
+    <string name="storage_delete_transfers_caption">Clears your send and receive history and the app\'s cached share content. Received files on disk are kept.</string>
+    <string name="storage_free_up_space_caption">Removes temporary files and leftover trash from earlier transfers. Your transfers and received files are kept.</string>
+    <string name="storage_refresh">Refresh</string>
+    <string name="storage_unavailable">Storage usage isn\'t available yet</string>
+    <string name="storage_usage_header">On this device</string>
     <string name="storage_free_up_space">Free up space</string>
     <string name="storage_delete_transfers">Delete all transfers</string>
     <string name="storage_delete_transfers_description">This clears all sent and received transfer records from your history. Your received files are not deleted. Cached shared content that is no longer needed is reclaimed automatically, which may take a little time. This can’t be undone.</string>
