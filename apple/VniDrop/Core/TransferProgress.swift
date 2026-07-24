@@ -82,7 +82,9 @@ func progressForReceiver(
 			labelKey: L10n.Progress.interrupted, progress: nil, detail: nil
 		)
 	}
-	if latestKind == .completed && !transferEvents.contains(where: { $0.eventKind == .progress || $0.eventKind == .started }) {
+	// Events are newest-first, so a completed latest event is terminal even when
+	// progress/started events precede it — it must show as Completed, not Sending.
+	if latestKind == .completed {
 		return TransferProgress(
 			transferId: transferId, phase: .transfer, kind: .completed,
 			labelKey: L10n.Progress.completed, progress: 1, detail: nil
