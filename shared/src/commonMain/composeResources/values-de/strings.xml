@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Datenschutz &amp; Sicherheit</string>
     <string name="about_tagline">Senden Sie Dateien direkt. Behalten Sie die Kontrolle darüber, wer sie empfängt.</string>
     <string name="about_title">Über</string>
+    <string name="app_starting">Wird gestartet…</string>
     <string name="appearance_auto_description">Der hellen oder dunklen Darstellung dieses Geräts folgen.</string>
     <string name="appearance_dark_mode">Dunkelmodus</string>
     <string name="appearance_light_mode">Hellmodus</string>

@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Конфиденциальность и безопасность</string>
     <string name="about_tagline">Отправляйте файлы напрямую. Сохраняйте контроль над тем, кто их получает.</string>
     <string name="about_title">О приложении</string>
+    <string name="app_starting">Запуск…</string>
     <string name="appearance_auto_description">Следовать светлому или тёмному оформлению этого устройства.</string>
     <string name="appearance_dark_mode">Тёмный режим</string>
     <string name="appearance_light_mode">Светлый режим</string>

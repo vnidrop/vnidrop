@@ -321,6 +321,20 @@
         "ru": "О приложении"
       }
     },
+    "app_starting": {
+      "context": "Shown briefly at launch while the core is still starting up.",
+      "translations": {
+        "en": "Starting…",
+        "fr": "Démarrage…",
+        "es": "Iniciando…",
+        "it": "Avvio…",
+        "de": "Wird gestartet…",
+        "pt": "A iniciar…",
+        "pl": "Uruchamianie…",
+        "nl": "Bezig met starten…",
+        "ru": "Запуск…"
+      }
+    },
     "appearance_auto_description": {
       "context": "Settings > Appearance: description for the System/auto option.",
       "translations": {

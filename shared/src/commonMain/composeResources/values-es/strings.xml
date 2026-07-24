@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Privacidad y seguridad</string>
     <string name="about_tagline">Envíe archivos directamente. Mantenga el control de quién los recibe.</string>
     <string name="about_title">Acerca de</string>
+    <string name="app_starting">Iniciando…</string>
     <string name="appearance_auto_description">Seguir la apariencia clara u oscura de este dispositivo.</string>
     <string name="appearance_dark_mode">Modo oscuro</string>
     <string name="appearance_light_mode">Modo claro</string>

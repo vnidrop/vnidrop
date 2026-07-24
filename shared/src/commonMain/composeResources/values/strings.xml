@@ -22,6 +22,7 @@
     <string name="about_privacy_title">Privacy &amp; security</string>
     <string name="about_tagline">Send files directly. Stay in control of who receives them.</string>
     <string name="about_title">About</string>
+    <string name="app_starting">Starting…</string>
     <string name="appearance_auto_description">Match this device’s light or dark appearance.</string>
     <string name="appearance_dark_mode">Dark mode</string>
     <string name="appearance_light_mode">Light mode</string>
