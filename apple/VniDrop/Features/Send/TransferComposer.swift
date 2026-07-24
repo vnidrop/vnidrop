@@ -75,28 +75,40 @@ struct TransferComposer: View {
 		}
 	}
 
-	@ViewBuilder
 	private var actions: some View {
 		let shareTitle = state.isSharing
 			? String(localized: L10n.Button.sharingFile) : String(localized: L10n.Button.shareFile)
-		let shareButton = PrimaryButton(
-			title: shareTitle, action: model.createShare,
-			enabled: state.canCreateShare(coreInitialized: model.coreState.isInitialized)
-		)
-		if windowClass == .phone {
-			VStack(spacing: 8) {
-				shareButton
-				QuietButton(title: String(localized: L10n.Button.changeFiles), action: model.selectFile, enabled: !state.isSharing)
-				QuietButton(title: String(localized: L10n.Button.chooseFolder), action: model.selectFolder, enabled: !state.isSharing)
-			}
-		} else {
-			HStack(spacing: 8) {
-				shareButton.fixedSize()
-				QuietButton(title: String(localized: L10n.Button.changeFiles), action: model.selectFile, enabled: !state.isSharing)
-				QuietButton(title: String(localized: L10n.Button.chooseFolder), action: model.selectFolder, enabled: !state.isSharing)
-				QuietButton(title: String(localized: L10n.Button.clear), action: model.clearSelectedSource, enabled: !state.isSharing)
+		return VStack(spacing: 10) {
+			PrimaryButton(
+				title: shareTitle, action: model.createShare,
+				enabled: state.canCreateShare(coreInitialized: model.coreState.isInitialized)
+			)
+			// Secondary source actions as an even row of bordered buttons rather than
+			// bare text links, so they read as controls and align with the primary.
+			HStack(spacing: 10) {
+				sourceButton(title: L10n.Button.changeFiles, symbol: .docBadgeArrowUp, action: model.selectFile)
+				sourceButton(title: L10n.Button.chooseFolder, symbol: .folder, action: model.selectFolder)
+				if windowClass != .phone {
+					sourceButton(title: L10n.Button.clear, symbol: .xmark, action: model.clearSelectedSource)
+				}
 			}
 		}
+	}
+
+	private func sourceButton(
+		title: String.LocalizationValue, symbol: SFSymbol, action: @escaping () -> Void
+	) -> some View {
+		Button(action: action) {
+			Label(String(localized: title), systemSymbol: symbol)
+				.lineLimit(1)
+				.minimumScaleFactor(0.85)
+				.frame(maxWidth: .infinity)
+				.frame(minHeight: 20)
+		}
+		.buttonStyle(.bordered)
+		.controlSize(.large)
+		.tint(.secondary)
+		.disabled(state.isSharing)
 	}
 }
 
